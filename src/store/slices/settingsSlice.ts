@@ -1,12 +1,19 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
-export type LayoutType = 'default' | 'compact' | 'wide';
-export type ColorScheme = 'blue' | 'green' | 'purple' | 'orange' | 'teal';
-export type NavbarPosition = 'fixed' | 'static';
-export type SidebarStyle = 'full' | 'compact' | 'closed';
-export type LayoutVariant = 'standard' | 'horizontal' | 'minimal' | 'footer';
-export type ThemeOption = 'default' | 'corporate' | 'creative' | 'elegant' | 'playful' | 'minimal' | 'dark';
+export type LayoutType = "default" | "compact" | "wide";
+export type ColorScheme = "blue" | "green" | "purple" | "orange" | "teal";
+export type NavbarPosition = "fixed" | "static";
+export type SidebarStyle = "full" | "compact" | "closed";
+export type LayoutVariant = "standard" | "horizontal" | "minimal" | "footer";
+export type ThemeOption =
+  | "default"
+  | "corporate"
+  | "creative"
+  | "elegant"
+  | "playful"
+  | "minimal"
+  | "dark";
 
 export interface ThemeColors {
   primary: string;
@@ -19,6 +26,8 @@ export interface ThemeColors {
   paper: string;
   textPrimary: string;
   textSecondary: string;
+  navBackground: string;
+  lightGray: string;
 }
 
 export interface SettingsState {
@@ -32,17 +41,17 @@ export interface SettingsState {
 }
 
 const initialState: SettingsState = {
-  layout: 'default',
-  colorScheme: 'blue',
-  navbarPosition: 'fixed',
-  sidebarStyle: 'full',
-  layoutVariant: 'standard',
-  themeOption: 'default',
-  isSettingsOpen: false
+  layout: "default",
+  colorScheme: "blue",
+  navbarPosition: "fixed",
+  sidebarStyle: "full",
+  layoutVariant: "standard",
+  themeOption: "default",
+  isSettingsOpen: false,
 };
 
 export const settingsSlice = createSlice({
-  name: 'settings',
+  name: "settings",
   initialState,
   reducers: {
     setLayout: (state, action: PayloadAction<LayoutType>) => {
@@ -68,19 +77,19 @@ export const settingsSlice = createSlice({
     },
     closeSettingsDrawer: (state) => {
       state.isSettingsOpen = false;
-    }
-  }
+    },
+  },
 });
 
-export const { 
-  setLayout, 
-  setColorScheme, 
-  setNavbarPosition, 
+export const {
+  setLayout,
+  setColorScheme,
+  setNavbarPosition,
   setSidebarStyle,
   setLayoutVariant,
   setThemeOption,
   toggleSettingsDrawer,
-  closeSettingsDrawer
+  closeSettingsDrawer,
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;
