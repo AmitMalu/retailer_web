@@ -31,8 +31,7 @@ export default function BaseLayout({
     sidebarStyle === "full" ? 180 : sidebarStyle === "compact" ? 80 : 0;
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <>
       <Box
         sx={{
           display: "flex",
@@ -64,6 +63,7 @@ export default function BaseLayout({
             minHeight: "100vh",
           }}
         >
+          {/* Navbar - conditionally positioned */}
           <Box
             sx={{
               width: "100%",
@@ -105,6 +105,6 @@ export default function BaseLayout({
           )}
         </Box>
       </Box>
-    </ThemeProvider>
+    </>
   );
 }

@@ -1,151 +1,43 @@
-import type { ThemeOptions } from "@mui/material";
-import type { ThemeColors } from "../store/slices/settingsSlice";
+import { createTheme } from "@mui/material";
+import type { PaletteColor, ThemeOptions } from "@mui/material";
+import { themeColors } from "./themeColors";
+import type { ThemeOption, ThemeColors } from "../store/slices/settingsSlice";
 
+// Extend MUI theme types
 declare module "@mui/material/styles" {
   interface TypeBackground {
     navBackground?: string;
-    lightGray?: string;
+  }
+  interface Palette {
+    lightGray: {
+      main: string;
+    };
+    authButtonBg: PaletteColor;
+    headLine?: string;
+    placeholder?: string;
+  }
+
+  interface PaletteOptions {
+    lightGray?: {
+      main: string;
+    };
+    authButtonBg: PaletteColor;
+    headLine?: string;
+    placeholder?: string;
   }
 }
 
-export const themeOptions: Record<string, ThemeColors> = {
-  // Default theme - Blue focused
-  default: {
-    primary: "#2B9E91",
-    secondary: "#f59e0b",
-    success: "#10b981",
-    warning: "#f59e0b",
-    error: "#ef4444",
-    info: "#3b82f6",
-    background: "#f8fafc",
-    paper: "#ffffff",
-    textPrimary: "#1e293b",
-    textSecondary: "#64748b",
-    navBackground: "#000000",
-    lightGray: "#D9D9D9",
-  },
+// Export theme colors and types
+export { themeColors, type ThemeOption, type ThemeColors };
 
-  // Corporate theme - Professional blue and gray
-  corporate: {
-    primary: "#1e40af",
-    secondary: "#475569",
-    success: "#059669",
-    warning: "#d97706",
-    error: "#dc2626",
-    info: "#0284c7",
-    background: "#f1f5f9",
-    paper: "#ffffff",
-    textPrimary: "#0f172a",
-    textSecondary: "#475569",
-    navBackground: "#ffffff",
-    lightGray: "#D9D9D9",
-  },
-
-  // Creative theme - Purple and pink
-  creative: {
-    primary: "#8b5cf6",
-    secondary: "#ec4899",
-    success: "#10b981",
-    warning: "#f59e0b",
-    error: "#ef4444",
-    info: "#3b82f6",
-    background: "#f5f3ff",
-    paper: "#ffffff",
-    textPrimary: "#4c1d95",
-    textSecondary: "#6d28d9",
-    navBackground: "#000000",
-    lightGray: "#D9D9D9",
-  },
-
-  // Elegant theme - Deep teal and gold
-  elegant: {
-    primary: "#0f766e",
-    secondary: "#ca8a04",
-    success: "#15803d",
-    warning: "#b45309",
-    error: "#b91c1c",
-    info: "#0369a1",
-    background: "#f0fdfa",
-    paper: "#ffffff",
-    textPrimary: "#134e4a",
-    textSecondary: "#115e59",
-    navBackground: "#000000",
-    lightGray: "#D9D9D9",
-  },
-
-  // Playful theme - Vibrant colors
-  playful: {
-    primary: "#f97316",
-    secondary: "#8b5cf6",
-    success: "#84cc16",
-    warning: "#facc15",
-    error: "#ef4444",
-    info: "#06b6d4",
-    background: "#fff7ed",
-    paper: "#ffffff",
-    textPrimary: "#7c2d12",
-    textSecondary: "#9a3412",
-    navBackground: "#000000",
-    lightGray: "#D9D9D9",
-  },
-
-  // Minimal theme - Monochrome
-  minimal: {
-    primary: "#525252",
-    secondary: "#737373",
-    success: "#16a34a",
-    warning: "#ca8a04",
-    error: "#dc2626",
-    info: "#0284c7",
-    background: "#fafafa",
-    paper: "#ffffff",
-    textPrimary: "#171717",
-    textSecondary: "#404040",
-    navBackground: "#000000",
-    lightGray: "#D9D9D9",
-  },
-
-  // Dark theme - Dark mode with blue accents
-  dark: {
-    primary: "#38bdf8",
-    secondary: "#fb923c",
-    success: "#4ade80",
-    warning: "#fbbf24",
-    error: "#f87171",
-    info: "#60a5fa",
-    background: "#0f172a",
-    paper: "#1e293b",
-    textPrimary: "#f1f5f9",
-    textSecondary: "#cbd5e1",
-    navBackground: "#000000",
-    lightGray: "#D9D9D9",
-  },
-
-  mutedTeal: {
-    primary: "#228c7a",
-    secondary: "#44b5a0",
-    success: "#5fd0bb",
-    warning: "#fbbf24",
-    error: "#f87171",
-    info: "#bae9e1",
-    background: "#effbf9",
-    paper: "#ffffff",
-    textPrimary: "#171717",
-    textSecondary: "#404040",
-    navBackground: "#000000",
-    lightGray: "#D9D9D9",
-  },
-};
-
-// Create theme options for MUI theme
 export const createThemeOptions = (
-  themeKey: string,
-  darkMode: boolean
+  themeKey: ThemeOption = "default",
+  darkMode: boolean = false
 ): ThemeOptions => {
-  const colors = themeOptions[themeKey] || themeOptions.default;
+  const colors = themeColors[themeKey] || themeColors.default;
 
   // Override colors for dark mode if not using the explicit dark theme
-  const adjustedColors =
+  const adjustedColors: ThemeColors =
     darkMode && themeKey !== "dark"
       ? {
           ...colors,
@@ -177,6 +69,12 @@ export const createThemeOptions = (
       info: {
         main: adjustedColors.info,
       },
+      authButtonBg: {
+        main: adjustedColors.authButtonBg,
+        light: adjustedColors.authButtonBg,
+        dark: adjustedColors.authButtonBg,
+        contrastText: "#ffffff",
+      },
       background: {
         default: adjustedColors.background,
         paper: adjustedColors.paper,
@@ -186,12 +84,14 @@ export const createThemeOptions = (
         primary: adjustedColors.textPrimary,
         secondary: adjustedColors.textSecondary,
       },
+      headLine: adjustedColors.headLine,
+      placeholder: adjustedColors.placeholder,
+      lightGray: {
+        main: adjustedColors.lightGray,
+      },
     },
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    },
-    shape: {
-      borderRadius: 8,
     },
     components: {
       MuiButton: {
@@ -199,6 +99,14 @@ export const createThemeOptions = (
           root: {
             textTransform: "none",
             fontWeight: 500,
+            borderRadius: 8,
+            padding: "8px 16px",
+          },
+          contained: {
+            boxShadow: "none",
+            "&:hover": {
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            },
           },
         },
       },
@@ -206,21 +114,42 @@ export const createThemeOptions = (
         styleOverrides: {
           root: {
             borderRadius: 12,
-            boxShadow: darkMode
-              ? "0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.1)"
-              : "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+            "&:hover": {
+              boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
+            },
           },
         },
       },
       MuiAppBar: {
         styleOverrides: {
           root: {
-            boxShadow: darkMode
-              ? "0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4)"
-              : "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+          },
+        },
+      },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            borderRadius: 8,
           },
         },
       },
     },
   };
 };
+
+// Helper function to get theme options
+export const getThemeOptions = (
+  themeKey: ThemeOption = "default",
+  darkMode: boolean = false
+) => {
+  return createThemeOptions(themeKey, darkMode);
+};
+
+// Create and export default theme instance
+export const theme = createTheme(createThemeOptions("default", false));
+export default theme;
+
+// For backward compatibility
+export const themeOptions = themeColors;

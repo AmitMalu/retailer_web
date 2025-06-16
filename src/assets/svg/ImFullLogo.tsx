@@ -3,8 +3,8 @@ export const ImFullLogo = () => (
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
     fill="none"
-    width={174}
-    height={83}
+    width={144}
+    height={73}
     viewBox="0 0 174 83"
   >
     <g>

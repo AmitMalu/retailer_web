@@ -92,82 +92,99 @@ const OtpInputScreen = () => {
     <>
       {isLoading && <Loader />}
       <AuthLayout>
-        <div className="flex w-[350px] flex-col items-start justify-start px-4 py-6">
-          <div className="flex flex-col items-start justify-items-start gap-3 ">
-            <TextComponent fontSize={30} fontWeight={500} color={"Primary"}>
-              Enter OTP
-            </TextComponent>
-            <TextComponent fontSize={12} fontWeight={500} color={"Primary"}>
-              Please enter your OTP
-            </TextComponent>
-          </div>
-          <Formik<OtpRequestProps>
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={() => {}}
-          >
-            {({ handleSubmit, handleChange, errors, touched, values }) => (
-              <>
-                <div className="mb-3 mt-6 flex w-full flex-col items-center justify-center">
-                  <OtpInput
-                    value={values.otp}
-                    onChange={handleChange("otp")}
-                    renderInput={(props) => <input {...props} />}
-                    numInputs={6}
-                    inputStyle={{
-                      width: "2.5rem",
-                      height: "3rem",
-                      margin: "0 0.3rem",
-                      fontSize: "1.5rem",
-                      borderRadius: "8px",
-                      border: "1px solid #ccc",
-                    }}
-                  />
-                  {touched.otp && errors.otp && (
-                    <TextComponent
-                      fontSize={12}
-                      fontWeight={400}
-                      color={"Primary"}
-                      style={{ textAlign: "right" }}
-                    >
-                      {errors.otp}
-                    </TextComponent>
-                  )}
-                </div>
-                <div className="mt-2 flex w-full items-center justify-center">
-                  {timer > 0 ? (
-                    <TextComponent
-                      fontSize={30}
-                      fontWeight={600}
-                      color={"Primary"}
-                    >
-                      {timer}
-                    </TextComponent>
-                  ) : (
-                    <div onClick={() => {}}>
+        <div className="flex w-full  items-center justify-center flex-col gap-5">
+          <div className="flex h-auto w-[380px] flex-col items-center rounded-3xl shadow-lg shadow-blue-200 border-2  justify-start px-6 py-6">
+            <div className="flex flex-col items-center justify-center gap-3 ">
+              <TextComponent fontSize={28} fontWeight={500} color={"Primary"}>
+                Enter OTP
+              </TextComponent>
+              <TextComponent fontSize={12} fontWeight={400} color={"Primary"}>
+                Please enter your OTP
+              </TextComponent>
+            </div>
+            <Formik<OtpRequestProps>
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={() => {}}
+            >
+              {({ handleSubmit, handleChange, errors, touched, values }) => (
+                <>
+                  <div className="mb-3 mt-10 flex gap-4 w-full flex-col items-center justify-center">
+                    <OtpInput
+                      value={values.otp}
+                      onChange={handleChange("otp")}
+                      renderInput={(props) => <input {...props} />}
+                      numInputs={6}
+                      inputStyle={{
+                        width: "2.5rem",
+                        height: "3rem",
+                        margin: "0 0.3rem",
+                        fontSize: "1.5rem",
+                        borderRadius: "8px",
+                        border: "1px solid #ccc",
+                      }}
+                    />
+                    {touched.otp && errors.otp && (
                       <TextComponent
-                        fontSize={14}
-                        fontWeight={500}
+                        fontSize={12}
+                        fontWeight={400}
+                        color={"Primary"}
+                        style={{ textAlign: "right" }}
+                      >
+                        {errors.otp}
+                      </TextComponent>
+                    )}
+                  </div>
+                  <div className="mt-2 flex w-full items-center justify-center">
+                    {timer > 0 ? (
+                      <TextComponent
+                        fontSize={30}
+                        fontWeight={600}
                         color={"Primary"}
                       >
-                        Resend OTP
+                        {timer}
                       </TextComponent>
-                    </div>
-                  )}
-                </div>
+                    ) : (
+                      <div onClick={() => {}}>
+                        <TextComponent
+                          fontSize={14}
+                          fontWeight={500}
+                          color={"Primary"}
+                        >
+                          Resend OTP
+                        </TextComponent>
+                      </div>
+                    )}
+                  </div>
 
-                <div className="mt-6 flex h-9 w-full items-center justify-center">
-                  <ButtonComponent
-                    title={"VERIFY"}
-                    variant="filled"
-                    onClick={() => handleSubmit()}
-                    loading={isLoading}
-                    radius={10}
-                  />
-                </div>
-              </>
-            )}
-          </Formik>
+                  <div className="mt-6 flex h-9 w-full items-center justify-center">
+                    <ButtonComponent
+                      title={"VERIFY"}
+                      variant="filled"
+                      onClick={() => handleSubmit()}
+                      loading={isLoading}
+                      radius={28}
+                      fullWidth
+                      disabled={isLoading || !values.otp}
+                    />
+                  </div>
+                </>
+              )}
+            </Formik>
+          </div>
+          <div className="flex items-center justify-center gap-4 ">
+            <TextComponent fontSize={16} fontWeight={400} color="text.headLine">
+              Don't have an account yet?
+            </TextComponent>
+            <TextComponent
+              fontSize={16}
+              fontWeight={400}
+              color="text.headLine"
+              className="underline"
+            >
+              Sign up
+            </TextComponent>
+          </div>
         </div>
       </AuthLayout>
     </>

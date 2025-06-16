@@ -1,5 +1,7 @@
 import React from "react";
 import { Button as MuiButton, ButtonProps, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+
 import { ButtonComponentProps } from "@/Common/interface";
 
 const ButtonComponent: React.FC<ButtonComponentProps> = ({
@@ -14,9 +16,10 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
   size = "small",
   fullWidth = false,
   radius = 6,
-  color = "primary",
+  color,
   fontSize = 16,
 }) => {
+  const theme = useTheme();
   const getMuiVariant = (): ButtonProps["variant"] => {
     switch (variant) {
       case "filled":
@@ -51,20 +54,21 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
   const buttonSx = {
     borderRadius: `${radius}px`,
     textTransform: "none",
-    padding: "6px 16px",
+    padding: "6px 12px",
+
     "&.MuiButton-contained": {
-      backgroundColor: color && color !== "primary" ? color : undefined,
+      backgroundColor: color ? color : theme.palette.authButtonBg.main,
       "&:hover": {
-        backgroundColor: color && color !== "primary" ? color : undefined,
+        backgroundColor: color ? color : theme.palette.authButtonBg.main,
         opacity: 0.8,
       },
     },
     "&.MuiButton-outlined": {
-      borderColor: color && color !== "primary" ? color : undefined,
-      color: color && color !== "primary" ? color : undefined,
+      borderColor: color ? color : theme.palette.authButtonBg.main,
+      color: color ? color : theme.palette.authButtonBg.main,
     },
     "&.MuiButton-text": {
-      color: color && color !== "primary" ? color : undefined,
+      color: color ? color : theme.palette.authButtonBg.main,
     },
     "&.Mui-disabled": {
       opacity: 0.6,

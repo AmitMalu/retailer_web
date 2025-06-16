@@ -219,6 +219,7 @@ export type TableProps = {
 
 export type AuthLayoutProps = {
   children: React.ReactNode;
+  authImage?: React.ReactNode;
 };
 
 export type LoginRequest = {

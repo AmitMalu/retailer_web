@@ -14,6 +14,7 @@ import { SetPasswordRequestProps } from "@/Common/interface";
 import { CloseEyeSvgIcon, LockSvgIcon, OpenEyeSvgIcon } from "@/assets/svg";
 import { PasswordRegex } from "@/Utils/helper";
 import AuthLayout from "@/components/layouts/AuthLayout";
+import SetPasswordImage from "@/assets/svg/Auth/setPassword";
 
 const SetPasswordScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -61,90 +62,113 @@ const SetPasswordScreen: React.FC = () => {
   return (
     <>
       {isLoading && <Loader />}
-      <AuthLayout>
-        <div className=" flex w-[350px] flex-col items-start justify-start  px-4 py-6">
-          <div className="flex flex-col items-start justify-items-start gap-3 ">
-            <TextComponent fontSize={30} fontWeight={500} color={"Primary"}>
-              Set Password
+      <AuthLayout authImage={<SetPasswordImage />}>
+        <div className="flex w-full  items-center justify-center flex-col gap-5">
+          <div className="flex h-auto w-[350px] flex-col items-center rounded-3xl shadow-lg shadow-blue-200 border-2  justify-start px-6 py-6">
+            <div className="flex flex-col items-center justify-center gap-3 ">
+              <TextComponent fontSize={30} fontWeight={500} color={"Primary"}>
+                Set Password
+              </TextComponent>
+              <TextComponent fontSize={12} fontWeight={500} color={"Primary"}>
+                Please enter new password
+              </TextComponent>
+            </div>
+            <Formik<SetPasswordRequestProps>
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={() => {}}
+            >
+              {({ handleSubmit, handleChange, errors, touched, values }) => (
+                <>
+                  <div className="mt-10 flex w-full flex-col gap-4 items-center justify-center">
+                    <TextInputComponent
+                      label="Enter new password"
+                      value={values.newPassword}
+                      onChange={handleChange("newPassword")}
+                      error={
+                        touched.newPassword && errors.newPassword
+                          ? errors.newPassword
+                          : ""
+                      }
+                      withAsterisk
+                      leftSection={<LockSvgIcon />}
+                      type={showNewPassword ? "text" : "password"}
+                      className="w-full"
+                      isAuth={true}
+                      rightSection={
+                        <div
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {showNewPassword ? (
+                            <OpenEyeSvgIcon />
+                          ) : (
+                            <CloseEyeSvgIcon />
+                          )}
+                        </div>
+                      }
+                    />
+                    <TextInputComponent
+                      label={"Re-enter New Password"}
+                      value={values.confirmPassword}
+                      onChange={handleChange("confirmPassword")}
+                      error={
+                        touched.confirmPassword && errors.confirmPassword
+                          ? errors.confirmPassword
+                          : ""
+                      }
+                      withAsterisk
+                      type={showPassword ? "text" : "password"}
+                      leftSection={<LockSvgIcon />}
+                      className="w-full"
+                      isAuth={true}
+                      rightSection={
+                        <div
+                          onClick={() => setShowPassword(!showPassword)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {showPassword ? (
+                            <OpenEyeSvgIcon />
+                          ) : (
+                            <CloseEyeSvgIcon />
+                          )}
+                        </div>
+                      }
+                    />
+                  </div>
+
+                  <div className="mt-6 flex w-full items-center justify-center">
+                    <ButtonComponent
+                      title={"CONTINUE"}
+                      variant="filled"
+                      onClick={() => handleSubmit()}
+                      loading={isLoading}
+                      radius={28}
+                      fullWidth={true}
+                      disabled={
+                        isLoading ||
+                        !values.newPassword ||
+                        !values.confirmPassword
+                      }
+                    />
+                  </div>
+                </>
+              )}
+            </Formik>
+          </div>
+          <div className="flex items-center justify-center gap-4 ">
+            <TextComponent fontSize={16} fontWeight={400} color="text.headLine">
+              Don't have an account yet?
             </TextComponent>
-            <TextComponent fontSize={12} fontWeight={500} color={"Primary"}>
-              Please enter new password
+            <TextComponent
+              fontSize={16}
+              fontWeight={400}
+              color="text.headLine"
+              className="underline"
+            >
+              Sign up
             </TextComponent>
           </div>
-          <Formik<SetPasswordRequestProps>
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={() => {}}
-          >
-            {({ handleSubmit, handleChange, errors, touched, values }) => (
-              <>
-                <div className="mt-6 flex w-full flex-col items-center justify-center">
-                  <TextInputComponent
-                    placeholder="Enter new password"
-                    value={values.newPassword}
-                    onChange={handleChange("newPassword")}
-                    error={
-                      touched.newPassword && errors.newPassword
-                        ? errors.newPassword
-                        : ""
-                    }
-                    leftSection={<LockSvgIcon />}
-                    type={showNewPassword ? "text" : "password"}
-                    className="w-full"
-                    isAuth={true}
-                    rightSection={
-                      <div
-                        onClick={() => setShowNewPassword(!showNewPassword)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {showNewPassword ? (
-                          <OpenEyeSvgIcon color={"Primary"} />
-                        ) : (
-                          <CloseEyeSvgIcon color={"Primary"} />
-                        )}
-                      </div>
-                    }
-                  />
-                  <TextInputComponent
-                    placeholder={"Re-enter New Password"}
-                    value={values.confirmPassword}
-                    onChange={handleChange("confirmPassword")}
-                    error={
-                      touched.confirmPassword && errors.confirmPassword
-                        ? errors.confirmPassword
-                        : ""
-                    }
-                    type={showPassword ? "text" : "password"}
-                    leftSection={<LockSvgIcon />}
-                    className="w-full"
-                    isAuth={true}
-                    rightSection={
-                      <div
-                        onClick={() => setShowPassword(!showPassword)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {showPassword ? (
-                          <OpenEyeSvgIcon color={"Primary"} />
-                        ) : (
-                          <CloseEyeSvgIcon color={"Primary"} />
-                        )}
-                      </div>
-                    }
-                  />
-                </div>
-
-                <div className="mt-6 flex h-9 w-full items-center justify-center">
-                  <ButtonComponent
-                    title={"CONTINUE"}
-                    variant="filled"
-                    onClick={() => handleSubmit()}
-                    loading={isLoading}
-                    radius={10}
-                  />
-                </div>
-              </>
-            )}
-          </Formik>
         </div>
       </AuthLayout>
     </>

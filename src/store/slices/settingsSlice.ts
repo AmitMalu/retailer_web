@@ -13,7 +13,8 @@ export type ThemeOption =
   | "elegant"
   | "playful"
   | "minimal"
-  | "dark";
+  | "dark"
+  | "mutedTeal";
 
 export interface ThemeColors {
   primary: string;
@@ -28,6 +29,9 @@ export interface ThemeColors {
   textSecondary: string;
   navBackground: string;
   lightGray: string;
+  headLine: string;
+  placeholder: string;
+  authButtonBg: string;
 }
 
 export interface SettingsState {
