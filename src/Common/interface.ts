@@ -222,26 +222,35 @@ export type AuthLayoutProps = {
   authImage?: React.ReactNode;
 };
 
+export type TokenGenerationRequest = {
+  userName: string;
+};
+
+export type VerifyTokenRequest = {
+  token: string;
+  hierarchyType: string;
+};
+
 export type LoginRequest = {
-  mobileNumber: string;
+  userName: string;
   password: string;
 };
 
 export type SetPasswordRequestProps = {
+  username: string;
   newPassword: string;
-  mobileNumber: string;
-  confirmPassword?: string;
+  reEnteredPassword: string;
 };
 
 export type ForgotPasswordRequestProps = {
-  mobileNo: string;
+  username: string;
 };
 
 export type OtpRequestProps = {
   otp: string;
-  mobileNumber: string;
+  username: string;
 };
 
 export type ResendOtpRequestProps = {
-  mobile: string;
+  username: string;
 };

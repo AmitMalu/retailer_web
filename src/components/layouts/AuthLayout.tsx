@@ -7,7 +7,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, authImage }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex h-screen w-full bg-cover bg-center">
+    <div className="flex h-screen w-full bg-cover bg-center bg-white">
       <div className="flex h-full w-full">
         <div className="flex h-full w-1/2 flex-col items-center justify-center p-4 sm:hidden md:flex">
           <div

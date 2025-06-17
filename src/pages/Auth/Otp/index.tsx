@@ -8,21 +8,26 @@ import Loader from "../../../components/Atoms/Loader";
 import { OtpRequestProps } from "@/Common/interface";
 import OtpInput from "react-otp-input";
 import AuthLayout from "@/components/layouts/AuthLayout";
+import { Resend_Otp, Verify_Otp } from "@/Services/api";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "@/Utils/notifications";
 
 const OtpInputScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const mobileNumber = location.state?.mobileNumber;
+  const username = location.state?.username;
   const [isLoading, setIsLoading] = useState(false);
   const [timer, setTimer] = useState(30);
   const [hasStartedTimer, setHasStartedTimer] = useState(false);
 
   useEffect(() => {
-    if (mobileNumber && !hasStartedTimer) {
+    if (username && !hasStartedTimer) {
       setTimer(30);
       setHasStartedTimer(true);
     }
-  }, [mobileNumber, hasStartedTimer]);
+  }, [username, hasStartedTimer]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -38,55 +43,87 @@ const OtpInputScreen = () => {
     };
   }, [timer]);
 
+  // const GenerateCredentials = async (userName: string) => {
+  //   try {
+  //     let bodyRequest = {
+  //       userName: userName || "",
+  //     };
+  //     const CredentialsResponse = await Token_generation(bodyRequest);
+  //     VerifyToken(CredentialsResponse?.data);
+  //   } catch (error: any) {
+  //     showErrorNotification(error.response?.data?.message || error.message);
+  //   }
+  // };
+  // const VerifyToken = async (values: VerifyTokenRequest) => {
+  //   try {
+  //     const tokenValue = values?.token?.split("|")[1] || "";
+
+  //     let bodyRequest = {
+  //       token: tokenValue || "",
+  //       hierarchyType: "RT",
+  //     };
+  //     const tokenResponse = await Verify_Token(bodyRequest);
+  //     document.cookie = `authToken=${encodeURIComponent(tokenValue)}; expires=${new Date(Date.now() + 7 * 864e5).toUTCString()}; path=/; SameSite=Strict`;
+  //     if (tokenValue && tokenResponse?.status === 200) {
+  //       showSuccessNotification("Logged In Successfully");
+  //       navigate("/otpInput", {
+  //         state: { username: tokenResponse?.data?.username },
+  //       });
+  //     }
+  //   } catch (error: any) {
+  //     showErrorNotification(error.response?.data?.message || error.message);
+  //   }
+  // };
+
   const validationSchema = Yup.object({
     otp: Yup.string().required("Required"),
   });
 
   const initialValues: OtpRequestProps = {
     otp: "",
-    mobileNumber: mobileNumber,
+    username: username,
   };
 
-  // const handleSubmit = async (values: OtpRequestProps) => {
-  //   try {
-  //     setIsLoading(true);
-  //     const response = await Verify_Otp({
-  //       otp: values.otp,
-  //       mobileNumber: mobileNumber,
-  //     });
-  //     if (
-  //       response?.data?.statusCode === 200 ||
-  //       response?.data?.statusCode === '200'
-  //     ) {
-  //       showSuccessNotification('Otp Verified Successfully!');
-  //       navigate('/setPassword', { state: { mobileNumber: mobileNumber } });
-  //     } else {
-  //       showErrorNotification(response?.data?.message || 'Invalid OTP');
-  //     }
-  //   } catch (error: any) {
-  //     showErrorNotification(error.response?.data?.message || error.message);
-  //     setIsLoading(false);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+  const handleSubmit = async (values: OtpRequestProps) => {
+    try {
+      setIsLoading(true);
+      const response = await Verify_Otp({
+        otp: values.otp,
+        username: username,
+      });
+      if (
+        response?.data?.statusCode === 200 ||
+        response?.data?.statusCode === "200"
+      ) {
+        showSuccessNotification("Otp Verified Successfully!");
+        // navigate("/setPassword", { state: { username: username } });
+      } else {
+        showErrorNotification(response?.data?.message || "Invalid OTP");
+      }
+    } catch (error: any) {
+      showErrorNotification(error.response?.data?.message || error.message);
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  // const handleResendOtp = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     await Resend_Otp({
-  //       mobile: mobileNumber,
-  //     });
-  //     setTimer(30);
-  //     setHasStartedTimer(true);
-  //     showSuccessNotification('OTP sent successfully');
-  //   } catch (error: any) {
-  //     setIsLoading(false);
-  //     showErrorNotification(error.response?.data?.message || error.message);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+  const handleResendOtp = async () => {
+    try {
+      setIsLoading(true);
+      await Resend_Otp({
+        username: username,
+      });
+      setTimer(30);
+      setHasStartedTimer(true);
+      showSuccessNotification("OTP sent successfully");
+    } catch (error: any) {
+      setIsLoading(false);
+      showErrorNotification(error.response?.data?.message || error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -105,7 +142,7 @@ const OtpInputScreen = () => {
             <Formik<OtpRequestProps>
               initialValues={initialValues}
               validationSchema={validationSchema}
-              onSubmit={() => {}}
+              onSubmit={handleSubmit}
             >
               {({ handleSubmit, handleChange, errors, touched, values }) => (
                 <>
@@ -145,7 +182,7 @@ const OtpInputScreen = () => {
                         {timer}
                       </TextComponent>
                     ) : (
-                      <div onClick={() => {}}>
+                      <div onClick={() => handleResendOtp()}>
                         <TextComponent
                           fontSize={14}
                           fontWeight={500}

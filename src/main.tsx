@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -11,5 +13,6 @@ createRoot(document.getElementById("root")!).render(
     >
       <App />
     </BrowserRouter>
+    <ToastContainer />
   </StrictMode>
 );

@@ -15,6 +15,11 @@ import { CloseEyeSvgIcon, LockSvgIcon, OpenEyeSvgIcon } from "@/assets/svg";
 import { PasswordRegex } from "@/Utils/helper";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import SetPasswordImage from "@/assets/svg/Auth/setPassword";
+import { Set_Password } from "@/Services/api";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "@/Utils/notifications";
 
 const SetPasswordScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -22,7 +27,7 @@ const SetPasswordScreen: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const location = useLocation();
-  const mobileNumber = location.state?.mobileNumber;
+  const username = location.state?.username;
 
   const validationSchema = Yup.object({
     newPassword: Yup.string()
@@ -31,33 +36,35 @@ const SetPasswordScreen: React.FC = () => {
         "Password must be at least 6 characters long and include at least one letter, one number, and one special character (@#$%^&*()_+!)."
       )
       .required("Required"),
-    confirmPassword: Yup.string()
+    reEnteredPassword: Yup.string()
       .oneOf([Yup.ref("newPassword")], "Passwords do not match")
       .required("Required"),
   });
 
   const initialValues: SetPasswordRequestProps = {
     newPassword: "",
-    mobileNumber: mobileNumber,
+    reEnteredPassword: "",
+    username: username,
   };
 
-  // const handleSubmit = async (values: SetPasswordRequestProps) => {
-  //   try {
-  //     setIsLoading(true);
-  //     let bodyRequest = {
-  //       mobileNumber: mobileNumber,
-  //       newPassword: values.newPassword,
-  //     };
-  //     await Set_Password(bodyRequest);
-  //     showSuccessNotification('Password Set Successfully!');
-  //     navigate('/login');
-  //   } catch (error: any) {
-  //     setIsLoading(false);
-  //     showErrorNotification(error.response?.data?.message || error.message);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+  const handleSubmit = async (values: SetPasswordRequestProps) => {
+    try {
+      setIsLoading(true);
+      let bodyRequest = {
+        username: username,
+        newPassword: values.newPassword,
+        reEnteredPassword: values.reEnteredPassword,
+      };
+      await Set_Password(bodyRequest);
+      showSuccessNotification("Password Set Successfully!");
+      navigate("/login");
+    } catch (error: any) {
+      setIsLoading(false);
+      showErrorNotification(error.response?.data?.message || error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -76,7 +83,7 @@ const SetPasswordScreen: React.FC = () => {
             <Formik<SetPasswordRequestProps>
               initialValues={initialValues}
               validationSchema={validationSchema}
-              onSubmit={() => {}}
+              onSubmit={handleSubmit}
             >
               {({ handleSubmit, handleChange, errors, touched, values }) => (
                 <>
@@ -110,11 +117,11 @@ const SetPasswordScreen: React.FC = () => {
                     />
                     <TextInputComponent
                       label={"Re-enter New Password"}
-                      value={values.confirmPassword}
-                      onChange={handleChange("confirmPassword")}
+                      value={values.reEnteredPassword}
+                      onChange={handleChange("reEnteredPassword")}
                       error={
-                        touched.confirmPassword && errors.confirmPassword
-                          ? errors.confirmPassword
+                        touched.reEnteredPassword && errors.reEnteredPassword
+                          ? errors.reEnteredPassword
                           : ""
                       }
                       withAsterisk
@@ -148,7 +155,7 @@ const SetPasswordScreen: React.FC = () => {
                       disabled={
                         isLoading ||
                         !values.newPassword ||
-                        !values.confirmPassword
+                        !values.reEnteredPassword
                       }
                     />
                   </div>
