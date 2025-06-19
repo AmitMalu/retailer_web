@@ -7,6 +7,7 @@ import Login from "@/pages/Auth/Login";
 import ForgotPassword from "@/pages/Auth/ForgotPassword";
 import OtpInputScreen from "@/pages/Auth/Otp";
 import SetPasswordScreen from "@/pages/Auth/SetPassword";
+import SignUp from "@/pages/Auth/SignUp.tsx";
 
 const getToken = () => {
   const token = document.cookie
@@ -46,6 +47,16 @@ const RouterOutlet = () => {
             <Route index element={<Login />} />
           </Route>
           <Route
+            path="/signUp"
+            element={
+              <ProtecteAuthRoute>
+                <Outlet />
+              </ProtecteAuthRoute>
+            }
+          >
+            <Route index element={<SignUp />} />
+          </Route>
+          <Route
             path="/forgotPassword"
             element={
               <ProtecteAuthRoute>
@@ -78,6 +89,23 @@ const RouterOutlet = () => {
 
           <Route
             path="dashboard"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <Dashboard />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="/"
             element={
               <ProtectedRoute>
                 <Outlet />

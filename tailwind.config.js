@@ -9,6 +9,10 @@ module.exports = {
       colors: {
         ...color.colorTokens,
       },
+      fontFamily: {
+        "belle-aurore": ['"La Belle Aurore"', "cursive"],
+        poppins: ["Poppins", "sans-serif"],
+      },
     },
   },
   plugins: [],

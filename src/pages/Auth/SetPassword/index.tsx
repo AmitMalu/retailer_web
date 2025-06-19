@@ -69,9 +69,12 @@ const SetPasswordScreen: React.FC = () => {
   return (
     <>
       {isLoading && <Loader />}
-      <AuthLayout authImage={<SetPasswordImage />}>
+      <AuthLayout
+        authImage={<SetPasswordImage />}
+        authText='"One password. Total protection. Your finances deserve the best security."'
+      >
         <div className="flex w-full  items-center justify-center flex-col gap-5">
-          <div className="flex h-auto w-[350px] flex-col items-center rounded-3xl shadow-lg shadow-blue-200 border-2  justify-start px-6 py-6">
+          <div className="flex h-auto w-[380px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-white justify-start px-6 py-3">
             <div className="flex flex-col items-center justify-center gap-3 ">
               <TextComponent fontSize={30} fontWeight={500} color={"Primary"}>
                 Set Password
@@ -89,7 +92,7 @@ const SetPasswordScreen: React.FC = () => {
                 <>
                   <div className="mt-10 flex w-full flex-col gap-4 items-center justify-center">
                     <TextInputComponent
-                      label="Enter new password"
+                      label="New Password"
                       value={values.newPassword}
                       onChange={handleChange("newPassword")}
                       error={
@@ -159,22 +162,27 @@ const SetPasswordScreen: React.FC = () => {
                       }
                     />
                   </div>
+                  <div className="flex items-center justify-center gap-2 mt-2 ">
+                    <TextComponent
+                      fontSize={14}
+                      fontWeight={400}
+                      color="text.headLine"
+                    >
+                      Don't have an account yet?
+                    </TextComponent>
+                    <TextComponent
+                      fontSize={14}
+                      fontWeight={400}
+                      color="red"
+                      className="underline"
+                      onClick={() => navigate("/signUp")}
+                    >
+                      Sign up
+                    </TextComponent>
+                  </div>
                 </>
               )}
             </Formik>
-          </div>
-          <div className="flex items-center justify-center gap-4 ">
-            <TextComponent fontSize={16} fontWeight={400} color="text.headLine">
-              Don't have an account yet?
-            </TextComponent>
-            <TextComponent
-              fontSize={16}
-              fontWeight={400}
-              color="text.headLine"
-              className="underline"
-            >
-              Sign up
-            </TextComponent>
           </div>
         </div>
       </AuthLayout>

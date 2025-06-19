@@ -40,10 +40,7 @@ import { useDispatch } from "react-redux";
 import { toggleDarkMode } from "../../../store/slices/uiSlice";
 import { toggleSettingsDrawer } from "../../../store/slices/settingsSlice";
 import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom";
-
-interface FooterLayoutProps {
-  children: React.ReactNode;
-}
+import { FooterLayoutProps } from "@/Common/interface";
 
 export default function FooterLayout({ children }: FooterLayoutProps) {
   const { layout, navbarPosition } = useSelector(

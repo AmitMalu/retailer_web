@@ -18,6 +18,8 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     headLine: colorTokens.headLine,
     placeholder: colorTokens.placeholder,
     authButtonBg: colorTokens.authButtonBg.DEFAULT,
+    authBackground: colorTokens.authBackground,
+    redLightText: colorTokens.redLightText.main,
   },
   corporate: {
     primary: colorTokens.primary.DEFAULT,
@@ -35,6 +37,8 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     headLine: colorTokens.headLine,
     placeholder: colorTokens.placeholder,
     authButtonBg: colorTokens.authButtonBg.DEFAULT,
+    authBackground: colorTokens.authBackground,
+    redLightText: colorTokens.redLightText.main,
   },
   creative: {
     primary: colorTokens.primary.DEFAULT,
@@ -52,6 +56,8 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     headLine: colorTokens.headLine,
     placeholder: colorTokens.placeholder,
     authButtonBg: colorTokens.authButtonBg.DEFAULT,
+    authBackground: colorTokens.authBackground,
+    redLightText: colorTokens.redLightText.main,
   },
   elegant: {
     primary: colorTokens.primary.DEFAULT,
@@ -69,6 +75,8 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     headLine: colorTokens.headLine,
     placeholder: colorTokens.placeholder,
     authButtonBg: colorTokens.authButtonBg.DEFAULT,
+    authBackground: colorTokens.authBackground,
+    redLightText: colorTokens.redLightText.main,
   },
   playful: {
     primary: colorTokens.primary.DEFAULT,
@@ -86,6 +94,8 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     headLine: colorTokens.headLine,
     placeholder: colorTokens.placeholder,
     authButtonBg: colorTokens.authButtonBg.DEFAULT,
+    authBackground: colorTokens.authBackground,
+    redLightText: colorTokens.redLightText.main,
   },
   minimal: {
     primary: colorTokens.primary.DEFAULT,
@@ -103,6 +113,8 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     headLine: colorTokens.headLine,
     placeholder: colorTokens.placeholder,
     authButtonBg: colorTokens.authButtonBg.DEFAULT,
+    authBackground: colorTokens.authBackground,
+    redLightText: colorTokens.redLightText.main,
   },
   dark: {
     primary: colorTokens.primary.DEFAULT,
@@ -120,6 +132,8 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     headLine: colorTokens.headLine,
     placeholder: colorTokens.placeholder,
     authButtonBg: colorTokens.authButtonBg.DEFAULT,
+    authBackground: colorTokens.authBackground,
+    redLightText: colorTokens.redLightText.main,
   },
   mutedTeal: {
     primary: colorTokens.primary.DEFAULT,
@@ -137,5 +151,7 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     headLine: colorTokens.headLine,
     placeholder: colorTokens.placeholder,
     authButtonBg: colorTokens.authButtonBg.DEFAULT,
+    authBackground: colorTokens.authBackground,
+    redLightText: colorTokens.redLightText.main,
   },
 };

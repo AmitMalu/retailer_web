@@ -1,9 +1,5 @@
 import { AnyAction } from "redux";
-import { SAVE_API_RESPONSE } from "@/Common/interface";
-
-interface ApiState {
-  responses: { [key: string]: any };
-}
+import { ApiState, SAVE_API_RESPONSE } from "@/Common/interface";
 
 const initialState: ApiState = {
   responses: {},

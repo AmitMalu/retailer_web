@@ -42,10 +42,7 @@ import { useDispatch } from "react-redux";
 import { toggleDarkMode } from "../../../store/slices/uiSlice";
 import { toggleSettingsDrawer } from "../../../store/slices/settingsSlice";
 import { useNavigate, useLocation } from "react-router-dom";
-
-interface MinimalLayoutProps {
-  children: React.ReactNode;
-}
+import { MinimalLayoutProps } from "@/Common/interface";
 
 export default function MinimalLayout({ children }: MinimalLayoutProps) {
   const { layout, navbarPosition } = useSelector(

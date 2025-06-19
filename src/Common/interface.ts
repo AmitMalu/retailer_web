@@ -1,5 +1,70 @@
-import { TextareaProps, TextInputProps } from "@mantine/core";
-import { ReactNode, ChangeEvent, MouseEventHandler, FocusEvent } from "react";
+import { TextInputProps } from "@mantine/core";
+import { ReactNode, ChangeEvent, MouseEventHandler } from "react";
+import type { ThemeOption } from "../../src/store/slices/settingsSlice";
+
+export type BaseLayoutProps = {
+  children: React.ReactNode;
+  sidebar?: React.ReactNode;
+  navbar?: React.ReactNode;
+  footer?: React.ReactNode;
+};
+
+export type FooterLayoutProps = {
+  children: React.ReactNode;
+};
+
+export type HorizontalLayoutProps = {
+  children: React.ReactNode;
+};
+
+export type MinimalLayoutProps = {
+  children: React.ReactNode;
+};
+
+export type StandardLayoutProps = {
+  children: React.ReactNode;
+};
+
+export type NavbarProps = {
+  onMenuClick: () => void;
+  isMobile: boolean;
+};
+
+export type SidebarProps = {
+  mobileOpen: boolean;
+  onClose: () => void;
+};
+
+export type ReduxProviderProps = {
+  children: ReactNode;
+};
+
+export type ThemePreviewProps = {
+  themeKey: ThemeOption;
+  selected: boolean;
+  onClick: () => void;
+  darkMode: boolean;
+};
+
+export type ServiceItem = {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  color: string;
+};
+
+export type ThemeComparisonProps = {
+  currentTheme: ThemeOption;
+  darkMode: boolean;
+};
+
+export type ThemeShowcaseProps = {
+  title?: string;
+};
+
+export type ApiState = {
+  responses: { [key: string]: any };
+};
 
 export const SAVE_API_RESPONSE = "SAVE_API_RESPONSE";
 export const CLEAR_API_RESPONSE = "CLEAR_API_RESPONSE";
@@ -62,6 +127,7 @@ export type CustomTextProps = {
   className?: string;
   onClick?: MouseEventHandler<HTMLDivElement>;
   children: ReactNode;
+  fontFamily?: string;
   [key: string]: any;
 };
 
@@ -151,35 +217,6 @@ export type DynamicModalProps = {
   onClick?: () => void;
 };
 
-export type CustomTextareaProps = Omit<
-  TextareaProps,
-  "error" | "onChange" | "onBlur"
-> & {
-  label?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (event: ChangeEvent<HTMLTextAreaElement>) => void;
-  onBlur?: (event: FocusEvent<HTMLTextAreaElement>) => void;
-  error?: string | boolean;
-  disabled?: boolean;
-  required?: boolean;
-  maxLength?: number;
-  minLength?: number;
-  autoComplete?: string;
-  name?: string;
-  id?: string;
-  className?: string;
-  style?: React.CSSProperties;
-  radius?: string;
-  variant?: "default" | "filled" | "unstyled";
-  withAsterisk?: boolean | false;
-  rows?: number;
-  autosize?: boolean;
-  minRows?: number;
-  maxRows?: number;
-  isAuth?: boolean;
-};
-
 export type TimeComponentProps = {
   value?: string;
   onChange?: (value: string) => void;
@@ -217,9 +254,34 @@ export type TableProps = {
   keyField?: string;
 };
 
+export type CustomTextareaProps = {
+  label?: string;
+  placeholder?: string;
+  value: string;
+  onChange: (value: string) => void;
+  onBlur?: () => void;
+  error?: string | boolean;
+  disabled?: boolean;
+  maxLength?: number;
+  minLength?: number;
+  autoComplete?: string;
+  name?: string;
+  id?: string;
+  className?: string;
+  style?: React.CSSProperties;
+  variant?: "outlined" | "filled" | "standard";
+  withAsterisk?: boolean;
+  rows?: number;
+  minRows?: number;
+  maxRows?: number;
+  helperText?: string;
+  showCharacterCount?: boolean;
+};
+
 export type AuthLayoutProps = {
   children: React.ReactNode;
   authImage?: React.ReactNode;
+  authText?: string;
 };
 
 export type TokenGenerationRequest = {
@@ -236,6 +298,11 @@ export type LoginRequest = {
   password: string;
 };
 
+export type SignUpRequest = {
+  userName: string;
+  name: string;
+};
+
 export type SetPasswordRequestProps = {
   username: string;
   newPassword: string;
@@ -243,14 +310,14 @@ export type SetPasswordRequestProps = {
 };
 
 export type ForgotPasswordRequestProps = {
-  username: string;
+  userName: string;
 };
 
 export type OtpRequestProps = {
   otp: string;
-  username: string;
+  userName: string;
 };
 
 export type ResendOtpRequestProps = {
-  username: string;
+  userName: string;
 };

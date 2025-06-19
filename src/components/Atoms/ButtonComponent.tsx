@@ -57,18 +57,28 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
     padding: "6px 12px",
 
     "&.MuiButton-contained": {
-      backgroundColor: color ? color : theme.palette.authButtonBg.main,
+      backgroundColor: color
+        ? color
+        : "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)",
       "&:hover": {
-        backgroundColor: color ? color : theme.palette.authButtonBg.main,
+        backgroundColor: color
+          ? color
+          : "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)",
         opacity: 0.8,
       },
     },
     "&.MuiButton-outlined": {
-      borderColor: color ? color : theme.palette.authButtonBg.main,
-      color: color ? color : theme.palette.authButtonBg.main,
+      borderColor: color
+        ? color
+        : "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)",
+      color: color
+        ? color
+        : "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)",
     },
     "&.MuiButton-text": {
-      color: color ? color : theme.palette.authButtonBg.main,
+      color: color
+        ? color
+        : "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)",
     },
     "&.Mui-disabled": {
       opacity: 0.6,
@@ -81,6 +91,7 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
     fontWeight: 600,
     color: "inherit",
     padding: "6px 0",
+    fontFamily: '"Poppins", sans-serif',
   };
 
   return (

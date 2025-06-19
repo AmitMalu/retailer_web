@@ -9,6 +9,7 @@ export const API_ROUTES = {
   LOGIN: `${BASE_URL}/auth/login`,
   FORGOT_PASSWORD: `${BASE_URL}/auth/forgot-password`,
   VERIFY_OTP: `${BASE_URL}/auth/verify-otp`,
+  VERIFY_FORGET_OTP: `${BASE_URL}/auth/forget-verify-otp`,
   RESEND_OTP: `${BASE_URL}/auth/resend-otp`,
   SET_PASSWORD: `${BASE_URL}/auth/set-password`,
 };

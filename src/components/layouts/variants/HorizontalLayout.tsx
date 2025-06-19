@@ -33,10 +33,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import { useDispatch } from "react-redux";
 import { toggleDarkMode } from "../../../store/slices/uiSlice";
 import { toggleSettingsDrawer } from "../../../store/slices/settingsSlice";
-
-interface HorizontalLayoutProps {
-  children: React.ReactNode;
-}
+import { HorizontalLayoutProps } from "@/Common/interface";
 
 export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
   const { layout, navbarPosition } = useSelector(

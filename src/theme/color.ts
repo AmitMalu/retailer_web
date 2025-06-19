@@ -40,9 +40,14 @@ export const colorTokens = {
   headLine: "#2B3241",
   placeholder: "#AAB3C3",
   navBackground: "#ffffff",
+  authBackground: "#BDBDBD",
   lightGray: "#D9D9D9",
+  redLightText: {
+    main: "#FF0000",
+  },
   authButtonBg: {
     DEFAULT: "#EB4335",
+    light: "#EB3535",
   },
   gray: {
     50: "#F9FAFB",

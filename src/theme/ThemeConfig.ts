@@ -12,6 +12,9 @@ declare module "@mui/material/styles" {
     lightGray: {
       main: string;
     };
+    redLightText: {
+      main: string;
+    };
     authButtonBg: PaletteColor;
     headLine?: string;
     placeholder?: string;
@@ -19,6 +22,9 @@ declare module "@mui/material/styles" {
 
   interface PaletteOptions {
     lightGray?: {
+      main: string;
+    };
+    redLightText?: {
       main: string;
     };
     authButtonBg: PaletteColor;
@@ -89,9 +95,12 @@ export const createThemeOptions = (
       lightGray: {
         main: adjustedColors.lightGray,
       },
+      redLightText: {
+        main: adjustedColors.redLightText,
+      },
     },
     typography: {
-      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+      fontFamily: '"Poppins", sans-serif',
     },
     components: {
       MuiButton: {
@@ -100,10 +109,12 @@ export const createThemeOptions = (
             textTransform: "none",
             fontWeight: 500,
             borderRadius: 8,
-            padding: "8px 16px",
+            padding: "8px 10px",
           },
           contained: {
             boxShadow: "none",
+            background:
+              "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)",
             "&:hover": {
               boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
             },

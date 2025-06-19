@@ -67,6 +67,9 @@ export const Forgot_Password = async (data: ForgotPasswordRequestProps) =>
 export const Verify_Otp = async (data: OtpRequestProps) =>
   await api.post(API_ROUTES.VERIFY_OTP, data);
 
+export const Verify_Forget_Otp = async (data: OtpRequestProps) =>
+  await api.post(API_ROUTES.VERIFY_FORGET_OTP, data);
+
 export const Resend_Otp = async (data: ResendOtpRequestProps) =>
   await api.post(API_ROUTES.RESEND_OTP, data);
 

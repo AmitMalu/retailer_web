@@ -16,11 +16,7 @@ import type { RootState } from "../../Redux/Store";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import ImLogo from "@/assets/svg/imLogo";
 import TextInputComponent from "../Atoms/TextInputComponent";
-
-interface NavbarProps {
-  onMenuClick: () => void;
-  isMobile: boolean;
-}
+import { NavbarProps } from "@/Common/interface";
 
 export default function Navbar({
   onMenuClick,

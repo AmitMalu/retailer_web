@@ -126,6 +126,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
             color: theme.palette.placeholder,
             fontSize: "16px",
             fontWeight: 400,
+            fontFamily: '"Poppins", sans-serif',
             "&.Mui-focused": {
               color: theme.palette.text.primary,
             },
@@ -135,6 +136,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
           },
           "& .MuiOutlinedInput-root": {
             borderColor: theme.palette.placeholder,
+            fontFamily: '"Poppins", sans-serif',
             "&.Mui-error .MuiOutlinedInput-notchedOutline": {
               borderColor: theme.palette.error.main,
               borderRadius: isAuth ? 28 : 37,

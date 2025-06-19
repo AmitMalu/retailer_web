@@ -12,6 +12,7 @@ const TextComponent: React.FC<CustomTextProps> = ({
   className,
   onClick = () => {},
   children,
+  fontFamily,
   ...props
 }) => {
   const sxStyles: SxProps = {
@@ -26,6 +27,7 @@ const TextComponent: React.FC<CustomTextProps> = ({
     WebkitLineClamp: lineClamp,
     WebkitBoxOrient: lineClamp ? "vertical" : undefined,
     whiteSpace: truncate && !lineClamp ? "nowrap" : undefined,
+    fontFamily: fontFamily ? fontFamily : '"Poppins", sans-serif',
   };
 
   return (

@@ -2,16 +2,8 @@ import React, { useEffect } from "react";
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
-  CardMedia,
-  Button,
-  Chip,
   CircularProgress,
-  TextField,
-  InputAdornment,
   Grid,
-  Paper,
   useTheme,
 } from "@mui/material";
 import {
@@ -24,13 +16,7 @@ import {
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../Redux/Store";
-
-type ServiceItem = {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-  color: string;
-};
+import { ServiceItem } from "@/Common/interface";
 
 export default function ProductList() {
   const dispatch = useDispatch();

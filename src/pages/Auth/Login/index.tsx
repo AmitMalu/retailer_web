@@ -6,29 +6,22 @@ import TextInputComponent from "../../../components/Atoms/TextInputComponent";
 import { UnstyledButton } from "@mantine/core";
 import ButtonComponent from "../../../components/Atoms/ButtonComponent";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import Loader from "../../../components/Atoms/Loader";
-import { login, Token_generation, Verify_Token } from "@/Services/api";
-import {
-  showErrorNotification,
-  showSuccessNotification,
-} from "@/Utils/notifications";
+import { login } from "@/Services/api";
+import { showErrorNotification } from "@/Utils/notifications";
 import {
   CloseEyeSvgIcon,
   LockSvgIcon,
   OpenEyeSvgIcon,
   UserNameSvgIcon,
 } from "@/assets/svg";
-import { saveApiResponse } from "@/Redux/Actions/apiActions";
 import { MobileNoRegex } from "@/Utils/helper";
-import { AppDispatch } from "@/Redux/Store";
 import AuthLayout from "@/components/layouts/AuthLayout";
-import { LoginRequest, VerifyTokenRequest } from "@/Common/interface";
+import { LoginRequest } from "@/Common/interface";
 import LoginImage from "@/assets/svg/Auth/login";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -58,10 +51,8 @@ const Login: React.FC = () => {
         response?.data?.statusCode === "200"
       ) {
         navigate("/otpInput", {
-          state: { username: values.userName },
+          state: { userName: values.userName, login: true },
         });
-        // dispatch(saveApiResponse("loginData", response?.data));
-        // GenerateCredentials(values.userName);
       } else {
         showErrorNotification(response?.data?.message || "Unable to login");
       }
@@ -76,10 +67,13 @@ const Login: React.FC = () => {
   return (
     <>
       {isLoading && <Loader />}
-      <AuthLayout authImage={<LoginImage />}>
+      <AuthLayout
+        authImage={<LoginImage />}
+        authText='"Welcome to your financial hub."'
+      >
         <div className="flex w-full  items-center justify-center flex-col gap-5">
-          <div className="flex h-auto w-[380px] flex-col items-center rounded-3xl shadow-lg shadow-blue-200 border-2  justify-start px-6 py-6">
-            <div className="flex flex-col items-center justify-items-center gap-3 ">
+          <div className="flex h-auto w-[350px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-white justify-start px-6 py-3">
+            <div className="flex flex-col items-center justify-items-center gap-2 ">
               <TextComponent
                 fontSize={28}
                 fontWeight={500}
@@ -104,7 +98,7 @@ const Login: React.FC = () => {
                 <>
                   <div className="mt-10 flex w-full flex-col gap-4 items-center justify-center">
                     <TextInputComponent
-                      label="Merchant ID"
+                      label="Mobile Number"
                       value={values.userName}
                       onChange={handleChange("userName")}
                       error={
@@ -163,7 +157,7 @@ const Login: React.FC = () => {
                   </UnstyledButton>
                   <div className="mt-6 flex w-full items-center justify-center">
                     <ButtonComponent
-                      title="Continue"
+                      title="CONTINUE"
                       variant="filled"
                       onClick={() => handleSubmit()}
                       loading={isLoading}
@@ -174,22 +168,27 @@ const Login: React.FC = () => {
                       }
                     />
                   </div>
+                  <div className="flex items-center justify-center gap-2 mt-2 ">
+                    <TextComponent
+                      fontSize={14}
+                      fontWeight={400}
+                      color="text.headLine"
+                    >
+                      Don't have an account yet?
+                    </TextComponent>
+                    <TextComponent
+                      fontSize={14}
+                      fontWeight={400}
+                      color="red"
+                      className="underline"
+                      onClick={() => navigate("/signUp")}
+                    >
+                      Sign up
+                    </TextComponent>
+                  </div>
                 </>
               )}
             </Formik>
-          </div>
-          <div className="flex items-center justify-center gap-4 ">
-            <TextComponent fontSize={16} fontWeight={400} color="text.headLine">
-              Don't have an account yet?
-            </TextComponent>
-            <TextComponent
-              fontSize={16}
-              fontWeight={400}
-              color="text.headLine"
-              className="underline"
-            >
-              Sign up
-            </TextComponent>
           </div>
         </div>
       </AuthLayout>

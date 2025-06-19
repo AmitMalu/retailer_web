@@ -32,6 +32,8 @@ export interface ThemeColors {
   headLine: string;
   placeholder: string;
   authButtonBg: string;
+  authBackground: string;
+  redLightText: string;
 }
 
 export interface SettingsState {

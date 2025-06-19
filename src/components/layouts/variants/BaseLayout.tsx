@@ -1,15 +1,9 @@
 import React from "react";
-import { Box, ThemeProvider, CssBaseline, createTheme } from "@mui/material";
+import { Box, createTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../Redux/Store";
 import { createThemeOptions } from "../../../theme/ThemeConfig";
-
-interface BaseLayoutProps {
-  children: React.ReactNode;
-  sidebar?: React.ReactNode;
-  navbar?: React.ReactNode;
-  footer?: React.ReactNode;
-}
+import { BaseLayoutProps } from "@/Common/interface";
 
 export default function BaseLayout({
   children,
