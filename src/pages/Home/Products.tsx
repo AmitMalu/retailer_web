@@ -1,5 +1,5 @@
-import { Box, Typography, Button } from "@mui/material";
-import ProductList from "../components/products/ProductList";
+import ProductList from "@/components/products/ProductList";
+import { Box, Typography } from "@mui/material";
 
 export default function Products() {
   return (

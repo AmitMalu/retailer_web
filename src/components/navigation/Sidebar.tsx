@@ -23,9 +23,10 @@ import MobileFriendlyIcon from "@mui/icons-material/MobileFriendly";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import { SidebarProps } from "@/Common/interface";
+import TextComponent from "../Atoms/TextComponent";
 
 const menuItems = [
-  { name: "Dashboard", path: "/", icon: <DashboardIcon /> },
+  { name: "Dashboard", path: "/dashboard", icon: <DashboardIcon /> },
   { name: "Products", path: "/products", icon: <ShoppingCartIcon /> },
   { name: "PG", path: "/pg", icon: <PaymentIcon /> },
   { name: "DMT", path: "/dmt", icon: <AccountBalanceIcon /> },
@@ -91,10 +92,12 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                   color: isActive
                     ? "primary.contrastText"
                     : "rgba(255, 255, 255, 0.7)",
-                  bgcolor: isActive ? "primary.main" : "transparent",
+                  bgcolor: isActive
+                    ? theme.palette.primary.main
+                    : "transparent",
                   "&:hover": {
                     bgcolor: isActive
-                      ? "primary.dark"
+                      ? theme.palette.primary.dark
                       : "rgba(255, 255, 255, 0.08)",
                   },
                   px: 2,
@@ -103,18 +106,24 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                   transition: "all 0.2s ease-in-out",
                 }}
               >
-                <ListItemIcon sx={{ minWidth: "40px", color: "inherit" }}>
+                <ListItemIcon
+                  sx={{
+                    minWidth: "30px",
+                    color: isActive ? "inherit" : "black",
+                  }}
+                >
                   {item.icon}
                 </ListItemIcon>
                 {!isCompact && (
                   <ListItemText
                     primary={
-                      <Typography
-                        variant="body2"
-                        sx={{ fontWeight: isActive ? 600 : 400 }}
+                      <TextComponent
+                        fontSize={14}
+                        fontWeight={isActive ? 600 : 400}
+                        color={isActive ? "white" : theme.palette.text.primary}
                       >
                         {item.name}
-                      </Typography>
+                      </TextComponent>
                     }
                   />
                 )}

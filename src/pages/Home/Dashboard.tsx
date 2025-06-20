@@ -9,11 +9,6 @@ import {
   Tabs,
   Tab,
 } from "@mui/material";
-import ThemeShowcase from "../components/showcase/ThemeShowcase";
-import ThemeComparison from "../components/showcase/ThemeComparison";
-import { useNotification } from "../components/notifications";
-import { useSelector } from "react-redux";
-import type { RootState } from "../Redux/Store";
 import { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import TextComponent from "@/components/Atoms/TextComponent";
@@ -26,6 +21,11 @@ import ModalComponent from "@/components/Atoms/ModalComponent";
 import TextareaComponent from "@/components/Atoms/TextareaComponent";
 import TableComponent from "@/components/Molecules/TableComponent";
 import { TableColumn } from "@/Common/interface";
+import { useNotification } from "@/components/notifications";
+import { useSelector } from "react-redux";
+import { RootState } from "@/Redux/Store";
+import ThemeShowcase from "@/components/showcase/ThemeShowcase";
+import ThemeComparison from "@/components/showcase/ThemeComparison";
 
 // Dashboard stats component
 const DashboardStats = () => {

@@ -1,13 +1,13 @@
 import { Route, Routes, Navigate, Outlet } from "react-router-dom";
 import { Suspense } from "react";
 import MainLayout from "@/components/layouts/MainLayout";
-import Dashboard from "@/pages/Dashboard";
-import Products from "@/pages/Products";
 import Login from "@/pages/Auth/Login";
 import ForgotPassword from "@/pages/Auth/ForgotPassword";
 import OtpInputScreen from "@/pages/Auth/Otp";
 import SetPasswordScreen from "@/pages/Auth/SetPassword";
 import SignUp from "@/pages/Auth/SignUp.tsx";
+import Dashboard from "@/pages/Home/Dashboard";
+import Products from "@/pages/Home/Products";
 
 const getToken = () => {
   const token = document.cookie
