@@ -22,7 +22,7 @@ export default function BaseLayout({
     (state: RootState) => state.settings
   );
   const sidebarWidth =
-    sidebarStyle === "full" ? 180 : sidebarStyle === "compact" ? 80 : 0;
+    sidebarStyle === "full" ? 220 : sidebarStyle === "compact" ? 80 : 0;
 
   return (
     <>
