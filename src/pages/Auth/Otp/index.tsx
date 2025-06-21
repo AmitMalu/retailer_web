@@ -108,7 +108,7 @@ const OtpInputScreen = () => {
           response?.data?.statusCode === 200 ||
           response?.data?.statusCode === "200"
         ) {
-          dispatch(saveApiResponse("loginData", response?.data));
+          dispatch(saveApiResponse("loginData", response?.data?.data));
           GenerateCredentials(values.userName);
         } else {
           showErrorNotification(response?.data?.message || "Invalid OTP");

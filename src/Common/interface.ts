@@ -66,6 +66,17 @@ export type ApiState = {
   responses: { [key: string]: any };
 };
 
+export type UserRole = "RT" | "DT" | "SD" | "WL";
+
+export type MenuItem = {
+  name: string;
+  path: string;
+  icon?: React.ReactNode;
+  roles?: UserRole[]; // If not specified, accessible to all roles
+  subItems?: MenuItem[];
+  hidden?: boolean; // Optional flag to hide menu item
+};
+
 export const SAVE_API_RESPONSE = "SAVE_API_RESPONSE";
 export const CLEAR_API_RESPONSE = "CLEAR_API_RESPONSE";
 export const CLEAR_ALL_RESPONSES = "CLEAR_ALL_RESPONSES";
