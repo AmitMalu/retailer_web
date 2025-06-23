@@ -66,7 +66,7 @@ export type ApiState = {
   responses: { [key: string]: any };
 };
 
-export type UserRole = "RT" | "DT" | "SD" | "WL";
+export type UserRole = "RT" | "DT" | "SD" | "WL" | "PT";
 
 export type MenuItem = {
   name: string;
