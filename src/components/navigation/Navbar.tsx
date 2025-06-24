@@ -17,6 +17,8 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import ImLogo from "@/assets/svg/imLogo";
 import TextInputComponent from "../Atoms/TextInputComponent";
 import { NavbarProps } from "@/Common/interface";
+import TextComponent from "../Atoms/TextComponent";
+import { useLogoutHandling } from "@/Utils/CustomLogout";
 
 export default function Navbar({
   onMenuClick,
@@ -30,6 +32,7 @@ export default function Navbar({
   const theme = useTheme();
   const isMobileView = useMediaQuery(theme.breakpoints.down("md"));
   const isMobile = isMobileProp || isMobileView;
+  const { logout } = useLogoutHandling();
 
   const handleSettingsClick = () => {
     dispatch(toggleSettingsDrawer());
@@ -183,6 +186,19 @@ export default function Navbar({
           >
             ⚙️
           </IconButton>
+          <div
+            onClick={() => logout()}
+            className="flex cursor-pointer items-center gap-4 "
+          >
+            <TextComponent
+              color={theme.palette.success.main}
+              fontSize={20}
+              fontWeight={500}
+              className="transition-all duration-200 group-hover:text-[16px]"
+            >
+              Logout
+            </TextComponent>
+          </div>
         </Toolbar>
       </AppBar>
     </>

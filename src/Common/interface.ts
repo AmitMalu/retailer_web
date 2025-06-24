@@ -2,6 +2,12 @@ import { TextInputProps } from "@mantine/core";
 import { ReactNode, ChangeEvent, MouseEventHandler } from "react";
 import type { ThemeOption } from "../../src/store/slices/settingsSlice";
 
+export type CustomError = {
+  status?: number;
+  message?: string;
+  data?: any;
+};
+
 export type BaseLayoutProps = {
   children: React.ReactNode;
   sidebar?: React.ReactNode;
