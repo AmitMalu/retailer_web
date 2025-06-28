@@ -7,6 +7,7 @@ import type { ThemeOption, ThemeColors } from "../store/slices/settingsSlice";
 declare module "@mui/material/styles" {
   interface TypeBackground {
     navBackground?: string;
+    blackColor?: string;
   }
   interface Palette {
     lightGray: {
@@ -15,6 +16,16 @@ declare module "@mui/material/styles" {
     redLightText: {
       main: string;
     };
+    red: {
+      DEFAULT: string;
+      light: string;
+      dark: string;
+    };
+    gray: {
+      DEFAULT: string;
+      light: string;
+    };
+
     authButtonBg: PaletteColor;
     headLine?: string;
     placeholder?: string;
@@ -27,6 +38,16 @@ declare module "@mui/material/styles" {
     redLightText?: {
       main: string;
     };
+    red?: {
+      DEFAULT: string;
+      light: string;
+      dark: string;
+    };
+    gray?: {
+      DEFAULT: string;
+      light: string;
+    };
+
     authButtonBg: PaletteColor;
     headLine?: string;
     placeholder?: string;
@@ -84,6 +105,7 @@ export const createThemeOptions = (
       background: {
         default: adjustedColors.background,
         paper: adjustedColors.paper,
+        blackColor: adjustedColors.blackColor,
         navBackground: adjustedColors.navBackground,
       },
       text: {
@@ -98,51 +120,24 @@ export const createThemeOptions = (
       redLightText: {
         main: adjustedColors.redLightText,
       },
+      red: {
+        DEFAULT: adjustedColors.red,
+        light: adjustedColors.redLight,
+        dark: adjustedColors.redDark,
+      },
+      gray: {
+        DEFAULT: adjustedColors.grayDefault,
+        light: adjustedColors.grayLight,
+      },
     },
     typography: {
       fontFamily: '"Poppins", sans-serif',
     },
     components: {
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            textTransform: "none",
-            fontWeight: 500,
-            borderRadius: 8,
-            padding: "8px 10px",
-          },
-          contained: {
-            boxShadow: "none",
-            background:
-              "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)",
-            "&:hover": {
-              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-            },
-          },
-        },
-      },
-      MuiCard: {
-        styleOverrides: {
-          root: {
-            borderRadius: 12,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-            "&:hover": {
-              boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
-            },
-          },
-        },
-      },
       MuiAppBar: {
         styleOverrides: {
           root: {
             boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-          },
-        },
-      },
-      MuiOutlinedInput: {
-        styleOverrides: {
-          root: {
-            borderRadius: 8,
           },
         },
       },

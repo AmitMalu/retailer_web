@@ -25,6 +25,7 @@ export interface ThemeColors {
   info: string;
   background: string;
   paper: string;
+  blackColor: string;
   textPrimary: string;
   textSecondary: string;
   navBackground: string;
@@ -34,6 +35,11 @@ export interface ThemeColors {
   authButtonBg: string;
   authBackground: string;
   redLightText: string;
+  red: string;
+  redLight: string;
+  redDark: string;
+  grayDefault: string;
+  grayLight: string;
 }
 
 export interface SettingsState {

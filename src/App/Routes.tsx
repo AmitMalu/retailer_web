@@ -5,6 +5,11 @@ import ForgotPassword from "@/pages/Auth/ForgotPassword";
 import OtpInputScreen from "@/pages/Auth/Otp";
 import SetPasswordScreen from "@/pages/Auth/SetPassword";
 import SignUp from "@/pages/Auth/SignUp.tsx";
+import { useSelector } from "react-redux";
+import { RootState } from "@/Redux/Store";
+import { decryptData } from "@/Utils/helper";
+import FundTransfer from "@/pages/Home/Funding/FundTransfer";
+import FundReversal from "@/pages/Home/Funding/FundReversal";
 
 const Dashboard = lazy(() => import("@/pages/Home/Dashboard"));
 const AddAndViewUser = lazy(
@@ -804,6 +809,40 @@ const RouterOutlet = () => {
               element={
                 <MainLayout>
                   <WalletToWallet />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="/funding/fundTransfer"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <FundTransfer />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="/funding/fundReversal"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <FundReversal />
                 </MainLayout>
               }
             />

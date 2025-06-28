@@ -21,7 +21,7 @@ const ShortcutButton = styled(Button)(({ theme }) => ({
   justifyContent: "flex-start",
   textTransform: "none",
   color: theme.palette.text.primary,
-  border: `1px solid ${theme.palette.error.light}`,
+  border: `1px solid ${theme.palette.error.main}`,
   "&:hover": {
     backgroundColor: "transparent",
     opacity: 0.8,
@@ -208,7 +208,7 @@ const CustomDateComponent: React.FC<CustomDatePickerProps> = ({
             {label}
           </Typography>
           {withAsterisk && (
-            <Typography variant="body2" color="primary.main" fontWeight={600}>
+            <Typography variant="body2" color="error.main" fontWeight={600}>
               *
             </Typography>
           )}
@@ -238,7 +238,7 @@ const CustomDateComponent: React.FC<CustomDatePickerProps> = ({
                 borderColor: "text.primary",
               },
               "&.Mui-focused fieldset": {
-                borderColor: "primary.main",
+                borderColor: "background.blackColor",
               },
             },
           }}

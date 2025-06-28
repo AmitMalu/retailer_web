@@ -22,7 +22,7 @@ export default function BaseLayout({
     (state: RootState) => state.settings
   );
   const sidebarWidth =
-    sidebarStyle === "full" ? 220 : sidebarStyle === "compact" ? 80 : 0;
+    sidebarStyle === "full" ? 180 : sidebarStyle === "compact" ? 50 : 0;
 
   return (
     <>
@@ -32,6 +32,7 @@ export default function BaseLayout({
           minHeight: "100vh",
           width: "100vw",
           overflow: "hidden",
+          backgroundColor: theme.palette.background.navBackground,
         }}
       >
         <Box

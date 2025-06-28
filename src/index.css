@@ -20,3 +20,7 @@ body {
 * {
   box-sizing: border-box;
 }
+
+.scale-141 {
+  transform: scale(1.41) rotate(-45deg);
+}

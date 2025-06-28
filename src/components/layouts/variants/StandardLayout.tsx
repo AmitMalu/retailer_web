@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Box, Paper, Breadcrumbs, Typography, Link } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Breadcrumbs,
+  Typography,
+  Link,
+  useTheme,
+} from "@mui/material";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../Redux/Store";
 import BaseLayout from "./BaseLayout";
@@ -10,6 +17,7 @@ import { useLocation, Link as RouterLink } from "react-router-dom";
 import { StandardLayoutProps } from "@/Common/interface";
 
 export default function StandardLayout({ children }: StandardLayoutProps) {
+  const theme = useTheme();
   const { layout, navbarPosition, sidebarStyle } = useSelector(
     (state: RootState) => state.settings
   );
@@ -19,10 +27,6 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
-  // Calculate main content padding based on sidebar style
-  const mainPaddingLeft =
-    sidebarStyle === "full" ? 240 : sidebarStyle === "compact" ? 70 : 0;
 
   // Generate breadcrumbs based on current path
   const generateBreadcrumbs = () => {
@@ -60,24 +64,17 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
         sx={{
           p: layout === "compact" ? 2 : 3,
           mt: navbarPosition === "fixed" ? "64px" : 0,
-          // ml: `${mainPaddingLeft}px`,
           transition: "margin-left 0.3s ease",
-          // width: { sm: `calc(100% - ${mainPaddingLeft}px)` },
           position: "relative",
           width: "100%",
+          backgroundColor: theme.palette.background.navBackground,
         }}
       >
         {/* Breadcrumbs */}
-        <Paper
+        {/* <Paper
           elevation={0}
           sx={{
-            p: 1.5,
             mb: 3,
-            borderRadius: 1,
-            backgroundColor: (theme) =>
-              theme.palette.mode === "dark"
-                ? "rgba(255,255,255,0.05)"
-                : "rgba(0,0,0,0.05)",
           }}
         >
           <Breadcrumbs aria-label="breadcrumb">
@@ -100,19 +97,10 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
               );
             })}
           </Breadcrumbs>
-        </Paper>
+        </Paper> */}
 
         {/* Main content */}
-        <Paper
-          elevation={1}
-          sx={{
-            p: layout === "compact" ? 2 : 3,
-            borderRadius: 2,
-            minHeight: "80vh",
-          }}
-        >
-          {children}
-        </Paper>
+        <div>{children}</div>
 
         {/* Floating action button */}
         {/* <Tooltip title="Add new item">

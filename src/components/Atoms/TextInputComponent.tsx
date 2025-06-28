@@ -135,30 +135,35 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
             },
           },
           "& .MuiOutlinedInput-root": {
-            borderColor: theme.palette.placeholder,
-            fontFamily: '"Poppins", sans-serif',
+            borderColor: theme.palette.gray.DEFAULT,
+            borderRadius: `${isAuth ? 28 : 6}px !important`,
             "&.Mui-error .MuiOutlinedInput-notchedOutline": {
               borderColor: theme.palette.error.main,
-              borderRadius: isAuth ? 28 : 37,
+              borderRadius: `${isAuth ? 28 : 6}px !important`,
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: theme.palette.text.primary,
+              borderColor: error
+                ? theme.palette.error.main
+                : theme.palette.background.blackColor,
               borderWidth: "1px",
-            },
-            "&.Mui-focused fieldset": {
-              borderColor: theme.palette.text.primary,
+              borderRadius: `${isAuth ? 28 : 6}px !important`,
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: theme.palette.text.primary,
+              borderColor: error
+                ? theme.palette.error.main
+                : theme.palette.background.blackColor,
             },
             "& fieldset": {
               borderColor: isAuth
                 ? theme.palette.placeholder
-                : theme.palette.warning.main,
-              borderRadius: isAuth ? 28 : 37,
+                : theme.palette.gray.DEFAULT,
+              borderRadius: `${isAuth ? 28 : 6}px !important`,
             },
             "&:hover fieldset": {
-              borderColor: theme.palette.text.primary,
+              borderColor: error
+                ? theme.palette.error.main
+                : theme.palette.background.blackColor,
+              borderRadius: `${isAuth ? 28 : 6}px !important`,
             },
           },
           ...(typeof className === "string"

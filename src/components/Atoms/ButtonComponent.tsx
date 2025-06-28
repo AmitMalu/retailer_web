@@ -1,7 +1,10 @@
 import React from "react";
-import { Button as MuiButton, ButtonProps, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-
+import {
+  Button as MuiButton,
+  ButtonProps,
+  Typography,
+  Box,
+} from "@mui/material";
 import { ButtonComponentProps } from "@/Common/interface";
 
 const ButtonComponent: React.FC<ButtonComponentProps> = ({
@@ -18,8 +21,9 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
   radius = 6,
   color,
   fontSize = 16,
+  isAuth = false,
+  ...rest
 }) => {
-  const theme = useTheme();
   const getMuiVariant = (): ButtonProps["variant"] => {
     switch (variant) {
       case "filled":
@@ -34,81 +38,76 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
         return "contained";
     }
   };
-  const getMuiSize = (): ButtonProps["size"] => {
-    switch (size) {
-      case "xs":
-        return "small";
-      case "sm":
-        return "small";
-      case "md":
-        return "medium";
-      case "lg":
-        return "large";
-      case "xl":
-        return "large";
-      default:
-        return "medium";
-    }
-  };
 
   const buttonSx = {
-    borderRadius: `${radius}px`,
+    borderRadius: radius,
+    fontSize: `${fontSize}px`,
     textTransform: "none",
-    padding: "6px 12px",
-
+    fontWeight: 500,
+    padding: "8px 16px",
     "&.MuiButton-contained": {
-      backgroundColor: color
-        ? color
-        : "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)",
+      backgroundColor: color || (!isAuth ? "error.main" : "primary.main"),
+      backgroundImage:
+        !color && isAuth
+          ? "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)"
+          : "none",
+      color: "#fff",
       "&:hover": {
-        backgroundColor: color
-          ? color
-          : "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)",
-        opacity: 0.8,
+        backgroundColor: color || (!isAuth ? "error.main" : "primary.main"),
+        backgroundImage:
+          !color && isAuth
+            ? "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)"
+            : "none",
+        opacity: 0.9,
       },
     },
     "&.MuiButton-outlined": {
-      borderColor: color
-        ? color
-        : "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)",
-      color: color
-        ? color
-        : "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)",
+      borderColor: color || (!isAuth ? "error.main" : "primary.main"),
+      color: color || (!isAuth ? "error.main" : "primary.main"),
+      "&:hover": {
+        borderColor: color || (!isAuth ? "error.main" : "primary.main"),
+        backgroundColor: "rgba(0, 0, 0, 0.04)",
+      },
     },
     "&.MuiButton-text": {
-      color: color
-        ? color
-        : "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)",
+      color: color || (!isAuth ? "error.main" : "primary.main"),
+      "&:hover": {
+        backgroundColor: "rgba(0, 0, 0, 0.04)",
+      },
     },
-    "&.Mui-disabled": {
-      opacity: 0.6,
-    },
-    ...(fullWidth && { width: "100%" }),
-  };
-
-  const textSx = {
-    fontSize: `${fontSize}px`,
-    fontWeight: 600,
-    color: "inherit",
-    padding: "6px 0",
-    fontFamily: '"Poppins", sans-serif',
   };
 
   return (
     <MuiButton
       variant={getMuiVariant()}
-      onClick={onClick}
-      disabled={disabled || loading}
-      size={getMuiSize()}
-      className={className}
+      disabled={disabled}
       fullWidth={fullWidth}
+      onClick={onClick}
       sx={buttonSx}
-      startIcon={leftIcon}
-      endIcon={rightIcon}
+      {...rest}
     >
-      <Typography component="span" sx={textSx}>
+      {leftIcon && (
+        <Box component="span" mr={1}>
+          {leftIcon}
+        </Box>
+      )}
+      <Typography
+        component="span"
+        sx={{
+          fontSize: `${fontSize}px`,
+          fontWeight: 600,
+          color: "inherit",
+          padding: "6px 0",
+          fontFamily: '"Poppins", sans-serif',
+        }}
+      >
         {title}
       </Typography>
+      {rightIcon && (
+        <Box component="span" ml={1}>
+          {rightIcon}
+        </Box>
+      )}
     </MuiButton>
   );
 };

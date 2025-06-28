@@ -26,7 +26,7 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
   multiple = false,
   // withCheckIcon = true,
   className = "",
-  placeholder = "Select an option",
+  placeholder = "Select",
 }) => {
   const handleChange = (event: SelectChangeEvent<unknown>) => {
     const value = event.target.value;
@@ -45,7 +45,14 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
   });
 
   return (
-    <Box className={className}>
+    <Box
+      className={className}
+      sx={{
+        mt: 0.125,
+        mb: 0.125,
+        width: "100%",
+      }}
+    >
       {label && (
         <Box display="flex" alignItems="center" gap={0.5} mb={0.5}>
           <Typography variant="body2" color="text.primary" fontWeight={600}>
@@ -77,6 +84,30 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
           startAdornment={leftSection}
           endAdornment={rightSection}
           multiple={multiple}
+          sx={{
+            width: "100%",
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "background.blackColor",
+              borderRadius: "6px",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "background.blackColor",
+              borderWidth: "1px",
+              borderRadius: "6px",
+            },
+            "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+              borderColor: "error.main",
+            },
+            "&.Mui-disabled .MuiOutlinedInput-notchedOutline": {
+              borderColor: "action.disabled",
+            },
+            "& .MuiSelect-select": {
+              color: "text.primary",
+            },
+            "&.Mui-focused .MuiSelect-select": {
+              color: "text.primary",
+            },
+          }}
           renderValue={(selected) => {
             if (multiple) {
               const selectedValues = selected as string[];
@@ -101,6 +132,7 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
             PaperProps: {
               style: {
                 maxHeight: 300,
+                width: "100%",
               },
             },
           }}
@@ -116,7 +148,11 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
             </MenuItem>
           ))}
         </Select>
-        {error && <FormHelperText>{error}</FormHelperText>}
+        {error && (
+          <FormHelperText sx={{ textAlign: "right", mx: 0, px: 0 }}>
+            {error}
+          </FormHelperText>
+        )}
       </FormControl>
     </Box>
   );

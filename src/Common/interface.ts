@@ -1,6 +1,7 @@
 import { TextInputProps } from "@mantine/core";
 import { ReactNode, ChangeEvent, MouseEventHandler } from "react";
 import type { ThemeOption } from "../../src/store/slices/settingsSlice";
+import { SvgIconComponent } from "@mui/icons-material";
 
 export type CustomError = {
   status?: number;
@@ -162,6 +163,7 @@ export type ButtonComponentProps = {
   radius?: number;
   color?: string;
   fontSize?: number;
+  isAuth?: boolean;
 };
 
 export type CustomDatePickerProps = {
@@ -337,4 +339,24 @@ export type OtpRequestProps = {
 
 export type ResendOtpRequestProps = {
   userName: string;
+};
+
+export type ProductCardProps = {
+  image: React.ReactNode;
+  title: string;
+  fill: boolean;
+};
+
+export type FundRequestProps = {
+  depositType: string;
+  transactionId: string;
+  bankName: string;
+  bankAccountNumber: string;
+  amount: string;
+  confirmAmount: string;
+  depositDate: string;
+  narration: string;
+  depositSlip: File | string | null;
+  bankAccountHolderName: string;
+  paymentMode: string;
 };

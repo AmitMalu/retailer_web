@@ -16,16 +16,30 @@ import {
 } from "@mui/material";
 import { ChevronRight } from "@mui/icons-material";
 import { getMenuItems } from "@/Config/menuItems";
-import { MenuItem, UserRole } from "@/Common/interface";
+import { MenuItem, SidebarProps, UserRole } from "@/Common/interface";
 import { decryptData } from "@/Utils/helper";
 import TextComponent from "../Atoms/TextComponent";
+import { styled } from "@mui/material/styles";
+import { useLogoutHandling } from "@/Utils/CustomLogout";
+import { LogoutSvgIcon } from "@/assets/svg";
 
-interface SidebarProps {
-  mobileOpen: boolean;
-  onClose: () => void;
-}
+const StyledPopover = styled(Popover)(({ theme }) => ({
+  "& .MuiPopover-paper": {
+    transition: theme.transitions.create(["transform", "opacity"], {
+      duration: theme.transitions.duration.enteringScreen,
+      easing: theme.transitions.easing.easeOut,
+    }),
+    transform: "translateX(8px)",
+    opacity: 0,
+    "&.MuiPopover-paper-enter": {
+      transform: "translateX(0)",
+      opacity: 1,
+    },
+  },
+}));
 
 export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
+  const { logout } = useLogoutHandling();
   const { sidebarStyle } = useSelector((state: RootState) => state.settings);
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
@@ -40,7 +54,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
   if (!loginData) return null;
 
   const isCompact = sidebarStyle === "compact";
-  const drawerWidth = isCompact ? 80 : 240;
+  const drawerWidth = isCompact ? 60 : "auto";
 
   // State for submenu popover
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -123,7 +137,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
             width: drawerWidth,
             boxSizing: "border-box",
             border: "none",
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor: theme.palette.red.DEFAULT,
             boxShadow: theme.shadows[3],
             borderRadius: "0 16px 16px 0",
             height: "auto",
@@ -141,9 +155,10 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
             flexDirection: "column",
             height: "100%",
             overflow: "hidden",
+            py: 1,
           }}
         >
-          <List sx={{ overflowY: "auto", flexGrow: 1, py: 1 }}>
+          <List sx={{ overflowY: "auto", flexGrow: 1 }}>
             {menuItems.map((item, index) => {
               const hasSubItems = item.subItems && item.subItems.length > 0;
               const isActive =
@@ -157,25 +172,23 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                 <ListItemButton
                   onClick={(e) => handleSubMenuOpen(e, item)}
                   selected={isActive}
+                  className="flex items-start justify-start w-auto ml-[0.3px] rounded-s-xl mb-[0.2px] "
                   sx={{
-                    borderRadius: 1,
-                    mx: 1,
-                    mb: 0.5,
+                    color: theme.palette.background.navBackground,
                     "&.Mui-selected": {
-                      backgroundColor: theme.palette.primary.light,
-                      color: theme.palette.primary.contrastText,
+                      backgroundColor: theme.palette.background.navBackground,
+                      color: theme.palette.red.DEFAULT,
                       "&:hover": {
-                        backgroundColor: theme.palette.primary.main,
+                        backgroundColor: theme.palette.background.navBackground,
+                        color: theme.palette.red.DEFAULT,
                       },
                     },
                   }}
                 >
                   <ListItemIcon
+                    className="flex items-start self-end justify-self-end  justify-start"
                     sx={{
-                      minWidth: 40,
-                      color: isActive
-                        ? theme.palette.primary.contrastText
-                        : "inherit",
+                      color: isActive ? theme.palette.red.DEFAULT : "inherit",
                     }}
                   >
                     {item.icon}
@@ -210,20 +223,20 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
               );
             })}
           </List>
+          <div
+            onClick={() => logout()}
+            className="flex cursor-pointer items-center justify-center gap-4 "
+          >
+            <LogoutSvgIcon color={theme.palette.background.navBackground} />
+          </div>
         </Box>
       </Drawer>
 
       {/* Submenu Popover */}
-      <Popover
+      <StyledPopover
         open={isSubMenuOpen}
         anchorEl={anchorEl}
         onClose={handleSubMenuClose}
-        anchorReference="anchorPosition"
-        anchorPosition={
-          isSubMenuOpen
-            ? { top: subMenuPosition.top, left: subMenuPosition.left }
-            : undefined
-        }
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
@@ -232,16 +245,32 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
           vertical: "top",
           horizontal: "left",
         }}
-        PaperProps={{
-          sx: {
-            width: 240,
+        sx={{
+          "& .MuiPopover-paper": {
+            width: "auto",
             boxShadow: theme.shadows[8],
             borderRadius: 2,
             overflow: "hidden",
-            ml: 1,
+            ml: 2,
+            backgroundColor: theme.palette.red.light,
+            transform: "translateX(8px)",
+            opacity: 0,
+            transition: theme.transitions.create(["transform", "opacity"], {
+              duration: theme.transitions.duration.enteringScreen,
+              easing: theme.transitions.easing.easeOut,
+            }),
+          },
+          "& .MuiPopover-paper.MuiPopover-paper-enter": {
+            transform: "translateX(0)",
+            opacity: 1,
           },
         }}
-        disableRestoreFocus
+        TransitionProps={{
+          timeout: {
+            enter: theme.transitions.duration.enteringScreen,
+            exit: theme.transitions.duration.leavingScreen,
+          },
+        }}
       >
         <List>
           {activeSubMenu.map((subItem, index) => (
@@ -252,12 +281,16 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
               onClick={handleMenuItemClick}
               selected={location.pathname === subItem.path}
               sx={{
-                px: 3,
+                paddingLeft: 2,
+                borderTopLeftRadius: 12,
+                borderBottomLeftRadius: 12,
+                marginLeft: 1,
                 "&.Mui-selected": {
-                  backgroundColor: theme.palette.primary.light,
-                  color: theme.palette.primary.contrastText,
+                  backgroundColor: theme.palette.background.navBackground,
+                  color: theme.palette.red.DEFAULT,
                   "&:hover": {
-                    backgroundColor: theme.palette.primary.main,
+                    backgroundColor: theme.palette.background.navBackground,
+                    color: theme.palette.red.DEFAULT,
                   },
                 },
               }}
@@ -272,7 +305,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
             </ListItemButton>
           ))}
         </List>
-      </Popover>
+      </StyledPopover>
     </Box>
   );
 }

@@ -85,12 +85,12 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
           textTransform: "none",
           borderColor: error
             ? theme.palette.error.main
-            : theme.palette.primary.main,
+            : theme.palette.gray.DEFAULT,
           color: theme.palette.text.primary,
           "&:hover": {
             borderColor: error
               ? theme.palette.error.main
-              : theme.palette.primary.main,
+              : theme.palette.background.blackColor,
             backgroundColor: theme.palette.action.hover,
           },
           "&.Mui-disabled": {
@@ -136,7 +136,7 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
                 ml: 1,
                 color: theme.palette.text.secondary,
                 "&:hover": {
-                  color: theme.palette.text.primary,
+                  color: theme.palette.background.blackColor,
                   backgroundColor: theme.palette.action.hover,
                 },
               }}

@@ -1,4 +1,14 @@
 import { MenuItem, UserRole } from "@/Common/interface";
+import {
+  DashboardSvgIcon,
+  FundingSvgIcon,
+  ManageuserSvgIcon,
+  ProductsSvgIcon,
+  ReportsSvgIcon,
+  SettingsSvgIcon,
+  SupportSvgIcon,
+  WebSettingsSvgIcon,
+} from "@/assets/svg";
 import React from "react";
 
 export const getMenuItems = (role: UserRole): MenuItem[] => {
@@ -6,12 +16,12 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
     {
       name: "Dashboard",
       path: "/dashboard",
-      //   icon: <DashboardIcon />,
+      icon: React.createElement(DashboardSvgIcon, { color: "currentColor" }),
     },
     {
       name: "Manage User",
       path: "/manageUser",
-      //   icon: <ReceiptIcon />,
+      icon: React.createElement(ManageuserSvgIcon, { color: "currentColor" }),
       roles: ["DT", "SD", "RT", "WL", "PT"],
       subItems: [
         {
@@ -49,13 +59,13 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
     {
       name: "Products",
       path: "/products",
-      //   icon: <ShoppingCartIcon />,
+      icon: React.createElement(ProductsSvgIcon, { color: "currentColor" }),
       roles: ["RT"],
     },
     {
       name: "Funding",
       path: "/funding",
-      //   icon: <AssessmentIcon />,
+      icon: React.createElement(FundingSvgIcon, { color: "currentColor" }),
       roles: ["RT", "DT", "SD", "WL", "PT"],
       subItems: [
         {
@@ -76,12 +86,24 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           //   icon: <InventoryIcon />,
           roles: ["RT", "DT", "SD", "WL", "PT"],
         },
+        {
+          name: "Fund Transfer",
+          path: "/funding/fundTransfer",
+          //   icon: <InventoryIcon />,
+          roles: ["RT", "DT", "SD", "WL", "PT"],
+        },
+        {
+          name: "Fund Reversal",
+          path: "/funding/fundReversal",
+          //   icon: <InventoryIcon />,
+          roles: ["DT", "SD", "WL", "PT"],
+        },
       ],
     },
     {
       name: "Reports",
       path: "/reports",
-      //   icon: <ReceiptIcon />,
+      icon: React.createElement(ReportsSvgIcon, { color: "currentColor" }),
       roles: ["DT", "RT", "SD", "WL", "PT"],
       subItems: [
         {
@@ -161,7 +183,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
     {
       name: "Settings",
       path: "/settings",
-      //   icon: <AssessmentIcon />,
+      icon: React.createElement(SettingsSvgIcon, { color: "currentColor" }),
       roles: ["RT", "DT", "SD", "WL", "PT"],
       subItems: [
         {
@@ -205,7 +227,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
     {
       name: "Support",
       path: "/support",
-      //   icon: <AdminPanelSettingsIcon />,
+      icon: React.createElement(SupportSvgIcon, { color: "currentColor" }),
       roles: ["RT", "DT", "SD", "WL", "PT"], // Only System Admin can see this menu
       subItems: [
         {
@@ -267,7 +289,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
     {
       name: "Website Settings",
       path: "/websiteSettings",
-      //   icon: <AdminPanelSettingsIcon />,
+      icon: React.createElement(WebSettingsSvgIcon, { color: "currentColor" }),
       roles: ["WL"], // Only System Admin can see this menu
       subItems: [
         {
