@@ -201,24 +201,24 @@ const CustomDateComponent: React.FC<CustomDatePickerProps> = ({
   };
 
   return (
-    <Box className={className}>
-      {label && (
-        <Box display="flex" alignItems="center" gap={0.5} mb={0.5}>
-          <Typography variant="body2" color="text.primary" fontWeight={600}>
-            {label}
-          </Typography>
-          {withAsterisk && (
-            <Typography variant="body2" color="error.main" fontWeight={600}>
-              *
-            </Typography>
-          )}
-        </Box>
-      )}
-
+    <Box
+      className={className}
+      sx={{
+        width: "100%",
+      }}
+    >
       <div onClick={handleClick}>
         <TextField
           fullWidth
           value={inputValue}
+          label={
+            label && (
+              <>
+                {label}
+                {withAsterisk && <span>*</span>}
+              </>
+            )
+          }
           placeholder={
             type === "range"
               ? dateFormat === "YYYY-MM-DD"
@@ -232,16 +232,6 @@ const CustomDateComponent: React.FC<CustomDatePickerProps> = ({
           size="small"
           disabled={disabled}
           error={!!error}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              "&:hover fieldset": {
-                borderColor: "text.primary",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "background.blackColor",
-              },
-            },
-          }}
           InputProps={{
             readOnly: inputMode === "picker",
             endAdornment: (
@@ -252,29 +242,88 @@ const CustomDateComponent: React.FC<CustomDatePickerProps> = ({
                     onClick={handleClear}
                     edge="end"
                     color="inherit"
+                    sx={{
+                      color: theme.palette.text.secondary,
+                      "&:hover": {
+                        backgroundColor: theme.palette.action.hover,
+                      },
+                    }}
                   >
                     <Clear fontSize="small" />
                   </IconButton>
                 ) : (
-                  <CalendarToday fontSize="small" color="action" />
+                  <CalendarToday
+                    fontSize="small"
+                    color={error ? "error" : "action"}
+                  />
                 )}
               </InputAdornment>
             ),
           }}
+          sx={{
+            "& .MuiOutlinedInput-input": {
+              padding: "16px 14px",
+            },
+            "& .MuiInputLabel-root": {
+              color: theme.palette.placeholder,
+              fontSize: "16px",
+              fontWeight: 400,
+              "&.Mui-focused": {
+                color: theme.palette.text.primary,
+              },
+              "&.Mui-error": {
+                color: theme.palette.error.main,
+              },
+            },
+            "& .MuiOutlinedInput-root": {
+              borderColor: theme.palette.gray.DEFAULT,
+              borderRadius: "6px !important",
+              "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+                borderColor: theme.palette.error.main,
+                borderRadius: "6px !important",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: error
+                  ? theme.palette.error.main
+                  : theme.palette.background.blackColor,
+                borderWidth: "1px",
+                borderRadius: "6px !important",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: error
+                  ? theme.palette.error.main
+                  : theme.palette.background.blackColor,
+              },
+              "& fieldset": {
+                padding: "16px 14px 16px 14px !important",
+                borderColor: theme.palette.gray.DEFAULT,
+                borderRadius: "6px !important",
+              },
+              "&:hover fieldset": {
+                borderColor: error
+                  ? theme.palette.error.main
+                  : theme.palette.background.blackColor,
+                borderRadius: "6px !important",
+              },
+            },
+          }}
         />
+        {error && (
+          <Typography
+            variant="caption"
+            color="error"
+            sx={{
+              display: "block",
+              textAlign: "right",
+              margin: "4px 0 0 0",
+              lineHeight: 1,
+              fontSize: "12px",
+            }}
+          >
+            {error}
+          </Typography>
+        )}
       </div>
-
-      {error && (
-        <Typography
-          variant="caption"
-          color="error"
-          display="block"
-          textAlign="right"
-          sx={{ mt: 0.5 }}
-        >
-          {error}
-        </Typography>
-      )}
 
       <Popover
         id={id}
