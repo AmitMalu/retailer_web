@@ -67,7 +67,8 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
           transition: "margin-left 0.3s ease",
           position: "relative",
           width: "100%",
-          backgroundColor: theme.palette.background.navBackground,
+          // backgroundColor: theme.palette.background.navBackground,
+          height: "100vh",
         }}
       >
         {/* Breadcrumbs */}

@@ -323,7 +323,7 @@ export type SignUpRequest = {
 };
 
 export type SetPasswordRequestProps = {
-  username: string;
+  userName: string;
   newPassword: string;
   reEnteredPassword: string;
 };
@@ -360,3 +360,41 @@ export type FundRequestProps = {
   bankAccountHolderName: string;
   paymentMode: string;
 };
+
+export type FundTransferProps = {
+  fromHierarchyId: string;
+  toHierarchyId: string;
+  amount: string;
+  confirmAmount: string;
+  fromWalletType: string;
+  toWalletType: string;
+  narration: string;
+};
+
+export type WalletToBankProps = {
+  requesterHierarchyId: string;
+  walletBalance?: string;
+  selectBank: string;
+  TransactionType: string;
+  amount?: string;
+  confirmAmount?: string;
+};
+
+export type FundReversalProps = {
+  parentHierarchyId: string;
+  childHierarchyId: string;
+  walletType: string;
+  reversalAmount: string;
+  confirmAmount?: string;
+  narration?: string;
+};
+
+export type WalletToWalletProps = {
+  hierarchyId: string;
+  transferAmount: string;
+  confirmAmount: string;
+  walletTypeFrom: string;
+  walletTypeTo: string;
+};
+
+export type ChildMemberListProps = Record<string, any>;

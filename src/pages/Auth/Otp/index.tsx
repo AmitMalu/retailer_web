@@ -77,7 +77,7 @@ const OtpInputScreen = () => {
         hierarchyType: hierarchyType,
       };
       const tokenResponse = await Verify_Token(bodyRequest);
-      document.cookie = `authToken=${encodeURIComponent(tokenValue)}; expires=${new Date(Date.now() + 7 * 864e5).toUTCString()}; path=/; SameSite=Strict`;
+      document.cookie = `authToken=${encodeURIComponent(values?.token)}; expires=${new Date(Date.now() + 7 * 864e5).toUTCString()}; path=/; SameSite=Strict`;
       if (tokenValue && tokenResponse?.status === 200) {
         showSuccessNotification("Logged In Successfully");
         navigate("/dashboard");

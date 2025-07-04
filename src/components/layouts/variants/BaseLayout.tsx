@@ -43,7 +43,7 @@ export default function BaseLayout({
             left: 0,
             bottom: 0,
             overflowY: "auto",
-            zIndex: 1200,
+            // zIndex: 1200,
           }}
         >
           {sidebar}
@@ -62,7 +62,7 @@ export default function BaseLayout({
           <Box
             sx={{
               width: "100%",
-              zIndex: 1100,
+              // zIndex: 1100,
               ...(navbarPosition === "fixed" && {
                 position: "fixed",
                 top: 0,
@@ -79,7 +79,8 @@ export default function BaseLayout({
             sx={{
               flex: 1,
               overflowY: "auto",
-              ml: `${sidebarWidth}px`,
+              height: "100vh",
+              ml: `${sidebarWidth + 90}px`,
             }}
           >
             <Box>{children}</Box>

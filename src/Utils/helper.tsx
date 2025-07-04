@@ -2,6 +2,9 @@ import { saveApiResponse } from "@/Redux/Actions/apiActions";
 import { AppDispatch } from "@/Redux/Store";
 import { useDispatch } from "react-redux";
 import CryptoJS from "crypto-js";
+import { showErrorNotification } from "./notifications";
+import { handleCustomError } from "./handleCustomError";
+import { Wallet_Balance } from "@/Services/api";
 
 const KEY = CryptoJS.enc.Hex.parse(
   "a7f3d9c6e8421fb62e7e5c3410b974e2d5c6a8f90fd13b4aa12f658f9a34bc29"
@@ -60,4 +63,23 @@ export const useIpAddress = () => {
 export const formatDate = (date: string | Date) => {
   const d = new Date(date);
   return `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}`;
+};
+
+export const useWalletBalance = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const WalletBalanceReq = async (id: string) => {
+    try {
+      const response = await Wallet_Balance(id);
+      if (response?.status === 200 || response?.status === 201) {
+        dispatch(saveApiResponse("walletBalance", response?.data?.data));
+      } else {
+        showErrorNotification(response?.data?.message);
+      }
+    } catch (error) {
+      await handleCustomError(error);
+    } finally {
+    }
+  };
+
+  return { WalletBalanceReq };
 };

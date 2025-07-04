@@ -44,14 +44,14 @@ const SetPasswordScreen: React.FC = () => {
   const initialValues: SetPasswordRequestProps = {
     newPassword: "",
     reEnteredPassword: "",
-    username: username,
+    userName: username,
   };
 
   const handleSubmit = async (values: SetPasswordRequestProps) => {
     try {
       setIsLoading(true);
       let bodyRequest = {
-        username: username,
+        userName: username,
         newPassword: values.newPassword,
         reEnteredPassword: values.reEnteredPassword,
       };

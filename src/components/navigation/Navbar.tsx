@@ -1,7 +1,5 @@
 import {
   AppBar,
-  Toolbar,
-  Typography,
   IconButton,
   Box,
   useMediaQuery,
@@ -10,16 +8,13 @@ import {
   Stack,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleDarkMode } from "../../store/slices/uiSlice";
 import { toggleSettingsDrawer } from "../../store/slices/settingsSlice";
 import type { RootState } from "../../Redux/Store";
-import RefreshIcon from "@mui/icons-material/Refresh";
 import ImLogo from "@/assets/svg/imLogo";
-import TextInputComponent from "../Atoms/TextInputComponent";
 import { NavbarProps } from "@/Common/interface";
 import TextComponent from "../Atoms/TextComponent";
-import { useLogoutHandling } from "@/Utils/CustomLogout";
 import { RefreshSvgIcon, ThemeSettingSvgIcon } from "@/assets/svg";
+import { decryptData } from "@/Utils/helper";
 
 export default function Navbar({
   onMenuClick,
@@ -33,7 +28,12 @@ export default function Navbar({
   const theme = useTheme();
   const isMobileView = useMediaQuery(theme.breakpoints.down("md"));
   const isMobile = isMobileProp || isMobileView;
-
+  const apiResponses = useSelector(
+    (state: RootState) => state.apiResponse.responses
+  );
+  const walletBalance = apiResponses?.walletBalance
+    ? decryptData(apiResponses?.walletBalance)
+    : null;
   const handleSettingsClick = () => {
     dispatch(toggleSettingsDrawer());
   };
@@ -70,11 +70,11 @@ export default function Navbar({
         <TextComponent fontSize={14} fontWeight={500}>
           {title}
         </TextComponent>
-        {amount && (
-          <TextComponent fontSize={14} fontWeight={600}>
-            -
-          </TextComponent>
-        )}
+
+        <TextComponent fontSize={14} fontWeight={600}>
+          -
+        </TextComponent>
+
         <TextComponent fontSize={14} fontWeight={600}>
           {amount}
         </TextComponent>
@@ -117,8 +117,14 @@ export default function Navbar({
             {!isMobile && (
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Stack direction="row" spacing={2} alignItems="center">
-                  <WalletDisplay title="PREPAID" amount="₹10,000.00" />
-                  <WalletDisplay title="POSTPAID" amount="₹2,500.00" />
+                  <WalletDisplay
+                    title="PREPAID"
+                    amount={walletBalance?.prepaidBalance}
+                  />
+                  <WalletDisplay
+                    title="POSTPAID"
+                    amount={walletBalance?.postpaidBalance}
+                  />
                   <WalletDisplay title="IM-R-5649" />
                 </Stack>
                 <IconButton

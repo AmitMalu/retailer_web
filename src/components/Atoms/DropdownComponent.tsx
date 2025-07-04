@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useTheme } from "@mui/material/styles";
 import {
   FormControl,
@@ -6,7 +6,6 @@ import {
   MenuItem,
   FormHelperText,
   Box,
-  Typography,
   SelectChangeEvent,
   InputLabel,
 } from "@mui/material";
@@ -19,7 +18,6 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
   onChange,
   error,
   disabled = false,
-  required = false,
   // searchable = false,
   clearable = false,
   withAsterisk = false,
@@ -28,10 +26,8 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
   multiple = false,
   // withCheckIcon = true,
   className = "",
-  placeholder = "Select",
 }) => {
   const theme = useTheme();
-  const [isFocused, setIsFocused] = useState(false);
 
   const handleChange = (event: SelectChangeEvent<unknown>) => {
     const value = event.target.value;
@@ -53,7 +49,6 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
     <Box
       className={className}
       sx={{
-        mt: 3,
         mb: 0.125,
         width: "100%",
         position: "relative",
@@ -101,16 +96,11 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
             },
           }}
         >
-          <>
-            {label}
-            {/* {withAsterisk && <span style={{ color: "red" }}>*</span>} */}
-          </>
+          <>{label}</>
         </InputLabel>
         <Select
           value={multiple ? value || [] : value || ""}
           onChange={handleChange}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
           displayEmpty
           inputProps={{
             "aria-label": label || "Select",
@@ -165,9 +155,9 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
               sx={{
                 fontSize: "14px",
                 "&.Mui-selected": {
-                  backgroundColor: "action.selected",
+                  backgroundColor: "gray.dark",
                   "&:hover": {
-                    backgroundColor: "action.hover",
+                    backgroundColor: "gray.light",
                   },
                 },
               }}

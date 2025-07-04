@@ -1,11 +1,14 @@
 import {
   ForgotPasswordRequestProps,
+  FundReversalProps,
+  FundTransferProps,
   LoginRequest,
   OtpRequestProps,
   ResendOtpRequestProps,
   SetPasswordRequestProps,
   TokenGenerationRequest,
   VerifyTokenRequest,
+  WalletToWalletProps,
 } from "@/Common/interface";
 import api from ".";
 import { API_ROUTES } from "./apiRoutes";
@@ -75,3 +78,28 @@ export const Resend_Otp = async (data: ResendOtpRequestProps) =>
 
 export const Set_Password = async (data: SetPasswordRequestProps) =>
   await api.post(API_ROUTES.SET_PASSWORD, data);
+
+export const Prefund_Request = async (data: FormData) =>
+  await api.post(
+    `${API_ROUTES.PREFUND_REQUEST}`,
+    data,
+    await createMultipartHeaders()
+  );
+
+export const Fund_Transfer = async (data: FundTransferProps) =>
+  await api.post(`${API_ROUTES.FUND_TRANSFER}`, data, await createHeaders());
+
+export const Fund_Reversal = async (data: FundReversalProps) =>
+  await api.post(`${API_ROUTES.FUND_REVERSAL}`, data, await createHeaders());
+
+export const Wallet_To_Wallet = async (data: WalletToWalletProps) =>
+  await api.post(`${API_ROUTES.WALLET_TO_WALLET}`, data, await createHeaders());
+
+export const Wallet_Balance = async (id: string) =>
+  await api.get(`${API_ROUTES.WALLET_BALANCE}/${id}`, await createHeaders());
+
+export const Profile = async (id: string) =>
+  await api.get(`${API_ROUTES.PROFILE}/${id}`, await createHeaders());
+
+export const Child_Member_List = async (id: string) =>
+  await api.get(`${API_ROUTES.CHILD_MEMBER_LIST}/${id}`, await createHeaders());
