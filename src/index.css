@@ -24,3 +24,12 @@ body {
 .scale-141 {
   transform: scale(1.41) rotate(-45deg);
 }
+
+/* Add this to your global CSS or style tag */
+foreignObject {
+  pointer-events: none;
+}
+
+foreignObject>* {
+  pointer-events: auto;
+}

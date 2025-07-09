@@ -26,6 +26,9 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     redDark: colorTokens.red.dark,
     grayDefault: colorTokens.gray.DEFAULT,
     grayLight: colorTokens.gray.light,
+    grayDark: colorTokens.gray.dark,
+    greenDefault: colorTokens.GreenColor.DEFAULT,
+    greenLight: colorTokens.GreenColor.light,
   },
   corporate: {
     primary: colorTokens.primary.DEFAULT,
@@ -51,6 +54,9 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     redDark: colorTokens.red.dark,
     grayDefault: colorTokens.gray.DEFAULT,
     grayLight: colorTokens.gray.light,
+    grayDark: colorTokens.gray.dark,
+    greenDefault: colorTokens.GreenColor.DEFAULT,
+    greenLight: colorTokens.GreenColor.light,
   },
   creative: {
     primary: colorTokens.primary.DEFAULT,
@@ -76,6 +82,9 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     redDark: colorTokens.red.dark,
     grayDefault: colorTokens.gray.DEFAULT,
     grayLight: colorTokens.gray.light,
+    grayDark: colorTokens.gray.dark,
+    greenDefault: colorTokens.GreenColor.DEFAULT,
+    greenLight: colorTokens.GreenColor.light,
   },
   elegant: {
     primary: colorTokens.primary.DEFAULT,
@@ -101,6 +110,9 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     redDark: colorTokens.red.dark,
     grayDefault: colorTokens.gray.DEFAULT,
     grayLight: colorTokens.gray.light,
+    grayDark: colorTokens.gray.dark,
+    greenDefault: colorTokens.GreenColor.DEFAULT,
+    greenLight: colorTokens.GreenColor.light,
   },
   playful: {
     primary: colorTokens.primary.DEFAULT,
@@ -126,6 +138,9 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     redDark: colorTokens.red.dark,
     grayDefault: colorTokens.gray.DEFAULT,
     grayLight: colorTokens.gray.light,
+    grayDark: colorTokens.gray.dark,
+    greenDefault: colorTokens.GreenColor.DEFAULT,
+    greenLight: colorTokens.GreenColor.light,
   },
   minimal: {
     primary: colorTokens.primary.DEFAULT,
@@ -151,6 +166,9 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     redDark: colorTokens.red.dark,
     grayDefault: colorTokens.gray.DEFAULT,
     grayLight: colorTokens.gray.light,
+    grayDark: colorTokens.gray.dark,
+    greenDefault: colorTokens.GreenColor.DEFAULT,
+    greenLight: colorTokens.GreenColor.light,
   },
   dark: {
     primary: colorTokens.primary.DEFAULT,
@@ -176,6 +194,9 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     redDark: colorTokens.red.dark,
     grayDefault: colorTokens.gray.DEFAULT,
     grayLight: colorTokens.gray.light,
+    grayDark: colorTokens.gray.dark,
+    greenDefault: colorTokens.GreenColor.DEFAULT,
+    greenLight: colorTokens.GreenColor.light,
   },
   mutedTeal: {
     primary: colorTokens.primary.DEFAULT,
@@ -201,5 +222,8 @@ export const themeColors: Record<ThemeOption, ThemeColors> = {
     redDark: colorTokens.red.dark,
     grayDefault: colorTokens.gray.DEFAULT,
     grayLight: colorTokens.gray.light,
+    grayDark: colorTokens.gray.dark,
+    greenDefault: colorTokens.GreenColor.DEFAULT,
+    greenLight: colorTokens.GreenColor.light,
   },
 };

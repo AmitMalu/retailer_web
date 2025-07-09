@@ -25,8 +25,8 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
       roles: ["DT", "SD", "RT", "WL", "PT"],
       subItems: [
         {
-          name: "Add and View User ",
-          path: "/manageUser/addAndViewUser",
+          name: "Create User ",
+          path: "/manageUser/createUser",
           //   icon: <ListIcon />,
           roles: ["DT", "SD", "WL", "PT"],
         },
@@ -37,20 +37,8 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           roles: ["DT", "SD", "WL", "PT"],
         },
         {
-          name: "Create Profile",
-          path: "/manageUser/createProfile",
-          //   icon: <PendingIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
-        {
-          name: "Fees Settings",
-          path: "/manageUser/feesSettings",
-          //   icon: <PendingIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
-        {
-          name: "Internal Transfer",
-          path: "/manageUser/internalTransfer",
+          name: "View User",
+          path: "/manageUser/ViewUser",
           //   icon: <PendingIcon />,
           roles: ["DT", "SD", "WL", "PT"],
         },
@@ -68,12 +56,6 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
       icon: React.createElement(FundingSvgIcon, { color: "currentColor" }),
       roles: ["RT", "DT", "SD", "WL", "PT"],
       subItems: [
-        {
-          name: "Wallet To Bank",
-          path: "/funding/walletToBank",
-          //   icon: <ShowChartIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT"],
-        },
         {
           name: "Wallet To Bank Fund",
           path: "/funding/walletToBankFund",
@@ -97,6 +79,12 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           path: "/funding/fundReversal",
           //   icon: <InventoryIcon />,
           roles: ["DT", "SD", "WL", "PT"],
+        },
+        {
+          name: "Wallet To Bank",
+          path: "/funding/walletToBank",
+          //   icon: <ShowChartIcon />,
+          roles: ["RT", "DT", "SD", "WL", "PT"],
         },
       ],
     },

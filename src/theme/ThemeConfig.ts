@@ -24,6 +24,11 @@ declare module "@mui/material/styles" {
     gray: {
       DEFAULT: string;
       light: string;
+      dark: string;
+    };
+    greenColor: {
+      DEFAULT: string;
+      light: string;
     };
 
     authButtonBg: PaletteColor;
@@ -44,6 +49,11 @@ declare module "@mui/material/styles" {
       dark: string;
     };
     gray?: {
+      DEFAULT: string;
+      light: string;
+      dark: string;
+    };
+    greenColor?: {
       DEFAULT: string;
       light: string;
     };
@@ -128,6 +138,11 @@ export const createThemeOptions = (
       gray: {
         DEFAULT: adjustedColors.grayDefault,
         light: adjustedColors.grayLight,
+        dark: adjustedColors.grayDark,
+      },
+      greenColor: {
+        DEFAULT: adjustedColors.greenDefault,
+        light: adjustedColors.greenLight,
       },
     },
     typography: {
