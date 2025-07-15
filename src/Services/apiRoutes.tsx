@@ -14,7 +14,7 @@ export const API_ROUTES = {
   SET_PASSWORD: `${BASE_URL}/auth/set-password`,
 
   ///////////////// MAIN /////////////////////////////
-  PROFILE: `${BASE_URL}/api/dashboard/profile`,
+  USER_PROFILE: `${BASE_URL}/api/dashboard/profile`,
 
   ///////////////// FUNDING //////////////////////////
   PREFUND_REQUEST: `${BASE_URL}/api/prefund/request`,

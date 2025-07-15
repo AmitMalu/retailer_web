@@ -1,8 +1,6 @@
 import React from "react";
-import { Box, createTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../Redux/Store";
-import { createThemeOptions } from "../../../theme/ThemeConfig";
 import { BaseLayoutProps } from "@/Common/interface";
 
 export default function BaseLayout({
@@ -11,13 +9,6 @@ export default function BaseLayout({
   navbar,
   footer,
 }: BaseLayoutProps) {
-  const darkMode = useSelector((state: RootState) => state.ui.darkMode);
-  const { themeOption } = useSelector((state: RootState) => state.settings);
-  const theme = React.useMemo(() => {
-    const themeOptions = createThemeOptions(themeOption, darkMode);
-    return createTheme(themeOptions);
-  }, [darkMode, themeOption]);
-
   const { navbarPosition, sidebarStyle } = useSelector(
     (state: RootState) => state.settings
   );
@@ -25,82 +16,59 @@ export default function BaseLayout({
     sidebarStyle === "full" ? 180 : sidebarStyle === "compact" ? 50 : 0;
 
   return (
-    <>
-      <Box
-        sx={{
-          display: "flex",
-          minHeight: "100vh",
-          width: "100vw",
-          overflow: "hidden",
-          backgroundColor: theme.palette.background.navBackground,
+    <div
+      className="flex h-screen w-screen overflow-hidden bg-background-paper"
+      style={{
+        scrollbarWidth: "none",
+      }}
+    >
+      <div
+        className="flex fixed h-screen w-screen overflow-auto"
+        style={{
+          scrollbarWidth: "none",
         }}
       >
-        <Box
-          sx={{
-            flexShrink: 0,
-            position: "fixed",
-            top: 0,
-            left: 0,
-            bottom: 0,
-            overflowY: "auto",
-            // zIndex: 1200,
+        {sidebar}
+      </div>
+
+      <div
+        className="flex flex-1 flex-col min-h-screen"
+        style={{
+          scrollbarWidth: "none",
+          width: `calc(100vw - ${sidebarWidth}px)`,
+        }}
+      >
+        {/* Navbar - conditionally positioned */}
+        <div
+          className="flex w-full"
+          style={{
+            ...(navbarPosition === "fixed" && {
+              position: "fixed",
+              top: 0,
+              right: 0,
+              left: sidebarWidth,
+            }),
+            scrollbarWidth: "none",
           }}
         >
-          {sidebar}
-        </Box>
+          {navbar}
+        </div>
 
-        <Box
-          sx={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            width: `calc(100vw - ${sidebarWidth}px)`,
-            minHeight: "100vh",
+        <div
+          className="flex flex-1 flex-col h-screen"
+          style={{
+            marginLeft: `${sidebarWidth + 70}px`,
+            scrollbarWidth: "none",
           }}
         >
-          {/* Navbar - conditionally positioned */}
-          <Box
-            sx={{
-              width: "100%",
-              // zIndex: 1100,
-              ...(navbarPosition === "fixed" && {
-                position: "fixed",
-                top: 0,
-                right: 0,
-                left: sidebarWidth,
-              }),
-            }}
-          >
-            {navbar}
-          </Box>
+          {children}
+        </div>
 
-          <Box
-            component="main"
-            sx={{
-              flex: 1,
-              overflowY: "auto",
-              height: "100vh",
-              ml: `${sidebarWidth + 90}px`,
-            }}
-          >
-            <Box>{children}</Box>
-          </Box>
-
-          {/* Footer */}
-          {footer && (
-            <Box
-              sx={{
-                width: "100%",
-                position: "sticky",
-                bottom: 0,
-                zIndex: 1100,
-              }}
-            >
-              {footer}
-            </Box>
-          )}
-        </Box>
-      </Box>
-    </>
+        {/* Footer */}
+        {footer && (
+          <div className="flex w-full sticky bottom-0 z-[1100]">{footer}</div>
+        )}
+      </div>
+    </div>
   );
 }

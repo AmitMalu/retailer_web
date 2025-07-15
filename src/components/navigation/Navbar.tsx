@@ -13,8 +13,13 @@ import type { RootState } from "../../Redux/Store";
 import ImLogo from "@/assets/svg/imLogo";
 import { NavbarProps } from "@/Common/interface";
 import TextComponent from "../Atoms/TextComponent";
-import { RefreshSvgIcon, ThemeSettingSvgIcon } from "@/assets/svg";
-import { decryptData } from "@/Utils/helper";
+import {
+  ProfileSvgIcon,
+  RefreshSvgIcon,
+  ThemeSettingSvgIcon,
+} from "@/assets/svg";
+import { decryptData, useWalletBalance } from "@/Utils/helper";
+import { NavLink } from "react-router-dom";
 
 export default function Navbar({
   onMenuClick,
@@ -34,16 +39,19 @@ export default function Navbar({
   const walletBalance = apiResponses?.walletBalance
     ? decryptData(apiResponses?.walletBalance)
     : null;
+  const loginData = apiResponses?.loginData
+    ? decryptData(apiResponses?.loginData)
+    : null;
   const handleSettingsClick = () => {
     dispatch(toggleSettingsDrawer());
   };
-
+  const { WalletBalanceReq } = useWalletBalance();
   const WalletDisplay = ({
     title,
     amount,
   }: {
     title: string;
-    amount?: string;
+    amount?: number | null | undefined;
   }) => (
     <Paper
       elevation={0}
@@ -70,12 +78,13 @@ export default function Navbar({
         <TextComponent fontSize={14} fontWeight={500}>
           {title}
         </TextComponent>
+        {amount != null && amount >= 0 ? (
+          <TextComponent fontSize={14} fontWeight={400}>
+            -
+          </TextComponent>
+        ) : null}
 
-        <TextComponent fontSize={14} fontWeight={600}>
-          -
-        </TextComponent>
-
-        <TextComponent fontSize={14} fontWeight={600}>
+        <TextComponent fontSize={14} fontWeight={700}>
           {amount}
         </TextComponent>
       </Box>
@@ -129,7 +138,7 @@ export default function Navbar({
                 </Stack>
                 <IconButton
                   color="inherit"
-                  onClick={() => window.location.reload()}
+                  onClick={() => WalletBalanceReq(loginData?.hierarchyId)}
                   title="Refresh"
                   className="border border-red"
                   sx={{
@@ -149,6 +158,11 @@ export default function Navbar({
             >
               <ThemeSettingSvgIcon color={theme.palette.red.DEFAULT} />
             </IconButton>
+            <NavLink to="/settings/myProfile">
+              <div className="cursor-pointer bg-red-light p-2 rounded-full ">
+                <ProfileSvgIcon color={theme.palette.red.DEFAULT} />
+              </div>
+            </NavLink>
           </div>
         </div>
       </AppBar>

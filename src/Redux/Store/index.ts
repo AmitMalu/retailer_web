@@ -5,12 +5,14 @@ import settingsReducer from "../../store/slices/settingsSlice";
 import apiReducer from "../Reducers/apiReducer";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import navigationReducer from "../Reducers/navigationReducer";
 
 const rootReducer = combineReducers({
   ui: uiReducer,
   products: productReducer,
   settings: settingsReducer,
   apiResponse: apiReducer,
+  navigation: navigationReducer,
 });
 
 const persistConfig = {

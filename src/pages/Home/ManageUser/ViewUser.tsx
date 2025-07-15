@@ -23,6 +23,7 @@ import {
 } from "@/assets/svg";
 import TableComponent from "@/components/Molecules/TableComponent";
 import ColumsSelectionModal from "@/components/Molecules/ColumsSelectionModal";
+import moment from "moment";
 
 const ViewUser = () => {
   const theme = useTheme();
@@ -67,17 +68,46 @@ const ViewUser = () => {
 
   const tableColumns = [
     {
-      key: "parentAccount",
+      key: "network",
       label: "Network",
-      searchKey: "parentAccount",
+      render: (row: ViewUserList) => (
+        <div className="flex items-center justify-center">
+          <TextComponent
+            color={theme.palette.greenColor.DEFAULT}
+            fontSize={12}
+            fontWeight={400}
+          >
+            {row.toString() || "-"}
+          </TextComponent>
+        </div>
+      ),
+      searchKey: "network",
       sortable: false,
     },
-    // {
-    //   key: "userId",
-    //   label: "User ID",
-    //   searchKey: "userId",
-    //   sortable: false,
-    // },
+    {
+      key: "createdOn",
+      label: "Created On",
+      render: (row: ViewUserList) => (
+        <div className="flex items-center justify-center">
+          <TextComponent
+            color={theme.palette.background.light}
+            fontSize={12}
+            fontWeight={400}
+          >
+            {moment(row.createdOn).format("YYYY-MM-DD") || "-"}
+          </TextComponent>
+        </div>
+      ),
+      searchKey: "createdOn",
+      type: "date",
+      sortable: false,
+    },
+    {
+      key: "userId",
+      label: "User ID",
+      searchKey: "userId",
+      sortable: false,
+    },
     {
       key: "name",
       label: "User Name",
@@ -111,7 +141,7 @@ const ViewUser = () => {
       key: "status",
       label: "Status",
       render: (row: ViewUserList) => (
-        <div className="flex items-center bg-GreenColor-light px-1 py-1 rounded text-center justify-center">
+        <div className="flex items-center justify-self-center w-max bg-GreenColor-light px-1 py-1 rounded text-center justify-center">
           <TextComponent
             color={theme.palette.greenColor.DEFAULT}
             fontSize={12}
@@ -280,15 +310,17 @@ const ViewUser = () => {
     <div className="">
       <div className="mb-4">
         <div className="flex w-full items-center justify-between gap-2">
-          <div className="flex w-[15%] items-center rounded-lg border bg-red-light p-2 shadow-lg">
-            <ViewUserSvgIcon color={theme.palette.red.DEFAULT} />
-            <TextComponent
-              color={theme.palette.red.DEFAULT}
-              fontSize={14}
-              fontWeight={600}
-            >
-              View User
-            </TextComponent>
+          <div className="flex w-full items-center justify-start gap-2">
+            <div className="flex w-max items-center justify-center rounded-lg border gap-2 bg-red-light p-2 shadow-lg">
+              <ViewUserSvgIcon color={theme.palette.red.DEFAULT} />
+              <TextComponent
+                color={theme.palette.red.DEFAULT}
+                fontSize={14}
+                fontWeight={600}
+              >
+                View User
+              </TextComponent>
+            </div>
           </div>
           <div className="flex w-full items-center justify-end gap-2">
             <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px] ">
@@ -321,7 +353,7 @@ const ViewUser = () => {
                 Cols
               </TextComponent>
             </div>
-            <div className="flex w-[15%] items-center justify-center rounded-lg border bg-red-light p-2 shadow-lg">
+            <div className="flex w-max items-center justify-center rounded-lg border bg-red-light p-2 shadow-lg">
               <Menu shadow="md" width={140}>
                 <Menu.Target>
                   <div className="flex items-center gap-2">

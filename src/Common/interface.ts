@@ -1,7 +1,6 @@
 import { TextInputProps } from "@mantine/core";
 import { ReactNode, ChangeEvent, MouseEventHandler } from "react";
 import type { ThemeOption } from "../../src/store/slices/settingsSlice";
-import { SvgIconComponent } from "@mui/icons-material";
 
 export type CustomError = {
   status?: number;
@@ -87,6 +86,7 @@ export type MenuItem = {
 export const SAVE_API_RESPONSE = "SAVE_API_RESPONSE";
 export const CLEAR_API_RESPONSE = "CLEAR_API_RESPONSE";
 export const CLEAR_ALL_RESPONSES = "CLEAR_ALL_RESPONSES";
+export const SET_CURRENT_ROUTE = "route/SET_CURRENT_ROUTE";
 
 export type SaveApiResponseAction = {
   type: typeof SAVE_API_RESPONSE;
@@ -101,11 +101,16 @@ export type ClearApiResponseAction = {
 export type ClearAllResponsesAction = {
   type: typeof CLEAR_ALL_RESPONSES;
 };
+export interface SetCurrentRouteAction {
+  type: typeof SET_CURRENT_ROUTE;
+  payload: string;
+}
 
 export type ApiActionTypes =
   | SaveApiResponseAction
   | ClearApiResponseAction
-  | ClearAllResponsesAction;
+  | ClearAllResponsesAction
+  | SetCurrentRouteAction;
 
 export type CustomTextInputProps = Omit<
   TextInputProps,
@@ -460,3 +465,16 @@ export type ViewUserAPIProps = {
   id: string;
   search?: string;
 };
+
+export type TicketingSystemProps = {
+  transactionId: string;
+  issueType: string;
+  description: string;
+  subProductName: string;
+  email: string;
+  mobileNumber: string;
+};
+
+export type MyBanksList = Record<string, any>;
+export type KycDocList = Record<string, any>;
+export type UserProfileData = Record<string, any>;

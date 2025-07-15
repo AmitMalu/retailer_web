@@ -1,5 +1,5 @@
 import React from "react";
-import { TextField, Box, Typography } from "@mui/material";
+import { TextField, Box, useTheme } from "@mui/material";
 import { CustomTextareaProps } from "@/Common/interface";
 
 const TextareaComponent: React.FC<CustomTextareaProps> = ({
@@ -19,46 +19,48 @@ const TextareaComponent: React.FC<CustomTextareaProps> = ({
   style,
   variant = "outlined",
   withAsterisk = false,
-  rows,
-  minRows = 3,
-  maxRows = 5,
+  rows = 8,
+  minRows = 6,
+  maxRows = 12,
   helperText,
   showCharacterCount = false,
   ...rest
 }) => {
+  const theme = useTheme();
+
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(event.target.value);
   };
 
   return (
-    <Box sx={{ width: "100%" }} className={className} style={style}>
-      {label && (
-        <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
-          {label}
-          {withAsterisk && <span style={{ color: "red" }}>*</span>}
-        </Typography>
-      )}
+    <Box
+      sx={{
+        mt: 0.125,
+        mb: 0.125,
+        width: "100%",
+      }}
+      className={className}
+      style={style}
+    >
       <TextField
+        variant={variant}
         fullWidth
         multiline
-        variant={variant}
+        rows={rows}
+        label={label}
         placeholder={placeholder}
-        value={value || ""}
+        value={value}
         onChange={handleChange}
         onBlur={onBlur}
-        disabled={disabled}
         error={!!error}
+        disabled={disabled}
+        required={withAsterisk}
         name={name}
         id={id || name}
         autoComplete={autoComplete}
-        // Use either rows or minRows/maxRows based on which is provided
-        {...(rows ? { rows } : { minRows, maxRows })}
         inputProps={{
           maxLength,
           minLength,
-          style: {
-            resize: "vertical",
-          },
         }}
         helperText={
           <Box
@@ -78,10 +80,65 @@ const TextareaComponent: React.FC<CustomTextareaProps> = ({
         }
         FormHelperTextProps={{
           sx: {
-            marginLeft: 0,
-            marginRight: 0,
-            display: "flex",
-            justifyContent: "space-between",
+            textAlign: "right",
+            margin: "4px 0 0 0",
+            lineHeight: 1,
+          },
+        }}
+        sx={{
+          "& .MuiInputLabel-root": {
+            color: theme.palette.placeholder,
+            fontSize: "16px",
+            fontWeight: 400,
+            fontFamily: '"Poppins", sans-serif',
+            "&.Mui-focused": {
+              color: theme.palette.text.primary,
+            },
+            "&.Mui-error": {
+              color: theme.palette.error.main,
+            },
+          },
+          "& .MuiOutlinedInput-root": {
+            borderColor: theme.palette.gray.DEFAULT,
+            borderRadius: "6px !important",
+            alignItems: "flex-start",
+            padding: "8.5px 14px",
+            "& textarea": {
+              padding: 0,
+              fontFamily: '"Poppins", sans-serif',
+              fontSize: "16px",
+              color: theme.palette.text.primary,
+              "&::placeholder": {
+                color: theme.palette.placeholder,
+                opacity: 1,
+              },
+            },
+            "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+              borderColor: theme.palette.error.main,
+              borderRadius: "6px !important",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: error
+                ? theme.palette.error.main
+                : theme.palette.background.blackColor,
+              borderWidth: "1px",
+              borderRadius: "6px !important",
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: error
+                ? theme.palette.error.main
+                : theme.palette.background.blackColor,
+            },
+            "& fieldset": {
+              borderColor: theme.palette.gray.DEFAULT,
+              borderRadius: "6px !important",
+            },
+            "&:hover fieldset": {
+              borderColor: error
+                ? theme.palette.error.main
+                : theme.palette.background.blackColor,
+              borderRadius: "6px !important",
+            },
           },
         }}
         {...rest}

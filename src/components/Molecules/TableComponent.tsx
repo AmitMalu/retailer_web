@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
 import { TableProps } from "@/Common/interface";
 import TextComponent from "../Atoms/TextComponent";
 import CustomDateComponent from "../Atoms/CustomDateComponent";
@@ -53,9 +59,11 @@ const TableComponent: React.FC<TableProps> = ({
   };
 
   const sortedData = useMemo(() => {
-    if (!sortConfig.key || sortConfig.direction === null) return data;
+    const dataArray = Array.isArray(data) ? data : [];
 
-    return [...data].sort((a, b) => {
+    if (!sortConfig.key || sortConfig.direction === null) return dataArray;
+
+    return [...dataArray].sort((a, b) => {
       const aValue = a[sortConfig.key];
       const bValue = b[sortConfig.key];
 
@@ -75,8 +83,12 @@ const TableComponent: React.FC<TableProps> = ({
     });
   }, [data, sortConfig.key, sortConfig.direction]);
 
-  const paginatedData = sortedData.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedData = useMemo(() => {
+    return sortedData.slice(startIndex, startIndex + itemsPerPage);
+  }, [sortedData, startIndex, itemsPerPage]);
+
   const [prevDataLength, setPrevDataLength] = useState(data.length);
+  const prevPaginatedData = useRef(paginatedData);
 
   useEffect(() => {
     if (data.length !== prevDataLength) {
@@ -85,9 +97,20 @@ const TableComponent: React.FC<TableProps> = ({
     }
   }, [data, prevDataLength]);
 
-  useEffect(() => {
-    onCurrentPageData?.(paginatedData);
+  // Memoize the onCurrentPageData callback
+  const handleCurrentPageData = useCallback(() => {
+    if (
+      JSON.stringify(prevPaginatedData.current) !==
+      JSON.stringify(paginatedData)
+    ) {
+      onCurrentPageData?.(paginatedData);
+      prevPaginatedData.current = paginatedData;
+    }
   }, [paginatedData, onCurrentPageData]);
+
+  useEffect(() => {
+    handleCurrentPageData();
+  }, [handleCurrentPageData]);
 
   const parseDateString = (dateStr: string): Date | null => {
     if (!dateStr) return null;
@@ -279,7 +302,7 @@ const TableComponent: React.FC<TableProps> = ({
                                 handleSearch(column.key, "");
                               }
                             }}
-                            className="w-full font-medium"
+                            className="w-full font-medium "
                             dateFormat="DD-MM-YYYY"
                           />
                         ) : column.type === "time" ? (
@@ -293,14 +316,16 @@ const TableComponent: React.FC<TableProps> = ({
                             className="w-full font-medium"
                           />
                         ) : (
-                          <TextInputComponent
-                            value={searchValues[column.key] || ""}
-                            onChange={(e) =>
-                              handleSearch(column.key, e.target.value)
-                            }
-                            withAsterisk
-                            className="w-max font-medium"
-                          />
+                          <div>
+                            <TextInputComponent
+                              value={searchValues[column.key] || ""}
+                              onChange={(e) =>
+                                handleSearch(column.key, e.target.value)
+                              }
+                              withAsterisk
+                              className="w-max font-medium h-5"
+                            />
+                          </div>
                         )}
                       </Table.Th>
                     );
@@ -308,7 +333,7 @@ const TableComponent: React.FC<TableProps> = ({
               </Table.Tr>
             )}
           </Table.Thead>
-          {sortedData.length >= 0 ? (
+          {sortedData.length > 0 ? (
             <Table.Tbody>{rows}</Table.Tbody>
           ) : (
             <Table.Caption>
@@ -338,8 +363,8 @@ const TableComponent: React.FC<TableProps> = ({
       <div className="flex w-full items-center justify-between gap-2 rounded-lg border border-whiteColor bg-whiteColor px-2 shadow-xl">
         <div className="w-1/2">
           {data && data.length > 0 && (
-            <div className="flex items-center justify-start gap-4 w-full">
-              <div className="w-[20%] ">
+            <div className="flex items-center justify-start gap-4 w-full m-2">
+              <div>
                 <DropdownComponent
                   data={[
                     { value: "5", label: "5" },
@@ -360,6 +385,7 @@ const TableComponent: React.FC<TableProps> = ({
                       setCurrentPage(1);
                     }
                   }}
+                  className="w-10 h-10 "
                 />
               </div>
 
