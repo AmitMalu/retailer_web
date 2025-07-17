@@ -271,6 +271,10 @@ export type TableProps = {
   onSearch?: (columnKey: string, value: string) => void;
   showSearch?: boolean;
   keyField?: string;
+  page?: number;
+  size?: number;
+  onPageChange?: (size: number) => void;
+  onPageSizeChange?: (size: number) => void;
 };
 
 export type CustomTextareaProps = {
@@ -478,3 +482,46 @@ export type TicketingSystemProps = {
 export type MyBanksList = Record<string, any>;
 export type KycDocList = Record<string, any>;
 export type UserProfileData = Record<string, any>;
+export type CommissionData = Record<string, any>;
+
+export type CommissionAndChargesParams = {
+  fromDate: string;
+  toDate: string;
+  hierarchyId: string;
+  walletType: string;
+  subProductName: string;
+  reportType: string;
+  page: number;
+  size: number;
+  [key: string]: any;
+};
+
+export type WalletParams = {
+  hierarchyId: string;
+  fromDate: string;
+  toDate: string;
+  subProductName: string;
+  walletType: string;
+  status: string;
+  page: number;
+  size: number;
+  [key: string]: any;
+};
+
+export type WalletData = Record<string, any>;
+
+export type NetworkTransactionParams = {
+  loginHierarchyId: string;
+  fromDate: string;
+  toDate: string;
+  subProductName: string;
+  partnerId: string;
+  distributorId: string;
+  retailerId: string;
+  status: string;
+  page: number;
+  size: number;
+  [key: string]: any;
+};
+
+export type NetworkTransactionData = Record<string, any>;

@@ -69,6 +69,11 @@ export const formatDate = (date: string | Date) => {
   return `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}`;
 };
 
+export const formatYMDdate = (date: string | Date) => {
+  const d = new Date(date);
+  return `${String(d.getFullYear())}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
 export const useWalletBalance = () => {
   const dispatch = useDispatch<AppDispatch>();
   const WalletBalanceReq = async (id: string) => {
@@ -86,4 +91,26 @@ export const useWalletBalance = () => {
   };
 
   return { WalletBalanceReq };
+};
+
+export const isSameOrBefore = (input: Date | null, compareTo: Date | null) => {
+  if (!input || !compareTo) return true;
+  return (
+    input.getFullYear() < compareTo.getFullYear() ||
+    (input.getFullYear() === compareTo.getFullYear() &&
+      (input.getMonth() < compareTo.getMonth() ||
+        (input.getMonth() === compareTo.getMonth() &&
+          input.getDate() <= compareTo.getDate())))
+  );
+};
+
+export const isSameOrAfter = (input: Date | null, compareTo: Date | null) => {
+  if (!input || !compareTo) return true;
+  return (
+    input.getFullYear() > compareTo.getFullYear() ||
+    (input.getFullYear() === compareTo.getFullYear() &&
+      (input.getMonth() > compareTo.getMonth() ||
+        (input.getMonth() === compareTo.getMonth() &&
+          input.getDate() >= compareTo.getDate())))
+  );
 };

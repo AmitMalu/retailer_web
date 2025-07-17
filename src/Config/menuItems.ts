@@ -95,8 +95,14 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
       roles: ["DT", "RT", "SD", "WL", "PT"],
       subItems: [
         {
-          name: "Transaction History",
-          path: "/reports/transactionHistory",
+          name: "Wallet Report",
+          path: "/reports/WalletReport",
+          //   icon: <PendingIcon />,
+          roles: ["DT", "RT", "SD", "WL", "PT"],
+        },
+        {
+          name: "Network Transaction",
+          path: "/reports/networkTransaction",
           //   icon: <PendingIcon />,
           roles: ["DT", "RT", "SD", "WL", "PT"],
         },

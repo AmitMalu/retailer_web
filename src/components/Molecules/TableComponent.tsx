@@ -18,19 +18,21 @@ import TextInputComponent from "../Atoms/TextInputComponent";
 const TableComponent: React.FC<TableProps> = ({
   data,
   columns,
-  // height,
   caption,
   onSelectRow,
   onCurrentPageData,
   onSearch,
   showSearch = false,
   keyField = "id",
+  page = 1,
+  size = 10,
+  onPageChange,
+  onPageSizeChange,
 }) => {
   const theme = useTheme();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const startIndex = (currentPage - 1) * itemsPerPage;
+
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
+  const startIndex = (page - 1) * size;
 
   const handleSearch = (columnKey: string, value: string) => {
     setSearchValues((prev) => ({ ...prev, [columnKey]: value }));
@@ -84,20 +86,11 @@ const TableComponent: React.FC<TableProps> = ({
   }, [data, sortConfig.key, sortConfig.direction]);
 
   const paginatedData = useMemo(() => {
-    return sortedData.slice(startIndex, startIndex + itemsPerPage);
-  }, [sortedData, startIndex, itemsPerPage]);
+    return sortedData.slice(startIndex, startIndex + size);
+  }, [sortedData, startIndex, size]);
 
-  const [prevDataLength, setPrevDataLength] = useState(data.length);
   const prevPaginatedData = useRef(paginatedData);
 
-  useEffect(() => {
-    if (data.length !== prevDataLength) {
-      setCurrentPage(1);
-      setPrevDataLength(data.length);
-    }
-  }, [data, prevDataLength]);
-
-  // Memoize the onCurrentPageData callback
   const handleCurrentPageData = useCallback(() => {
     if (
       JSON.stringify(prevPaginatedData.current) !==
@@ -182,7 +175,7 @@ const TableComponent: React.FC<TableProps> = ({
   return (
     <>
       <div
-        className="my-6 overflow-auto rounded-lg border border-inActive shadow-xl"
+        className="my-6 overflow-auto rounded-lg border border-gray-light shadow-xl"
         style={{ position: "relative", scrollbarWidth: "none" }}
       >
         <Table
@@ -208,11 +201,7 @@ const TableComponent: React.FC<TableProps> = ({
           }}
         >
           <Table.Thead>
-            <Table.Tr
-              style={{
-                backgroundColor: theme.palette.gray.dark,
-              }}
-            >
+            <Table.Tr style={{ backgroundColor: theme.palette.gray.dark }}>
               {columns
                 .filter(
                   (column) =>
@@ -231,7 +220,7 @@ const TableComponent: React.FC<TableProps> = ({
                         right: isActionColumn ? 0 : "auto",
                         zIndex: isActionColumn ? 3 : 2,
                       }}
-                      className={`items-center justify-center bg-tablebg text-center ${
+                      className={`items-center justify-center bg-background-paper text-center ${
                         column.sortable ? "cursor-pointer" : "cursor-default"
                       }`}
                     >
@@ -251,7 +240,7 @@ const TableComponent: React.FC<TableProps> = ({
                           {column.label}
                         </TextComponent>
                         {column.sortable && (
-                          <span className="text-whiteColor">||</span>
+                          <span className="text-background-light">||</span>
                         )}
                       </div>
                     </Table.Th>
@@ -346,7 +335,6 @@ const TableComponent: React.FC<TableProps> = ({
               </TextComponent>
             </Table.Caption>
           )}
-
           {caption && (
             <Table.Caption>
               <TextComponent
@@ -358,63 +346,55 @@ const TableComponent: React.FC<TableProps> = ({
               </TextComponent>
             </Table.Caption>
           )}
+          {/* <Table.Tbody>
+            {paginatedData.map((item, index) => (
+              <Table.Tr key={item[keyField] ?? index}>
+                {columns.map((column) => (
+                  <Table.Td key={`${item[keyField]}-${column.key}`}>
+                    {item[column.key] ?? "-"}
+                  </Table.Td>
+                ))}
+              </Table.Tr>
+            ))}
+          </Table.Tbody> */}
         </Table>
       </div>
-      <div className="flex w-full items-center justify-between gap-2 rounded-lg border border-whiteColor bg-whiteColor px-2 shadow-xl">
-        <div className="w-1/2">
-          {data && data.length > 0 && (
-            <div className="flex items-center justify-start gap-4 w-full m-2">
-              <div>
-                <DropdownComponent
-                  data={[
-                    { value: "5", label: "5" },
-                    { value: "10", label: "10" },
-                    { value: "20", label: "20" },
-                    { value: "50", label: "50" },
-                    { value: "100", label: "100" },
-                    { value: "500", label: "500" },
-                  ]}
-                  value={itemsPerPage}
-                  onChange={(value) => {
-                    const selected = Array.isArray(value) ? value[0] : value;
-                    const numeric = Number(selected);
-                    if (!selected || isNaN(numeric)) return;
 
-                    if (numeric !== itemsPerPage) {
-                      setItemsPerPage(numeric);
-                      setCurrentPage(1);
-                    }
-                  }}
-                  className="w-10 h-10 "
-                />
-              </div>
-
-              <TextComponent
-                color={theme.palette.background.light}
-                fontSize={12}
-                fontWeight={400}
-                className="flex w-full items-center justify-start"
-              >{`Displaying ${startIndex + 1} - ${
-                startIndex + paginatedData.length
-              } of ${data.length} records`}</TextComponent>
-            </div>
-          )}
-        </div>
-        <div>
-          {data && data.length > itemsPerPage && (
-            <div className="flex justify-center p-2">
-              <Pagination
-                value={currentPage}
-                onChange={setCurrentPage}
-                total={Math.ceil(sortedData.length / itemsPerPage)}
-                autoContrast
-                color={theme.palette.red.DEFAULT}
-                size="sm"
-                radius="md"
+      <div className="flex justify-between items-center mt-4">
+        {sortedData.length > 0 && (
+          <div className="flex items-center justify-start gap-4 w-full m-2">
+            <div className="flex items-center gap-3">
+              <DropdownComponent
+                data={[
+                  { value: "5", label: "5" },
+                  { value: "10", label: "10" },
+                  { value: "20", label: "20" },
+                  { value: "50", label: "50" },
+                  { value: "100", label: "100" },
+                ]}
+                value={size}
+                onChange={(value) => {
+                  const numeric = Number(value);
+                  if (!isNaN(numeric)) {
+                    onPageSizeChange?.(numeric);
+                  }
+                }}
               />
+              <TextComponent fontSize={12} fontWeight={400}>
+                {`Showing ${startIndex + 1}-${startIndex + paginatedData.length} of ${
+                  data.length
+                } Records`}
+              </TextComponent>
             </div>
-          )}
-        </div>
+            <Pagination
+              value={page}
+              onChange={onPageChange}
+              total={Math.ceil(data.length / size)}
+              color={theme.palette.red.DEFAULT}
+              size="sm"
+            />
+          </div>
+        )}
       </div>
     </>
   );

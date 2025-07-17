@@ -1,14 +1,17 @@
 import {
+  CommissionAndChargesParams,
   ForgotPasswordRequestProps,
   FundReversalProps,
   FundTransferProps,
   LoginRequest,
+  NetworkTransactionParams,
   OtpRequestProps,
   ResendOtpRequestProps,
   SetPasswordRequestProps,
   TokenGenerationRequest,
   VerifyTokenRequest,
   ViewUserAPIProps,
+  WalletParams,
   WalletToWalletProps,
 } from "@/Common/interface";
 import api from ".";
@@ -152,3 +155,42 @@ export const Create_Retailer = async (data: FormData) =>
     data,
     await createMultipartHeaders()
   );
+
+export const Commission_And_Charges_Report = async (
+  params: Record<string, string>,
+  bodyRequest: CommissionAndChargesParams
+) => {
+  const queryParams = new URLSearchParams(params).toString();
+
+  return await api.post(
+    `${API_ROUTES.COMMISSION_AND_CHARGES}?${queryParams}`,
+    bodyRequest,
+    await createHeaders()
+  );
+};
+
+export const Wallet_Report = async (
+  params: Record<string, string>,
+  bodyRequest: WalletParams
+) => {
+  const queryParams = new URLSearchParams(params).toString();
+
+  return await api.post(
+    `${API_ROUTES.WALLET_REPORT}?${queryParams}`,
+    bodyRequest,
+    await createHeaders()
+  );
+};
+
+export const Network_Transaction_Report = async (
+  params: Record<string, string>,
+  bodyRequest: NetworkTransactionParams
+) => {
+  const queryParams = new URLSearchParams(params).toString();
+
+  return await api.post(
+    `${API_ROUTES.NETWORK_TRANSACTION_REPORT}?${queryParams}`,
+    bodyRequest,
+    await createHeaders()
+  );
+};

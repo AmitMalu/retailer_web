@@ -23,9 +23,10 @@ const WalletToBankFund = lazy(
 const WalletToWallet = lazy(
   () => import("@/pages/Home/Funding/WalletToWallet")
 );
-const Transaction = lazy(
-  () => import("@/pages/Home/Reports/TransactionHistory")
+const NetworkTransaction = lazy(
+  () => import("@/pages/Home/Reports/NetworkTransaction")
 );
+const WalletReport = lazy(() => import("@/pages/Home/Reports/WalletReport"));
 const AccountSummary = lazy(
   () => import("@/pages/Home/Reports/AccountSummary")
 );
@@ -265,6 +266,23 @@ const RouterOutlet = () => {
             />
           </Route>
           <Route
+            path="reports/networkTransaction"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <NetworkTransaction />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
             path="reports/accountSummary"
             element={
               <ProtectedRoute>
@@ -282,7 +300,7 @@ const RouterOutlet = () => {
             />
           </Route>
           <Route
-            path="reports/transactionHistory"
+            path="reports/WalletReport"
             element={
               <ProtectedRoute>
                 <Outlet />
@@ -293,7 +311,7 @@ const RouterOutlet = () => {
               index
               element={
                 <MainLayout>
-                  <Transaction />
+                  <WalletReport />
                 </MainLayout>
               }
             />
