@@ -360,9 +360,9 @@ const TableComponent: React.FC<TableProps> = ({
         </Table>
       </div>
 
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex justify-between items-center mt-4 bg-white shadow-lg">
         {sortedData.length > 0 && (
-          <div className="flex items-center justify-start gap-4 w-full m-2">
+          <div className="flex items-center justify-between gap-4 w-full m-2">
             <div className="flex items-center gap-3">
               <DropdownComponent
                 data={[

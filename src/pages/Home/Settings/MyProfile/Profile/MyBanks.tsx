@@ -38,23 +38,23 @@ const MyBanks = () => {
         </div>
       ),
     },
-    {
-      key: "action",
-      label: "Action",
-      sortable: false,
-      render: (_value: any, _index: number, row: any) => (
-        <div className="flex w-max items-center justify-between gap-2 justify-self-center">
-          <UnstyledButton
-            onClick={() => {
-              // setSelectedRowData(row);
-              // setShowDrawerForm(true);
-            }}
-          >
-            <ViewDocSvgIcon color={theme.palette.red.DEFAULT} />
-          </UnstyledButton>
-        </div>
-      ),
-    },
+    // {
+    //   key: "action",
+    //   label: "Action",
+    //   sortable: false,
+    //   render: (_value: any, _index: number, row: any) => (
+    //     <div className="flex w-max items-center justify-between gap-2 justify-self-center">
+    //       <UnstyledButton
+    //         onClick={() => {
+    //           // setSelectedRowData(row);
+    //           // setShowDrawerForm(true);
+    //         }}
+    //       >
+    //         <ViewDocSvgIcon color={theme.palette.red.DEFAULT} />
+    //       </UnstyledButton>
+    //     </div>
+    //   ),
+    // },
   ];
 
   console.log(UserProfileData?.myBanks, "UserProfileData?.myBanks");

@@ -181,18 +181,6 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
       roles: ["RT", "DT", "SD", "WL", "PT"],
       subItems: [
         {
-          name: "My Profile",
-          path: "/settings/myProfile",
-          //   icon: <ShowChartIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT"],
-        },
-        {
-          name: "Change Password",
-          path: "/settings/changePassword",
-          //   icon: <InventoryIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT"],
-        },
-        {
           name: "Change TPIN",
           path: "/settings/changeTPIN",
           //   icon: <InventoryIcon />,

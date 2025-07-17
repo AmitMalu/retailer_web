@@ -332,6 +332,15 @@ export type SetPasswordRequestProps = {
   reEnteredPassword: string;
 };
 
+export type ChangePasswordRequestProps = {
+  userName: string;
+  otp: string;
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+  step: string;
+};
+
 export type ForgotPasswordRequestProps = {
   userName: string;
 };

@@ -57,9 +57,6 @@ const DownLineBalance = lazy(
   () => import("@/pages/Home/Reports/DownLineBalance")
 );
 const MyProfile = lazy(() => import("@/pages/Home/Settings/MyProfile"));
-const ChangePassword = lazy(
-  () => import("@/pages/Home/Settings/ChangePassword")
-);
 const ChangeTPIN = lazy(() => import("@/pages/Home/Settings/ChangeTPin"));
 const MyCertificate = lazy(() => import("@/pages/Home/Settings/MyCertificate"));
 const LowBalanceAlert = lazy(
@@ -504,23 +501,7 @@ const RouterOutlet = () => {
               }
             />
           </Route>
-          <Route
-            path="settings/changePassword"
-            element={
-              <ProtectedRoute>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <ChangePassword />
-                </MainLayout>
-              }
-            />
-          </Route>
+
           <Route
             path="settings/changeTPIN"
             element={

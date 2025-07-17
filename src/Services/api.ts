@@ -1,4 +1,5 @@
 import {
+  ChangePasswordRequestProps,
   CommissionAndChargesParams,
   ForgotPasswordRequestProps,
   FundReversalProps,
@@ -82,6 +83,9 @@ export const Resend_Otp = async (data: ResendOtpRequestProps) =>
 
 export const Set_Password = async (data: SetPasswordRequestProps) =>
   await api.post(API_ROUTES.SET_PASSWORD, data);
+
+export const Change_Password = async (data: ChangePasswordRequestProps) =>
+  await api.post(API_ROUTES.CHANGE_PASSWORD, data, await createHeaders());
 
 export const Prefund_Request = async (data: FormData) =>
   await api.post(
