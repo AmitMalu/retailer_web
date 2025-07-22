@@ -52,10 +52,10 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
 
   return (
     <Box
-      className={className}
       sx={{
         mb: 0.125,
         width: "100%",
+
         position: "relative",
       }}
     >
@@ -66,6 +66,7 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
         required={withAsterisk}
         size="small"
         variant="outlined"
+        className={className}
         sx={{
           mt: 0,
           "& .MuiInputLabel-root": {
@@ -114,6 +115,7 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
           multiple={multiple}
           sx={{
             width: "100%",
+            height: "100%",
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
               borderColor: error ? "error.main" : "#000 !important",
               borderWidth: "1px !important",

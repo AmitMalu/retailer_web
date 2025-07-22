@@ -79,13 +79,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
   const validTextFieldProps = getValidTextFieldProps(rest);
 
   return (
-    <Box
-      sx={{
-        mt: 0.125,
-        mb: 0.125,
-        width: "100%",
-      }}
-    >
+    <div className="w-full">
       <TextField
         variant={getMuiVariant()}
         fullWidth
@@ -123,6 +117,8 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
         }}
         sx={{
           "& .MuiInputLabel-root": {
+            width: "100%",
+            height: "100%",
             color: theme.palette.placeholder,
             fontSize: "16px",
             fontWeight: 400,
@@ -172,7 +168,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
         }}
         {...validTextFieldProps}
       />
-    </Box>
+    </div>
   );
 };
 

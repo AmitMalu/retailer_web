@@ -48,14 +48,15 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
     ? decryptData(apiResponses.loginData)
     : null;
   const theme = useTheme();
-  const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   if (!loginData) return null;
 
   const isCompact = sidebarStyle === "compact";
   const drawerWidth = isCompact ? 60 : "auto";
-
+  const selectedRoute = useSelector(
+    (state: RootState) => state.navigation.selectedRoute
+  );
   // State for submenu popover
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [activeSubMenu, setActiveSubMenu] = useState<MenuItem[]>([]);
@@ -66,18 +67,19 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
   // Update the function signature to accept MenuItem instead of MenuItem[]
   const handleSubMenuOpen = (
     event: React.MouseEvent<HTMLElement>,
-    item: MenuItem // Changed from subItems: MenuItem[]
+    item: MenuItem
   ) => {
+    // If the item has a path and no subitems, let the Link handle navigation
     if (
       item.path &&
       item.path !== "#" &&
       (!item.subItems || item.subItems.length === 0)
     ) {
       if (isMobile && onClose) onClose();
-      return; // Let the Link handle the navigation
+      return;
     }
 
-    // If it has subitems, open the submenu
+    // If it has subitems, toggle the submenu
     if (item.subItems && item.subItems.length > 0) {
       event.preventDefault();
       event.stopPropagation();
@@ -89,7 +91,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
       }
 
       setAnchorEl(event.currentTarget);
-      setActiveSubMenu(item.subItems); // Pass the subItems array here
+      setActiveSubMenu(item.subItems);
       const rect = event.currentTarget.getBoundingClientRect();
       setSubMenuPosition({
         top: rect.top,
@@ -121,6 +123,9 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
         height: "100vh",
         justifyContent: "center",
         alignItems: "center",
+      }}
+      style={{
+        scrollbarWidth: "none",
       }}
     >
       <Drawer
@@ -162,9 +167,9 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
             {menuItems.map((item, index) => {
               const hasSubItems = item.subItems && item.subItems.length > 0;
               const isActive =
-                location.pathname === item.path ||
+                selectedRoute === item.path ||
                 (item.subItems?.some((subItem) =>
-                  location.pathname.startsWith(subItem.path)
+                  selectedRoute.startsWith(subItem.path)
                 ) ??
                   false);
 
@@ -279,7 +284,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
               component={Link}
               to={subItem.path}
               onClick={handleMenuItemClick}
-              selected={location.pathname === subItem.path}
+              selected={selectedRoute === subItem.path}
               sx={{
                 paddingLeft: 2,
                 borderTopLeftRadius: 12,

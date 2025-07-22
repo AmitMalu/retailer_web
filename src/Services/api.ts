@@ -99,8 +99,8 @@ export const Wallet_To_Wallet = async (data: WalletToWalletProps) =>
 export const Wallet_Balance = async (id: string) =>
   await api.get(`${API_ROUTES.WALLET_BALANCE}/${id}`, await createHeaders());
 
-export const Profile = async (id: string) =>
-  await api.get(`${API_ROUTES.PROFILE}/${id}`, await createHeaders());
+export const User_Profile = async (id: string) =>
+  await api.get(`${API_ROUTES.USER_PROFILE}/${id}`, await createHeaders());
 
 export const Child_Member_List = async (params: ViewUserAPIProps) => {
   const queryParams = new URLSearchParams();

@@ -366,184 +366,189 @@ export default function Dashboard() {
   ];
 
   return (
-    <Box sx={{ p: 3 }}>
-      <TextComponent fontSize={30} fontWeight={500} color={"primary"}>
-        Login
+    <div className="flex h-[calc(100vh-200px)] items-center justify-center">
+      <TextComponent fontSize={30} fontWeight={500} color="error.main">
+        Coming Soon!
       </TextComponent>
-      <TextInputComponent
-        placeholder={"Registered Mobile Number"}
-        value={""}
-        onChange={(e) => console.log(e, "change")}
-        error={"error text"}
-        // leftSection={<UserNameSvgIcon />}
-        maxLength={10}
-        minLength={10}
-        type="tel"
-        className="w-full"
-        isAuth={true}
-      />
-      <ButtonComponent
-        title="LOGIN"
-        variant="filled"
-        onClick={() => setOpenModal(true)}
-        loading={false}
-        radius={10}
-      />
-      <Box mb={4}>
-        <h2>Single Date Picker</h2>
-        <CustomDateComponent
-          label="Select a date"
-          value={selectedDate}
-          onChange={handleDateChange}
-          dateFormat="DD-MM-YYYY"
-          withAsterisk
-          customButtons
-        />
-      </Box>
-      <Box>
-        <h2>Date Range Picker</h2>
-        <CustomDateComponent
-          label="Select date range"
-          value={dateRange}
-          onChange={handleDateChange}
-          type="range"
-          dateFormat="DD-MM-YYYY"
-          withAsterisk
-          customButtons
-        />
-      </Box>
-      <DropdownComponent
-        label="Select an option"
-        data={["Option 1", "Option 2", "Option 3"]}
-        value={selectedValue}
-        onChange={(value) => setSelectedValue(value as string)}
-        withAsterisk
-        clearable
-      />
-      <DropdownComponent
-        label="Select multiple options"
-        data={[
-          { value: "1", label: "Option 1" },
-          { value: "2", label: "Option 2" },
-        ]}
-        value={selectedValues}
-        onChange={(value) => setSelectedValues(value as string[])}
-        multiple
-      />
-      <FileInputComponent
-        label="Upload File"
-        placeholder="Choose a file or drag and drop"
-        onChange={(file) => console.log(file)}
-        accept="image/*,.pdf"
-        withAsterisk
-      />
-      <ModalComponent
-        opened={openModal}
-        onClose={() => setOpenModal(false)}
-        title="Modal Title"
-        content="This is the modal content"
-        ButtonTitle="Confirm"
-        onClick={() => {}}
-      />
-      {/* Fixed height */}
-      <TextareaComponent
-        label="Fixed Height"
-        rows={4}
-        value={""}
-        onChange={(e) => console.log(e)}
-      />
-      {/* Auto-resizing */}
-      <TextareaComponent
-        label="Auto-resizing"
-        minRows={3}
-        maxRows={10}
-        value={""}
-        onChange={(e) => console.log(e)}
-      />
-      {/* With character count */}
-      <TextareaComponent
-        label="With Character Count"
-        minRows={3}
-        maxRows={10}
-        maxLength={500}
-        showCharacterCount
-        value={""}
-        onChange={(e) => console.log(e)}
-      />
-      {/* <Box sx={{ width: "100%", mt: 3 }}>
-        <TableComponent
-          data={products}
-          columns={columns}
-          onSelectRow={(row) => {
-            console.log("Selected row:", row);
-          }}
-          keyField="id"
-          showSearch={true}
-          caption="Product Inventory"
-          onCurrentPageData={(data) => console.log("Current page data:", data)}
-          onSearch={(searchTerm, column) =>
-            console.log(`Searching "${searchTerm}" in column:`, column)
-          }
-        />
-      </Box> */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        <Typography variant="h4">Dashboard</Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={showThemeNotification}
-        >
-          Show Current Theme
-        </Button>
-      </Box>
-      <Box sx={{ mb: 4 }}>
-        <DashboardStats />
-      </Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Quick Actions
-        </Typography>
-        <QuickActions />
-      </Box>
-      <Divider sx={{ my: 4 }} />
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Theme System
-        </Typography>
-        <Typography variant="body2" color="text.secondary" paragraph>
-          Explore and customize the application's appearance with our
-          comprehensive theme system. You can change themes in the settings
-          drawer (click the gear icon in the top right).
-        </Typography>
+    </div>
+    // <Box sx={{ p: 3 }}>
+    //   <TextComponent fontSize={30} fontWeight={500} color={"primary"}>
+    //     Login
+    //   </TextComponent>
+    //   <TextInputComponent
+    //     placeholder={"Registered Mobile Number"}
+    //     value={""}
+    //     onChange={(e) => console.log(e, "change")}
+    //     error={"error text"}
+    //     // leftSection={<UserNameSvgIcon />}
+    //     maxLength={10}
+    //     minLength={10}
+    //     type="tel"
+    //     className="w-full"
+    //     isAuth={true}
+    //   />
+    //   <ButtonComponent
+    //     title="LOGIN"
+    //     variant="filled"
+    //     onClick={() => setOpenModal(true)}
+    //     loading={false}
+    //     radius={10}
+    //   />
+    //   <Box mb={4}>
+    //     <h2>Single Date Picker</h2>
+    //     <CustomDateComponent
+    //       label="Select a date"
+    //       value={selectedDate}
+    //       onChange={handleDateChange}
+    //       dateFormat="DD-MM-YYYY"
+    //       withAsterisk
+    //       customButtons
+    //     />
+    //   </Box>
+    //   <Box>
+    //     <h2>Date Range Picker</h2>
+    //     <CustomDateComponent
+    //       label="Select date range"
+    //       value={dateRange}
+    //       onChange={handleDateChange}
+    //       type="range"
+    //       dateFormat="DD-MM-YYYY"
+    //       withAsterisk
+    //       customButtons
+    //     />
+    //   </Box>
+    //   <DropdownComponent
+    //     label="Select an option"
+    //     data={["Option 1", "Option 2", "Option 3"]}
+    //     value={selectedValue}
+    //     onChange={(value) => setSelectedValue(value as string)}
+    //     withAsterisk
+    //     clearable
+    //   />
+    //   <DropdownComponent
+    //     label="Select multiple options"
+    //     data={[
+    //       { value: "1", label: "Option 1" },
+    //       { value: "2", label: "Option 2" },
+    //     ]}
+    //     value={selectedValues}
+    //     onChange={(value) => setSelectedValues(value as string[])}
+    //     multiple
+    //   />
+    //   <FileInputComponent
+    //     label="Upload File"
+    //     placeholder="Choose a file or drag and drop"
+    //     onChange={(file) => console.log(file)}
+    //     accept="image/*,.pdf"
+    //     withAsterisk
+    //   />
+    //   <ModalComponent
+    //     opened={openModal}
+    //     onClose={() => setOpenModal(false)}
+    //     title="Modal Title"
+    //     content="This is the modal content"
+    //     ButtonTitle="Confirm"
+    //     onClick={() => {}}
+    //   />
+    //   {/* Fixed height */}
+    //   <TextareaComponent
+    //     label="Fixed Height"
+    //     rows={4}
+    //     value={""}
+    //     onChange={(e) => console.log(e)}
+    //   />
+    //   {/* Auto-resizing */}
+    //   <TextareaComponent
+    //     label="Auto-resizing"
+    //     minRows={3}
+    //     maxRows={10}
+    //     value={""}
+    //     onChange={(e) => console.log(e)}
+    //   />
+    //   {/* With character count */}
+    //   <TextareaComponent
+    //     label="With Character Count"
+    //     minRows={3}
+    //     maxRows={10}
+    //     maxLength={500}
+    //     showCharacterCount
+    //     value={""}
+    //     onChange={(e) => console.log(e)}
+    //   />
+    //   {/* <Box sx={{ width: "100%", mt: 3 }}>
+    //     <TableComponent
+    //       data={products}
+    //       columns={columns}
+    //       onSelectRow={(row) => {
+    //         console.log("Selected row:", row);
+    //       }}
+    //       keyField="id"
+    //       showSearch={true}
+    //       caption="Product Inventory"
+    //       onCurrentPageData={(data) => console.log("Current page data:", data)}
+    //       onSearch={(searchTerm, column) =>
+    //         console.log(`Searching "${searchTerm}" in column:`, column)
+    //       }
+    //     />
+    //   </Box> */}
+    //   <Box
+    //     sx={{
+    //       display: "flex",
+    //       justifyContent: "space-between",
+    //       alignItems: "center",
+    //       mb: 3,
+    //     }}
+    //   >
+    //     <Typography variant="h4">Dashboard</Typography>
+    //     <Button
+    //       variant="contained"
+    //       color="primary"
+    //       onClick={showThemeNotification}
+    //     >
+    //       Show Current Theme
+    //     </Button>
+    //   </Box>
+    //   <Box sx={{ mb: 4 }}>
+    //     <DashboardStats />
+    //   </Box>
+    //   <Box sx={{ mb: 4 }}>
+    //     <Typography variant="h5" gutterBottom>
+    //       Quick Actions
+    //     </Typography>
+    //     <QuickActions />
+    //   </Box>
+    //   <Divider sx={{ my: 4 }} />
+    //   <Box sx={{ mb: 4 }}>
+    //     <Typography variant="h5" gutterBottom>
+    //       Theme System
+    //     </Typography>
+    //     <Typography variant="body2" color="text.secondary" paragraph>
+    //       Explore and customize the application's appearance with our
+    //       comprehensive theme system. You can change themes in the settings
+    //       drawer (click the gear icon in the top right).
+    //     </Typography>
 
-        <Tabs
-          value={themeTabValue}
-          onChange={handleThemeTabChange}
-          sx={{ mb: 3 }}
-        >
-          <Tab label="Theme Preview" />
-          <Tab label="Theme Comparison" />
-        </Tabs>
+    //     <Tabs
+    //       value={themeTabValue}
+    //       onChange={handleThemeTabChange}
+    //       sx={{ mb: 3 }}
+    //     >
+    //       <Tab label="Theme Preview" />
+    //       <Tab label="Theme Comparison" />
+    //     </Tabs>
 
-        {themeTabValue === 0 && (
-          <ThemeShowcase
-            title={`${
-              themeOption.charAt(0).toUpperCase() + themeOption.slice(1)
-            } Theme (${darkMode ? "Dark" : "Light"} Mode)`}
-          />
-        )}
+    //     {themeTabValue === 0 && (
+    //       <ThemeShowcase
+    //         title={`${
+    //           themeOption.charAt(0).toUpperCase() + themeOption.slice(1)
+    //         } Theme (${darkMode ? "Dark" : "Light"} Mode)`}
+    //       />
+    //     )}
 
-        {themeTabValue === 1 && (
-          <ThemeComparison currentTheme={themeOption} darkMode={darkMode} />
-        )}
-      </Box>
-    </Box>
+    //     {themeTabValue === 1 && (
+    //       <ThemeComparison currentTheme={themeOption} darkMode={darkMode} />
+    //     )}
+    //   </Box>
+    // </Box>
   );
 }

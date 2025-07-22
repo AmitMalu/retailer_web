@@ -70,6 +70,9 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
           // backgroundColor: theme.palette.background.navBackground,
           height: "100vh",
         }}
+        style={{
+          scrollbarWidth: "none",
+        }}
       >
         {/* Breadcrumbs */}
         {/* <Paper

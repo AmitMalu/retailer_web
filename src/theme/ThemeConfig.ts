@@ -148,15 +148,7 @@ export const createThemeOptions = (
     typography: {
       fontFamily: '"Poppins", sans-serif',
     },
-    components: {
-      MuiAppBar: {
-        styleOverrides: {
-          root: {
-            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-          },
-        },
-      },
-    },
+    components: {},
   };
 };
 

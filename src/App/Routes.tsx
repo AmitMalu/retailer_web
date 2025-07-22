@@ -5,6 +5,7 @@ import ForgotPassword from "@/pages/Auth/ForgotPassword";
 import OtpInputScreen from "@/pages/Auth/Otp";
 import SetPasswordScreen from "@/pages/Auth/SetPassword";
 import SignUp from "@/pages/Auth/SignUp.tsx";
+import Loader from "@/components/Atoms/Loader";
 
 const Dashboard = lazy(() => import("@/pages/Home/Dashboard"));
 const CreateUser = lazy(() => import("@/pages/Home/ManageUser/CreateUser"));
@@ -119,7 +120,13 @@ const ProtecteAuthRoute: React.FC<{ children?: React.ReactNode }> = ({}) => {
 
 const RouterOutlet = () => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <div>
+          <Loader />
+        </div>
+      }
+    >
       <Routes>
         <Route path="/" element={<Outlet />}>
           <Route
