@@ -84,46 +84,6 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
         mt: 0.125,
         mb: 0.125,
         width: "100%",
-        // "& .MuiOutlinedInput-root": {
-        //   "& fieldset": {
-        //     borderColor: isAuth ? theme.palette.primary.main : "white",
-        //     borderRadius: isAuth ? 28 : 37,
-        //   },
-        //   "&:hover fieldset": {
-        //     borderColor: isAuth
-        //       ? theme.palette.primary.main
-        //       : theme.palette.action.hover,
-        //     borderRadius: isAuth ? 28 : 37,
-        //   },
-        //   "&.Mui-focused fieldset": {
-        //     borderColor: theme.palette.info.main,
-        //     borderRadius: isAuth ? 28 : 37,
-        //   },
-        //   "&.Mui-error fieldset": {
-        //     borderColor: theme.palette.error.main,
-        //     borderRadius: isAuth ? 28 : 37,
-        //   },
-        //   backgroundColor: isAuth ? theme.palette.primary.light : "white",
-        //   borderRadius: isAuth ? 28 : 37,
-        //   "&:hover": {
-        //     backgroundColor: isAuth ? theme.palette.primary.light : "white",
-        //   },
-        // },
-        // "& .MuiInputBase-input": {
-        //   padding: "8.5px 14px",
-        //   "&::placeholder": {
-        //     color: theme.palette.text.disabled,
-        //     opacity: 1,
-        //   },
-        // },
-        // ...(isAuth && {
-        //   "& .MuiOutlinedInput-root": {
-        //     backgroundColor: theme.palette.primary.light,
-        //     "&:hover": {
-        //       backgroundColor: theme.palette.primary.light,
-        //     },
-        //   },
-        // }),
       }}
     >
       <TextField
@@ -158,34 +118,47 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
           sx: {
             textAlign: "right",
             margin: "4px 0 0 0",
-            fontSize: "0.75rem",
-            lineHeight: 1.25,
+            lineHeight: 1,
           },
         }}
         sx={{
           "& .MuiInputLabel-root": {
-            color: theme.palette.text.secondary,
+            color: theme.palette.placeholder,
+            fontSize: "16px",
+            fontWeight: 400,
+            fontFamily: '"Poppins", sans-serif',
             "&.Mui-focused": {
-              color: theme.palette.primary.main,
+              color: theme.palette.text.primary,
             },
             "&.Mui-error": {
               color: theme.palette.error.main,
             },
           },
           "& .MuiOutlinedInput-root": {
+            borderColor: theme.palette.placeholder,
+            fontFamily: '"Poppins", sans-serif',
             "&.Mui-error .MuiOutlinedInput-notchedOutline": {
               borderColor: theme.palette.error.main,
               borderRadius: isAuth ? 28 : 37,
             },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: theme.palette.text.primary,
+              borderWidth: "1px",
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: theme.palette.text.primary,
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: theme.palette.text.primary,
+            },
             "& fieldset": {
               borderColor: isAuth
-                ? theme.palette.warning.main
+                ? theme.palette.placeholder
                 : theme.palette.warning.main,
-              borderRadius: 28,
+              borderRadius: isAuth ? 28 : 37,
             },
             "&:hover fieldset": {
-              borderColor: theme.palette.primary.dark,
-              borderRadius: 37,
+              borderColor: theme.palette.text.primary,
             },
           },
           ...(typeof className === "string"

@@ -1,13 +1,6 @@
 import { Box, Paper, Typography, Button, Chip, useTheme } from "@mui/material";
 import { themeOptions } from "../../theme/ThemeConfig";
-import type { ThemeOption } from "../../store/slices/settingsSlice";
-
-interface ThemePreviewProps {
-  themeKey: ThemeOption;
-  selected: boolean;
-  onClick: () => void;
-  darkMode: boolean;
-}
+import { ThemePreviewProps } from "@/Common/interface";
 
 export default function ThemePreview({
   themeKey,

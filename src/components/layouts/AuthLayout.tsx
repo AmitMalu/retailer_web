@@ -1,34 +1,51 @@
 import React from "react";
 import { AuthLayoutProps } from "@/Common/interface";
 import { useNavigate } from "react-router-dom";
-import ImFullLogo from "@/assets/svg/ImFullLogo";
-import AuthImage from "@/assets/svg/AuthLogoImage";
+import ImShortLogo from "@/assets/svg/ImShortLogo";
+import TextComponent from "../Atoms/TextComponent";
 
-const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
+const AuthLayout: React.FC<AuthLayoutProps> = ({
+  children,
+  authImage,
+  authText,
+}) => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex h-screen w-full bg-cover bg-center">
-      <div className="flex h-full w-full">
-        <div className="flex h-full w-1/2 flex-col items-center justify-center p-6 sm:hidden md:flex">
+    <div
+      // style={{ backgroundImage: `url(${IMAGES.auth_bg})` }}
+      className="flex flex-col h-screen w-full gap-2 bg-cover bg-center bg-authBackground "
+    >
+      <div className="flex h-[90%] w-full">
+        <div className="flex h-full w-1/2 flex-col items-center justify-center p-3 sm:hidden md:flex">
           <div
             onClick={() => navigate("/login")}
-            className="mb-6 flex h-auto w-full items-start justify-start pt-8"
+            className="mb-6 -mt-12 flex h-auto w-full items-start justify-start"
           >
-            <ImFullLogo />
+            <ImShortLogo />
           </div>
 
-          <div className="flex h-full w-full items-center justify-center">
-            <AuthImage />
+          <div className="flex h-3/4 w-3/4 items-center justify-center">
+            {authImage}
           </div>
           {/* <div className="flex w-full items-center justify-end pb-8">
             <MudraSevakSvg />
           </div> */}
         </div>
 
-        <div className="flex h-full items-center justify-center bg-lightPink sm:w-screen md:w-1/2">
+        <div className="flex h-full items-center justify-center sm:w-screen md:w-1/2">
           {children}
         </div>
+      </div>
+      <div className="flex items-center justify-center gap-2 ">
+        <TextComponent
+          fontSize={30}
+          fontWeight={400}
+          color="black"
+          fontFamily='"La Belle Aurore", cursive'
+        >
+          {authText}
+        </TextComponent>
       </div>
     </div>
   );

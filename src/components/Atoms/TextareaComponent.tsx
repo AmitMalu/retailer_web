@@ -1,29 +1,6 @@
 import React from "react";
 import { TextField, Box, Typography } from "@mui/material";
-
-interface CustomTextareaProps {
-  label?: string;
-  placeholder?: string;
-  value: string;
-  onChange: (value: string) => void;
-  onBlur?: () => void;
-  error?: string | boolean;
-  disabled?: boolean;
-  maxLength?: number;
-  minLength?: number;
-  autoComplete?: string;
-  name?: string;
-  id?: string;
-  className?: string;
-  style?: React.CSSProperties;
-  variant?: "outlined" | "filled" | "standard";
-  withAsterisk?: boolean;
-  rows?: number;
-  minRows?: number;
-  maxRows?: number;
-  helperText?: string;
-  showCharacterCount?: boolean;
-}
+import { CustomTextareaProps } from "@/Common/interface";
 
 const TextareaComponent: React.FC<CustomTextareaProps> = ({
   label,
@@ -84,7 +61,13 @@ const TextareaComponent: React.FC<CustomTextareaProps> = ({
           },
         }}
         helperText={
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              fontFamily: '"Poppins", sans-serif',
+            }}
+          >
             <span>{error || helperText}</span>
             {showCharacterCount && maxLength && (
               <span>

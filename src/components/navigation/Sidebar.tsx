@@ -22,6 +22,7 @@ import ReceiptIcon from "@mui/icons-material/Receipt";
 import MobileFriendlyIcon from "@mui/icons-material/MobileFriendly";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AssessmentIcon from "@mui/icons-material/Assessment";
+import { SidebarProps } from "@/Common/interface";
 
 const menuItems = [
   { name: "Dashboard", path: "/", icon: <DashboardIcon /> },
@@ -33,11 +34,6 @@ const menuItems = [
   { name: "Payout", path: "/payout", icon: <AccountBalanceWalletIcon /> },
   { name: "Reports", path: "/reports", icon: <AssessmentIcon /> },
 ];
-
-interface SidebarProps {
-  mobileOpen: boolean;
-  onClose: () => void;
-}
 
 export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
   const { sidebarStyle } = useSelector((state: RootState) => state.settings);

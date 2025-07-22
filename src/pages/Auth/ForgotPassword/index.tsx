@@ -10,93 +10,127 @@ import { MobileNoRegex } from "@/Utils/helper";
 import { UserNameSvgIcon } from "@/assets/svg";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { ForgotPasswordRequestProps } from "@/Common/interface";
+import ForgetPassword from "@/assets/svg/Auth/ForgetPassword";
+import { Forgot_Password } from "@/Services/api";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "@/Utils/notifications";
 
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   const validationSchema = Yup.object({
-    mobileNo: Yup.string()
+    userName: Yup.string()
       .max(10, "Please enter valid number")
       .matches(MobileNoRegex, "Please enter valid number")
       .required("Required"),
   });
 
   const initialValues: ForgotPasswordRequestProps = {
-    mobileNo: "",
+    userName: "",
   };
 
-  // const handleSubmit = async (values: ForgotPasswordRequestProps) => {
-  //   try {
-  //     setIsLoading(true);
-  //     const response = await Forgot_Password({
-  //       mobileNo: values.mobileNo,
-  //     });
-  //     if (
-  //       response?.data?.statusCode === 200 ||
-  //       response?.data?.statusCode === '200'
-  //     ) {
-  //       showSuccessNotification('OTP sent successfully');
-  //       navigate('/otpInput', { state: { mobileNumber: values.mobileNo } });
-  //     } else {
-  //       showErrorNotification(response?.data?.message || 'Unable to send OTP');
-  //     }
-  //   } catch (error: any) {
-  //     showErrorNotification(error.response?.data?.message || error.message);
-  //     setIsLoading(false);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+  const handleSubmit = async (values: ForgotPasswordRequestProps) => {
+    try {
+      setIsLoading(true);
+      const response = await Forgot_Password({
+        userName: values.userName,
+      });
+      if (
+        response?.data?.statusCode === 200 ||
+        response?.data?.statusCode === "200"
+      ) {
+        showSuccessNotification("OTP sent successfully");
+        navigate("/otpInput", { state: { userName: values.userName } });
+      } else {
+        showErrorNotification(response?.data?.message || "Unable to send OTP");
+      }
+    } catch (error: any) {
+      showErrorNotification(error.response?.data?.message || error.message);
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
       {isLoading && <Loader />}
-      <AuthLayout>
-        <div className="flex h-auto w-[350px] flex-col items-start justify-center px-4 py-6">
-          <div className="flex flex-col items-start justify-items-start gap-3">
-            <TextComponent fontSize={30} fontWeight={500} color={"Primary"}>
-              Forgot Password
-            </TextComponent>
-            <TextComponent fontSize={12} fontWeight={500} color={"Primary"}>
-              Please enter your registered mobile number.
-            </TextComponent>
+      <AuthLayout
+        authImage={<ForgetPassword />}
+        authText='"Start smart. Stay secure. Create a password that works for you."'
+      >
+        <div className="flex w-full  items-center justify-center flex-col gap-5">
+          <div className="flex h-auto w-[350px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-white justify-start px-6 py-3">
+            <div className="flex flex-col items-center justify-center gap-3">
+              <TextComponent fontSize={30} fontWeight={500} color={"Primary"}>
+                Forgot Password
+              </TextComponent>
+              <TextComponent fontSize={12} fontWeight={500} color={"Primary"}>
+                Please enter your registered mobile number.
+              </TextComponent>
+            </div>
+            <Formik<ForgotPasswordRequestProps>
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+            >
+              {({ handleSubmit, handleChange, errors, touched, values }) => (
+                <>
+                  <div className="mt-10 flex w-full flex-col items-center justify-center">
+                    <TextInputComponent
+                      label={"Mobile Number"}
+                      value={values.userName}
+                      onChange={handleChange("userName")}
+                      maxLength={10}
+                      minLength={10}
+                      error={
+                        touched.userName && errors.userName
+                          ? errors.userName
+                          : ""
+                      }
+                      withAsterisk
+                      leftSection={<UserNameSvgIcon />}
+                      type="tel"
+                      className="w-full"
+                      isAuth={true}
+                    />
+                  </div>
+                  <div className="mt-6 flex w-full items-center justify-center">
+                    <ButtonComponent
+                      title={"CONTINUE"}
+                      variant="filled"
+                      onClick={() => handleSubmit()}
+                      loading={isLoading}
+                      radius={28}
+                      fullWidth={true}
+                      disabled={isLoading || !values.userName}
+                    />
+                  </div>
+                  <div className="flex items-center justify-center gap-2 mt-2 ">
+                    <TextComponent
+                      fontSize={14}
+                      fontWeight={400}
+                      color="text.headLine"
+                    >
+                      Don't have an account yet?
+                    </TextComponent>
+                    <TextComponent
+                      fontSize={14}
+                      fontWeight={400}
+                      color="red"
+                      className="underline"
+                      onClick={() => navigate("/signUp")}
+                    >
+                      Sign up
+                    </TextComponent>
+                  </div>
+                </>
+              )}
+            </Formik>
           </div>
-          <Formik<ForgotPasswordRequestProps>
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={() => {}}
-          >
-            {({ handleSubmit, handleChange, errors, touched, values }) => (
-              <>
-                <div className="mt-6 flex w-full flex-col items-center justify-center">
-                  <TextInputComponent
-                    placeholder={"Enter Mobile Number"}
-                    value={values.mobileNo}
-                    onChange={handleChange("mobileNo")}
-                    maxLength={10}
-                    minLength={10}
-                    error={
-                      touched.mobileNo && errors.mobileNo ? errors.mobileNo : ""
-                    }
-                    leftSection={<UserNameSvgIcon />}
-                    type="tel"
-                    className="w-full"
-                    isAuth={true}
-                  />
-                </div>
-                <div className="mt-6 flex h-9 w-full items-center justify-center">
-                  <ButtonComponent
-                    title={"CONTINUE"}
-                    variant="filled"
-                    onClick={() => handleSubmit()}
-                    loading={isLoading}
-                    radius={10}
-                  />
-                </div>
-              </>
-            )}
-          </Formik>
         </div>
       </AuthLayout>
     </>

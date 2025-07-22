@@ -7,10 +7,7 @@ import Navbar from "../../navigation/Navbar";
 import Sidebar from "../../navigation/Sidebar";
 import SettingsDrawer from "../../settings/SettingsDrawer";
 import { useLocation, Link as RouterLink } from "react-router-dom";
-
-interface StandardLayoutProps {
-  children: React.ReactNode;
-}
+import { StandardLayoutProps } from "@/Common/interface";
 
 export default function StandardLayout({ children }: StandardLayoutProps) {
   const { layout, navbarPosition, sidebarStyle } = useSelector(
