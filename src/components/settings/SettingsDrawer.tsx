@@ -15,7 +15,7 @@ import {
   Tab,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../../store";
+import type { RootState } from "../../Redux/Store";
 import {
   setLayout,
   setColorScheme,

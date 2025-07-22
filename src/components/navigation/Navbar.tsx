@@ -1,16 +1,9 @@
-import React from "react";
 import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   IconButton,
   Box,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
   useMediaQuery,
   useTheme,
   Paper,
@@ -19,24 +12,31 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { toggleDarkMode } from "../../store/slices/uiSlice";
 import { toggleSettingsDrawer } from "../../store/slices/settingsSlice";
-import type { RootState } from "../../store";
+import type { RootState } from "../../Redux/Store";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import ImLogo from "@/assets/svg/imLogo";
+import TextInputComponent from "../Atoms/TextInputComponent";
 
-export default function Navbar() {
+interface NavbarProps {
+  onMenuClick: () => void;
+  isMobile: boolean;
+}
+
+export default function Navbar({
+  onMenuClick,
+  isMobile: isMobileProp,
+}: NavbarProps) {
   const dispatch = useDispatch();
   const darkMode = useSelector((state: RootState) => state.ui.darkMode);
   const { navbarPosition, sidebarStyle } = useSelector(
     (state: RootState) => state.settings
   );
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobileView = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = isMobileProp || isMobileView;
 
   const handleSettingsClick = () => {
     dispatch(toggleSettingsDrawer());
-  };
-
-  const toggleDrawer = () => {
-    setDrawerOpen(!drawerOpen);
   };
 
   const WalletDisplay = ({
@@ -49,7 +49,7 @@ export default function Navbar() {
     <Paper
       elevation={0}
       sx={{
-        p: 0.8,
+        p: 0.6,
         borderRadius: 2,
         minWidth: 140,
         cursor: "pointer",
@@ -79,11 +79,16 @@ export default function Navbar() {
         },
       }}
     >
-      <Box display="flex" alignItems="center" mb={0.5} gap={2}>
-        <Typography variant="subtitle1" component="div" fontWeight={500}>
+      <Box display="flex" alignItems="center" gap={2}>
+        <Typography
+          variant="subtitle1"
+          component="div"
+          fontWeight={500}
+          fontSize={14}
+        >
           {title}
         </Typography>
-        <Typography variant="h6" component="div" fontWeight={600}>
+        <Typography variant="h6" component="div" fontWeight={600} fontSize={14}>
           {amount}
         </Typography>
       </Box>
@@ -95,14 +100,23 @@ export default function Navbar() {
       <AppBar
         position={navbarPosition}
         sx={{
-          width: {
-            sm: `calc(100% - ${sidebarStyle === "full" ? 240 : sidebarStyle === "compact" ? 70 : 0}px)`,
-          },
-          ml: {
-            sm: `${sidebarStyle === "full" ? 240 : sidebarStyle === "compact" ? 70 : 0}px`,
-          },
+          width: "100vw",
+          left: 0,
+          right: 0,
+          ...(navbarPosition === "fixed" && {
+            position: "fixed",
+            top: 0,
+          }),
+          paddingLeft: "3%",
+          paddingRight: "3%",
           zIndex: (theme) => theme.zIndex.drawer + 1,
           boxShadow: 1,
+          backgroundColor: theme.palette.background.navBackground,
+          borderBottomLeftRadius: 50,
+          borderBottomRightRadius: 50,
+          borderBottomWidth: 1,
+          borderBottomStyle: "solid",
+          borderBottomColor: theme.palette.background.navBackground,
         }}
       >
         <Toolbar>
@@ -110,18 +124,26 @@ export default function Navbar() {
             <IconButton
               color="inherit"
               edge="start"
-              onClick={toggleDrawer}
+              onClick={onMenuClick}
               sx={{ mr: 2 }}
             >
               ☰
             </IconButton>
           )}
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Retailer Web
+            <ImLogo />
           </Typography>
 
           {!isMobile && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
+              <TextInputComponent
+                placeholder={"Search"}
+                value={""}
+                onChange={(e) => console.log(e, "change")}
+                // leftSection={<UserNameSvgIcon />}
+                className="w-full"
+                isAuth={false}
+              />
               <Stack
                 direction="row"
                 spacing={2}
@@ -131,6 +153,22 @@ export default function Navbar() {
                 <WalletDisplay title="PREPAID" amount="₹10,000.00" />
                 <WalletDisplay title="POSTPAID" amount="₹2,500.00" />
               </Stack>
+              {/* Refresh Button */}
+              <IconButton
+                color="inherit"
+                onClick={() => window.location.reload()}
+                title="Refresh"
+                sx={{
+                  borderRadius: 1,
+                  mr: 1,
+                  bgcolor: (theme) =>
+                    theme.palette.mode === "dark"
+                      ? "rgba(30, 41, 59, 0.5)"
+                      : "rgba(241, 245, 249, 0.5)",
+                }}
+              >
+                <RefreshIcon fontSize="small" />
+              </IconButton>
             </Box>
           )}
 
@@ -151,21 +189,6 @@ export default function Navbar() {
           </IconButton>
         </Toolbar>
       </AppBar>
-
-      {/* Mobile Drawer */}
-      <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer}>
-        <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer}>
-          <List>
-            {/* {navItems.map((item) => (
-              <ListItem key={item.name}>
-                <ListItemButton>
-                  <ListItemText primary={item.name} />
-                </ListItemButton>
-              </ListItem>
-            ))} */}
-          </List>
-        </Box>
-      </Drawer>
     </>
   );
 }

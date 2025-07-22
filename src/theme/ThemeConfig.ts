@@ -1,11 +1,17 @@
 import type { ThemeOptions } from "@mui/material";
 import type { ThemeColors } from "../store/slices/settingsSlice";
 
-// Define theme options with complete color palettes
+declare module "@mui/material/styles" {
+  interface TypeBackground {
+    navBackground?: string;
+    lightGray?: string;
+  }
+}
+
 export const themeOptions: Record<string, ThemeColors> = {
   // Default theme - Blue focused
   default: {
-    primary: "#0ea5e9",
+    primary: "#2B9E91",
     secondary: "#f59e0b",
     success: "#10b981",
     warning: "#f59e0b",
@@ -15,6 +21,8 @@ export const themeOptions: Record<string, ThemeColors> = {
     paper: "#ffffff",
     textPrimary: "#1e293b",
     textSecondary: "#64748b",
+    navBackground: "#000000",
+    lightGray: "#D9D9D9",
   },
 
   // Corporate theme - Professional blue and gray
@@ -29,6 +37,8 @@ export const themeOptions: Record<string, ThemeColors> = {
     paper: "#ffffff",
     textPrimary: "#0f172a",
     textSecondary: "#475569",
+    navBackground: "#ffffff",
+    lightGray: "#D9D9D9",
   },
 
   // Creative theme - Purple and pink
@@ -43,6 +53,8 @@ export const themeOptions: Record<string, ThemeColors> = {
     paper: "#ffffff",
     textPrimary: "#4c1d95",
     textSecondary: "#6d28d9",
+    navBackground: "#000000",
+    lightGray: "#D9D9D9",
   },
 
   // Elegant theme - Deep teal and gold
@@ -57,6 +69,8 @@ export const themeOptions: Record<string, ThemeColors> = {
     paper: "#ffffff",
     textPrimary: "#134e4a",
     textSecondary: "#115e59",
+    navBackground: "#000000",
+    lightGray: "#D9D9D9",
   },
 
   // Playful theme - Vibrant colors
@@ -71,6 +85,8 @@ export const themeOptions: Record<string, ThemeColors> = {
     paper: "#ffffff",
     textPrimary: "#7c2d12",
     textSecondary: "#9a3412",
+    navBackground: "#000000",
+    lightGray: "#D9D9D9",
   },
 
   // Minimal theme - Monochrome
@@ -85,6 +101,8 @@ export const themeOptions: Record<string, ThemeColors> = {
     paper: "#ffffff",
     textPrimary: "#171717",
     textSecondary: "#404040",
+    navBackground: "#000000",
+    lightGray: "#D9D9D9",
   },
 
   // Dark theme - Dark mode with blue accents
@@ -99,6 +117,8 @@ export const themeOptions: Record<string, ThemeColors> = {
     paper: "#1e293b",
     textPrimary: "#f1f5f9",
     textSecondary: "#cbd5e1",
+    navBackground: "#000000",
+    lightGray: "#D9D9D9",
   },
 
   mutedTeal: {
@@ -112,6 +132,8 @@ export const themeOptions: Record<string, ThemeColors> = {
     paper: "#ffffff",
     textPrimary: "#171717",
     textSecondary: "#404040",
+    navBackground: "#000000",
+    lightGray: "#D9D9D9",
   },
 };
 
@@ -158,6 +180,7 @@ export const createThemeOptions = (
       background: {
         default: adjustedColors.background,
         paper: adjustedColors.paper,
+        navBackground: adjustedColors.navBackground,
       },
       text: {
         primary: adjustedColors.textPrimary,

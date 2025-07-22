@@ -1,20 +1,11 @@
-import React from "react";
-import {
-  Box,
-  Paper,
-  Breadcrumbs,
-  Typography,
-  Link,
-  Fab,
-  Tooltip,
-} from "@mui/material";
+import React, { useState } from "react";
+import { Box, Paper, Breadcrumbs, Typography, Link } from "@mui/material";
 import { useSelector } from "react-redux";
-import type { RootState } from "../../../store";
+import type { RootState } from "../../../Redux/Store";
 import BaseLayout from "./BaseLayout";
 import Navbar from "../../navigation/Navbar";
 import Sidebar from "../../navigation/Sidebar";
 import SettingsDrawer from "../../settings/SettingsDrawer";
-import AddIcon from "@mui/icons-material/Add";
 import { useLocation, Link as RouterLink } from "react-router-dom";
 
 interface StandardLayoutProps {
@@ -26,6 +17,11 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
     (state: RootState) => state.settings
   );
   const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   // Calculate main content padding based on sidebar style
   const mainPaddingLeft =
@@ -53,7 +49,16 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
   const breadcrumbs = generateBreadcrumbs();
 
   return (
-    <BaseLayout navbar={<Navbar />} sidebar={<Sidebar />} footer={null}>
+    <BaseLayout
+      navbar={
+        <Navbar
+          onMenuClick={handleDrawerToggle}
+          isMobile={sidebarStyle === "closed" || window.innerWidth < 960}
+        />
+      }
+      sidebar={<Sidebar mobileOpen={mobileOpen} onClose={handleDrawerToggle} />}
+      footer={null}
+    >
       <Box
         sx={{
           p: layout === "compact" ? 2 : 3,
@@ -75,7 +80,7 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
             backgroundColor: (theme) =>
               theme.palette.mode === "dark"
                 ? "rgba(255,255,255,0.05)"
-                : "rgba(0,0,0,0.02)",
+                : "rgba(0,0,0,0.05)",
           }}
         >
           <Breadcrumbs aria-label="breadcrumb">
@@ -113,7 +118,7 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
         </Paper>
 
         {/* Floating action button */}
-        <Tooltip title="Add new item">
+        {/* <Tooltip title="Add new item">
           <Fab
             color="primary"
             aria-label="add"
@@ -126,7 +131,7 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
           >
             <AddIcon />
           </Fab>
-        </Tooltip>
+        </Tooltip> */}
       </Box>
       <SettingsDrawer />
     </BaseLayout>
