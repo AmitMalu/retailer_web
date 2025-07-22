@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import {
   FormControl,
@@ -29,12 +29,17 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
 }) => {
   const theme = useTheme();
 
-  const handleChange = (event: SelectChangeEvent<unknown>) => {
-    const value = event.target.value;
+  const handleChange = (event: SelectChangeEvent<any>) => {
+    const newValue = event.target.value;
+
     if (multiple) {
-      onChange?.(Array.isArray(value) ? value : [value as string]);
+      const updatedValue = Array.isArray(newValue)
+        ? newValue
+        : [String(newValue)];
+
+      onChange?.(updatedValue);
     } else {
-      onChange?.(value as string);
+      onChange?.(newValue);
     }
   };
 
@@ -99,7 +104,7 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
           <>{label}</>
         </InputLabel>
         <Select
-          value={multiple ? value || [] : value || ""}
+          value={multiple ? value || [] : (value ?? "")}
           onChange={handleChange}
           displayEmpty
           inputProps={{

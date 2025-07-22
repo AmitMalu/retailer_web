@@ -45,6 +45,10 @@ export const MobileNoRegex = /^[0-9]{10}$/;
 
 export const EmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+export const PanRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+export const PinCodeRegex = /^[0-9]{6}$/;
+
 export const useIpAddress = () => {
   const dispatch = useDispatch<AppDispatch>();
   const fetchIpAddress = async () => {

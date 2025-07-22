@@ -14,11 +14,20 @@ export const API_ROUTES = {
   SET_PASSWORD: `${BASE_URL}/auth/set-password`,
 
   ///////////////// MAIN /////////////////////////////
+  PROFILE: `${BASE_URL}/api/dashboard/profile`,
+
+  ///////////////// FUNDING //////////////////////////
   PREFUND_REQUEST: `${BASE_URL}/api/prefund/request`,
   WALLET_TO_WALLET: `${BASE_URL}/api/wallet-to-wallet/transfer`,
   FUND_REVERSAL: `${BASE_URL}/api/fund-reversal`,
   CHILD_MEMBER_LIST: `${BASE_URL}/api/dropdown-manager/child-accounts`,
   FUND_TRANSFER: `${BASE_URL}/api/fund-transfer`,
   WALLET_BALANCE: `${BASE_URL}/api/dashboard/wallet-balance`,
-  PROFILE: `${BASE_URL}/api/dashboard/profile`,
+
+  ///////////////// CREATE USER //////////////////////////
+  CREATE_WHITE_LABEL: `${BASE_URL}/api/white-labels`,
+  CREATE_SUPER_DISTRIBUTOR: `${BASE_URL}/api/super-distributors`,
+  CREATE_PARTNER: `${BASE_URL}/api/partners`,
+  CREATE_DISTRIBUTOR: `${BASE_URL}/api/distributors`,
+  CREATE_RETAILER: `${BASE_URL}/api/retailers`,
 };

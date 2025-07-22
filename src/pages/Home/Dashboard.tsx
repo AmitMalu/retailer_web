@@ -470,7 +470,7 @@ export default function Dashboard() {
         value={""}
         onChange={(e) => console.log(e)}
       />
-      <Box sx={{ width: "100%", mt: 3 }}>
+      {/* <Box sx={{ width: "100%", mt: 3 }}>
         <TableComponent
           data={products}
           columns={columns}
@@ -485,7 +485,7 @@ export default function Dashboard() {
             console.log(`Searching "${searchTerm}" in column:`, column)
           }
         />
-      </Box>
+      </Box> */}
       <Box
         sx={{
           display: "flex",

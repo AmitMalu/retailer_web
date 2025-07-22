@@ -5,28 +5,17 @@ import ForgotPassword from "@/pages/Auth/ForgotPassword";
 import OtpInputScreen from "@/pages/Auth/Otp";
 import SetPasswordScreen from "@/pages/Auth/SetPassword";
 import SignUp from "@/pages/Auth/SignUp.tsx";
-import { useSelector } from "react-redux";
-import { RootState } from "@/Redux/Store";
-import { decryptData } from "@/Utils/helper";
-import FundTransfer from "@/pages/Home/Funding/FundTransfer";
-import FundReversal from "@/pages/Home/Funding/FundReversal";
 
 const Dashboard = lazy(() => import("@/pages/Home/Dashboard"));
-const AddAndViewUser = lazy(
-  () => import("@/pages/Home/ManageUser/AddAndViewUser")
-);
+const CreateUser = lazy(() => import("@/pages/Home/ManageUser/CreateUser"));
 const DebitAndCreditUser = lazy(
   () => import("@/pages/Home/ManageUser/DebitAndCreditUser")
 );
-const CreateProfile = lazy(
-  () => import("@/pages/Home/ManageUser/CreateProfile")
-);
-const FeesSettings = lazy(() => import("@/pages/Home/ManageUser/FeesSettings"));
-const InternalTransfer = lazy(
-  () => import("@/pages/Home/ManageUser/InternalTransfer")
-);
+const ViewUser = lazy(() => import("@/pages/Home/ManageUser/ViewUser"));
 const Products = lazy(() => import("@/pages/Home/Products/Products"));
 const WalletToBank = lazy(() => import("@/pages/Home/Funding/WalletToBank"));
+const FundTransfer = lazy(() => import("@/pages/Home/Funding/FundTransfer"));
+const FundReversal = lazy(() => import("@/pages/Home/Funding/FundReversal"));
 const WalletToBankFund = lazy(
   () => import("@/pages/Home/Funding/WalletToBankFund")
 );
@@ -218,7 +207,7 @@ const RouterOutlet = () => {
             />
           </Route>
           <Route
-            path="/manageUser/addAndViewUser"
+            path="/manageUser/createUser"
             element={
               <ProtectedRoute>
                 <Outlet />
@@ -229,7 +218,7 @@ const RouterOutlet = () => {
               index
               element={
                 <MainLayout>
-                  <AddAndViewUser />
+                  <CreateUser />
                 </MainLayout>
               }
             />
@@ -252,7 +241,7 @@ const RouterOutlet = () => {
             />
           </Route>
           <Route
-            path="/manageUser/createProfile"
+            path="/manageUser/ViewUser"
             element={
               <ProtectedRoute>
                 <Outlet />
@@ -263,41 +252,7 @@ const RouterOutlet = () => {
               index
               element={
                 <MainLayout>
-                  <CreateProfile />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="/manageUser/feesSettings"
-            element={
-              <ProtectedRoute>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <FeesSettings />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="/manageUser/internalTransfer"
-            element={
-              <ProtectedRoute>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <InternalTransfer />
+                  <ViewUser />
                 </MainLayout>
               }
             />

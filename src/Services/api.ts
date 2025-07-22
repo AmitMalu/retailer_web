@@ -8,6 +8,7 @@ import {
   SetPasswordRequestProps,
   TokenGenerationRequest,
   VerifyTokenRequest,
+  ViewUserAPIProps,
   WalletToWalletProps,
 } from "@/Common/interface";
 import api from ".";
@@ -101,5 +102,53 @@ export const Wallet_Balance = async (id: string) =>
 export const Profile = async (id: string) =>
   await api.get(`${API_ROUTES.PROFILE}/${id}`, await createHeaders());
 
-export const Child_Member_List = async (id: string) =>
-  await api.get(`${API_ROUTES.CHILD_MEMBER_LIST}/${id}`, await createHeaders());
+export const Child_Member_List = async (params: ViewUserAPIProps) => {
+  const queryParams = new URLSearchParams();
+  const { id, ...restParams } = params;
+
+  Object.entries(restParams).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      queryParams.append(key, String(value));
+    }
+  });
+
+  const queryString = queryParams.toString();
+  const url = `${API_ROUTES.CHILD_MEMBER_LIST}/${id}${queryString ? `?${queryString}` : ""}`;
+
+  return await api.get(url, await createHeaders());
+};
+
+export const Create_White_Label = async (data: FormData) =>
+  await api.post(
+    `${API_ROUTES.CREATE_WHITE_LABEL}`,
+    data,
+    await createMultipartHeaders()
+  );
+
+export const Create_Super_Distributor = async (data: FormData) =>
+  await api.post(
+    `${API_ROUTES.CREATE_SUPER_DISTRIBUTOR}`,
+    data,
+    await createMultipartHeaders()
+  );
+
+export const Create_Partner = async (data: FormData) =>
+  await api.post(
+    `${API_ROUTES.CREATE_PARTNER}`,
+    data,
+    await createMultipartHeaders()
+  );
+
+export const Create_Distributor = async (data: FormData) =>
+  await api.post(
+    `${API_ROUTES.CREATE_DISTRIBUTOR}`,
+    data,
+    await createMultipartHeaders()
+  );
+
+export const Create_Retailer = async (data: FormData) =>
+  await api.post(
+    `${API_ROUTES.CREATE_RETAILER}`,
+    data,
+    await createMultipartHeaders()
+  );

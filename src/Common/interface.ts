@@ -194,25 +194,20 @@ export type CustomDatePickerProps = {
   customButtons?: boolean;
   inputMode?: "picker" | "manual" | "both";
 };
-
-export type CustomDropdownProps = {
+export interface CustomDropdownProps {
   label?: string;
-  placeholder?: string;
-  data: (string | { value: string; label: string })[];
-  value?: string | string[];
-  onChange?: (value: string | string[] | null) => void;
+  data: Array<string | { label: string; value: string | number }>;
+  value?: string | number | string[] | number[];
+  onChange?: (value: string | number | string[] | number[]) => void;
   error?: string;
   disabled?: boolean;
-  required?: boolean;
-  searchable?: boolean;
   clearable?: boolean;
   withAsterisk?: boolean;
+  multiple?: boolean;
+  className?: string;
   leftSection?: React.ReactNode;
   rightSection?: React.ReactNode;
-  multiple?: boolean;
-  withCheckIcon?: boolean;
-  className?: string;
-};
+}
 
 export type customFileinputProps = {
   label?: string;
@@ -398,3 +393,70 @@ export type WalletToWalletProps = {
 };
 
 export type ChildMemberListProps = Record<string, any>;
+
+export type UserProfileFormProps = {
+  title: string;
+  mobileNumber: string;
+  emailId: string;
+  parentAccount: string;
+  name: string;
+  aadhaarNumber: string;
+  panNumber: string;
+  shopNumber: string;
+  businessNumber: string;
+  dob: Date | null;
+  mainAddress: string;
+  city: string;
+  state: string;
+  addessZipCode: string;
+  outletName: string;
+  outletAddresses: string;
+  outletCity: string;
+  outletState: string;
+  outletZipCode: string;
+  bankName: string;
+  bankAccountNumber: string;
+  ifscCode: string;
+  branchName: string;
+  createdBy: string;
+  createdByIPAddress: string;
+  aadhaarCardFrontImage: File | null;
+  aadhaarCardBackImage: File | null;
+  panCardImage: File | null;
+  shopImage: File | null;
+  businessProofImage: File | null;
+};
+
+export type PendingPartnerActivationData = Record<string, any>;
+
+export type PartnerRegistrationModalProps = {
+  opened: boolean;
+  onClose: () => void;
+  rowData?: PendingPartnerActivationData;
+  openedAs?: string;
+};
+
+export type ViewUserProps = {
+  network: string;
+  userID: string;
+  userName: string;
+  mobileNumber: string;
+  emailId: string;
+  status: string;
+  isBlocked: boolean;
+};
+
+export type ViewUserList = Record<string, any>;
+
+export type ColumsSelectionModalProps = {
+  open: boolean;
+  onClose: () => void;
+  data: any[];
+  setVisibleColumns: (columns: string[]) => void;
+  visibleColumns: string[];
+};
+
+export type ViewUserAPIProps = {
+  id: string;
+  search?: string;
+};

@@ -40,6 +40,9 @@ export interface ThemeColors {
   redDark: string;
   grayDefault: string;
   grayLight: string;
+  grayDark: string;
+  greenDefault: string;
+  greenLight: string;
 }
 
 export interface SettingsState {
