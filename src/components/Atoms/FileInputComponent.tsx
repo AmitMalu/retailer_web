@@ -4,9 +4,7 @@ import {
   Box,
   FormHelperText,
   IconButton,
-  useTheme,
   styled,
-  Stack,
   TextField,
 } from "@mui/material";
 import { customFileinputProps } from "@/Common/interface";
@@ -33,9 +31,7 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
   withAsterisk = false,
   accept,
 }) => {
-  const theme = useTheme();
   const [fileName, setFileName] = useState<string>("");
-  const [isFocused, setIsFocused] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,8 +59,6 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
         value={fileName}
         ref={fileInputRef}
         onChange={(e) => e.stopPropagation()}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
         error={!!error}
         disabled={disabled}
         slotProps={{

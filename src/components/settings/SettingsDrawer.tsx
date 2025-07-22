@@ -17,8 +17,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../Redux/Store";
 import {
-  setLayout,
-  setColorScheme,
+  // setLayout,
+  // setColorScheme,
   setNavbarPosition,
   setSidebarStyle,
   setLayoutVariant,
@@ -26,8 +26,8 @@ import {
   closeSettingsDrawer,
 } from "../../store/slices/settingsSlice";
 import type {
-  LayoutType,
-  ColorScheme,
+  // LayoutType,
+  // ColorScheme,
   NavbarPosition,
   SidebarStyle,
   LayoutVariant,
@@ -37,52 +37,14 @@ import { toggleDarkMode } from "../../store/slices/uiSlice";
 import ThemePreview from "./ThemePreview";
 import { useState } from "react";
 
-// Color scheme option component
-const ColorOption = ({
-  color,
-  selected,
-  onClick,
-}: {
-  color: string;
-  selected: boolean;
-  onClick: () => void;
-}) => {
-  const colorMap: Record<string, string> = {
-    blue: "#0ea5e9",
-    green: "#10b981",
-    purple: "#8b5cf6",
-    orange: "#f59e0b",
-    teal: "#14b8a6",
-  };
-
-  return (
-    <Box
-      sx={{
-        width: 40,
-        height: 40,
-        borderRadius: "50%",
-        bgcolor: colorMap[color] || color,
-        border: selected ? "3px solid #fff" : "3px solid transparent",
-        boxShadow: selected ? "0 0 0 2px #000" : "none",
-        cursor: "pointer",
-        transition: "all 0.2s ease",
-        "&:hover": {
-          transform: "scale(1.1)",
-        },
-      }}
-      onClick={onClick}
-    />
-  );
-};
-
 export default function SettingsDrawer() {
   const dispatch = useDispatch();
   const isSettingsOpen = useSelector(
     (state: RootState) => state.settings.isSettingsOpen
   );
   const {
-    layout,
-    colorScheme,
+    // layout,
+    // colorScheme,
     navbarPosition,
     sidebarStyle,
     layoutVariant,
@@ -93,13 +55,13 @@ export default function SettingsDrawer() {
   // State for settings tabs
   const [activeTab, setActiveTab] = useState(0);
 
-  const handleLayoutChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setLayout(event.target.value as LayoutType));
-  };
+  // const handleLayoutChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   dispatch(setLayout(event.target.value as LayoutType));
+  // };
 
-  const handleColorSchemeChange = (color: ColorScheme) => {
-    dispatch(setColorScheme(color));
-  };
+  // const handleColorSchemeChange = (color: ColorScheme) => {
+  //   dispatch(setColorScheme(color));
+  // };
 
   const handleThemeOptionChange = (theme: ThemeOption) => {
     dispatch(setThemeOption(theme));

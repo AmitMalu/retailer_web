@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
 import {
@@ -10,7 +10,6 @@ import {
   ListItemIcon,
   ListItemText,
   Popover,
-  Tooltip,
   useTheme,
   useMediaQuery,
 } from "@mui/material";
@@ -60,7 +59,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
   // State for submenu popover
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [activeSubMenu, setActiveSubMenu] = useState<MenuItem[]>([]);
-  const [subMenuPosition, setSubMenuPosition] = useState({ top: 0, left: 0 });
+  // const [subMenuPosition, setSubMenuPosition] = useState({ top: 0, left: 0 });
 
   const menuItems = getMenuItems(loginData.role as UserRole);
 
@@ -92,11 +91,11 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
 
       setAnchorEl(event.currentTarget);
       setActiveSubMenu(item.subItems);
-      const rect = event.currentTarget.getBoundingClientRect();
-      setSubMenuPosition({
-        top: rect.top,
-        left: rect.right,
-      });
+      // const rect = event.currentTarget.getBoundingClientRect();
+      // setSubMenuPosition({
+      //   top: rect.top,
+      //   left: rect.right,
+      // });
     }
   };
 
@@ -133,7 +132,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
         open={mobileOpen}
         onClose={onClose}
         ModalProps={{
-          keepMounted: true, // Better open performance on mobile
+          keepMounted: true,
         }}
         sx={{
           width: drawerWidth,

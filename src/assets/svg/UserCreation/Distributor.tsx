@@ -1,4 +1,3 @@
-import * as React from "react";
 const DistributoeSVgIcon = ({ color }: { color: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

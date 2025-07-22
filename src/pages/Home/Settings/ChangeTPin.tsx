@@ -1,5 +1,4 @@
 import TextComponent from "@/components/Atoms/TextComponent";
-import React from "react";
 
 const ChangeTPin = () => {
   return (

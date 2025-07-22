@@ -1,84 +1,54 @@
-import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
-import React, { useState } from "react";
-import { Formik, FormikHelpers } from "formik";
-import * as Yup from "yup";
-import { useSelector } from "react-redux";
-import { RootState } from "@/Redux/Store";
-import { decryptData } from "@/Utils/helper";
-import { WalletToBankProps } from "@/Common/interface";
-import TextInputComponent from "@/components/Atoms/TextInputComponent";
-import DropdownComponent from "@/components/Atoms/DropdownComponent";
-import ButtonComponent from "@/components/Atoms/ButtonComponent";
-import {
-  showErrorNotification,
-  showSuccessNotification,
-} from "@/Utils/notifications";
-import { handleCustomError } from "@/Utils/handleCustomError";
 
 const WalletToBank = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  // const validationSchema = Yup.object().shape({
+  //   walletBalance: Yup.string().required("Required"),
+  //   selectBank: Yup.string().required("Required"),
+  //   TransactionType: Yup.string().required("Required"),
+  //   amount: Yup.string().required("Required"),
+  //   confirmAmount: Yup.string().required("Required"),
+  // });
 
-  const apiResponses = useSelector(
-    (state: RootState) => state.apiResponse.responses
-  );
-  const loginData = apiResponses?.loginData
-    ? decryptData(apiResponses?.loginData)
-    : null;
-  const ipAddress = apiResponses?.ipAddress
-    ? decryptData(apiResponses?.ipAddress)
-    : null;
+  // const initialValues: WalletToBankProps = {
+  //   requesterHierarchyId: "",
+  //   walletBalance: "",
+  //   selectBank: "",
+  //   TransactionType: "",
+  //   amount: "",
+  //   confirmAmount: "",
+  // };
 
-  console.log("ipAddress", ipAddress);
-  console.log("loginData", loginData);
-  const validationSchema = Yup.object().shape({
-    walletBalance: Yup.string().required("Required"),
-    selectBank: Yup.string().required("Required"),
-    TransactionType: Yup.string().required("Required"),
-    amount: Yup.string().required("Required"),
-    confirmAmount: Yup.string().required("Required"),
-  });
-
-  const initialValues: WalletToBankProps = {
-    requesterHierarchyId: "",
-    walletBalance: "",
-    selectBank: "",
-    TransactionType: "",
-    amount: "",
-    confirmAmount: "",
-  };
-
-  const handleFundRequest = async (
-    values: WalletToBankProps,
-    { resetForm }: FormikHelpers<WalletToBankProps>
-  ) => {
-    // try {
-    //   setIsLoading(true);
-    //   const bodyData = {
-    //     requesterHierarchyId: loginData?.partner_Id,
-    //     walletBalance: values.walletBalance,
-    //     selectBank: values.selectBank,
-    //     TransactionType: values.TransactionType,
-    //     amount: Number(values.amount),
-    //     confirmAmount: Number(values.confirmAmount),
-    //   };
-    //   const response = await Fund_Request(bodyData);
-    //   if (response?.status === 200 || response?.status === 201) {
-    //     showSuccessNotification(response?.data?.message);
-    //     resetForm();
-    //   } else {
-    //     showErrorNotification(response?.data?.message);
-    //   }
-    // } catch (error) {
-    //   await handleCustomError(error);
-    // } finally {
-    //   setIsLoading(false);
-    // }
-  };
+  // const handleFundRequest = async (
+  //   values: WalletToBankProps,
+  //   { resetForm }: FormikHelpers<WalletToBankProps>
+  // ) => {
+  //   // try {
+  //   //   setIsLoading(true);
+  //   //   const bodyData = {
+  //   //     requesterHierarchyId: loginData?.partner_Id,
+  //   //     walletBalance: values.walletBalance,
+  //   //     selectBank: values.selectBank,
+  //   //     TransactionType: values.TransactionType,
+  //   //     amount: Number(values.amount),
+  //   //     confirmAmount: Number(values.confirmAmount),
+  //   //   };
+  //   //   const response = await Fund_Request(bodyData);
+  //   //   if (response?.status === 200 || response?.status === 201) {
+  //   //     showSuccessNotification(response?.data?.message);
+  //   //     resetForm();
+  //   //   } else {
+  //   //     showErrorNotification(response?.data?.message);
+  //   //   }
+  //   // } catch (error) {
+  //   //   await handleCustomError(error);
+  //   // } finally {
+  //   //   setIsLoading(false);
+  //   // }
+  // };
 
   return (
     <>
-      {isLoading && <Loader />}
+      {/* {isLoading && <Loader />} */}
       <div className=" flex w-full flex-col flex-wrap items-center justify-start gap-1">
         <div className="relative w-[80%]">
           <div className="absolute inset-0 bg-[#D82226] rounded-[20px] blur-[8px] h-full"></div>

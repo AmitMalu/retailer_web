@@ -32,12 +32,13 @@ const SignUp: React.FC = () => {
   };
 
   const handleSubmit = async (values: SignUpRequest) => {
+    console.log(values);
     try {
       setIsLoading(true);
-      let bodyRequest = {
-        userName: values.userName,
-        name: values.name,
-      };
+      // let bodyRequest = {
+      //   userName: values.userName,
+      //   name: values.name,
+      // };
       //   const response = await login(bodyRequest);
       //   if (
       //     response?.data?.statusCode === 200 ||

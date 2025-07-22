@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { CommissionAndChargesParams, CommissionData } from "@/Common/interface";
@@ -23,7 +23,6 @@ import { useTheme } from "@mui/system";
 import { Commission_And_Charges_Report } from "@/Services/api";
 import { ColsSvgIcon, ExportSvgIcon, FilterSvgIcon } from "@/assets/svg";
 import ColumsSelectionModal from "@/components/Molecules/ColumsSelectionModal";
-import { useDebounce } from "@/Utils/debounce";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
@@ -37,9 +36,6 @@ const CommissionAndCharges = () => {
   const [isSeacrh, setIsSeacrh] = useState(false);
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
   const [showColumnModal, setShowColumnModal] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const debouncedSearchValue = useDebounce(searchValue, 800);
-  const [currentPageData, setCurrentPageData] = useState<CommissionData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const apiResponses = useSelector(
@@ -324,25 +320,6 @@ const CommissionAndCharges = () => {
     tableColumns.find((col) => col.key === "action")!,
   ];
 
-  const filteredData = isCommissionReportList
-    .filter((item: any) => {
-      const matchesSearch = debouncedSearchValue
-        ? Object.entries(item).some(([key, value]) => {
-            const stringValue = value?.toString().toLowerCase() || "";
-            const matches =
-              key !== "action" &&
-              stringValue.includes(debouncedSearchValue.toLowerCase());
-            return matches;
-          })
-        : true;
-
-      return matchesSearch;
-    })
-    .map((item: any, index: number) => ({
-      ...item,
-      _rowKey: `${item.userId || ""}__${index}`,
-    }));
-
   return (
     <>
       {isLoading && <Loader />}
@@ -522,12 +499,15 @@ const CommissionAndCharges = () => {
                   )}
                 <div className="mt-6">
                   <TableComponent
-                    data={filteredData}
+                    data={
+                      Array.isArray(isCommissionReportList)
+                        ? isCommissionReportList
+                        : [isCommissionReportList]
+                    }
                     columns={filteredTableColumns}
                     showSearch={isSeacrh}
                     page={currentPage}
                     size={itemsPerPage}
-                    onCurrentPageData={setCurrentPageData}
                     onSearch={(columnKey, value) =>
                       handleSearchWithValues(columnKey, value, values)
                     }

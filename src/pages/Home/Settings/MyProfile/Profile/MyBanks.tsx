@@ -1,9 +1,7 @@
-import { ViewDocSvgIcon } from "@/assets/svg";
 import TextComponent from "@/components/Atoms/TextComponent";
 import TableComponent from "@/components/Molecules/TableComponent";
 import { RootState } from "@/Redux/Store";
 import { decryptData } from "@/Utils/helper";
-import { UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { useSelector } from "react-redux";
 

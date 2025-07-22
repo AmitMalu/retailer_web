@@ -15,7 +15,6 @@ import ColumsSelectionModal from "@/components/Molecules/ColumsSelectionModal";
 import TableComponent from "@/components/Molecules/TableComponent";
 import { RootState } from "@/Redux/Store";
 import { Child_Member_List, Network_Transaction_Report } from "@/Services/api";
-import { useDebounce } from "@/Utils/debounce";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import {
   decryptData,
@@ -42,8 +41,6 @@ const NetworkTransaction = () => {
   const [isSeacrh, setIsSeacrh] = useState(false);
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
   const [showColumnModal, setShowColumnModal] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const debouncedSearchValue = useDebounce(searchValue, 800);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const isFetchingRef = useRef(false);
@@ -526,25 +523,6 @@ const NetworkTransaction = () => {
     tableColumns.find((col) => col.key === "action")!,
   ];
 
-  const filteredData = isNetworkTransactionReportList
-    .filter((item: any) => {
-      const matchesSearch = debouncedSearchValue
-        ? Object.entries(item).some(([key, value]) => {
-            const stringValue = value?.toString().toLowerCase() || "";
-            const matches =
-              key !== "action" &&
-              stringValue.includes(debouncedSearchValue.toLowerCase());
-            return matches;
-          })
-        : true;
-
-      return matchesSearch;
-    })
-    .map((item: any, index: number) => ({
-      ...item,
-      _rowKey: `${item.userId || ""}__${index}`,
-    }));
-
   return (
     <>
       {isLoading && <Loader />}
@@ -809,7 +787,11 @@ const NetworkTransaction = () => {
                   )}
                 <div className="mt-6">
                   <TableComponent
-                    data={filteredData}
+                    data={
+                      Array.isArray(isNetworkTransactionReportList)
+                        ? isNetworkTransactionReportList
+                        : [isNetworkTransactionReportList]
+                    }
                     columns={filteredTableColumns}
                     showSearch={isSeacrh}
                     page={currentPage}

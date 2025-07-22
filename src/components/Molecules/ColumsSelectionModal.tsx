@@ -54,6 +54,7 @@ const ColumsSelectionModal: React.FC<ColumsSelectionModalProps> = ({
           height: "45%",
           borderRadius: 30,
           borderColor: theme.palette.red.light,
+          scrollbarWidth: "none",
         },
       }}
     >

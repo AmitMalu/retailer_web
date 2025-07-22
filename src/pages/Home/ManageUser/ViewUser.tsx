@@ -10,7 +10,6 @@ import {
 import { useTheme } from "@mui/system";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { useDebounce } from "@/Utils/debounce";
 import { Child_Member_List } from "@/Services/api";
 import { Menu, UnstyledButton } from "@mantine/core";
 import {
@@ -24,16 +23,14 @@ import {
 import TableComponent from "@/components/Molecules/TableComponent";
 import ColumsSelectionModal from "@/components/Molecules/ColumsSelectionModal";
 import moment from "moment";
+import Loader from "@/components/Atoms/Loader";
 
 const ViewUser = () => {
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const debouncedSearchValue = useDebounce(searchValue, 800);
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [isSeacrh, setIsSeacrh] = useState(false);
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
-
   const [isUserList, setIsUserList] = useState<ViewUserList[]>([]);
   const [currentPageData, setCurrentPageData] = useState<ViewUserList[]>([]);
   const isFetchingRef = useRef<boolean>(false);
@@ -186,30 +183,11 @@ const ViewUser = () => {
     ...tableColumns.filter(
       (col) => visibleColumns.includes(col.key) && col.key !== "action"
     ),
-    tableColumns.find((col) => col.key === "action")!, // Always include action at the end
+    tableColumns.find((col) => col.key === "action")!,
   ];
 
-  const filteredData = isUserList
-    .filter((item: any) => {
-      const matchesSearch = debouncedSearchValue
-        ? Object.entries(item).some(([key, value]) => {
-            const stringValue = value?.toString().toLowerCase() || "";
-            const matches =
-              key !== "action" &&
-              stringValue.includes(debouncedSearchValue.toLowerCase());
-            return matches;
-          })
-        : true;
-
-      return matchesSearch;
-    })
-    .map((item: any, index: number) => ({
-      ...item,
-      _rowKey: `${item.userId || ""}__${index}`,
-    }));
-
   const handleExport = (exportType: "all" | "currentPage") => {
-    const dataToExport = exportType === "all" ? filteredData : currentPageData;
+    const dataToExport = exportType === "all" ? isUserList : currentPageData;
 
     if (dataToExport.length === 0) {
       showErrorNotification(
@@ -307,6 +285,7 @@ const ViewUser = () => {
 
   return (
     <div className="">
+      {isLoading && <Loader />}
       <div className="mb-4">
         <div className="flex w-full items-center justify-between gap-2">
           <div className="flex w-full items-center justify-start gap-2">
@@ -382,7 +361,7 @@ const ViewUser = () => {
       </div>
       <div className="shadow-black-900/100 bg-transparent shadow-lg">
         <TableComponent
-          data={filteredData}
+          data={Array.isArray(isUserList) ? isUserList : [isUserList]}
           columns={filteredTableColumns}
           showSearch={isSeacrh}
           onCurrentPageData={setCurrentPageData}

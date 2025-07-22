@@ -1,6 +1,5 @@
 import { WalletData, WalletParams } from "@/Common/interface";
 import { RootState } from "@/Redux/Store";
-import { useDebounce } from "@/Utils/debounce";
 import {
   decryptData,
   formatYMDdate,
@@ -8,7 +7,7 @@ import {
   isSameOrBefore,
 } from "@/Utils/helper";
 import { useTheme } from "@mui/system";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -37,9 +36,6 @@ const WalletReport = () => {
   const [isSeacrh, setIsSeacrh] = useState(false);
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
   const [showColumnModal, setShowColumnModal] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const debouncedSearchValue = useDebounce(searchValue, 800);
-  const [currentPageData, setCurrentPageData] = useState<WalletData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const apiResponses = useSelector(
@@ -100,14 +96,9 @@ const WalletReport = () => {
     status: "",
     page: currentPage,
     size: itemsPerPage,
-    // search: "",
-    // download: false,
   };
 
-  const handleReportSubmit = async (
-    values: WalletParams
-    // { resetForm }: FormikHelpers<ReportProps>,
-  ) => {
+  const handleReportSubmit = async (values: WalletParams) => {
     try {
       setIsLoading(true);
       setCurrentPage(values.page);
@@ -309,25 +300,6 @@ const WalletReport = () => {
     tableColumns.find((col) => col.key === "action")!,
   ];
 
-  const filteredData = isWalletReportList
-    .filter((item: any) => {
-      const matchesSearch = debouncedSearchValue
-        ? Object.entries(item).some(([key, value]) => {
-            const stringValue = value?.toString().toLowerCase() || "";
-            const matches =
-              key !== "action" &&
-              stringValue.includes(debouncedSearchValue.toLowerCase());
-            return matches;
-          })
-        : true;
-
-      return matchesSearch;
-    })
-    .map((item: any, index: number) => ({
-      ...item,
-      _rowKey: `${item.userId || ""}__${index}`,
-    }));
-
   return (
     <>
       {isLoading && <Loader />}
@@ -505,12 +477,15 @@ const WalletReport = () => {
                 )}
                 <div className="mt-6">
                   <TableComponent
-                    data={filteredData}
+                    data={
+                      Array.isArray(isWalletReportList)
+                        ? isWalletReportList
+                        : [isWalletReportList]
+                    }
                     columns={filteredTableColumns}
                     showSearch={isSeacrh}
                     page={currentPage}
                     size={itemsPerPage}
-                    onCurrentPageData={setCurrentPageData}
                     onSearch={(columnKey, value) =>
                       handleSearchWithValues(columnKey, value, values)
                     }

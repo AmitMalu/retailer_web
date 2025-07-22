@@ -1,5 +1,5 @@
 import { Tabs } from "@mantine/core";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useTheme } from "@mui/material";
 import TextComponent from "@/components/Atoms/TextComponent";
 import { PasswordSvgIcon, ProfileSvgIcon } from "@/assets/svg";
