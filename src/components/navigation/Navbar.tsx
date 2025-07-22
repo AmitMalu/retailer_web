@@ -26,10 +26,7 @@ export default function Navbar({
   isMobile: isMobileProp,
 }: NavbarProps) {
   const dispatch = useDispatch();
-  const darkMode = useSelector((state: RootState) => state.ui.darkMode);
-  const { navbarPosition, sidebarStyle } = useSelector(
-    (state: RootState) => state.settings
-  );
+  const { navbarPosition } = useSelector((state: RootState) => state.settings);
   const theme = useTheme();
   const isMobileView = useMediaQuery(theme.breakpoints.down("md"));
   const isMobile = isMobileProp || isMobileView;

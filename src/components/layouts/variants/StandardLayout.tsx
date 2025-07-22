@@ -1,27 +1,18 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Paper,
-  Breadcrumbs,
-  Typography,
-  Link,
-  useTheme,
-} from "@mui/material";
+import { useState } from "react";
+import { Box } from "@mui/material";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../Redux/Store";
 import BaseLayout from "./BaseLayout";
 import Navbar from "../../navigation/Navbar";
 import Sidebar from "../../navigation/Sidebar";
 import SettingsDrawer from "../../settings/SettingsDrawer";
-import { useLocation, Link as RouterLink } from "react-router-dom";
 import { StandardLayoutProps } from "@/Common/interface";
 
 export default function StandardLayout({ children }: StandardLayoutProps) {
-  const theme = useTheme();
-  const { layout, navbarPosition, sidebarStyle } = useSelector(
+  const { layout, navbarPosition } = useSelector(
     (state: RootState) => state.settings
   );
-  const location = useLocation();
+  // const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
@@ -29,23 +20,23 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
   };
 
   // Generate breadcrumbs based on current path
-  const generateBreadcrumbs = () => {
-    const paths = location.pathname.split("/").filter((path) => path);
-    if (paths.length === 0) return [{ name: "Dashboard", path: "/" }];
+  // const generateBreadcrumbs = () => {
+  //   const paths = location.pathname.split("/").filter((path) => path);
+  //   if (paths.length === 0) return [{ name: "Dashboard", path: "/" }];
 
-    const breadcrumbs = [{ name: "Dashboard", path: "/" }];
-    let currentPath = "";
+  //   const breadcrumbs = [{ name: "Dashboard", path: "/" }];
+  //   let currentPath = "";
 
-    paths.forEach((path) => {
-      currentPath += `/${path}`;
-      breadcrumbs.push({
-        name: path.charAt(0).toUpperCase() + path.slice(1),
-        path: currentPath,
-      });
-    });
+  //   paths.forEach((path) => {
+  //     currentPath += `/${path}`;
+  //     breadcrumbs.push({
+  //       name: path.charAt(0).toUpperCase() + path.slice(1),
+  //       path: currentPath,
+  //     });
+  //   });
 
-    return breadcrumbs;
-  };
+  //   return breadcrumbs;
+  // };
 
   // const breadcrumbs = generateBreadcrumbs();
 
@@ -98,7 +89,6 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
           </Breadcrumbs>
         </Paper> */}
 
-        {/* Main content */}
         <div>{children}</div>
 
         {/* Floating action button */}

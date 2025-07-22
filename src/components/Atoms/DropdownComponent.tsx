@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useTheme } from "@mui/material/styles";
 import {
   FormControl,
@@ -21,8 +21,8 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
   // searchable = false,
   clearable = false,
   withAsterisk = false,
-  leftSection,
-  rightSection,
+  // leftSection,
+  // rightSection,
   multiple = false,
   // withCheckIcon = true,
   className = "",

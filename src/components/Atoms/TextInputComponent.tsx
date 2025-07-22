@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   TextField,
   InputAdornment,
-  Box,
   useTheme,
   TextFieldProps,
 } from "@mui/material";
@@ -46,7 +45,6 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
   ...rest
 }) => {
   const theme = useTheme();
-  const [isFocused, setIsFocused] = useState(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
@@ -87,8 +85,6 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
         placeholder={placeholder}
         value={value}
         onChange={handleChange}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
         error={!!error}
         disabled={disabled}
         type={type}

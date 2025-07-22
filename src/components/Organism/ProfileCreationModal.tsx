@@ -43,7 +43,7 @@ import theme from "@/theme/ThemeConfig";
 const ProfileRegistrationForm = ({
   opened,
   onClose,
-  rowData,
+  // rowData,
   openedAs,
 }: PartnerRegistrationModalProps) => {
   const [active, setActive] = useState(0);
