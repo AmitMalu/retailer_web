@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { SetPasswordRequestProps } from "@/Common/interface";
+import { ChangePasswordRequestProps } from "@/Common/interface";
 import {
   CloseEyeSvgIcon,
   LockSvgIcon,
@@ -9,7 +9,7 @@ import {
   ProfileSvgIcon,
 } from "@/assets/svg";
 import { decryptData, PasswordRegex } from "@/Utils/helper";
-import { Set_Password } from "@/Services/api";
+import { Change_Password } from "@/Services/api";
 import {
   showErrorNotification,
   showSuccessNotification,
@@ -21,10 +21,12 @@ import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import { useTheme } from "@mui/system";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
+import OTPInput from "react-otp-input";
 
 const ChangePassowrd: React.FC = () => {
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const apiResponses = useSelector(
@@ -33,35 +35,75 @@ const ChangePassowrd: React.FC = () => {
   const UserProfileData = apiResponses?.userProfile
     ? decryptData(apiResponses?.userProfile)
     : null;
+  const [isOtp, setIsOtp] = useState(false);
 
   const validationSchema = Yup.object({
+    otp: Yup.string().required("Required"),
+    oldPassword: Yup.string()
+      .matches(
+        PasswordRegex,
+        "Password must be at least 6 characters long and include at least one letter, one number, and one special character (@#$%^&*()_+!)."
+      )
+      .required("Required"),
     newPassword: Yup.string()
       .matches(
         PasswordRegex,
         "Password must be at least 6 characters long and include at least one letter, one number, and one special character (@#$%^&*()_+!)."
       )
       .required("Required"),
-    reEnteredPassword: Yup.string()
+    confirmPassword: Yup.string()
       .oneOf([Yup.ref("newPassword")], "Passwords do not match")
       .required("Required"),
   });
 
-  const initialValues: SetPasswordRequestProps = {
-    newPassword: "",
-    reEnteredPassword: "",
+  const initialValues: ChangePasswordRequestProps = {
     userName: UserProfileData?.info?.mobileNumber,
+    otp: "",
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+    step: "",
   };
 
-  const handleSubmit = async (values: SetPasswordRequestProps) => {
+  const handleChangePasswordSubmit = async (
+    values: ChangePasswordRequestProps
+  ) => {
     try {
       setIsLoading(true);
-      let bodyRequest = {
-        userName: UserProfileData?.info?.mobileNumber,
-        newPassword: values.newPassword,
-        reEnteredPassword: values.reEnteredPassword,
-      };
-      await Set_Password(bodyRequest);
-      showSuccessNotification("Password Changed Successfully!");
+
+      if (!values.otp) {
+        let bodyRequest = {
+          userName: UserProfileData?.info?.mobileNumber,
+          otp: "",
+          oldPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+          step: "REQUEST_OTP",
+        };
+        const response = await Change_Password(bodyRequest);
+        if (response?.status === 200) {
+          showSuccessNotification(response?.data?.message);
+          setIsOtp(true);
+        } else {
+          showErrorNotification(response?.data?.message);
+        }
+      } else {
+        let bodyRequest = {
+          userName: UserProfileData?.info?.mobileNumber,
+          otp: values.otp,
+          oldPassword: values.oldPassword,
+          newPassword: values.newPassword,
+          confirmPassword: values.confirmPassword,
+          step: "VERIFY_AND_CHANGE",
+        };
+        const response = await Change_Password(bodyRequest);
+        if (response?.status === 200) {
+          showSuccessNotification(response?.data?.message);
+          setIsOtp(false);
+        } else {
+          showErrorNotification(response?.data?.message);
+        }
+      }
     } catch (error: any) {
       setIsLoading(false);
       showErrorNotification(error.response?.data?.message || error.message);
@@ -84,82 +126,163 @@ const ChangePassowrd: React.FC = () => {
             {UserProfileData?.info?.name}
           </TextComponent>
         </div>
-        <Formik<SetPasswordRequestProps>
+        <Formik<ChangePasswordRequestProps>
           initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
+          validationSchema={isOtp ? validationSchema : null}
+          onSubmit={handleChangePasswordSubmit}
           enableReinitialize={true}
         >
           {({ handleSubmit, handleChange, errors, touched, values }) => (
             <>
-              <div className="mt-10 flex w-full flex-col gap-4 items-center justify-center">
-                <TextInputComponent
-                  label="New Password"
-                  value={values.newPassword}
-                  onChange={handleChange("newPassword")}
-                  error={
-                    touched.newPassword && errors.newPassword
-                      ? errors.newPassword
-                      : ""
-                  }
-                  withAsterisk
-                  leftSection={<LockSvgIcon />}
-                  type={showNewPassword ? "text" : "password"}
-                  className="w-full"
-                  isAuth={true}
-                  rightSection={
-                    <div
-                      onClick={() => setShowNewPassword(!showNewPassword)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      {showNewPassword ? (
-                        <OpenEyeSvgIcon />
-                      ) : (
-                        <CloseEyeSvgIcon />
+              {isOtp ? (
+                <>
+                  <div className="mt-10 flex w-full flex-col gap-4 items-center justify-center">
+                    <div className="mb-4">
+                      <OTPInput
+                        value={values.otp}
+                        onChange={handleChange("otp")}
+                        renderInput={(props) => <input {...props} />}
+                        numInputs={6}
+                        inputStyle={{
+                          width: "4rem",
+                          height: "3rem",
+                          margin: "0 0.3rem",
+                          fontSize: "1.5rem",
+                          borderRadius: "8px",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          borderColor:
+                            touched.otp && errors.otp
+                              ? theme.palette.red.DEFAULT
+                              : "#ccc",
+                          fontFamily: '"Poppins", sans-serif',
+                        }}
+                      />
+                      {touched.otp && errors.otp && (
+                        <TextComponent
+                          fontSize={12}
+                          fontWeight={400}
+                          color={theme.palette.red.DEFAULT}
+                          style={{ textAlign: "right" }}
+                        >
+                          {errors.otp}
+                        </TextComponent>
                       )}
                     </div>
-                  }
-                />
-                <TextInputComponent
-                  label={"Re-enter New Password"}
-                  value={values.reEnteredPassword}
-                  onChange={handleChange("reEnteredPassword")}
-                  error={
-                    touched.reEnteredPassword && errors.reEnteredPassword
-                      ? errors.reEnteredPassword
-                      : ""
-                  }
-                  withAsterisk
-                  type={showPassword ? "text" : "password"}
-                  leftSection={<LockSvgIcon />}
-                  className="w-full"
-                  isAuth={true}
-                  rightSection={
-                    <div
-                      onClick={() => setShowPassword(!showPassword)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      {showPassword ? <OpenEyeSvgIcon /> : <CloseEyeSvgIcon />}
-                    </div>
-                  }
-                />
-              </div>
+                    <TextInputComponent
+                      label="Old Password"
+                      value={values.oldPassword}
+                      onChange={handleChange("oldPassword")}
+                      error={
+                        touched.oldPassword && errors.oldPassword
+                          ? errors.oldPassword
+                          : ""
+                      }
+                      withAsterisk
+                      leftSection={<LockSvgIcon />}
+                      type={showOldPassword ? "text" : "password"}
+                      className="w-full"
+                      isAuth={true}
+                      rightSection={
+                        <div
+                          onClick={() => setShowOldPassword(!showOldPassword)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {showOldPassword ? (
+                            <OpenEyeSvgIcon />
+                          ) : (
+                            <CloseEyeSvgIcon />
+                          )}
+                        </div>
+                      }
+                    />
+                    <TextInputComponent
+                      label="New Password"
+                      value={values.newPassword}
+                      onChange={handleChange("newPassword")}
+                      error={
+                        touched.newPassword && errors.newPassword
+                          ? errors.newPassword
+                          : ""
+                      }
+                      withAsterisk
+                      leftSection={<LockSvgIcon />}
+                      type={showNewPassword ? "text" : "password"}
+                      className="w-full"
+                      isAuth={true}
+                      rightSection={
+                        <div
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {showNewPassword ? (
+                            <OpenEyeSvgIcon />
+                          ) : (
+                            <CloseEyeSvgIcon />
+                          )}
+                        </div>
+                      }
+                    />
+                    <TextInputComponent
+                      label={"Re-enter New Password"}
+                      value={values.confirmPassword}
+                      onChange={handleChange("confirmPassword")}
+                      error={
+                        touched.confirmPassword && errors.confirmPassword
+                          ? errors.confirmPassword
+                          : ""
+                      }
+                      withAsterisk
+                      type={showPassword ? "text" : "password"}
+                      leftSection={<LockSvgIcon />}
+                      className="w-full"
+                      isAuth={true}
+                      rightSection={
+                        <div
+                          onClick={() => setShowPassword(!showPassword)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {showPassword ? (
+                            <OpenEyeSvgIcon />
+                          ) : (
+                            <CloseEyeSvgIcon />
+                          )}
+                        </div>
+                      }
+                    />
+                  </div>
+                  <div className="mt-6 flex w-full items-center justify-center">
+                    <ButtonComponent
+                      title={"Update"}
+                      variant="filled"
+                      onClick={() => handleSubmit()}
+                      loading={isLoading}
+                      radius={28}
+                      fullWidth={true}
+                      // disabled={
+                      //   isLoading ||
+                      //   !values.newPassword ||
+                      //   !values.confirmPassword
+                      // }
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="mb-3 mt-10 flex gap-4 w-full flex-col items-center justify-center"></div>
 
-              <div className="mt-6 flex w-full items-center justify-center">
-                <ButtonComponent
-                  title={"Update"}
-                  variant="filled"
-                  onClick={() => handleSubmit()}
-                  loading={isLoading}
-                  radius={28}
-                  fullWidth={true}
-                  disabled={
-                    isLoading ||
-                    !values.newPassword ||
-                    !values.reEnteredPassword
-                  }
-                />
-              </div>
+                  <div className="mt-6 flex h-9 w-full items-center justify-center">
+                    <ButtonComponent
+                      title={"SEND OTP"}
+                      variant="filled"
+                      onClick={() => handleSubmit()}
+                      loading={isLoading}
+                      radius={28}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </>
+              )}
             </>
           )}
         </Formik>

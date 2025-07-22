@@ -23,9 +23,10 @@ const WalletToBankFund = lazy(
 const WalletToWallet = lazy(
   () => import("@/pages/Home/Funding/WalletToWallet")
 );
-const Transaction = lazy(
-  () => import("@/pages/Home/Reports/TransactionHistory")
+const NetworkTransaction = lazy(
+  () => import("@/pages/Home/Reports/NetworkTransaction")
 );
+const WalletReport = lazy(() => import("@/pages/Home/Reports/WalletReport"));
 const AccountSummary = lazy(
   () => import("@/pages/Home/Reports/AccountSummary")
 );
@@ -56,9 +57,6 @@ const DownLineBalance = lazy(
   () => import("@/pages/Home/Reports/DownLineBalance")
 );
 const MyProfile = lazy(() => import("@/pages/Home/Settings/MyProfile"));
-const ChangePassword = lazy(
-  () => import("@/pages/Home/Settings/ChangePassword")
-);
 const ChangeTPIN = lazy(() => import("@/pages/Home/Settings/ChangeTPin"));
 const MyCertificate = lazy(() => import("@/pages/Home/Settings/MyCertificate"));
 const LowBalanceAlert = lazy(
@@ -265,6 +263,23 @@ const RouterOutlet = () => {
             />
           </Route>
           <Route
+            path="reports/networkTransaction"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <NetworkTransaction />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
             path="reports/accountSummary"
             element={
               <ProtectedRoute>
@@ -282,7 +297,7 @@ const RouterOutlet = () => {
             />
           </Route>
           <Route
-            path="reports/transactionHistory"
+            path="reports/WalletReport"
             element={
               <ProtectedRoute>
                 <Outlet />
@@ -293,7 +308,7 @@ const RouterOutlet = () => {
               index
               element={
                 <MainLayout>
-                  <Transaction />
+                  <WalletReport />
                 </MainLayout>
               }
             />
@@ -486,23 +501,7 @@ const RouterOutlet = () => {
               }
             />
           </Route>
-          <Route
-            path="settings/changePassword"
-            element={
-              <ProtectedRoute>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <ChangePassword />
-                </MainLayout>
-              }
-            />
-          </Route>
+
           <Route
             path="settings/changeTPIN"
             element={

@@ -15,6 +15,7 @@ export const API_ROUTES = {
 
   ///////////////// MAIN /////////////////////////////
   USER_PROFILE: `${BASE_URL}/api/dashboard/profile`,
+  CHANGE_PASSWORD: `${BASE_URL}/auth/change-password`,
 
   ///////////////// FUNDING //////////////////////////
   PREFUND_REQUEST: `${BASE_URL}/api/prefund/request`,
@@ -30,4 +31,7 @@ export const API_ROUTES = {
   CREATE_PARTNER: `${BASE_URL}/api/partners`,
   CREATE_DISTRIBUTOR: `${BASE_URL}/api/distributors`,
   CREATE_RETAILER: `${BASE_URL}/api/retailers`,
+  COMMISSION_AND_CHARGES: `${BASE_URL}/api/commission-charge/view`,
+  WALLET_REPORT: `${BASE_URL}/api/my-transaction/view`,
+  NETWORK_TRANSACTION_REPORT: `${BASE_URL}/api/network-transaction/view`,
 };

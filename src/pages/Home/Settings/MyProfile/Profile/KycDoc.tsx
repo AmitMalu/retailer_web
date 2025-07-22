@@ -16,19 +16,39 @@ const KycDoc = () => {
     ? decryptData(apiResponses?.userProfile)
     : null;
 
+  const documentMapping = {
+    aadhaarCardFrontImage: { name: "Aadhaar Card Front" },
+    aadhaarCardBackImage: { name: "Aadhaar Card Back" },
+    panCardImage: { name: "PAN Card" },
+    shopImage: { name: "Shop Image" },
+    businessProofImage: { name: "Business Proof" },
+  } as const;
+
+  type DocumentKey = keyof typeof documentMapping;
+
+  const transformDocuments = (kycDocs: any) => {
+    if (!kycDocs) return [];
+    return Object.entries(kycDocs).map(([key, url]) => ({
+      document: documentMapping[key as DocumentKey]?.name || key,
+      documentNo: "",
+      url: url,
+    }));
+  };
+
+  const documents = transformDocuments(UserProfileData?.kycDocs);
   const tableColumns = [
     {
       key: "document",
-      label: "Document",
+      label: "Document Name",
       searchKey: "document",
       sortable: false,
     },
-    {
-      key: "documentNo",
-      label: "Document No",
-      searchKey: "documentNo",
-      sortable: false,
-    },
+    // {
+    //   key: "documentNo",
+    //   label: "Document No",
+    //   searchKey: "documentNo",
+    //   sortable: false,
+    // },
     // {
     //   key: "verified",
     //   label: "Status",
@@ -52,9 +72,12 @@ const KycDoc = () => {
       render: (row: KycDocList) => (
         <div className="flex w-max items-center justify-between gap-2  justify-self-center">
           <UnstyledButton
-            onClick={() => {
-              // setSelectedRowData(row);
-              //   setShowDrawerForm(true);
+            onClick={(e) => {
+              e.preventDefault();
+              const fileUrl = row.url.startsWith("C:\\")
+                ? `file:///${row.url.replace(/\\/g, "/")}`
+                : row.url;
+              window.open(fileUrl, "_blank");
             }}
           >
             <ViewDocSvgIcon color={theme.palette.red.DEFAULT} />
@@ -65,19 +88,21 @@ const KycDoc = () => {
       sortable: false,
     },
   ];
+
+  console.log(UserProfileData?.kycDocs);
   return (
     <div>
       <div className="shadow-black-900/100 bg-transparent shadow-lg">
         <TableComponent
           data={
-            Array.isArray(UserProfileData?.kycDocs)
-              ? UserProfileData.kycDocs
-              : UserProfileData?.kycDocs
-                ? [UserProfileData.kycDocs]
-                : []
+            documents
+            // Array.isArray(UserProfileData?.kycDocs)
+            //   ? UserProfileData.kycDocs
+            //   : UserProfileData?.kycDocs
+            //     ? [UserProfileData.kycDocs]
+            //     : []
           }
           columns={tableColumns}
-          // onCurrentPageData={setCurrentPageData}
         />
       </div>
     </div>
