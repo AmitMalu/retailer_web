@@ -1,12 +1,13 @@
 import React, { useRef, useState } from "react";
 import {
   Button,
-  Typography,
   Box,
   FormHelperText,
   IconButton,
   useTheme,
   styled,
+  Stack,
+  TextField,
 } from "@mui/material";
 import { customFileinputProps } from "@/Common/interface";
 import { CloudUpload, Close } from "@mui/icons-material";
@@ -26,17 +27,15 @@ const VisuallyHiddenInput = styled("input")({
 const FileInputComponent: React.FC<customFileinputProps> = ({
   label,
   placeholder = "Choose a file or drag and drop",
-  // value,
   onChange,
   error,
   disabled = false,
   withAsterisk = false,
-  // leftSection,
-  // rightSection,
   accept,
 }) => {
   const theme = useTheme();
   const [fileName, setFileName] = useState<string>("");
+  const [isFocused, setIsFocused] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,113 +54,107 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
   };
 
   return (
-    <Box>
-      {label && (
-        <Box display="flex" alignItems="center" gap={0.5} mb={0.5}>
-          <Typography
-            variant="body2"
-            color={theme.palette.text.primary}
-            fontWeight={600}
-          >
-            {label}
-          </Typography>
-          {withAsterisk && (
-            <Typography variant="body2" color="error" fontWeight={600}>
-              *
-            </Typography>
-          )}
-        </Box>
-      )}
-
-      <Button
-        component="label"
+    <Box sx={{ position: "relative", width: "100%", mt: 0.125, mb: 0.125 }}>
+      <TextField
         variant="outlined"
-        color="inherit"
-        disabled={disabled}
         fullWidth
-        startIcon={<CloudUpload />}
+        label={`${label}${withAsterisk ? " *" : ""}`}
+        placeholder={placeholder}
+        value={fileName}
+        ref={fileInputRef}
+        onChange={(e) => e.stopPropagation()}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        error={!!error}
+        disabled={disabled}
+        InputProps={{
+          readOnly: true,
+          endAdornment: (
+            <Stack direction="row" spacing={1} alignItems="center">
+              {fileName && (
+                <IconButton
+                  size="small"
+                  onClick={handleRemoveFile}
+                  sx={{ color: "text.secondary" }}
+                >
+                  <Close fontSize="small" />
+                </IconButton>
+              )}
+              <Button
+                component="label"
+                variant="outlined"
+                size="small"
+                startIcon={<CloudUpload />}
+                disabled={disabled}
+                onClick={(e) => e.stopPropagation()}
+                sx={{
+                  width: "100%",
+                  textTransform: "none",
+                  borderColor: error ? "error.main" : "gray.DEFAULT",
+                  color: error ? "error.main" : "text.primary",
+                  "&:hover": {
+                    borderColor: error ? "error.main" : "background.blackColor",
+                    backgroundColor: "rgba(0, 0, 0, 0.04)",
+                  },
+                }}
+              >
+                <VisuallyHiddenInput
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept={accept}
+                  disabled={disabled}
+                />
+              </Button>
+            </Stack>
+          ),
+        }}
         sx={{
-          justifyContent: "flex-start",
-          textTransform: "none",
-          borderColor: error
-            ? theme.palette.error.main
-            : theme.palette.primary.main,
-          color: theme.palette.text.primary,
-          "&:hover": {
-            borderColor: error
-              ? theme.palette.error.main
-              : theme.palette.primary.main,
-            backgroundColor: theme.palette.action.hover,
+          "& .MuiInputLabel-root": {
+            color: "placeholder",
+            fontSize: "16px",
+            fontWeight: 400,
+            "&.Mui-focused": {
+              color: error ? "error.main" : "text.primary",
+            },
+            "&.Mui-error": {
+              color: "error.main",
+            },
           },
-          "&.Mui-disabled": {
-            borderColor: theme.palette.action.disabled,
-            color: theme.palette.action.disabled,
+          "& .MuiOutlinedInput-root": {
+            borderColor: "gray.DEFAULT",
+            borderRadius: "6px !important",
+
+            "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+              borderColor: "error.main",
+              borderRadius: "6px !important",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: error ? "error.main" : "background.blackColor",
+              borderWidth: "1px",
+              borderRadius: "6px !important",
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: error ? "error.main" : "background.blackColor",
+            },
+            "& fieldset": {
+              borderColor: "gray.DEFAULT",
+              borderRadius: "6px !important",
+            },
+            "&:hover fieldset": {
+              borderColor: error ? "error.main" : "background.blackColor",
+              borderRadius: "6px !important",
+            },
           },
         }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            width: "100%",
-            justifyContent: "space-between",
-            overflow: "hidden",
-          }}
-        >
-          <Typography
-            variant="body2"
-            color={
-              fileName
-                ? theme.palette.text.primary
-                : theme.palette.text.secondary
-            }
-            noWrap
-            sx={{
-              flex: 1,
-              textAlign: "left",
-              overflow: "hidden",
-              "&.Mui-disabled": {
-                color: theme.palette.action.disabled,
-              },
-            }}
-          >
-            {fileName || placeholder}
-          </Typography>
-
-          {fileName && (
-            <IconButton
-              size="small"
-              onClick={handleRemoveFile}
-              sx={{
-                ml: 1,
-                color: theme.palette.text.secondary,
-                "&:hover": {
-                  color: theme.palette.text.primary,
-                  backgroundColor: theme.palette.action.hover,
-                },
-              }}
-              disabled={disabled}
-            >
-              <Close fontSize="small" />
-            </IconButton>
-          )}
-        </Box>
-
-        <VisuallyHiddenInput
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          accept={accept}
-        />
-      </Button>
-
+      />
       {error && (
         <FormHelperText
           error
           sx={{
-            mt: 0.5,
-            ml: 1.5,
-            color: theme.palette.error.main,
+            textAlign: "right",
+            margin: "4px 0 0 0",
+            lineHeight: 1,
           }}
         >
           {error}

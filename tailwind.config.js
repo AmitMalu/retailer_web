@@ -13,7 +13,14 @@ module.exports = {
         "belle-aurore": ['"La Belle Aurore"', "cursive"],
         poppins: ["Poppins", "sans-serif"],
       },
+      clipPath: {
+        diamond: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
+      },
+      rotate: {
+        45: "45deg",
+        "-45": "-45deg",
+      },
     },
   },
-  plugins: [],
+  plugins: [require("tailwind-clip-path")],
 };

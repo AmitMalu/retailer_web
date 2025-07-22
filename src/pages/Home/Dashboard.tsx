@@ -1,7 +1,6 @@
 import {
   Box,
   Typography,
-  Paper,
   Card,
   CardContent,
   Button,
@@ -9,13 +8,7 @@ import {
   Tabs,
   Tab,
 } from "@mui/material";
-import ThemeShowcase from "../components/showcase/ThemeShowcase";
-import ThemeComparison from "../components/showcase/ThemeComparison";
-import { useNotification } from "../components/notifications";
-import { useSelector } from "react-redux";
-import type { RootState } from "../Redux/Store";
-import { useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
+import { useEffect, useRef, useState } from "react";
 import TextComponent from "@/components/Atoms/TextComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
@@ -26,6 +19,12 @@ import ModalComponent from "@/components/Atoms/ModalComponent";
 import TextareaComponent from "@/components/Atoms/TextareaComponent";
 import TableComponent from "@/components/Molecules/TableComponent";
 import { TableColumn } from "@/Common/interface";
+import { useNotification } from "@/components/notifications";
+import { useSelector } from "react-redux";
+import { RootState } from "@/Redux/Store";
+import ThemeShowcase from "@/components/showcase/ThemeShowcase";
+import ThemeComparison from "@/components/showcase/ThemeComparison";
+import { decryptData, useIpAddress, useWalletBalance } from "@/Utils/helper";
 
 // Dashboard stats component
 const DashboardStats = () => {
@@ -184,6 +183,23 @@ const products: Product[] = [
 ];
 
 export default function Dashboard() {
+  const { fetchIpAddress } = useIpAddress();
+  const { WalletBalanceReq } = useWalletBalance();
+  const isFetchingRef = useRef(false);
+  const apiResponses = useSelector(
+    (state: RootState) => state.apiResponse.responses
+  );
+  const loginData = apiResponses?.loginData
+    ? decryptData(apiResponses?.loginData)
+    : null;
+
+  useEffect(() => {
+    if (!isFetchingRef.current) {
+      isFetchingRef.current = true;
+      fetchIpAddress();
+      WalletBalanceReq(loginData?.hierarchyId);
+    }
+  }, []);
   const { addNotification } = useNotification();
 
   const { themeOption } = useSelector((state: RootState) => state.settings);

@@ -16,7 +16,7 @@
   "dependencies": {
     "@crello/react-lottie": "^0.0.11",
     "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@mantine/carousel": "^7.17.8",
     "@mantine/charts": "^7.17.8",
     "@mantine/code-highlight": "^7.17.8",
@@ -30,7 +30,7 @@
     "@mantine/nprogress": "^7.17.8",
     "@mantine/spotlight": "^7.17.8",
     "@mantine/tiptap": "^7.17.8",
-    "@mui/icons-material": "^7.1.0",
+    "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.1.1",
     "@mui/system": "^7.1.0",
     "@mui/x-date-pickers": "^8.5.1",
@@ -94,6 +94,7 @@
     "postcss": "^8.5.3",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.11",
+    "tailwind-clip-path": "^1.0.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.2.2",
     "vite": "^5.1.4"

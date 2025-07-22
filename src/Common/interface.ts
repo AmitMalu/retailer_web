@@ -1,6 +1,13 @@
 import { TextInputProps } from "@mantine/core";
 import { ReactNode, ChangeEvent, MouseEventHandler } from "react";
 import type { ThemeOption } from "../../src/store/slices/settingsSlice";
+import { SvgIconComponent } from "@mui/icons-material";
+
+export type CustomError = {
+  status?: number;
+  message?: string;
+  data?: any;
+};
 
 export type BaseLayoutProps = {
   children: React.ReactNode;
@@ -64,6 +71,17 @@ export type ThemeShowcaseProps = {
 
 export type ApiState = {
   responses: { [key: string]: any };
+};
+
+export type UserRole = "RT" | "DT" | "SD" | "WL" | "PT";
+
+export type MenuItem = {
+  name: string;
+  path: string;
+  icon?: React.ReactNode;
+  roles?: UserRole[]; // If not specified, accessible to all roles
+  subItems?: MenuItem[];
+  hidden?: boolean; // Optional flag to hide menu item
 };
 
 export const SAVE_API_RESPONSE = "SAVE_API_RESPONSE";
@@ -145,6 +163,7 @@ export type ButtonComponentProps = {
   radius?: number;
   color?: string;
   fontSize?: number;
+  isAuth?: boolean;
 };
 
 export type CustomDatePickerProps = {
@@ -304,7 +323,7 @@ export type SignUpRequest = {
 };
 
 export type SetPasswordRequestProps = {
-  username: string;
+  userName: string;
   newPassword: string;
   reEnteredPassword: string;
 };
@@ -321,3 +340,61 @@ export type OtpRequestProps = {
 export type ResendOtpRequestProps = {
   userName: string;
 };
+
+export type ProductCardProps = {
+  image: React.ReactNode;
+  title: string;
+  fill: boolean;
+};
+
+export type FundRequestProps = {
+  depositType: string;
+  transactionId: string;
+  bankName: string;
+  bankAccountNumber: string;
+  amount: string;
+  confirmAmount: string;
+  depositDate: string;
+  narration: string;
+  depositSlip: File | string | null;
+  bankAccountHolderName: string;
+  paymentMode: string;
+};
+
+export type FundTransferProps = {
+  fromHierarchyId: string;
+  toHierarchyId: string;
+  amount: string;
+  confirmAmount: string;
+  fromWalletType: string;
+  toWalletType: string;
+  narration: string;
+};
+
+export type WalletToBankProps = {
+  requesterHierarchyId: string;
+  walletBalance?: string;
+  selectBank: string;
+  TransactionType: string;
+  amount?: string;
+  confirmAmount?: string;
+};
+
+export type FundReversalProps = {
+  parentHierarchyId: string;
+  childHierarchyId: string;
+  walletType: string;
+  reversalAmount: string;
+  confirmAmount?: string;
+  narration?: string;
+};
+
+export type WalletToWalletProps = {
+  hierarchyId: string;
+  transferAmount: string;
+  confirmAmount: string;
+  walletTypeFrom: string;
+  walletTypeTo: string;
+};
+
+export type ChildMemberListProps = Record<string, any>;

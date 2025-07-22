@@ -68,14 +68,16 @@ const OtpInputScreen = () => {
   };
   const VerifyToken = async (values: VerifyTokenRequest) => {
     try {
-      const tokenValue = values?.token?.split("|")[1] || "";
+      const tokenParts = values?.token?.split("|") || [];
+      const tokenValue = tokenParts[1] || "";
+      const hierarchyType = tokenParts[0] || "RT";
 
       let bodyRequest = {
         token: tokenValue || "",
-        hierarchyType: "RT",
+        hierarchyType: hierarchyType,
       };
       const tokenResponse = await Verify_Token(bodyRequest);
-      document.cookie = `authToken=${encodeURIComponent(tokenValue)}; expires=${new Date(Date.now() + 7 * 864e5).toUTCString()}; path=/; SameSite=Strict`;
+      document.cookie = `authToken=${encodeURIComponent(values?.token)}; expires=${new Date(Date.now() + 7 * 864e5).toUTCString()}; path=/; SameSite=Strict`;
       if (tokenValue && tokenResponse?.status === 200) {
         showSuccessNotification("Logged In Successfully");
         navigate("/dashboard");
@@ -108,7 +110,7 @@ const OtpInputScreen = () => {
           response?.data?.statusCode === 200 ||
           response?.data?.statusCode === "200"
         ) {
-          dispatch(saveApiResponse("loginData", response?.data));
+          dispatch(saveApiResponse("loginData", response?.data?.data));
           GenerateCredentials(values.userName);
         } else {
           showErrorNotification(response?.data?.message || "Invalid OTP");

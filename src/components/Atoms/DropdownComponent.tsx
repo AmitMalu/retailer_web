@@ -1,12 +1,13 @@
 import React from "react";
+import { useTheme } from "@mui/material/styles";
 import {
   FormControl,
   Select,
   MenuItem,
   FormHelperText,
   Box,
-  Typography,
   SelectChangeEvent,
+  InputLabel,
 } from "@mui/material";
 import { CustomDropdownProps } from "@/Common/interface";
 
@@ -17,7 +18,6 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
   onChange,
   error,
   disabled = false,
-  required = false,
   // searchable = false,
   clearable = false,
   withAsterisk = false,
@@ -26,12 +26,13 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
   multiple = false,
   // withCheckIcon = true,
   className = "",
-  placeholder = "Select an option",
 }) => {
+  const theme = useTheme();
+
   const handleChange = (event: SelectChangeEvent<unknown>) => {
     const value = event.target.value;
     if (multiple) {
-      onChange?.(value as string[]);
+      onChange?.(Array.isArray(value) ? value : [value as string]);
     } else {
       onChange?.(value as string);
     }
@@ -45,27 +46,58 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
   });
 
   return (
-    <Box className={className}>
-      {label && (
-        <Box display="flex" alignItems="center" gap={0.5} mb={0.5}>
-          <Typography variant="body2" color="text.primary" fontWeight={600}>
-            {label}
-          </Typography>
-          {withAsterisk && (
-            <Typography variant="body2" color="error" fontWeight={600}>
-              *
-            </Typography>
-          )}
-        </Box>
-      )}
-
+    <Box
+      className={className}
+      sx={{
+        mb: 0.125,
+        width: "100%",
+        position: "relative",
+      }}
+    >
       <FormControl
         fullWidth
         error={!!error}
         disabled={disabled}
-        required={required}
+        required={withAsterisk}
         size="small"
+        variant="outlined"
+        sx={{
+          mt: 0,
+          "& .MuiInputLabel-root": {
+            color: theme.palette.placeholder,
+            fontSize: "16px",
+            fontWeight: 400,
+            transform: "translate(14px, 16px) scale(1)",
+            "&.Mui-focused, &.MuiFormLabel-filled": {
+              color: error ? "error.main" : "text.primary",
+              transform: "translate(14px, -9px) scale(0.75)",
+            },
+            "&.Mui-error": {
+              color: "error.main",
+            },
+          },
+        }}
       >
+        <InputLabel
+          sx={{
+            color: "background.blackColor",
+            fontSize: "16px",
+            fontWeight: 400,
+            transform: "translate(14px, 16px) scale(1)",
+            backgroundColor: theme.palette.background.paper,
+            zIndex: 1,
+            "&.Mui-focused, &.MuiFormLabel-filled": {
+              borderColor: error ? "error.main" : "background.blackColor",
+              transform: "translate(14px, -9px) scale(0.75)",
+              zIndex: 1,
+            },
+            "&.Mui-error": {
+              color: "error.main",
+            },
+          }}
+        >
+          <>{label}</>
+        </InputLabel>
         <Select
           value={multiple ? value || [] : value || ""}
           onChange={handleChange}
@@ -74,34 +106,40 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
             "aria-label": label || "Select",
             id: `dropdown-${label?.toLowerCase().replace(/\s+/g, "-")}`,
           }}
-          startAdornment={leftSection}
-          endAdornment={rightSection}
           multiple={multiple}
-          renderValue={(selected) => {
-            if (multiple) {
-              const selectedValues = selected as string[];
-              return selectedValues.length === 0 ? (
-                <Typography color="text.secondary">{placeholder}</Typography>
-              ) : (
-                selectedValues.join(", ")
-              );
-            }
-            const selectedValue = selected as string;
-            if (!selectedValue) {
-              return (
-                <Typography color="text.secondary">{placeholder}</Typography>
-              );
-            }
-            const selectedItem = menuItems.find(
-              (item) => item.value === selectedValue
-            );
-            return selectedItem?.label || selectedValue;
-          }}
-          MenuProps={{
-            PaperProps: {
-              style: {
-                maxHeight: 300,
+          sx={{
+            width: "100%",
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: error ? "error.main" : "#000 !important",
+              borderWidth: "1px !important",
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: error ? "error.main" : "#000 !important",
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: error ? "error.main" : "rgba(0, 0, 0, 0.23)",
+              borderRadius: "6px",
+            },
+            "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+              borderColor: "error.main",
+            },
+            "& .MuiSelect-select": {
+              color: "text.primary",
+              fontSize: "14px",
+              padding: "16px 14px 16px 14px",
+              '&[aria-expanded="true"]': {
+                backgroundColor: "transparent",
               },
+              '&[aria-expanded="false"]': {
+                color:
+                  !value || (Array.isArray(value) && value.length === 0)
+                    ? theme.palette.text.secondary
+                    : "text.primary",
+              },
+            },
+            "& .MuiSelect-icon": {
+              color: error ? "error.main" : "action.active",
+              top: "calc(50% - 12px)",
             },
           }}
         >
@@ -111,12 +149,36 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
             </MenuItem>
           )}
           {menuItems.map((item) => (
-            <MenuItem key={item.value} value={item.value}>
+            <MenuItem
+              key={item.value}
+              value={item.value}
+              sx={{
+                fontSize: "14px",
+                "&.Mui-selected": {
+                  backgroundColor: "gray.dark",
+                  "&:hover": {
+                    backgroundColor: "gray.light",
+                  },
+                },
+              }}
+            >
               {item.label}
             </MenuItem>
           ))}
         </Select>
-        {error && <FormHelperText>{error}</FormHelperText>}
+        {error && (
+          <FormHelperText
+            sx={{
+              textAlign: "right",
+              margin: "4px 0 0 0",
+              lineHeight: 1,
+              fontSize: "12px",
+              color: "error.main",
+            }}
+          >
+            {error}
+          </FormHelperText>
+        )}
       </FormControl>
     </Box>
   );

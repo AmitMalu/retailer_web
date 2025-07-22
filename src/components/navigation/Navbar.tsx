@@ -1,7 +1,5 @@
 import {
   AppBar,
-  Toolbar,
-  Typography,
   IconButton,
   Box,
   useMediaQuery,
@@ -10,13 +8,13 @@ import {
   Stack,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleDarkMode } from "../../store/slices/uiSlice";
 import { toggleSettingsDrawer } from "../../store/slices/settingsSlice";
 import type { RootState } from "../../Redux/Store";
-import RefreshIcon from "@mui/icons-material/Refresh";
 import ImLogo from "@/assets/svg/imLogo";
-import TextInputComponent from "../Atoms/TextInputComponent";
 import { NavbarProps } from "@/Common/interface";
+import TextComponent from "../Atoms/TextComponent";
+import { RefreshSvgIcon, ThemeSettingSvgIcon } from "@/assets/svg";
+import { decryptData } from "@/Utils/helper";
 
 export default function Navbar({
   onMenuClick,
@@ -30,7 +28,12 @@ export default function Navbar({
   const theme = useTheme();
   const isMobileView = useMediaQuery(theme.breakpoints.down("md"));
   const isMobile = isMobileProp || isMobileView;
-
+  const apiResponses = useSelector(
+    (state: RootState) => state.apiResponse.responses
+  );
+  const walletBalance = apiResponses?.walletBalance
+    ? decryptData(apiResponses?.walletBalance)
+    : null;
   const handleSettingsClick = () => {
     dispatch(toggleSettingsDrawer());
   };
@@ -40,25 +43,13 @@ export default function Navbar({
     amount,
   }: {
     title: string;
-    amount: string;
+    amount?: string;
   }) => (
     <Paper
       elevation={0}
+      className="flex items-center justify-center w-auto p-1 cursor-pointer rounded-xl border border-red"
       sx={{
-        p: 0.6,
-        borderRadius: 2,
-        minWidth: 140,
-        cursor: "pointer",
         transition: "all 0.2s ease-in-out",
-        border: "1px solid",
-        borderColor: (theme) =>
-          theme.palette.mode === "dark"
-            ? "rgba(99, 102, 241, 0.5)"
-            : "rgba(99, 102, 241, 0.2)",
-        background: (theme) =>
-          theme.palette.mode === "dark"
-            ? "rgba(30, 41, 59, 0.5)"
-            : "rgba(241, 245, 249, 0.5)",
         "&:hover": {
           transform: "translateY(-1px)",
           boxShadow: (theme) =>
@@ -75,18 +66,18 @@ export default function Navbar({
         },
       }}
     >
-      <Box display="flex" alignItems="center" gap={2}>
-        <Typography
-          variant="subtitle1"
-          component="div"
-          fontWeight={500}
-          fontSize={14}
-        >
+      <Box display="flex" alignItems="center">
+        <TextComponent fontSize={14} fontWeight={500}>
           {title}
-        </Typography>
-        <Typography variant="h6" component="div" fontWeight={600} fontSize={14}>
+        </TextComponent>
+
+        <TextComponent fontSize={14} fontWeight={600}>
+          -
+        </TextComponent>
+
+        <TextComponent fontSize={14} fontWeight={600}>
           {amount}
-        </Typography>
+        </TextComponent>
       </Box>
     </Paper>
   );
@@ -95,95 +86,71 @@ export default function Navbar({
     <>
       <AppBar
         position={navbarPosition}
+        className="flex flex-row items-center justify-between w-screen px-[3%] rounded-b-[50px] "
         sx={{
-          width: "100vw",
-          left: 0,
-          right: 0,
           ...(navbarPosition === "fixed" && {
             position: "fixed",
             top: 0,
           }),
-          paddingLeft: "3%",
-          paddingRight: "3%",
           zIndex: (theme) => theme.zIndex.drawer + 1,
-          boxShadow: 1,
           backgroundColor: theme.palette.background.navBackground,
-          borderBottomLeftRadius: 50,
-          borderBottomRightRadius: 50,
-          borderBottomWidth: 1,
-          borderBottomStyle: "solid",
-          borderBottomColor: theme.palette.background.navBackground,
         }}
       >
-        <Toolbar>
-          {isMobile && (
-            <IconButton
-              color="inherit"
-              edge="start"
-              onClick={onMenuClick}
-              sx={{ mr: 2 }}
-            >
-              ☰
-            </IconButton>
-          )}
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <ImLogo />
-          </Typography>
-
-          {!isMobile && (
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <TextInputComponent
-                placeholder={"Search"}
-                value={""}
-                onChange={(e) => console.log(e, "change")}
-                // leftSection={<UserNameSvgIcon />}
-                className="w-full"
-                isAuth={false}
-              />
-              <Stack
-                direction="row"
-                spacing={2}
-                alignItems="center"
-                sx={{ mr: 2 }}
-              >
-                <WalletDisplay title="PREPAID" amount="₹10,000.00" />
-                <WalletDisplay title="POSTPAID" amount="₹2,500.00" />
-              </Stack>
-              {/* Refresh Button */}
+        <div className="flex flex-row items-center justify-between w-screen shadow-2xl px-[3%] rounded-b-[50px] ">
+          <div>
+            {isMobile && (
               <IconButton
                 color="inherit"
-                onClick={() => window.location.reload()}
-                title="Refresh"
-                sx={{
-                  borderRadius: 1,
-                  mr: 1,
-                  bgcolor: (theme) =>
-                    theme.palette.mode === "dark"
-                      ? "rgba(30, 41, 59, 0.5)"
-                      : "rgba(241, 245, 249, 0.5)",
-                }}
+                edge="start"
+                onClick={onMenuClick}
+                sx={{ mr: 2 }}
               >
-                <RefreshIcon fontSize="small" />
+                ☰
               </IconButton>
-            </Box>
-          )}
+            )}
+            <div className="flex items-center">
+              <ImLogo />
+            </div>
+          </div>
 
-          <IconButton
-            color="inherit"
-            onClick={() => dispatch(toggleDarkMode())}
-            sx={{ mr: 1 }}
-          >
-            {darkMode ? "🌞" : "🌙"}
-          </IconButton>
+          <div className="flex flex-row items-center justify-end w-screen">
+            {!isMobile && (
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <WalletDisplay
+                    title="PREPAID"
+                    amount={walletBalance?.prepaidBalance}
+                  />
+                  <WalletDisplay
+                    title="POSTPAID"
+                    amount={walletBalance?.postpaidBalance}
+                  />
+                  <WalletDisplay title="IM-R-5649" />
+                </Stack>
+                <IconButton
+                  color="inherit"
+                  onClick={() => window.location.reload()}
+                  title="Refresh"
+                  className="border border-red"
+                  sx={{
+                    borderRadius: 1,
+                    mr: 1,
+                  }}
+                >
+                  <RefreshSvgIcon color={theme.palette.red.DEFAULT} />
+                </IconButton>
+              </Box>
+            )}
 
-          <IconButton
-            color="inherit"
-            onClick={handleSettingsClick}
-            aria-label="settings"
-          >
-            ⚙️
-          </IconButton>
-        </Toolbar>
+            <IconButton
+              color="inherit"
+              onClick={handleSettingsClick}
+              aria-label="settings"
+            >
+              <ThemeSettingSvgIcon color={theme.palette.red.DEFAULT} />
+            </IconButton>
+          </div>
+        </div>
       </AppBar>
     </>
   );

@@ -251,16 +251,18 @@ export default function FooterLayout({ children }: FooterLayoutProps) {
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <LocationOnIcon fontSize="small" color="action" />
                 <Typography variant="body2">
-                  123 Retail Street, San Francisco, CA 94107
+                  36 and 37, Building " F", Pudhari Bhavan,5th Floor Plot No.29
+                  to 32, Near, Sanpada Station Rd, Sector 30A, Sanpada, Navi
+                  Mumbai, Maharashtra 400705
                 </Typography>
               </Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              {/* <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <EmailIcon fontSize="small" color="action" />
                 <Typography variant="body2">info@retailerweb.com</Typography>
-              </Box>
+              </Box> */}
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <PhoneIcon fontSize="small" color="action" />
-                <Typography variant="body2">+1 (555) 123-4567</Typography>
+                <Typography variant="body2">085913 82393</Typography>
               </Box>
 
               <Card variant="outlined" sx={{ mt: 2 }}>

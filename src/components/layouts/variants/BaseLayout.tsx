@@ -22,7 +22,7 @@ export default function BaseLayout({
     (state: RootState) => state.settings
   );
   const sidebarWidth =
-    sidebarStyle === "full" ? 180 : sidebarStyle === "compact" ? 80 : 0;
+    sidebarStyle === "full" ? 180 : sidebarStyle === "compact" ? 50 : 0;
 
   return (
     <>
@@ -32,6 +32,7 @@ export default function BaseLayout({
           minHeight: "100vh",
           width: "100vw",
           overflow: "hidden",
+          backgroundColor: theme.palette.background.navBackground,
         }}
       >
         <Box
@@ -42,7 +43,7 @@ export default function BaseLayout({
             left: 0,
             bottom: 0,
             overflowY: "auto",
-            zIndex: 1200,
+            // zIndex: 1200,
           }}
         >
           {sidebar}
@@ -61,7 +62,7 @@ export default function BaseLayout({
           <Box
             sx={{
               width: "100%",
-              zIndex: 1100,
+              // zIndex: 1100,
               ...(navbarPosition === "fixed" && {
                 position: "fixed",
                 top: 0,
@@ -78,7 +79,8 @@ export default function BaseLayout({
             sx={{
               flex: 1,
               overflowY: "auto",
-              ml: `${sidebarWidth}px`,
+              height: "100vh",
+              ml: `${sidebarWidth + 90}px`,
             }}
           >
             <Box>{children}</Box>

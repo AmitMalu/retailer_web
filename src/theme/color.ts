@@ -32,6 +32,7 @@ export const colorTokens = {
   background: {
     default: "#effbf9",
     paper: "#ffffff",
+    light: "#000000",
   },
   text: {
     primary: "#171717",
@@ -49,16 +50,13 @@ export const colorTokens = {
     DEFAULT: "#EB4335",
     light: "#EB3535",
   },
+  red: {
+    DEFAULT: "#D82226",
+    light: "#FFDCDD",
+    dark: "#DC2626",
+  },
   gray: {
-    50: "#F9FAFB",
-    100: "#F3F4F6",
-    200: "#E5E7EB",
-    300: "#D1D5DB",
-    400: "#9CA3AF",
-    500: "#6B7280",
-    600: "#4B5563",
-    700: "#374151",
-    800: "#1F2937",
-    900: "#111827",
+    DEFAULT: "#CACACA",
+    light: "#F1F1F1",
   },
 };
