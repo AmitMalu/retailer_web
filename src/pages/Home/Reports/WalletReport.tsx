@@ -50,6 +50,16 @@ const WalletReport = () => {
     ? decryptData(apiResponses?.loginData)
     : null;
 
+  const subproductData = apiResponses?.subProductDropdown
+    ? decryptData(apiResponses?.subProductDropdown)
+    : null;
+
+  const uniqueSubProductTypes =
+    subproductData?.map((item: any) => ({
+      value: item.subProduct_name,
+      label: item.subProduct_name,
+    })) || [];
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -400,10 +410,7 @@ const WalletReport = () => {
                     <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
                       <DropdownComponent
                         label="Sub Product"
-                        data={[
-                          { value: "PG_QUICK", label: "PG_QUICK" },
-                          { value: "PREPAID", label: "PREPAID" },
-                        ]}
+                        data={uniqueSubProductTypes}
                         value={values.subProductName}
                         withAsterisk
                         onChange={(value) =>

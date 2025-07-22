@@ -47,16 +47,11 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
     return breadcrumbs;
   };
 
-  const breadcrumbs = generateBreadcrumbs();
+  // const breadcrumbs = generateBreadcrumbs();
 
   return (
     <BaseLayout
-      navbar={
-        <Navbar
-          onMenuClick={handleDrawerToggle}
-          isMobile={sidebarStyle === "closed" || window.innerWidth < 960}
-        />
-      }
+      navbar={<Navbar onMenuClick={handleDrawerToggle} isMobile={mobileOpen} />}
       sidebar={<Sidebar mobileOpen={mobileOpen} onClose={handleDrawerToggle} />}
       footer={null}
     >

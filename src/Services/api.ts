@@ -10,6 +10,7 @@ import {
   ResendOtpRequestProps,
   SetPasswordRequestProps,
   TokenGenerationRequest,
+  TransactionDetailsParams,
   VerifyTokenRequest,
   ViewUserAPIProps,
   WalletParams,
@@ -109,18 +110,13 @@ export const Wallet_Balance = async (id: string) =>
 export const User_Profile = async (id: string) =>
   await api.get(`${API_ROUTES.USER_PROFILE}/${id}`, await createHeaders());
 
-export const Child_Member_List = async (params: ViewUserAPIProps) => {
-  const queryParams = new URLSearchParams();
-  const { id, ...restParams } = params;
+export const Child_Member_List = async (
+  id: string,
+  params?: ViewUserAPIProps
+) => {
+  const queryParams = new URLSearchParams(params).toString();
 
-  Object.entries(restParams).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
-      queryParams.append(key, String(value));
-    }
-  });
-
-  const queryString = queryParams.toString();
-  const url = `${API_ROUTES.CHILD_MEMBER_LIST}/${id}${queryString ? `?${queryString}` : ""}`;
+  const url = `${API_ROUTES.CHILD_MEMBER_LIST}/${id}${queryParams ? `?${queryParams}` : ""}`;
 
   return await api.get(url, await createHeaders());
 };
@@ -198,3 +194,23 @@ export const Network_Transaction_Report = async (
     await createHeaders()
   );
 };
+
+export const Transaction_Details = async (data: TransactionDetailsParams) =>
+  await api.post(
+    `${API_ROUTES.TRANSACTION_DETAILS}`,
+    data,
+    await createHeaders()
+  );
+
+export const Raise_Ticket = async (data: FormData) =>
+  await api.post(
+    `${API_ROUTES.TICKET_RAISE}`,
+    data,
+    await createMultipartHeaders()
+  );
+
+export const Issue_Type_Dropdown = async () =>
+  await api.get(`${API_ROUTES.ISSUE_TYPE_DROPDOWN}`, await createHeaders());
+
+export const Sub_Product_Dropdown = async () =>
+  await api.get(`${API_ROUTES.SUB_PRODUCT_DROPDOWN}`, await createHeaders());

@@ -1,32 +1,45 @@
 import { CommentSvgIcon, UserCardSvgIcon } from "@/assets/svg";
 import { useTheme } from "@mui/material";
 import TextComponent from "../Atoms/TextComponent";
-import moment from "moment";
 
-const TicketComponent = () => {
+const TicketComponent = ({
+  name,
+  id,
+  subject,
+  description,
+  status,
+  createdDate,
+}: {
+  name: string;
+  id: string;
+  subject: string;
+  description: string;
+  status: string;
+  createdDate: string;
+}) => {
   const theme = useTheme();
   return (
-    <div className="p-5 mb-4 gap-2 border flex w-full border-gray-light rounded-lg bg-gray-light items-center justify-between ">
-      <div className="flex items-center justify-center gap-2 w-1/6 ">
+    <div className="mb-2 flex w-full items-center justify-between ">
+      <div className="flex items-center justify-center w-1/6">
         <UserCardSvgIcon color={theme.palette.gray.DEFAULT} />
         <TextComponent
           fontSize={18}
           fontWeight={500}
           color={theme.palette.gray.DEFAULT}
         >
-          Name
+          {name}
         </TextComponent>
       </div>
-      <div className="flex items-center justify-center gap-2 w-1/6 ">
+      <div className="flex items-center justify-center w-1/6">
         <TextComponent
           fontSize={18}
           fontWeight={500}
           color={theme.palette.gray.DEFAULT}
         >
-          id
+          {id}
         </TextComponent>
       </div>
-      <div className="gap-2 flex items-center justify-start w-1/3 ">
+      <div className=" flex items-center justify-center w-1/3">
         <CommentSvgIcon
           color={theme.palette.gray.DEFAULT}
           tickColor={theme.palette.greenColor.DEFAULT}
@@ -40,7 +53,7 @@ const TicketComponent = () => {
             lineClamp={1}
             className="w-[70%]"
           >
-            ticketxsjadjhscn cjabcjsa cn cjabc
+            {subject}
           </TextComponent>
           <TextComponent
             fontSize={18}
@@ -50,26 +63,26 @@ const TicketComponent = () => {
             lineClamp={1}
             className="w-[90%]"
           >
-            sjdfj cns cjbcnas cjahbc
+            {description}
           </TextComponent>
         </div>
       </div>
-      <div className="flex items-center w-1/12 justify-center ">
+      <div className="flex items-center justify-center w-1/12">
         <TextComponent
           fontSize={18}
           fontWeight={500}
           color={theme.palette.gray.DEFAULT}
         >
-          status
+          {status}
         </TextComponent>
       </div>
-      <div className="flex items-center justify-center w-1/4">
+      <div className="flex items-center justify-center w-1/4 ">
         <TextComponent
           fontSize={18}
           fontWeight={500}
           color={theme.palette.gray.DEFAULT}
         >
-          {moment("17-11-2025").format("YYYY-MM-DD")}
+          {createdDate}
         </TextComponent>
       </div>
     </div>

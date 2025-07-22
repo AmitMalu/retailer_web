@@ -62,7 +62,6 @@ const ProfileRegistrationForm = ({
     ? decryptData(apiResponses?.ipAddress)
     : null;
 
-  console.log(loginData);
   const nextStep = async (formik: FormikProps<UserProfileFormProps>) => {
     const stepFields: { [key: number]: string[] } = {
       0: [
@@ -310,7 +309,7 @@ const ProfileRegistrationForm = ({
       opened={opened}
       onClose={onClose}
       title="Create Profile"
-      size="lg"
+      size="xl"
       centered
       overlayProps={{
         backgroundOpacity: 0.55,
@@ -320,8 +319,6 @@ const ProfileRegistrationForm = ({
         root: {
           zIndex: 9999,
           width: "100%",
-          borderWidth: "2px",
-          borderRadius: "50px !important",
         },
         title: {
           fontSize: "1.5rem",
@@ -330,6 +327,12 @@ const ProfileRegistrationForm = ({
         body: {
           padding: "20px",
         },
+        content: {
+          borderWidth: "2px",
+          borderRadius: 30,
+          borderColor: theme.palette.red.light,
+          scrollbarWidth: "none",
+        },
       }}
       transitionProps={{
         transition: "fade",
@@ -337,7 +340,7 @@ const ProfileRegistrationForm = ({
         timingFunction: "linear",
       }}
     >
-      <div className=" mt-6 flex h-full flex-col justify-between">
+      <div className=" mt-3 flex h-full flex-col justify-between">
         <Formik<UserProfileFormProps>
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -382,7 +385,7 @@ const ProfileRegistrationForm = ({
                       <PersonalSvgIcon color={theme.palette.background.paper} />
                     }
                   >
-                    <div className="mt-5 flex flex-wrap items-start justify-start gap-3">
+                    <div className="mt-3 flex flex-wrap items-start justify-start gap-3">
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <DropdownComponent
                           label="Title"

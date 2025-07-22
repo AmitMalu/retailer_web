@@ -55,36 +55,30 @@ export default function Navbar({
   }) => (
     <Paper
       elevation={0}
-      className="flex items-center justify-center w-auto p-1 cursor-pointer rounded-xl border border-red"
+      className="flex items-center justify-center w-auto py-2 px-3 cursor-pointer rounded-xl shadow-xl shadow-slate-700"
       sx={{
         transition: "all 0.2s ease-in-out",
-        "&:hover": {
-          transform: "translateY(-1px)",
-          boxShadow: (theme) =>
-            theme.palette.mode === "dark"
-              ? "0 2px 12px rgba(99, 102, 241, 0.15)"
-              : "0 2px 12px rgba(99, 102, 241, 0.1)",
-          background: (theme) =>
-            theme.palette.mode === "dark"
-              ? "rgba(30, 41, 59, 0.7)"
-              : "rgba(241, 245, 249, 0.7)",
-        },
-        "&:active": {
-          transform: "translateY(0)",
-        },
+        background: (theme) =>
+          theme.palette.mode === "dark"
+            ? "rgba(30, 41, 59, 0.7)"
+            : theme.palette.red.light,
       }}
+      onMouseEnter={(e) =>
+        (e.currentTarget.style.transform = "translateY(-1px)")
+      }
+      onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
     >
       <Box display="flex" alignItems="center">
-        <TextComponent fontSize={14} fontWeight={500}>
+        <TextComponent fontSize={14} fontWeight={500} color="red.DEFAULT">
           {title}
         </TextComponent>
         {amount != null && amount >= 0 ? (
-          <TextComponent fontSize={14} fontWeight={400}>
+          <TextComponent fontSize={12} fontWeight={400} color="red.DEFAULT">
             -
           </TextComponent>
         ) : null}
 
-        <TextComponent fontSize={14} fontWeight={700}>
+        <TextComponent fontSize={16} fontWeight={700} color="red.DEFAULT">
           {amount}
         </TextComponent>
       </Box>
@@ -95,74 +89,65 @@ export default function Navbar({
     <>
       <AppBar
         position={navbarPosition}
-        className="flex flex-row items-center justify-between w-screen px-[3%] rounded-b-[50px] "
+        className="flex flex-row items-center h-auto justify-between w-screen px-[3%] rounded-b-[50px] "
         sx={{
           ...(navbarPosition === "fixed" && {
             position: "fixed",
             top: 0,
           }),
+          paddingY: 1,
           zIndex: (theme) => theme.zIndex.drawer + 1,
           backgroundColor: theme.palette.background.navBackground,
         }}
       >
-        <div className="flex flex-row items-center justify-between w-screen shadow-2xl px-[3%] rounded-b-[50px] ">
+        <div className="flex flex-row items-center justify-between h-auto w-screen px-[3%] rounded-b-[50px] ">
           <div>
-            {isMobile && (
-              <IconButton
-                color="inherit"
-                edge="start"
-                onClick={onMenuClick}
-                sx={{ mr: 2 }}
-              >
+            {isMobile ? (
+              <IconButton color="error" edge="start" onClick={onMenuClick}>
                 ☰
               </IconButton>
+            ) : (
+              <div className="flex items-center">
+                <ImLogo />
+              </div>
             )}
-            <div className="flex items-center">
-              <ImLogo />
-            </div>
           </div>
 
           <div className="flex flex-row items-center justify-end w-screen">
-            {!isMobile && (
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <WalletDisplay
-                    title="PREPAID"
-                    amount={walletBalance?.prepaidBalance}
-                  />
-                  <WalletDisplay
-                    title="POSTPAID"
-                    amount={walletBalance?.postpaidBalance}
-                  />
-                  <WalletDisplay title="IM-R-5649" />
-                </Stack>
-                <IconButton
-                  color="inherit"
-                  onClick={() => WalletBalanceReq(loginData?.hierarchyId)}
-                  title="Refresh"
-                  className="border border-red"
-                  sx={{
-                    borderRadius: 1,
-                    mr: 1,
-                  }}
-                >
-                  <RefreshSvgIcon color={theme.palette.red.DEFAULT} />
-                </IconButton>
-              </Box>
-            )}
-
-            <IconButton
-              color="inherit"
-              onClick={handleSettingsClick}
-              aria-label="settings"
-            >
-              <ThemeSettingSvgIcon color={theme.palette.red.DEFAULT} />
-            </IconButton>
-            <NavLink to="/settings/myProfile">
-              <div className="cursor-pointer bg-red-light p-2 rounded-full ">
-                <ProfileSvgIcon color={theme.palette.red.DEFAULT} />
+            <div className="flex items-center gap-6">
+              {!isMobile && (
+                <>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <WalletDisplay
+                      title="PREPAID"
+                      amount={walletBalance?.prepaidBalance}
+                    />
+                    <WalletDisplay
+                      title="POSTPAID"
+                      amount={walletBalance?.postpaidBalance}
+                    />
+                    <WalletDisplay title={loginData?.hierarchyId} />
+                  </Stack>
+                  <div
+                    className="cursor-pointer bg-red-light rounded-md p-2"
+                    onClick={() => WalletBalanceReq(loginData?.hierarchyId)}
+                  >
+                    <RefreshSvgIcon color={theme.palette.red.DEFAULT} />
+                  </div>
+                </>
+              )}
+              <NavLink to="/settings/myProfile">
+                <div className="cursor-pointer bg-red-light rounded-md p-2">
+                  <ProfileSvgIcon color={theme.palette.red.DEFAULT} />
+                </div>
+              </NavLink>
+              <div
+                onClick={handleSettingsClick}
+                className="cursor-pointer bg-red-light rounded-md p-2"
+              >
+                <ThemeSettingSvgIcon color={theme.palette.red.DEFAULT} />
               </div>
-            </NavLink>
+            </div>
           </div>
         </div>
       </AppBar>

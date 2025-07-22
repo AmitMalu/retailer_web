@@ -55,7 +55,7 @@ const ViewUser = () => {
 
   const FetchUserList = async () => {
     try {
-      const response = await Child_Member_List({ id: loginData?.hierarchyId });
+      const response = await Child_Member_List(loginData?.hierarchyId);
       if (response?.status === 200) {
         setIsUserList(response?.data?.data?.content);
       } else {
@@ -269,7 +269,6 @@ const ViewUser = () => {
 
       if (loginData?.hierarchyId) {
         const bodyRequest = {
-          id: loginData?.hierarchyId,
           ...Object.fromEntries(
             Object.entries(newSearchValues).map(([key, value]) => [
               key === columnKey ? searchKey : key,
@@ -283,7 +282,7 @@ const ViewUser = () => {
         }
 
         timeoutRef.current = setTimeout(() => {
-          Child_Member_List(bodyRequest)
+          Child_Member_List(loginData?.hierarchyId, bodyRequest)
             .then((response) => {
               if (response?.status === 200) {
                 setIsUserList(response?.data?.data?.content);

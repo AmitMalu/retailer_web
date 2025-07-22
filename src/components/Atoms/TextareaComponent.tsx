@@ -63,20 +63,14 @@ const TextareaComponent: React.FC<CustomTextareaProps> = ({
           minLength,
         }}
         helperText={
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              fontFamily: '"Poppins", sans-serif',
-            }}
-          >
+          <div className="flex justify-end">
             <span>{error || helperText}</span>
             {showCharacterCount && maxLength && (
               <span>
                 {value?.length || 0}/{maxLength}
               </span>
             )}
-          </Box>
+          </div>
         }
         FormHelperTextProps={{
           sx: {
@@ -96,6 +90,7 @@ const TextareaComponent: React.FC<CustomTextareaProps> = ({
             },
             "&.Mui-error": {
               color: theme.palette.error.main,
+              textAlign: "right",
             },
           },
           "& .MuiOutlinedInput-root": {
