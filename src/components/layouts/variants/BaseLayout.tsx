@@ -1,4 +1,3 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../Redux/Store";
 import { BaseLayoutProps } from "@/Common/interface";
@@ -38,9 +37,8 @@ export default function BaseLayout({
           width: `calc(100vw - ${sidebarWidth}px)`,
         }}
       >
-        {/* Navbar - conditionally positioned */}
         <div
-          className="flex w-full"
+          className="flex w-full h-auto"
           style={{
             ...(navbarPosition === "fixed" && {
               position: "fixed",

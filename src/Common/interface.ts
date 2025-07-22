@@ -319,6 +319,7 @@ export type VerifyTokenRequest = {
 export type LoginRequest = {
   userName: string;
   password: string;
+  url: string;
 };
 
 export type SignUpRequest = {
@@ -475,7 +476,6 @@ export type ColumsSelectionModalProps = {
 };
 
 export type ViewUserAPIProps = {
-  id: string;
   search?: string;
 };
 
@@ -486,6 +486,7 @@ export type TicketingSystemProps = {
   subProductName: string;
   email: string;
   mobileNumber: string;
+  screenshotImage: File | null;
 };
 
 export type MyBanksList = Record<string, any>;
@@ -525,6 +526,8 @@ export type NetworkTransactionParams = {
   toDate: string;
   subProductName: string;
   partnerId: string;
+  whitelabelId: string;
+  superDistributorId: string;
   distributorId: string;
   retailerId: string;
   status: string;
@@ -534,3 +537,13 @@ export type NetworkTransactionParams = {
 };
 
 export type NetworkTransactionData = Record<string, any>;
+
+export type TransactionDetailsParams = {
+  transactionId: string;
+  hierarchyId: string;
+};
+
+export type TransactionDetailsData = Record<string, any>;
+export type PartnersData = Record<string, any>;
+export type DistributorsData = Record<string, any>;
+export type RetailersData = Record<string, any>;

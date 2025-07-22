@@ -346,40 +346,31 @@ const TableComponent: React.FC<TableProps> = ({
               </TextComponent>
             </Table.Caption>
           )}
-          {/* <Table.Tbody>
-            {paginatedData.map((item, index) => (
-              <Table.Tr key={item[keyField] ?? index}>
-                {columns.map((column) => (
-                  <Table.Td key={`${item[keyField]}-${column.key}`}>
-                    {item[column.key] ?? "-"}
-                  </Table.Td>
-                ))}
-              </Table.Tr>
-            ))}
-          </Table.Tbody> */}
         </Table>
       </div>
 
       <div className="flex justify-between items-center mt-4 bg-white shadow-lg">
         {sortedData.length > 0 && (
           <div className="flex items-center justify-between gap-4 w-full m-2">
-            <div className="flex items-center gap-3">
-              <DropdownComponent
-                data={[
-                  { value: "5", label: "5" },
-                  { value: "10", label: "10" },
-                  { value: "20", label: "20" },
-                  { value: "50", label: "50" },
-                  { value: "100", label: "100" },
-                ]}
-                value={size}
-                onChange={(value) => {
-                  const numeric = Number(value);
-                  if (!isNaN(numeric)) {
-                    onPageSizeChange?.(numeric);
-                  }
-                }}
-              />
+            <div className="flex items-center w-1/4 gap-3">
+              <div>
+                <DropdownComponent
+                  data={[
+                    { value: "5", label: "5" },
+                    { value: "10", label: "10" },
+                    { value: "20", label: "20" },
+                    { value: "50", label: "50" },
+                    { value: "100", label: "100" },
+                  ]}
+                  value={size}
+                  onChange={(value) => {
+                    const numeric = Number(value);
+                    if (!isNaN(numeric)) {
+                      onPageSizeChange?.(numeric);
+                    }
+                  }}
+                />
+              </div>
               <TextComponent fontSize={12} fontWeight={400}>
                 {`Showing ${startIndex + 1}-${startIndex + paginatedData.length} of ${
                   data.length

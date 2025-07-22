@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import CryptoJS from "crypto-js";
 import { showErrorNotification } from "./notifications";
 import { handleCustomError } from "./handleCustomError";
-import { Wallet_Balance } from "@/Services/api";
+import { Sub_Product_Dropdown, Wallet_Balance } from "@/Services/api";
 
 const KEY = CryptoJS.enc.Hex.parse(
   "a7f3d9c6e8421fb62e7e5c3410b974e2d5c6a8f90fd13b4aa12f658f9a34bc29"
@@ -113,4 +113,23 @@ export const isSameOrAfter = (input: Date | null, compareTo: Date | null) => {
         (input.getMonth() === compareTo.getMonth() &&
           input.getDate() >= compareTo.getDate())))
   );
+};
+
+export const useSubProductDropdown = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const SubProductDropdownReq = async () => {
+    try {
+      const response = await Sub_Product_Dropdown();
+      if (response?.status === 200 || response?.status === 201) {
+        dispatch(saveApiResponse("subProductDropdown", response?.data?.data));
+      } else {
+        showErrorNotification(response?.data?.message);
+      }
+    } catch (error) {
+      await handleCustomError(error);
+    } finally {
+    }
+  };
+
+  return { SubProductDropdownReq };
 };

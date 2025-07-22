@@ -52,7 +52,7 @@ const ColumsSelectionModal: React.FC<ColumsSelectionModalProps> = ({
         },
         content: {
           height: "45%",
-          borderRadius: "40px",
+          borderRadius: 30,
           borderColor: theme.palette.red.light,
         },
       }}

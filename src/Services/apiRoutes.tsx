@@ -31,7 +31,15 @@ export const API_ROUTES = {
   CREATE_PARTNER: `${BASE_URL}/api/partners`,
   CREATE_DISTRIBUTOR: `${BASE_URL}/api/distributors`,
   CREATE_RETAILER: `${BASE_URL}/api/retailers`,
+
+  //////////////// REPORTS //////////////////////////
   COMMISSION_AND_CHARGES: `${BASE_URL}/api/commission-charge/view`,
   WALLET_REPORT: `${BASE_URL}/api/my-transaction/view`,
   NETWORK_TRANSACTION_REPORT: `${BASE_URL}/api/network-transaction/view`,
+
+  /////////////// TICKETING SYSTEM //////////////////////////
+  TRANSACTION_DETAILS: `${BASE_URL}/api/ticket/transaction-details`,
+  TICKET_RAISE: `${BASE_URL}/api/ticket/raise-ticket`,
+  ISSUE_TYPE_DROPDOWN: `${BASE_URL}/api/ticket/issue-type-dropdown`,
+  SUB_PRODUCT_DROPDOWN: `${BASE_URL}/api/sub-products/dropdown`,
 };

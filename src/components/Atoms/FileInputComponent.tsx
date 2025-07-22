@@ -67,47 +67,51 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
         onBlur={() => setIsFocused(false)}
         error={!!error}
         disabled={disabled}
-        InputProps={{
-          readOnly: true,
-          endAdornment: (
-            <Stack direction="row" spacing={1} alignItems="center">
-              {fileName && (
-                <IconButton
+        slotProps={{
+          input: {
+            readOnly: true,
+            endAdornment: (
+              <div>
+                {fileName && (
+                  <IconButton
+                    size="small"
+                    onClick={handleRemoveFile}
+                    sx={{ color: "text.secondary" }}
+                  >
+                    <Close fontSize="small" />
+                  </IconButton>
+                )}
+                <Button
+                  component="label"
+                  variant="outlined"
                   size="small"
-                  onClick={handleRemoveFile}
-                  sx={{ color: "text.secondary" }}
-                >
-                  <Close fontSize="small" />
-                </IconButton>
-              )}
-              <Button
-                component="label"
-                variant="outlined"
-                size="small"
-                startIcon={<CloudUpload />}
-                disabled={disabled}
-                onClick={(e) => e.stopPropagation()}
-                sx={{
-                  width: "100%",
-                  textTransform: "none",
-                  borderColor: error ? "error.main" : "gray.DEFAULT",
-                  color: error ? "error.main" : "text.primary",
-                  "&:hover": {
-                    borderColor: error ? "error.main" : "background.blackColor",
-                    backgroundColor: "rgba(0, 0, 0, 0.04)",
-                  },
-                }}
-              >
-                <VisuallyHiddenInput
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept={accept}
+                  startIcon={<CloudUpload />}
                   disabled={disabled}
-                />
-              </Button>
-            </Stack>
-          ),
+                  onClick={(e) => e.stopPropagation()}
+                  sx={{
+                    width: "100%",
+                    textTransform: "none",
+                    borderColor: error ? "error.main" : "gray.DEFAULT",
+                    color: error ? "error.main" : "text.primary",
+                    "&:hover": {
+                      borderColor: error
+                        ? "error.main"
+                        : "background.blackColor",
+                      backgroundColor: "rgba(0, 0, 0, 0.04)",
+                    },
+                  }}
+                >
+                  <VisuallyHiddenInput
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept={accept}
+                    disabled={disabled}
+                  />
+                </Button>
+              </div>
+            ),
+          },
         }}
         sx={{
           "& .MuiInputLabel-root": {

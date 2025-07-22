@@ -36,6 +36,12 @@ const Login: React.FC = () => {
   const initialValues: LoginRequest = {
     userName: "",
     password: "",
+    url: "",
+  };
+
+  const getCurrentUrl = () => {
+    const { origin } = window.location;
+    return `${origin}/`;
   };
 
   const handleSubmit = async (values: LoginRequest) => {
@@ -44,6 +50,7 @@ const Login: React.FC = () => {
       let bodyRequest = {
         userName: values.userName,
         password: values.password,
+        url: getCurrentUrl(),
       };
       const response = await login(bodyRequest);
       if (

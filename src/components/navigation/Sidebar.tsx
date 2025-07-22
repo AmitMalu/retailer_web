@@ -191,7 +191,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                   }}
                 >
                   <ListItemIcon
-                    className="flex items-start self-end justify-self-end  justify-start"
+                    className="flex items-center  justify-center"
                     sx={{
                       color: isActive ? theme.palette.red.DEFAULT : "inherit",
                     }}
