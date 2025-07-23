@@ -12,18 +12,12 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
-import { decryptData, MobileNoRegex } from "@/Utils/helper";
+import { MobileNoRegex } from "@/Utils/helper";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { useSelector } from "react-redux";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
-import { RootState } from "@/Redux/Store";
-import {
-  Create_Retailer,
-  Fetch_Card_Bin_Detail,
-  Validate_Transaction,
-} from "@/Services/api";
+import { Fetch_Card_Bin_Detail, Validate_Transaction } from "@/Services/api";
 import theme from "@/theme/ThemeConfig";
 
 const PGFormModal = ({
@@ -33,17 +27,17 @@ const PGFormModal = ({
   //   openedAs,
 }: PartnerRegistrationModalProps) => {
   const [isBinDetails, setIsBinDetails] = useState(false);
-  const apiResponses = useSelector(
-    (state: RootState) => state.apiResponse.responses
-  );
+  //   const apiResponses = useSelector(
+  //     (state: RootState) => state.apiResponse.responses
+  //   );
 
-  const loginData = apiResponses?.loginData
-    ? decryptData(apiResponses?.loginData)
-    : null;
+  //   const loginData = apiResponses?.loginData
+  //     ? decryptData(apiResponses?.loginData)
+  //     : null;
 
-  const ipAddress = apiResponses?.ipAddress
-    ? decryptData(apiResponses?.ipAddress)
-    : null;
+  //   const ipAddress = apiResponses?.ipAddress
+  //     ? decryptData(apiResponses?.ipAddress)
+  //     : null;
   const [isLoading, setIsLoading] = useState(false);
 
   const validationSchema = Yup.object().shape({
