@@ -14,6 +14,7 @@ import { formatDate } from "@/Utils/helper";
 import { Pagination, Table } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import TextInputComponent from "../Atoms/TextInputComponent";
+import { SortSvgIcon } from "@/assets/svg";
 
 const TableComponent: React.FC<TableProps> = ({
   data,
@@ -240,7 +241,9 @@ const TableComponent: React.FC<TableProps> = ({
                           {column.label}
                         </TextComponent>
                         {column.sortable && (
-                          <span className="text-background-light">||</span>
+                          <span>
+                            <SortSvgIcon color={theme.palette.red.DEFAULT} />
+                          </span>
                         )}
                       </div>
                     </Table.Th>

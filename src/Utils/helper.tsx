@@ -5,6 +5,7 @@ import CryptoJS from "crypto-js";
 import { showErrorNotification } from "./notifications";
 import { handleCustomError } from "./handleCustomError";
 import { Sub_Product_Dropdown, Wallet_Balance } from "@/Services/api";
+import { useState } from "react";
 
 const KEY = CryptoJS.enc.Hex.parse(
   "a7f3d9c6e8421fb62e7e5c3410b974e2d5c6a8f90fd13b4aa12f658f9a34bc29"
@@ -76,8 +77,10 @@ export const formatYMDdate = (date: string | Date) => {
 
 export const useWalletBalance = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const [isLoading, setIsLoading] = useState(false);
   const WalletBalanceReq = async (id: string) => {
     try {
+      setIsLoading(true);
       const response = await Wallet_Balance(id);
       if (response?.status === 200 || response?.status === 201) {
         dispatch(saveApiResponse("walletBalance", response?.data?.data));
@@ -87,10 +90,11 @@ export const useWalletBalance = () => {
     } catch (error) {
       await handleCustomError(error);
     } finally {
+      setIsLoading(false);
     }
   };
 
-  return { WalletBalanceReq };
+  return { WalletBalanceReq, isLoading };
 };
 
 export const isSameOrBefore = (input: Date | null, compareTo: Date | null) => {

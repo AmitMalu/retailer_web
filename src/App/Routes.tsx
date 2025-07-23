@@ -94,6 +94,8 @@ const WebsitePageContent = lazy(
 
 const Login = lazy(() => import("@/pages/Auth/Login"));
 
+const PGScreen = lazy(() => import("@/pages/Home/Products/PG"));
+
 const getToken = () => {
   const token = document.cookie
     .split("; ")
@@ -207,6 +209,23 @@ const RouterOutlet = () => {
               element={
                 <MainLayout>
                   <Products />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/PG"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <PGScreen />
                 </MainLayout>
               }
             />

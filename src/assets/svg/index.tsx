@@ -1131,3 +1131,22 @@ export const BackSvgIcon = ({ color }: { color: string }) => (
     </g>
   </svg>
 );
+
+export const SortSvgIcon = ({ color }: { color: string }) => (
+  <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none">
+    <path
+      d="M16 18L16 16M16 6L20 10.125M16 6L12 10.125M16 6L16 13"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8 18L12 13.875M8 18L4 13.875M8 18L8 11M8 6V8"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);

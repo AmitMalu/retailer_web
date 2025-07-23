@@ -102,7 +102,7 @@ const Ticketing = () => {
     issueType: "",
     description: "",
     subProductName: "",
-    email: loginData?.email,
+    email: loginData?.emailId,
     mobileNumber: loginData?.mobileNumber,
     screenshotImage: null,
   };
@@ -529,7 +529,7 @@ const Ticketing = () => {
 
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <FileInputComponent
-                          accept="image/png,image/jpeg"
+                          accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
                           label={"Attachment"}
                           onChange={(file) => {
                             setFieldValue("screenshotImage", file);

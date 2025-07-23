@@ -423,6 +423,7 @@ const WalletReport = () => {
                           handleSubmit();
                         }}
                         radius={29}
+                        width={100}
                       />
                     </div>
                   </div>

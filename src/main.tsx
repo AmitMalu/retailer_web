@@ -10,7 +10,7 @@ import "@mantine/core/styles.css";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter
-      basename="/enterprises-portal"
+      basename={import.meta.env.VITE_APP_BASE_PATH}
       future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
     >
       <App />

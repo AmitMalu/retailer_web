@@ -237,6 +237,7 @@ const OtpInputScreen = () => {
                       radius={28}
                       fullWidth
                       disabled={isLoading || !values.otp}
+                      isAuth={true}
                     />
                   </div>
                   <div className="flex items-center justify-center gap-2 mt-2">
@@ -249,9 +250,9 @@ const OtpInputScreen = () => {
                     </TextComponent>
                     <TextComponent
                       fontSize={14}
-                      fontWeight={400}
-                      color="red"
-                      className="underline"
+                      fontWeight={600}
+                      color="red.DEFAULT"
+                      className="underline cursor-pointer"
                       onClick={() => navigate("/signUp")}
                     >
                       Sign up

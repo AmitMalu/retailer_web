@@ -169,6 +169,7 @@ export type ButtonComponentProps = {
   color?: string;
   fontSize?: number;
   isAuth?: boolean;
+  width?: string | number;
 };
 
 export type CustomDatePickerProps = {
@@ -359,6 +360,7 @@ export type ProductCardProps = {
   image: React.ReactNode;
   title: string;
   fill: boolean;
+  onClick: () => void;
 };
 
 export type FundRequestProps = {
@@ -547,3 +549,29 @@ export type TransactionDetailsData = Record<string, any>;
 export type PartnersData = Record<string, any>;
 export type DistributorsData = Record<string, any>;
 export type RetailersData = Record<string, any>;
+
+export type PGFormBodyProps = {
+  cardType?: string;
+  cardBinNo: string;
+  paymentMethod?: string;
+  cardHolderName?: string;
+  cardHolderMobileNumber: string;
+  amount: string;
+  confirmAmount?: string;
+  narration?: string;
+  productId: string;
+};
+
+export type FetchCardBinDetailProps = { cardType?: string; cardBinNo: string };
+export type ValidateTransactionProps = {
+  cardBinNo: string;
+  cardHolderMobileNumber: string;
+  amount: string;
+  productId: string;
+};
+export type CreateOrderProps = {
+  amount: string;
+  callbackUrl: string;
+  productId: string;
+  subProductId: string;
+};

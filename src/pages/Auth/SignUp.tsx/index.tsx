@@ -139,6 +139,7 @@ const SignUp: React.FC = () => {
                       radius={28}
                       fullWidth={true}
                       disabled={isLoading || !values.userName || !values.name}
+                      isAuth={true}
                     />
                   </div>
                   <div className="flex items-center justify-center gap-2 mt-2 ">
@@ -151,9 +152,9 @@ const SignUp: React.FC = () => {
                     </TextComponent>
                     <TextComponent
                       fontSize={14}
-                      fontWeight={400}
-                      color="red"
-                      className="underline"
+                      fontWeight={600}
+                      color="red.DEFAULT"
+                      className="underline cursor-pointer"
                       onClick={() => navigate("/login")}
                     >
                       Sign in

@@ -42,7 +42,7 @@ export default function Navbar({
   const handleSettingsClick = () => {
     dispatch(toggleSettingsDrawer());
   };
-  const { WalletBalanceReq } = useWalletBalance();
+  const { WalletBalanceReq, isLoading } = useWalletBalance();
   const WalletDisplay = ({
     title,
     amount,
@@ -125,12 +125,18 @@ export default function Navbar({
                     />
                     <WalletDisplay title={loginData?.hierarchyId} />
                   </Stack>
-                  <div
-                    className="cursor-pointer bg-red-light rounded-md p-2"
-                    onClick={() => WalletBalanceReq(loginData?.hierarchyId)}
-                  >
-                    <RefreshSvgIcon color={theme.palette.red.DEFAULT} />
-                  </div>
+                  {isLoading ? (
+                    <div className="animate-spin mr-2">
+                      <RefreshSvgIcon color={theme.palette.grey[400]} />
+                    </div>
+                  ) : (
+                    <div
+                      className="cursor-pointer bg-red-light rounded-md p-2"
+                      onClick={() => WalletBalanceReq(loginData?.hierarchyId)}
+                    >
+                      <RefreshSvgIcon color={theme.palette.red.DEFAULT} />
+                    </div>
+                  )}
                 </>
               )}
               <NavLink to="/settings/myProfile">

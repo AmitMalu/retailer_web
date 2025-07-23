@@ -33,11 +33,55 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
 }) => {
   const [fileName, setFileName] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [internalError, setInternalError] = useState<string | undefined>(
+    undefined
+  );
+
+  const errorText = error || internalError;
+  const MAX_FILE_SIZE = 1.5 * 1024 * 1024; // 1.5MB in bytes
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] || null;
-    onChange(file);
-    setFileName(file?.name || "");
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > MAX_FILE_SIZE) {
+      setInternalError(`File size should not exceed 1.5MB`);
+      if (onChange) {
+        onChange(null);
+      }
+      return;
+    }
+
+    setInternalError(undefined);
+
+    const acceptedTypes = accept
+      ? accept.split(",").map((type) => type.trim().toLowerCase())
+      : [];
+    const fileType = file.type.toLowerCase();
+    const fileExtension = file.name.split(".").pop()?.toLowerCase() || "";
+
+    const isTypeValid = acceptedTypes.some((type) => {
+      if (type.includes("/")) {
+        return fileType === type;
+      }
+      if (type.startsWith(".")) {
+        return fileExtension === type.substring(1);
+      }
+      return false;
+    });
+
+    if (accept && !isTypeValid) {
+      setInternalError(`Please upload a ${getFileTypes(accept)} file`);
+      if (onChange) {
+        onChange(null);
+      }
+      return;
+    }
+
+    setFileName(file.name);
+    if (onChange) {
+      onChange(file);
+    }
   };
 
   const handleRemoveFile = (e: React.MouseEvent) => {
@@ -47,6 +91,19 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
     }
     onChange(null);
     setFileName("");
+  };
+
+  const getFileTypes = (accept = "") => {
+    if (!accept) return "File";
+    const types = Array.from(
+      new Set(
+        accept
+          .split(",")
+          .map((t) => t.trim().split("/").pop()?.replace(".", "").toUpperCase())
+          .filter(Boolean)
+      )
+    );
+    return types.length ? `${types.join(", ")} files` : "File";
   };
 
   return (
@@ -59,13 +116,13 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
         value={fileName}
         ref={fileInputRef}
         onChange={(e) => e.stopPropagation()}
-        error={!!error}
+        error={!!errorText}
         disabled={disabled}
         slotProps={{
           input: {
             readOnly: true,
             endAdornment: (
-              <div>
+              <div className="flex items-center justify-end gap-5">
                 {fileName && (
                   <IconButton
                     size="small"
@@ -84,11 +141,14 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
                   onClick={(e) => e.stopPropagation()}
                   sx={{
                     width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     textTransform: "none",
-                    borderColor: error ? "error.main" : "gray.DEFAULT",
-                    color: error ? "error.main" : "text.primary",
+                    borderColor: errorText ? "error.main" : "gray.DEFAULT",
+                    color: errorText ? "error.main" : "text.primary",
                     "&:hover": {
-                      borderColor: error
+                      borderColor: errorText
                         ? "error.main"
                         : "background.blackColor",
                       backgroundColor: "rgba(0, 0, 0, 0.04)",
@@ -146,18 +206,29 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
           },
         }}
       />
-      {error && (
+      <div className="flex items-center justify-between ml-2 mt-1">
         <FormHelperText
-          error
           sx={{
             textAlign: "right",
             margin: "4px 0 0 0",
             lineHeight: 1,
           }}
         >
-          {error}
+          {getFileTypes(accept)} (max 1.5MB)
         </FormHelperText>
-      )}
+        {errorText && (
+          <FormHelperText
+            error
+            sx={{
+              textAlign: "right",
+              margin: "4px 0 0 0",
+              lineHeight: 1,
+            }}
+          >
+            {errorText}
+          </FormHelperText>
+        )}
+      </div>
     </Box>
   );
 };
