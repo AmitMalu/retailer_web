@@ -575,3 +575,12 @@ export type CreateOrderProps = {
   productId: string;
   subProductId: string;
 };
+
+export type PayOutInfoData = Record<string, any>;
+
+export type PayoutFormBodyProps = {
+  bank: string;
+  ifscCode: string;
+  accountNumber: string;
+  accountName: string;
+};

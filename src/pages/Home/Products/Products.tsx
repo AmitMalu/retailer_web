@@ -7,29 +7,32 @@ import ReportsSvgIcon from "@/assets/svg/Products/ReportsIcon";
 import BillPaymenstSvgIcon from "@/assets/svg/Products/BillPayments";
 import TextComponent from "@/components/Atoms/TextComponent";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "@mui/system";
 
 export default function Products() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const row1 = [
     {
       id: 1,
-      image: <PGSvgIcon color="red" />,
+      image: <PGSvgIcon color={theme.palette.red.DEFAULT} />,
       title: "Payment Gateway",
       onClick: () => {
-        console.log("object");
-        navigate(`/Products/PG`);
+        navigate(`/products/pgScreen`);
       },
     },
     {
       id: 2,
-      image: <PayoutSvgIcon color="red" />,
+      image: <PayoutSvgIcon color={theme.palette.red.DEFAULT} />,
       title: "Payout",
-      onClick: () => {},
+      onClick: () => {
+        navigate(`/products/payoutScreen`);
+      },
     },
     {
       id: 3,
-      image: <DMTSvgIcon color="red" />,
+      image: <DMTSvgIcon color={theme.palette.red.DEFAULT} />,
       title: "DMT",
       onClick: () => {},
     },
@@ -38,13 +41,13 @@ export default function Products() {
   const row2 = [
     {
       id: 4,
-      image: <RechargeSvgIcon color="white" />,
+      image: <RechargeSvgIcon color={theme.palette.background.default} />,
       title: "Recharge",
       onClick: () => {},
     },
     {
       id: 5,
-      image: <ReportsSvgIcon color="white" />,
+      image: <ReportsSvgIcon color={theme.palette.background.default} />,
       title: "Reports",
       onClick: () => {},
     },
@@ -53,7 +56,7 @@ export default function Products() {
   const row3 = [
     {
       id: 6,
-      image: <BillPaymenstSvgIcon color="red" />,
+      image: <BillPaymenstSvgIcon color={theme.palette.red.DEFAULT} />,
       title: "Bill Payment",
       onClick: () => {},
     },
@@ -61,7 +64,11 @@ export default function Products() {
 
   return (
     <div className="mx-auto py-10 px-4 text-center relative">
-      <TextComponent fontSize={28} fontWeight={600} color={"primary"}>
+      <TextComponent
+        fontSize={28}
+        fontWeight={600}
+        color={theme.palette.background.light}
+      >
         Products
       </TextComponent>
 
