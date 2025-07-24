@@ -6,19 +6,25 @@ import {
 } from "@/Common/interface";
 import { Modal } from "@mantine/core";
 import { useState } from "react";
-import { Formik } from "formik";
+import { Formik, FormikHelpers, useFormik } from "formik";
 import * as Yup from "yup";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
-import { MobileNoRegex } from "@/Utils/helper";
+import { decryptData, MobileNoRegex } from "@/Utils/helper";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
-import { Fetch_Card_Bin_Detail, Validate_Transaction } from "@/Services/api";
+import {
+  Create_Order,
+  Fetch_Card_Bin_Detail,
+  Validate_Transaction,
+} from "@/Services/api";
 import theme from "@/theme/ThemeConfig";
+import { useSelector } from "react-redux";
+import { RootState } from "@/Redux/Store";
 
 const PGFormModal = ({
   opened,
@@ -27,17 +33,15 @@ const PGFormModal = ({
   //   openedAs,
 }: PartnerRegistrationModalProps) => {
   const [isBinDetails, setIsBinDetails] = useState(false);
-  //   const apiResponses = useSelector(
-  //     (state: RootState) => state.apiResponse.responses
-  //   );
+  const apiResponses = useSelector(
+    (state: RootState) => state.apiResponse.responses
+  );
 
-  //   const loginData = apiResponses?.loginData
-  //     ? decryptData(apiResponses?.loginData)
-  //     : null;
+  const loginData = apiResponses?.loginData
+    ? decryptData(apiResponses?.loginData)
+    : null;
+  console.log(loginData, "login ");
 
-  //   const ipAddress = apiResponses?.ipAddress
-  //     ? decryptData(apiResponses?.ipAddress)
-  //     : null;
   const [isLoading, setIsLoading] = useState(false);
 
   const validationSchema = Yup.object().shape({
@@ -70,24 +74,26 @@ const PGFormModal = ({
     productId: "",
   };
 
-  const handleFetchCardTypeSubmit = async (values: FetchCardBinDetailProps) => {
+  const handleFetchCardTypeSubmit = async (
+    values: FetchCardBinDetailProps,
+    { setFieldValue }: FormikHelpers<PGFormBodyProps>
+  ) => {
     try {
       setIsLoading(true);
       const data: any = {
-        cardBinNo: values?.cardBinNo,
+        cardBinNo: values.cardBinNo,
       };
 
       const response = await Fetch_Card_Bin_Detail(data);
       if (response?.status === 200 || response?.data?.statusCode === "200") {
-        console.log(response?.data, "response?.data");
         showSuccessNotification(response?.data?.message);
+        setFieldValue("paymentMethod", response?.data?.data?.cardType);
         setIsBinDetails(true);
       } else {
-        showErrorNotification(response?.data?.message || "Unable to create");
+        showErrorNotification(response?.data?.message || "Unable to fetch");
       }
     } catch (error: any) {
       await handleCustomError(error);
-      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
@@ -102,33 +108,75 @@ const PGFormModal = ({
         cardBinNo: values.cardBinNo,
         cardHolderMobileNumber: values.cardHolderMobileNumber,
         amount: values.amount,
-        productId: "10", // Assuming this is a constant or you can get it from props
+        productId: "10",
       };
 
       const response = await Validate_Transaction(payload);
-      if (response?.status === 200) {
-        showSuccessNotification("Transaction validated successfully");
-        // Proceed with create order or next step
+      if (response?.status === 200 || response?.data?.status === "200") {
+        showSuccessNotification(response?.data?.message);
+        handleCreateOrder(values);
+      } else {
+        showErrorNotification(response?.data?.message || "Unable to Validate");
       }
     } catch (error) {
-      showErrorNotification("Transaction validation failed");
+      await handleCustomError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleCreateOrder = async (values: ValidateTransactionProps) => {
+    try {
+      setIsLoading(true);
+      const payload = {
+        amount: values.amount,
+        callbackUrl:
+          "https://uat.decipay.in/enterprises/api/pg/payment/callback",
+        productId: "10",
+        subProductId: "10",
+      };
+
+      const response = await Create_Order(payload);
+      if (response?.status === 200 || response?.data?.status === "200") {
+        showSuccessNotification(response?.data?.message);
+        onClose();
+      } else {
+        showErrorNotification(response?.data?.message || "Unable to create");
+      }
+    } catch (error) {
+      await handleCustomError(error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSubmit = (values: PGFormBodyProps) => {
+  const handleSubmit = (
+    values: PGFormBodyProps,
+    formikHelpers: FormikHelpers<PGFormBodyProps>
+  ) => {
     if (!isBinDetails) {
-      return handleFetchCardTypeSubmit(values);
+      return handleFetchCardTypeSubmit(values, formikHelpers);
     } else {
       return handleValidateTransaction(values);
     }
   };
 
+  const formik = useFormik<PGFormBodyProps>({
+    initialValues,
+    validationSchema,
+    onSubmit: handleSubmit,
+    validateOnBlur: true,
+    validateOnChange: true,
+    validateOnMount: true,
+  });
+
   return (
     <Modal
       opened={opened}
-      onClose={onClose}
+      onClose={() => {
+        formik.resetForm();
+        setIsBinDetails(false);
+        onClose();
+      }}
       title="Payment Gateway"
       size="xl"
       centered
@@ -221,8 +269,8 @@ const PGFormModal = ({
                         <DropdownComponent
                           label="Payment Method"
                           data={[
-                            { value: "Credit", label: "Credit" },
-                            { value: "Debit", label: "Debit" },
+                            { value: "credit", label: "Credit" },
+                            { value: "debit", label: "Debit" },
                           ]}
                           value={values.paymentMethod}
                           withAsterisk
@@ -235,6 +283,7 @@ const PGFormModal = ({
                               : ""
                           }
                           className="w-max"
+                          disabled={true}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
