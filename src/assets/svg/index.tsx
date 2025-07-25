@@ -1131,3 +1131,37 @@ export const BackSvgIcon = ({ color }: { color: string }) => (
     </g>
   </svg>
 );
+
+export const SortSvgIcon = ({ color }: { color: string }) => (
+  <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none">
+    <path
+      d="M16 18L16 16M16 6L20 10.125M16 6L12 10.125M16 6L16 13"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8 18L12 13.875M8 18L4 13.875M8 18L8 11M8 6V8"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const PlusSvgIcon = ({ color }: { color: string }) => (
+  <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none">
+    <g id="Edit / Add_Plus_Circle">
+      <path
+        id="Vector"
+        d="M8 12H12M12 12H16M12 12V16M12 12V8M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+  </svg>
+);

@@ -42,4 +42,9 @@ export const API_ROUTES = {
   TICKET_RAISE: `${BASE_URL}/api/ticket/raise-ticket`,
   ISSUE_TYPE_DROPDOWN: `${BASE_URL}/api/ticket/issue-type-dropdown`,
   SUB_PRODUCT_DROPDOWN: `${BASE_URL}/api/sub-products/dropdown`,
+
+  ///////////////////// PG /////////////////////////////////
+  FETCH_CARD_TYPE: `${BASE_URL}/api/transaction/fetch-card-bin-details`,
+  VALIDATE_TRANSACTION: `${BASE_URL}/api/pg/validate`,
+  CREATE_ORDER: `${BASE_URL}/api/pg/create-order`,
 };

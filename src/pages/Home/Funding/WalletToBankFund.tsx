@@ -299,7 +299,7 @@ const WalletToBankFund = () => {
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <FileInputComponent
-                    accept="image/png,image/jpeg"
+                    accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
                     label="Deposit Slip"
                     onChange={(file) => {
                       setFile(file);

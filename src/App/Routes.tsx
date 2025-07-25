@@ -94,6 +94,12 @@ const WebsitePageContent = lazy(
 
 const Login = lazy(() => import("@/pages/Auth/Login"));
 
+const PGScreen = lazy(() => import("@/pages/Home/Products/PG"));
+const PayoutScreen = lazy(() => import("@/pages/Home/Products/Payout"));
+const PayoutInfoTable = lazy(
+  () => import("@/pages/Home/Products/Payout/InfoTable")
+);
+
 const getToken = () => {
   const token = document.cookie
     .split("; ")
@@ -207,6 +213,57 @@ const RouterOutlet = () => {
               element={
                 <MainLayout>
                   <Products />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/pgScreen"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <PGScreen />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/payoutScreen"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <PayoutScreen />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/payoutScreen/Info"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <PayoutInfoTable />
                 </MainLayout>
               }
             />

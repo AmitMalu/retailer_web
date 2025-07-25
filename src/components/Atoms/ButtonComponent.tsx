@@ -16,12 +16,13 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
   rightIcon,
   disabled = false,
   loading = false,
-  size = "small",
+  size,
   fullWidth = false,
   radius = 6,
   color,
   fontSize = 16,
   isAuth = false,
+  width,
   ...rest
 }) => {
   const getMuiVariant = (): ButtonProps["variant"] => {
@@ -43,6 +44,7 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
     borderRadius: radius,
     fontSize: `${fontSize}px`,
     textTransform: "none",
+    width: width || "100%",
     fontWeight: 500,
     padding: "8px 16px",
     "&.MuiButton-contained": {

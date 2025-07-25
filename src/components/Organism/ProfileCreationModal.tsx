@@ -311,6 +311,8 @@ const ProfileRegistrationForm = ({
       title="Create Profile"
       size="xl"
       centered
+      closeOnEscape={false}
+      closeOnClickOutside={false}
       overlayProps={{
         backgroundOpacity: 0.55,
         blur: 3,
@@ -757,7 +759,7 @@ const ProfileRegistrationForm = ({
                       <div className="flex w-full items-center justify-between gap-8">
                         <div className="w-full sm:w-[calc(50%-12px)] ">
                           <FileInputComponent
-                            accept="image/png,image/jpeg"
+                            accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
                             label={"Aadhar Card Front"}
                             onChange={(file) => {
                               setFieldValue("aadhaarCardFrontImage", file);
@@ -791,7 +793,7 @@ const ProfileRegistrationForm = ({
                       <div className="flex w-full items-center justify-between gap-8">
                         <div className="w-full sm:w-[calc(50%-12px)] ">
                           <FileInputComponent
-                            accept="image/png,image/jpeg"
+                            accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
                             label={"Aadhar Card Back"}
                             onChange={(file) => {
                               setFieldValue("aadhaarCardBackImage", file);
@@ -825,7 +827,7 @@ const ProfileRegistrationForm = ({
                       <div className="flex w-full items-center justify-between gap-8">
                         <div className="w-full sm:w-[calc(50%-12px)] ">
                           <FileInputComponent
-                            accept="image/png,image/jpeg"
+                            accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
                             label={"Pan Card"}
                             onChange={(file) => {
                               setFieldValue("panCardImage", file);
@@ -858,7 +860,7 @@ const ProfileRegistrationForm = ({
                       <div className="flex w-full items-center justify-between gap-8">
                         <div className="w-full sm:w-[calc(50%-12px)] ">
                           <FileInputComponent
-                            accept="image/png,image/jpeg"
+                            accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
                             label={"Shop Image"}
                             onChange={(file) => {
                               setFieldValue("shopImage", file);
@@ -891,7 +893,7 @@ const ProfileRegistrationForm = ({
                       <div className="flex w-full items-center justify-between gap-8">
                         <div className="w-full sm:w-[calc(50%-12px)] ">
                           <FileInputComponent
-                            accept="image/png,image/jpeg"
+                            accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
                             label={"Business Proof Image"}
                             onChange={(file) => {
                               setFieldValue("businessProofImage", file);

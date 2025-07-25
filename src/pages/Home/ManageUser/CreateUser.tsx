@@ -35,11 +35,9 @@ const CreateUser = () => {
   const [showDrawerForm, setShowDrawerForm] = useState(false);
   const [openedAs, setOpenedAs] = useState<"SD" | "RT" | "PT" | "DT">("SD");
 
-  // Handle icon click
   const handleIconClick = (type: "SD" | "RT" | "PT" | "DT") => {
     setOpenedAs(type);
     setShowDrawerForm(true);
-    console.log("State after click - openedAs:", type, "showDrawerForm: true");
   };
 
   const apiResponses = useSelector(

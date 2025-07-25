@@ -344,98 +344,103 @@ const CommissionAndCharges = () => {
               <>
                 <div className="shadow-black-900/100 mt-5 flex w-full flex-col items-center justify-center gap-6 rounded-xl bg-background-paper p-3 shadow-lg 320px:mt-5 md:mt-0">
                   <div className="flex w-full flex-wrap items-center justify-between gap-4">
-                    <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                      <CustomDateComponent
-                        label="Date Range"
-                        type="range"
-                        value={[
-                          values.fromDate ? new Date(values.fromDate) : null,
-                          values.toDate ? new Date(values.toDate) : null,
-                        ]}
-                        onChange={(val) => {
-                          if (Array.isArray(val) && val.length === 2) {
-                            setFieldValue("fromDate", val[0]);
-                            setFieldValue("toDate", val[1]);
+                    <div className="flex w-full flex-wrap items-center justify-start gap-4">
+                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
+                        <CustomDateComponent
+                          label="Date Range"
+                          type="range"
+                          value={[
+                            values.fromDate ? new Date(values.fromDate) : null,
+                            values.toDate ? new Date(values.toDate) : null,
+                          ]}
+                          onChange={(val) => {
+                            if (Array.isArray(val) && val.length === 2) {
+                              setFieldValue("fromDate", val[0]);
+                              setFieldValue("toDate", val[1]);
+                            }
+                          }}
+                          onShortcutSelect={(
+                            start: Date | null,
+                            end: Date | null
+                          ) => {
+                            setFieldValue("fromDate", start);
+                            setFieldValue("toDate", end);
+                          }}
+                          dateFormat="YYYY-MM-DD"
+                          className="w-72"
+                          withAsterisk
+                          error={
+                            (touched.fromDate && errors.fromDate
+                              ? errors.fromDate
+                              : "") +
+                            (touched.toDate &&
+                            errors.toDate &&
+                            errors.toDate !== errors.fromDate
+                              ? (errors.fromDate ? " | " : "") + errors.toDate
+                              : "")
                           }
-                        }}
-                        onShortcutSelect={(
-                          start: Date | null,
-                          end: Date | null
-                        ) => {
-                          setFieldValue("fromDate", start);
-                          setFieldValue("toDate", end);
-                        }}
-                        dateFormat="YYYY-MM-DD"
-                        className="w-72"
-                        withAsterisk
-                        error={
-                          (touched.fromDate && errors.fromDate
-                            ? errors.fromDate
-                            : "") +
-                          (touched.toDate &&
-                          errors.toDate &&
-                          errors.toDate !== errors.fromDate
-                            ? (errors.fromDate ? " | " : "") + errors.toDate
-                            : "")
-                        }
-                        customButtons={true}
-                      />
+                          customButtons={true}
+                        />
+                      </div>
+                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
+                        <DropdownComponent
+                          label="Wallet Type"
+                          data={[
+                            { value: "POSTPAID", label: "POSTPAID" },
+                            { value: "PREPAID", label: "PREPAID" },
+                          ]}
+                          value={values.walletType}
+                          withAsterisk
+                          onChange={(value) =>
+                            setFieldValue("walletType", value)
+                          }
+                          error={
+                            touched.walletType && errors.walletType
+                              ? errors.walletType
+                              : ""
+                          }
+                          className="w-max"
+                        />
+                      </div>
+                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
+                        <DropdownComponent
+                          label="Sub Product"
+                          data={uniqueSubProductTypes}
+                          value={values.subProductName}
+                          withAsterisk
+                          onChange={(value) =>
+                            setFieldValue("subProductName", value)
+                          }
+                          error={
+                            touched.subProductName && errors.subProductName
+                              ? errors.subProductName
+                              : ""
+                          }
+                          className="w-max"
+                        />
+                      </div>
+                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
+                        <DropdownComponent
+                          label="Report Type"
+                          data={[
+                            { value: "COMMISSION", label: "COMMISSION" },
+                            { value: "CHARGE", label: "CHARGE" },
+                          ]}
+                          value={values.reportType}
+                          withAsterisk
+                          onChange={(value) =>
+                            setFieldValue("reportType", value)
+                          }
+                          error={
+                            touched.reportType && errors.reportType
+                              ? errors.reportType
+                              : ""
+                          }
+                          className="w-max"
+                        />
+                      </div>
                     </div>
-                    <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                      <DropdownComponent
-                        label="Wallet Type"
-                        data={[
-                          { value: "POSTPAID", label: "POSTPAID" },
-                          { value: "PREPAID", label: "PREPAID" },
-                        ]}
-                        value={values.walletType}
-                        withAsterisk
-                        onChange={(value) => setFieldValue("walletType", value)}
-                        error={
-                          touched.walletType && errors.walletType
-                            ? errors.walletType
-                            : ""
-                        }
-                        className="w-max"
-                      />
-                    </div>
-                    <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                      <DropdownComponent
-                        label="Sub Product"
-                        data={uniqueSubProductTypes}
-                        value={values.subProductName}
-                        withAsterisk
-                        onChange={(value) =>
-                          setFieldValue("subProductName", value)
-                        }
-                        error={
-                          touched.subProductName && errors.subProductName
-                            ? errors.subProductName
-                            : ""
-                        }
-                        className="w-max"
-                      />
-                    </div>
-                    <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                      <DropdownComponent
-                        label="Report Type"
-                        data={[
-                          { value: "COMMISSION", label: "COMMISSION" },
-                          { value: "CHARGE", label: "CHARGE" },
-                        ]}
-                        value={values.reportType}
-                        withAsterisk
-                        onChange={(value) => setFieldValue("reportType", value)}
-                        error={
-                          touched.reportType && errors.reportType
-                            ? errors.reportType
-                            : ""
-                        }
-                        className="w-max"
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-end w-max">
+                    <div className="flex items-center justify-end w-full">
                       <ButtonComponent
                         title="View"
                         variant="filled"
@@ -444,6 +449,7 @@ const CommissionAndCharges = () => {
                           handleSubmit();
                         }}
                         radius={29}
+                        width={100}
                       />
                     </div>
                   </div>

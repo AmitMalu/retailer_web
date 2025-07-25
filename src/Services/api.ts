@@ -1,6 +1,8 @@
 import {
   ChangePasswordRequestProps,
   CommissionAndChargesParams,
+  CreateOrderProps,
+  FetchCardBinDetailProps,
   ForgotPasswordRequestProps,
   FundReversalProps,
   FundTransferProps,
@@ -11,6 +13,7 @@ import {
   SetPasswordRequestProps,
   TokenGenerationRequest,
   TransactionDetailsParams,
+  ValidateTransactionProps,
   VerifyTokenRequest,
   ViewUserAPIProps,
   WalletParams,
@@ -214,3 +217,16 @@ export const Issue_Type_Dropdown = async () =>
 
 export const Sub_Product_Dropdown = async () =>
   await api.get(`${API_ROUTES.SUB_PRODUCT_DROPDOWN}`, await createHeaders());
+
+export const Fetch_Card_Bin_Detail = async (data: FetchCardBinDetailProps) =>
+  await api.post(`${API_ROUTES.FETCH_CARD_TYPE}`, data, await createHeaders());
+
+export const Validate_Transaction = async (data: ValidateTransactionProps) =>
+  await api.post(
+    `${API_ROUTES.VALIDATE_TRANSACTION}`,
+    data,
+    await createHeaders()
+  );
+
+export const Create_Order = async (data: CreateOrderProps) =>
+  await api.post(`${API_ROUTES.CREATE_ORDER}`, data, await createHeaders());
