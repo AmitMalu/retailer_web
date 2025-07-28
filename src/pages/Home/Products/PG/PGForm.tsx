@@ -2,7 +2,6 @@ import {
   FetchCardBinDetailProps,
   PartnerRegistrationModalProps,
   PGFormBodyProps,
-  ValidateTransactionProps,
 } from "@/Common/interface";
 import { Modal } from "@mantine/core";
 import { useState } from "react";
@@ -32,6 +31,7 @@ const PGFormModal = ({
   // rowData,
   //   openedAs,
 }: PartnerRegistrationModalProps) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [isBinDetails, setIsBinDetails] = useState(false);
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
@@ -40,20 +40,29 @@ const PGFormModal = ({
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
-  console.log(loginData, "login ");
 
-  const [isLoading, setIsLoading] = useState(false);
+  const productOptions =
+    loginData?.products?.map((product: any) => ({
+      value: product.productId,
+      label: product.productName,
+    })) || [];
 
   const validationSchema = Yup.object().shape({
     cardType: Yup.string().required("Required"),
-    cardBinNo: Yup.string().required("Required"),
+    cardBinNo: Yup.string()
+      .max(6, "Enter valid Number")
+      .min(6, "Enter valid Number")
+      .required("Required"),
     ...(isBinDetails && {
       paymentMethod: Yup.string().required("Required"),
       cardHolderName: Yup.string().required("Required"),
       cardHolderMobileNumber: Yup.string()
         .max(10, "Enter valid Number")
+        .min(10, "Enter valid Number")
         .matches(MobileNoRegex, "Please enter valid number")
         .required("Required"),
+      productId: Yup.string().required("Required"),
+      subProductId: Yup.string().required("Required"),
       amount: Yup.number().required("Required"),
       confirmAmount: Yup.number()
         .required("Required")
@@ -72,6 +81,7 @@ const PGFormModal = ({
     confirmAmount: "",
     narration: "",
     productId: "",
+    subProductId: "",
   };
 
   const handleFetchCardTypeSubmit = async (
@@ -99,20 +109,18 @@ const PGFormModal = ({
     }
   };
 
-  const handleValidateTransaction = async (
-    values: ValidateTransactionProps
-  ) => {
+  const handleValidateTransaction = async (values: PGFormBodyProps) => {
     try {
       setIsLoading(true);
       const payload = {
         cardBinNo: values.cardBinNo,
         cardHolderMobileNumber: values.cardHolderMobileNumber,
         amount: values.amount,
-        productId: "10",
+        productId: values.productId,
       };
 
       const response = await Validate_Transaction(payload);
-      if (response?.status === 200 || response?.data?.status === "200") {
+      if (response?.status === 200 || response?.data?.statusCode === 200) {
         showSuccessNotification(response?.data?.message);
         handleCreateOrder(values);
       } else {
@@ -124,19 +132,19 @@ const PGFormModal = ({
       setIsLoading(false);
     }
   };
-  const handleCreateOrder = async (values: ValidateTransactionProps) => {
+  const handleCreateOrder = async (values: PGFormBodyProps) => {
     try {
       setIsLoading(true);
       const payload = {
         amount: values.amount,
         callbackUrl:
           "https://uat.decipay.in/enterprises/api/pg/payment/callback",
-        productId: "10",
-        subProductId: "10",
+        productId: values.productId,
+        subProductId: values.subProductId,
       };
 
       const response = await Create_Order(payload);
-      if (response?.status === 200 || response?.data?.status === "200") {
+      if (response?.status === 200 || response?.data?.statusCode === 200) {
         showSuccessNotification(response?.data?.message);
         onClose();
       } else {
@@ -227,6 +235,17 @@ const PGFormModal = ({
               touched,
               values,
             } = formik;
+
+            const selectedProduct = loginData?.products?.find(
+              (product: any) => product.productId === values.productId
+            );
+
+            const subProductOptions =
+              selectedProduct?.subProducts?.map((sub: any) => ({
+                value: sub.subProductId,
+                label: sub.subProductName,
+              })) || [];
+
             return (
               <>
                 <div className="mt-3 flex flex-wrap items-start justify-start gap-3">
@@ -259,6 +278,8 @@ const PGFormModal = ({
                           ? errors.cardBinNo
                           : ""
                       }
+                      maxLength={6}
+                      minLength={6}
                       withAsterisk
                       className="w-max"
                     />
@@ -318,6 +339,52 @@ const PGFormModal = ({
                           withAsterisk
                           type="tel"
                           className="w-max"
+                        />
+                      </div>
+                      <div className="w-full sm:w-[calc(50%-12px)] ">
+                        <DropdownComponent
+                          label="Product"
+                          data={productOptions}
+                          value={values.productId}
+                          withAsterisk
+                          onChange={(value) => {
+                            setFieldValue("productId", value);
+                            const newProduct = loginData?.products?.find(
+                              (p: any) => p.productId === value
+                            );
+                            // const firstSubProduct =
+                            //   newProduct?.subProducts?.[0];
+                            // setFieldValue(
+                            //   "subProductId",
+                            //   firstSubProduct?.subProductId || ""
+                            // );
+                          }}
+                          error={
+                            touched.productId && errors.productId
+                              ? errors.productId
+                              : ""
+                          }
+                          className="w-full"
+                        />
+                      </div>
+                      <div className="w-full sm:w-[calc(50%-12px)] ">
+                        <DropdownComponent
+                          label="Sub Product"
+                          data={subProductOptions}
+                          value={values.subProductId}
+                          withAsterisk
+                          onChange={(value) =>
+                            setFieldValue("subProductId", value)
+                          }
+                          error={
+                            touched.subProductId && errors.subProductId
+                              ? errors.subProductId
+                              : ""
+                          }
+                          className="w-full"
+                          disabled={
+                            !values.productId || !subProductOptions.length
+                          }
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">

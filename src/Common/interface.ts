@@ -560,6 +560,7 @@ export type PGFormBodyProps = {
   confirmAmount?: string;
   narration?: string;
   productId: string;
+  subProductId: string;
 };
 
 export type FetchCardBinDetailProps = { cardType?: string; cardBinNo: string };
@@ -583,4 +584,20 @@ export type PayoutFormBodyProps = {
   ifscCode: string;
   accountNumber: string;
   accountName: string;
+};
+
+export type AepsFormBodyProps = {
+  mobileNumber: string;
+  aadhaarNumber: string;
+  amount: string;
+  bank: string;
+  deviceType: string;
+  csp: string;
+  alert: boolean;
+};
+
+export type TwoFAFormBodyProps = {
+  aadhaarNumber: string;
+  deviceType: string;
+  csp: string;
 };
