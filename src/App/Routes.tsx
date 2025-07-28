@@ -99,6 +99,37 @@ const PayoutScreen = lazy(() => import("@/pages/Home/Products/Payout"));
 const PayoutInfoTable = lazy(
   () => import("@/pages/Home/Products/Payout/InfoTable")
 );
+const AepsScreen = lazy(() => import("@/pages/Home/Products/AEPS"));
+const AepsList = lazy(() => import("@/pages/Home/Products/AEPS/Vendors"));
+const CashWithdrawal = lazy(
+  () => import("@/pages/Home/Products/AEPS/CashWithdrawal")
+);
+const SelectCashWithdrawalBank = lazy(
+  () => import("@/pages/Home/Products/AEPS/CashWithdrawal/SelectBank")
+);
+const TwoFactorCashWithdrawal = lazy(
+  () => import("@/pages/Home/Products/AEPS/CashWithdrawal/TwoFA")
+);
+const BalanceEnquiry = lazy(
+  () => import("@/pages/Home/Products/AEPS/BalanceEnquiry")
+);
+const SelectBankBalanceEnquiry = lazy(
+  () =>
+    import("@/pages/Home/Products/AEPS/BalanceEnquiry/SelectBankBalanceEnquiry")
+);
+const TwoFactorBalanceEnquiry = lazy(
+  () => import("@/pages/Home/Products/AEPS/BalanceEnquiry/TwoFABalanceEnquiry")
+);
+const MiniStatement = lazy(
+  () => import("@/pages/Home/Products/AEPS/MiniStatement")
+);
+const SelectBankMiniStatement = lazy(
+  () =>
+    import("@/pages/Home/Products/AEPS/MiniStatement/SelectBAnkMinistatement")
+);
+const TwoFactorMiniStatement = lazy(
+  () => import("@/pages/Home/Products/AEPS/MiniStatement/TwoFAMinistatement")
+);
 
 const getToken = () => {
   const token = document.cookie
@@ -264,6 +295,193 @@ const RouterOutlet = () => {
               element={
                 <MainLayout>
                   <PayoutInfoTable />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aepsScreen"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <AepsScreen />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aepsScreen/cashWithdrawal/aepsForm"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <TwoFactorCashWithdrawal />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aepsScreen/cashWithdrawal/TwoFactorCashWithdrawal"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <SelectCashWithdrawalBank />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aepsScreen/vendors"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <AepsList />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aepsScreen/vendors/cashWithdrawal"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <CashWithdrawal />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aepsScreen/vendors/balanceEnquiry"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <BalanceEnquiry />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aepsScreen/balanceEnquiry/TwoFactorBalanceEnquiry"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <TwoFactorBalanceEnquiry />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aepsScreen/balanceEnquiry/TwoFactorBalanceEnquiry"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <SelectBankBalanceEnquiry />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aepsScreen/vendors/miniStatement"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <MiniStatement />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aepsScreen/miniStatement/twoFAMinistatement"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <TwoFactorMiniStatement />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aepsScreen/miniStatement/SelectBankMiniStatement"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <SelectBankMiniStatement />
                 </MainLayout>
               }
             />

@@ -10,8 +10,14 @@ import TextComponent from "@/components/Atoms/TextComponent";
 import PGCard from "@/components/Molecules/PGCard";
 import PGFormModal from "./PGForm";
 import { useState } from "react";
+import { UnstyledButton } from "@mantine/core";
+import { useTheme } from "@mui/system";
+import { useNavigate } from "react-router-dom";
+import { BackSvgIcon } from "@/assets/svg";
 
 const PGScreen = () => {
+  const theme = useTheme();
+  const navigate = useNavigate();
   const [showDrawerForm, setShowDrawerForm] = useState(false);
   const [openedAs, setOpenedAs] = useState<
     "prepaid" | "tatkal" | "tez1" | "tone" | "tez2" | "tezMaster"
@@ -86,53 +92,62 @@ const PGScreen = () => {
   ];
 
   return (
-    <div className="mx-auto py-10 px-4 text-center relative">
-      <TextComponent fontSize={28} fontWeight={600} color={"primary"}>
-        Payment Gateway
-      </TextComponent>
+    <>
+      <UnstyledButton
+        onClick={() => {
+          navigate(`/products`);
+        }}
+      >
+        <BackSvgIcon color={theme.palette.red.DEFAULT} />
+      </UnstyledButton>
+      <div className="mx-auto py-10 px-4 text-center relative">
+        <TextComponent fontSize={28} fontWeight={600} color={"primary"}>
+          Payment Gateway
+        </TextComponent>
 
-      <div className="flex justify-center gap-28 my-12">
-        {row1.map((product) => (
-          <PGCard
-            key={product.id}
-            image={product.image}
-            title={product.title}
-            Subtitle={product.Subtitle}
-            onClick={product.onClick}
-          />
-        ))}
-      </div>
+        <div className="flex justify-center gap-28 my-12">
+          {row1.map((product) => (
+            <PGCard
+              key={product.id}
+              image={product.image}
+              title={product.title}
+              Subtitle={product.Subtitle}
+              onClick={product.onClick}
+            />
+          ))}
+        </div>
 
-      <div className="flex justify-center gap-24 mb-12 mt-[-10px]">
-        <div className="w-20" />
-        {row2.map((product) => (
-          <PGCard
-            key={product.id}
-            image={product.image}
-            title={product.title}
-            Subtitle={product.Subtitle}
-            onClick={product.onClick}
-          />
-        ))}
-        <div className="w-20" />
-      </div>
+        <div className="flex justify-center gap-24 mb-12 mt-[-10px]">
+          <div className="w-20" />
+          {row2.map((product) => (
+            <PGCard
+              key={product.id}
+              image={product.image}
+              title={product.title}
+              Subtitle={product.Subtitle}
+              onClick={product.onClick}
+            />
+          ))}
+          <div className="w-20" />
+        </div>
 
-      <div className="flex justify-center mt-[-10px]">
-        {row3.map((product) => (
-          <PGCard
-            key={product.id}
-            image={product.image}
-            title={product.title}
-            onClick={product.onClick}
-          />
-        ))}
+        <div className="flex justify-center mt-[-10px]">
+          {row3.map((product) => (
+            <PGCard
+              key={product.id}
+              image={product.image}
+              title={product.title}
+              onClick={product.onClick}
+            />
+          ))}
+        </div>
+        <PGFormModal
+          opened={showDrawerForm}
+          onClose={() => setShowDrawerForm(false)}
+          openedAs={openedAs}
+        />
       </div>
-      <PGFormModal
-        opened={showDrawerForm}
-        onClose={() => setShowDrawerForm(false)}
-        openedAs={openedAs}
-      />
-    </div>
+    </>
   );
 };
 

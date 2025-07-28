@@ -3,11 +3,11 @@ import PGSvgIcon from "@/assets/svg/Products/PgIcon";
 import PayoutSvgIcon from "@/assets/svg/Products/PayoutIcon";
 import DMTSvgIcon from "@/assets/svg/Products/DmtIcon";
 import RechargeSvgIcon from "@/assets/svg/Products/Recharge";
-import ReportsSvgIcon from "@/assets/svg/Products/ReportsIcon";
 import BillPaymenstSvgIcon from "@/assets/svg/Products/BillPayments";
 import TextComponent from "@/components/Atoms/TextComponent";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/system";
+import { AepsCardSvgIcon } from "@/assets/svg";
 
 export default function Products() {
   const navigate = useNavigate();
@@ -47,9 +47,11 @@ export default function Products() {
     },
     {
       id: 5,
-      image: <ReportsSvgIcon color={theme.palette.background.default} />,
-      title: "Reports",
-      onClick: () => {},
+      image: <AepsCardSvgIcon color={theme.palette.background.default} />,
+      title: "AEPS",
+      onClick: () => {
+        navigate(`/products/aepsScreen`);
+      },
     },
   ];
 
