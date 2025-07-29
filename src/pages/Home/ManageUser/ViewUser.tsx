@@ -87,7 +87,7 @@ const ViewUser = () => {
       render: (row: ViewUserList) => (
         <div className="flex items-center justify-center">
           <TextComponent
-            color={theme.palette.background.light}
+            color={theme.palette.background.default}
             fontSize={12}
             fontWeight={400}
           >

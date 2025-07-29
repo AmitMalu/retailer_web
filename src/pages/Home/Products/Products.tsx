@@ -34,20 +34,22 @@ export default function Products() {
       id: 3,
       image: <DMTSvgIcon color={theme.palette.red.DEFAULT} />,
       title: "DMT",
-      onClick: () => {},
+      onClick: () => {
+        navigate(`/products/dmt`);
+      },
     },
   ];
 
   const row2 = [
     {
       id: 4,
-      image: <RechargeSvgIcon color={theme.palette.background.default} />,
+      image: <RechargeSvgIcon color={theme.palette.background.paper} />,
       title: "Recharge",
       onClick: () => {},
     },
     {
       id: 5,
-      image: <AepsCardSvgIcon color={theme.palette.background.default} />,
+      image: <AepsCardSvgIcon color={theme.palette.background.paper} />,
       title: "AEPS",
       onClick: () => {
         navigate(`/products/aepsScreen`);
@@ -69,7 +71,7 @@ export default function Products() {
       <TextComponent
         fontSize={28}
         fontWeight={600}
-        color={theme.palette.background.light}
+        color={theme.palette.background.default}
       >
         Products
       </TextComponent>

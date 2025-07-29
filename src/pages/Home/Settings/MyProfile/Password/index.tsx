@@ -149,13 +149,7 @@ const ChangePassowrd: React.FC = () => {
                           margin: "0 0.3rem",
                           fontSize: "1.5rem",
                           borderRadius: "8px",
-                          borderWidth: "1px",
-                          borderStyle: "solid",
-                          borderColor:
-                            touched.otp && errors.otp
-                              ? theme.palette.red.DEFAULT
-                              : "#ccc",
-                          fontFamily: '"Poppins", sans-serif',
+                          border: `1px solid  ${touched.otp && errors.otp ? theme.palette.error.main : "#ccc"}`,
                         }}
                       />
                       {touched.otp && errors.otp && (

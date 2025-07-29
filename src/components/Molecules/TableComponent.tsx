@@ -153,7 +153,7 @@ const TableComponent: React.FC<TableProps> = ({
                   column.render(item[column.key], index, item)
                 ) : (
                   <TextComponent
-                    color={theme.palette.background.light}
+                    color={theme.palette.background.default}
                     fontSize={12}
                     fontWeight={400}
                     className="w-max justify-self-center"
@@ -232,7 +232,7 @@ const TableComponent: React.FC<TableProps> = ({
                         }
                       >
                         <TextComponent
-                          color={theme.palette.background.light}
+                          color={theme.palette.background.default}
                           fontSize={14}
                           fontWeight={500}
                           className="w-max justify-self-center"

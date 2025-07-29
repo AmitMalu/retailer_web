@@ -100,7 +100,6 @@ const PayoutInfoTable = lazy(
   () => import("@/pages/Home/Products/Payout/InfoTable")
 );
 const AepsScreen = lazy(() => import("@/pages/Home/Products/AEPS"));
-const AepsList = lazy(() => import("@/pages/Home/Products/AEPS/Vendors"));
 const CashWithdrawal = lazy(
   () => import("@/pages/Home/Products/AEPS/CashWithdrawal")
 );
@@ -125,10 +124,24 @@ const MiniStatement = lazy(
 );
 const SelectBankMiniStatement = lazy(
   () =>
-    import("@/pages/Home/Products/AEPS/MiniStatement/SelectBAnkMinistatement")
+    import("@/pages/Home/Products/AEPS/MiniStatement/SelectBankMinistatement")
 );
 const TwoFactorMiniStatement = lazy(
   () => import("@/pages/Home/Products/AEPS/MiniStatement/TwoFAMinistatement")
+);
+
+const DMTScreen = lazy(() => import("@/pages/Home/Products/DMT"));
+
+const RemitterInfo = lazy(
+  () => import("@/pages/Home/Products/DMT/RemitterInfo")
+);
+
+const RemitterRegister = lazy(
+  () => import("@/pages/Home/Products/DMT/RemitterRegister")
+);
+
+const RemitterEkyc = lazy(
+  () => import("@/pages/Home/Products/DMT/RemitterEkyc")
 );
 
 const getToken = () => {
@@ -350,23 +363,7 @@ const RouterOutlet = () => {
               }
             />
           </Route>
-          <Route
-            path="products/aepsScreen/vendors"
-            element={
-              <ProtectedRoute>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <AepsList />
-                </MainLayout>
-              }
-            />
-          </Route>
+
           <Route
             path="products/aepsScreen/vendors/cashWithdrawal"
             element={
@@ -482,6 +479,74 @@ const RouterOutlet = () => {
               element={
                 <MainLayout>
                   <SelectBankMiniStatement />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/dmt"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <DMTScreen />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/dmt/RemitterInfo"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <RemitterInfo />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/dmt/remitterRegister"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <RemitterRegister />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/dmt/remitterRegister/ekyc"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <RemitterEkyc />
                 </MainLayout>
               }
             />

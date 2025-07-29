@@ -31,7 +31,7 @@ const PayoutCard = ({
             <TextComponent
               fontSize={14}
               fontWeight={500}
-              color="background.light"
+              color="background.default"
               className="transition-colors duration-300 "
             >
               {title}
@@ -40,7 +40,7 @@ const PayoutCard = ({
               <TextComponent
                 fontSize={14}
                 fontWeight={500}
-                color="background.light"
+                color="background.default"
                 className="transition-colors duration-300 "
               >
                 {Subtitle}
