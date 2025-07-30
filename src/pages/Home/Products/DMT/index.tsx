@@ -14,6 +14,7 @@ import { handleCustomError } from "@/Utils/handleCustomError";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
+import RemitterReceiptModal from "@/components/Organism/DMT/RemitterReceipt";
 
 const DMTScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,6 +25,7 @@ const DMTScreen = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isNewRemitter, setIsNewRemitter] = useState(false);
+  const [isRemitterReceipt, setIsRemitterReceipt] = useState(true);
 
   const validationSchema = Yup.object({
     mobileNumber: Yup.string()
@@ -290,6 +292,10 @@ const DMTScreen = () => {
             // }}
           />
         </div>
+        <RemitterReceiptModal
+          opened={isRemitterReceipt}
+          onClose={() => setIsRemitterReceipt(false)}
+        />
       </div>
     </>
   );

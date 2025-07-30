@@ -44,8 +44,10 @@ export default function Products() {
     {
       id: 4,
       image: <RechargeSvgIcon color={theme.palette.background.paper} />,
-      title: "Recharge",
-      onClick: () => {},
+      title: "MPOS",
+      onClick: () => {
+        navigate(`/products/mpos`);
+      },
     },
     {
       id: 5,
@@ -62,7 +64,9 @@ export default function Products() {
       id: 6,
       image: <BillPaymenstSvgIcon color={theme.palette.red.DEFAULT} />,
       title: "Bill Payment",
-      onClick: () => {},
+      onClick: () => {
+        navigate(`/products/billPay`);
+      },
     },
   ];
 

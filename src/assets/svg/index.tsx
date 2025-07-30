@@ -1356,3 +1356,103 @@ export const EditSvgIcon = ({ color }: { color: string }) => (
     />
   </svg>
 );
+
+export const PrinterSvgIcon = ({ color }: { color: string }) => (
+  <svg width="28px" height="28px" viewBox="0 0 24 24" fill="none">
+    <path d="M9 10H6" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <path
+      d="M19 14L5 14"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+    <circle cx={17} cy={10} r={1} fill={color} />
+    <path
+      d="M15 16.5H9"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+    <path d="M13 19H9" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <path
+      d="M22 12C22 14.8284 22 16.2426 21.1213 17.1213C20.48 17.7626 19.5535 17.9359 18 17.9827M6 17.9827C4.44655 17.9359 3.51998 17.7626 2.87868 17.1213C2 16.2426 2 14.8284 2 12C2 9.17157 2 7.75736 2.87868 6.87868C3.75736 6 5.17157 6 8 6H16C18.8284 6 20.2426 6 21.1213 6.87868C21.4211 7.17848 21.6186 7.54062 21.7487 8"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+    <path
+      d="M17.9827 6C17.9359 4.44655 17.7626 3.51998 17.1213 2.87868C16.2426 2 14.8284 2 12 2C9.17157 2 7.75736 2 6.87868 2.87868C6.23738 3.51998 6.06413 4.44655 6.01732 6M18 15V16C18 18.8284 18 20.2426 17.1213 21.1213C16.48 21.7626 15.5535 21.9359 14 21.9827M6 15V16C6 18.8284 6 20.2426 6.87868 21.1213C7.51998 21.7626 8.44655 21.9359 10 21.9827"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+export const BillPaymentSvgIcon = ({ color }: { color: string }) => (
+  <svg width="100%" height="100%" viewBox="0 0 32 32" id="svg5">
+    <defs id="defs2" />
+    <g id="layer1" transform="translate(36,-148)">
+      <path
+        d="m -28,150 c -2.749574,0 -5,2.25042 -5,5 v 22 a 1.0001,1.0001 0 0 0 1.832031,0.55469 L -30,175.80273 l 1.167969,1.75196 a 1.0001,1.0001 0 0 0 1.664062,0 L -26,175.80273 l 1.167969,1.75196 a 1.0001,1.0001 0 0 0 1.664062,0 L -22,175.80273 l 1.167969,1.75196 a 1.0001,1.0001 0 0 0 1.664062,0 L -18,175.80273 l 1.167969,1.75196 A 1.0001,1.0001 0 0 0 -15,177 v -12 h 7 a 1.0001,1.0001 0 0 0 1,-1 v -9 c 0,-2.74958 -2.2504259,-5 -5,-5 z m 0,2 h 12.007812 C -16.624083,152.83731 -17,153.87659 -17,155 v 1 8 9.69727 l -0.167969,-0.25196 a 1.0001,1.0001 0 0 0 -1.664062,0 L -20,175.19727 l -1.167969,-1.75196 a 1.0001,1.0001 0 0 0 -1.664062,0 L -24,175.19727 l -1.167969,-1.75196 a 1.0001,1.0001 0 0 0 -1.664062,0 L -28,175.19727 l -1.167969,-1.75196 a 1.0001,1.0001 0 0 0 -1.664062,0 L -31,173.69727 V 155 c 0,-1.6687 1.331303,-3 3,-3 z m 16,0 c 1.668697,0 3,1.3313 3,3 v 8 h -6 v -7 -1 c 0,-1.6687 1.331303,-3 3,-3 z"
+        id="rect1587"
+        style={{
+          color: color,
+          fill: color,
+          fillRule: "evenodd",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeMiterlimit: 4.1,
+        }}
+      />
+      <path
+        d="m -28,162 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 4 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z"
+        id="path6019"
+        style={{
+          color: color,
+          fill: color,
+          fillRule: "evenodd",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeMiterlimit: 4.1,
+        }}
+      />
+      <path
+        d="m -28,165 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 8 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z"
+        id="path6021"
+        style={{
+          color: color,
+          fill: color,
+          fillRule: "evenodd",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeMiterlimit: 4.1,
+        }}
+      />
+      <path
+        d="m -28,168 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 8 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z"
+        id="path6023"
+        style={{
+          color: color,
+          fill: color,
+          fillRule: "evenodd",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeMiterlimit: 4.1,
+        }}
+      />
+      <path
+        d="m -28,155 a 1.0001,1.0001 0 0 0 -1,1 v 4 a 1.0001,1.0001 0 0 0 1,1 h 4 a 1.0001,1.0001 0 0 0 1,-1 v -4 a 1.0001,1.0001 0 0 0 -1,-1 z m 1,2 h 2 v 2 h -2 z"
+        id="rect6025"
+        style={{
+          color: color,
+          fill: color,
+          fillRule: "evenodd",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeMiterlimit: 4.1,
+        }}
+      />
+    </g>
+  </svg>
+);

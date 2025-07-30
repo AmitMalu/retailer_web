@@ -144,6 +144,14 @@ const RemitterEkyc = lazy(
   () => import("@/pages/Home/Products/DMT/RemitterEkyc")
 );
 
+const MposScreen = lazy(() => import("@/pages/Home/Products/MPOS"));
+const BillPaymentScreen = lazy(
+  () => import("@/pages/Home/Products/BillPayment")
+);
+// const BillPayOneScreen = lazy(
+//   () => import("@/pages/Home/Products/BillPayment/BillPay1")
+// );
+
 const getToken = () => {
   const token = document.cookie
     .split("; ")
@@ -551,6 +559,57 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+          <Route
+            path="products/mpos"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <MposScreen />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/billPay"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <BillPaymentScreen />
+                </MainLayout>
+              }
+            />
+          </Route>
+          {/* <Route
+            path="products/billPay"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <BillPayOneScreen />
+                </MainLayout>
+              }
+            />
+          </Route> */}
           <Route
             path="/manageUser/createUser"
             element={

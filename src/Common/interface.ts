@@ -639,3 +639,16 @@ export type RemitterEkycFormProps = {
   csp: boolean;
   alert: boolean;
 };
+
+export type MposBodyProps = {
+  cardType?: string;
+  cardBinNo: string;
+  paymentMethod?: string;
+  cardHolderName?: string;
+  cardHolderMobileNumber: string;
+  amount: string;
+  confirmAmount?: string;
+  narration?: string;
+  productId: string;
+  subProductId: string;
+};
