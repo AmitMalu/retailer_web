@@ -601,3 +601,54 @@ export type TwoFAFormBodyProps = {
   deviceType: string;
   csp: string;
 };
+
+export type FindRemitterProps = {
+  mobileNumber: string;
+  name?: string;
+  dob?: string;
+  page: number;
+  size: number;
+};
+
+export type RemitterData = Record<string, any>;
+
+export type RemitterInfoData = Record<string, any>;
+
+export type EditRemitterProps = {
+  name: string;
+  address: string;
+  otp?: string;
+};
+
+export type AddBeneficiaryFormProps = {
+  fullName: string;
+  bankName: string;
+  bankAccountNumber: string;
+  confirmBankAccountNumber: string;
+  ifscCode: string;
+};
+
+export type RegisterRemitterFormProps = {
+  aadhaarNumber: string;
+  mobileNumber: string;
+  otp?: string;
+};
+
+export type RemitterEkycFormProps = {
+  device: string;
+  csp: boolean;
+  alert: boolean;
+};
+
+export type MposBodyProps = {
+  cardType?: string;
+  cardBinNo: string;
+  paymentMethod?: string;
+  cardHolderName?: string;
+  cardHolderMobileNumber: string;
+  amount: string;
+  confirmAmount?: string;
+  narration?: string;
+  productId: string;
+  subProductId: string;
+};

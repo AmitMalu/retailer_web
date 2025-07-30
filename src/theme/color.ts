@@ -30,7 +30,7 @@ export const colorTokens = {
     dark: "#2563EB",
   },
   background: {
-    default: "#effbf9",
+    default: "#000000",
     paper: "#ffffff",
     light: "#000000",
   },

@@ -23,8 +23,10 @@ import { saveApiResponse } from "@/Redux/Actions/apiActions";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/Redux/Store";
 import OtpAuthImage from "@/assets/svg/Auth/Otp";
+import { useTheme } from "@mui/system";
 
 const OtpInputScreen = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const username = location.state?.userName;
@@ -191,8 +193,7 @@ const OtpInputScreen = () => {
                         margin: "0 0.3rem",
                         fontSize: "1.5rem",
                         borderRadius: "8px",
-                        border: "1px solid #ccc",
-                        fontFamily: '"Poppins", sans-serif',
+                        border: `1px solid  ${touched.otp && errors.otp ? theme.palette.error.main : "#ccc"}`,
                       }}
                     />
                     {touched.otp && errors.otp && (
@@ -211,7 +212,7 @@ const OtpInputScreen = () => {
                       <TextComponent
                         fontSize={30}
                         fontWeight={600}
-                        color={"Primary"}
+                        color={theme.palette.error.main}
                       >
                         {timer}
                       </TextComponent>
