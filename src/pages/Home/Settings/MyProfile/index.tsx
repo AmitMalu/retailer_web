@@ -2,13 +2,25 @@ import { Tabs } from "@mantine/core";
 import { useState } from "react";
 import { useTheme } from "@mui/material";
 import TextComponent from "@/components/Atoms/TextComponent";
-import { PasswordSvgIcon, ProfileSvgIcon } from "@/assets/svg";
+import { AddUserSvgIcon, PasswordSvgIcon, ProfileSvgIcon } from "@/assets/svg";
 import Profile from "./Profile";
 import ChangePassowrd from "./Password";
+import { useSelector } from "react-redux";
+import { RootState } from "@/Redux/Store";
+import { decryptData } from "@/Utils/helper";
+import SubuserCreation from "./Subuser";
 
 const MyProfile = () => {
   const theme = useTheme();
   const [activeTab, setActiveTab] = useState<string | null>("profile");
+
+  const apiResponses = useSelector(
+    (state: RootState) => state.apiResponse.responses
+  );
+
+  const loginData = apiResponses?.loginData
+    ? decryptData(apiResponses?.loginData)
+    : null;
 
   return (
     <Tabs
@@ -45,6 +57,30 @@ const MyProfile = () => {
             </TextComponent>
           </div>
         </Tabs.Tab>
+        {loginData?.role === "RT" && (
+          <Tabs.Tab value="subUser">
+            <div className="flex items-center justify-center gap-2 ">
+              <AddUserSvgIcon
+                color={
+                  activeTab === "subUser"
+                    ? theme.palette.red.DEFAULT
+                    : theme.palette.gray.DEFAULT
+                }
+              />
+              <TextComponent
+                fontSize={18}
+                fontWeight={500}
+                color={
+                  activeTab === "subUser"
+                    ? theme.palette.red.DEFAULT
+                    : theme.palette.gray.DEFAULT
+                }
+              >
+                Create Sub-User
+              </TextComponent>
+            </div>
+          </Tabs.Tab>
+        )}
         <Tabs.Tab value="password">
           <div className="flex items-center justify-center gap-2 ">
             <PasswordSvgIcon
@@ -68,10 +104,13 @@ const MyProfile = () => {
           </div>
         </Tabs.Tab>
       </Tabs.List>
-      <Tabs.Panel value="profile" pb="md">
+      <Tabs.Panel value="profile">
         <Profile />
       </Tabs.Panel>
-      <Tabs.Panel value="password" pb="md">
+      <Tabs.Panel value="subUser">
+        <SubuserCreation />
+      </Tabs.Panel>
+      <Tabs.Panel value="password">
         <ChangePassowrd />
       </Tabs.Panel>
     </Tabs>

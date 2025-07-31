@@ -51,7 +51,7 @@ const Profile = () => {
   };
 
   return (
-    <Tabs variant="none" value={value} onChange={setValue}>
+    <Tabs variant="none" value={value} onChange={setValue} className="mt-16">
       <Tabs.List>
         <Tabs.Tab value="1">
           <div

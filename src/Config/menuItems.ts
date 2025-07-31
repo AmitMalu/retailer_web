@@ -22,7 +22,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
       name: "Manage User",
       path: "/manageUser",
       icon: React.createElement(ManageuserSvgIcon, { color: "currentColor" }),
-      roles: ["DT", "SD", "RT", "WL", "PT"],
+      roles: ["DT", "SD", "WL", "PT"],
       subItems: [
         {
           name: "Create User ",
@@ -88,7 +88,6 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
         },
       ],
     },
-
     {
       name: "Settings",
       path: "/settings",
