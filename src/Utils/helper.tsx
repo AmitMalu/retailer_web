@@ -137,3 +137,33 @@ export const useSubProductDropdown = () => {
 
   return { SubProductDropdownReq };
 };
+
+export const createTriangularLayout = (items: any[]) => {
+  if (items.length === 0) return [];
+  if (items.length <= 3) return [items];
+
+  const result = [];
+  let remaining = [...items];
+
+  let rowSize = Math.min(Math.ceil(items.length / 2) + 1, 6);
+
+  const minRows = 2;
+  if (items.length - rowSize < minRows - 1) {
+    rowSize = items.length - (minRows - 1);
+  }
+
+  while (remaining.length > 0) {
+    const currentRowSize = Math.min(rowSize, remaining.length);
+    if (currentRowSize <= 0) break;
+
+    const rowItems = remaining.slice(0, currentRowSize);
+    result.push(rowItems);
+    remaining = remaining.slice(currentRowSize);
+
+    if (rowSize > 1) {
+      rowSize--;
+    }
+  }
+
+  return result;
+};

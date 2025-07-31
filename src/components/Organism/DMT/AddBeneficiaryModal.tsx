@@ -6,13 +6,10 @@ import { Group, Modal } from "@mantine/core";
 import { useState } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { decryptData } from "@/Utils/helper";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { useSelector } from "react-redux";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
-import { RootState } from "@/Redux/Store";
 import theme from "@/theme/ThemeConfig";
 
 const AddBeneficiaryModal = ({
@@ -21,17 +18,17 @@ const AddBeneficiaryModal = ({
   // rowData,
   // openedAs,
 }: PartnerRegistrationModalProps) => {
-  const apiResponses = useSelector(
-    (state: RootState) => state.apiResponse.responses
-  );
+  // const apiResponses = useSelector(
+  //   (state: RootState) => state.apiResponse.responses
+  // );
 
-  const loginData = apiResponses?.loginData
-    ? decryptData(apiResponses?.loginData)
-    : null;
+  // const loginData = apiResponses?.loginData
+  //   ? decryptData(apiResponses?.loginData)
+  //   : null;
 
-  const ipAddress = apiResponses?.ipAddress
-    ? decryptData(apiResponses?.ipAddress)
-    : null;
+  // const ipAddress = apiResponses?.ipAddress
+  //   ? decryptData(apiResponses?.ipAddress)
+  //   : null;
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -58,7 +55,7 @@ const AddBeneficiaryModal = ({
     ifscCode: "",
   };
 
-  const handleSubmit = async (values: AddBeneficiaryFormProps) => {
+  const handleSubmit = async () => {
     try {
       setIsLoading(true);
 

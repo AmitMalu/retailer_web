@@ -148,9 +148,9 @@ const MposScreen = lazy(() => import("@/pages/Home/Products/MPOS"));
 const BillPaymentScreen = lazy(
   () => import("@/pages/Home/Products/BillPayment")
 );
-// const BillPayOneScreen = lazy(
-//   () => import("@/pages/Home/Products/BillPayment/BillPay1")
-// );
+const BillPayOneScreen = lazy(
+  () => import("@/pages/Home/Products/BillPayment/BillPay1")
+);
 
 const getToken = () => {
   const token = document.cookie
@@ -593,8 +593,8 @@ const RouterOutlet = () => {
               }
             />
           </Route>
-          {/* <Route
-            path="products/billPay"
+          <Route
+            path="products/billPay/products"
             element={
               <ProtectedRoute>
                 <Outlet />
@@ -609,7 +609,7 @@ const RouterOutlet = () => {
                 </MainLayout>
               }
             />
-          </Route> */}
+          </Route>
           <Route
             path="/manageUser/createUser"
             element={

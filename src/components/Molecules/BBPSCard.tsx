@@ -1,5 +1,6 @@
 import React from "react";
 import TextComponent from "../Atoms/TextComponent";
+import { useTheme } from "@mui/system";
 
 const BbpsCard = ({
   image,
@@ -10,6 +11,7 @@ const BbpsCard = ({
   title: string;
   onClick: () => void;
 }) => {
+  const theme = useTheme();
   return (
     <div className="relative flex flex-col items-center min-h-[120px] group">
       <div
@@ -27,7 +29,8 @@ const BbpsCard = ({
             <TextComponent
               fontSize={14}
               fontWeight={500}
-              color="primary"
+              color={theme.palette.background.default}
+              align="center"
               className="transition-colors duration-300 group-hover:text-red-600"
             >
               {title}

@@ -19,8 +19,10 @@ import { MobileNoRegex } from "@/Utils/helper";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { LoginRequest } from "@/Common/interface";
 import LoginImage from "@/assets/svg/Auth/login";
+import { useTheme } from "@mui/system";
 
 const Login: React.FC = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -40,8 +42,9 @@ const Login: React.FC = () => {
   };
 
   const getCurrentUrl = () => {
-    const { origin } = window.location;
-    return `${origin}/`;
+    const { origin, pathname } = window.location;
+    const basePath = pathname.split("/").slice(0, -1).join("/"); // Removes the last segment
+    return `${origin}${basePath}`;
   };
 
   const handleSubmit = async (values: LoginRequest) => {
@@ -50,7 +53,8 @@ const Login: React.FC = () => {
       let bodyRequest = {
         userName: values.userName,
         password: values.password,
-        url: getCurrentUrl(),
+        url: "https://uat.decipay.in/enterprises-portal/",
+        // url: getCurrentUrl(),
       };
       const response = await login(bodyRequest);
       if (
@@ -141,7 +145,9 @@ const Login: React.FC = () => {
                           style={{ cursor: "pointer" }}
                         >
                           {!showPassword ? (
-                            <OpenEyeSvgIcon />
+                            <OpenEyeSvgIcon
+                              color={theme.palette.background.default}
+                            />
                           ) : (
                             <CloseEyeSvgIcon />
                           )}

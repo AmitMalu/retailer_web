@@ -58,8 +58,6 @@ const FundTransfer = () => {
     }
   }, []);
 
-  console.log("childMemberList", childMemberList);
-
   const validationSchema = Yup.object().shape({
     toHierarchyId: Yup.string().required("Required"),
     amount: Yup.string().required("Required"),

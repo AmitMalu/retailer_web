@@ -14,13 +14,9 @@ const BillPaymentScreen = () => {
       id: 1,
       image: <BillPaymentSvgIcon color={theme.palette.red.DEFAULT} />,
       title: "BBPS1",
-      onClick: () => {},
-    },
-    {
-      id: 2,
-      image: <BillPaymentSvgIcon color={theme.palette.red.DEFAULT} />,
-      title: "BILLPAY 2",
-      onClick: () => {},
+      onClick: () => {
+        navigate(`/products/billPay/products`);
+      },
     },
   ];
 

@@ -6,12 +6,9 @@ import { Modal } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { decryptData } from "@/Utils/helper";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { useSelector } from "react-redux";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
-import { RootState } from "@/Redux/Store";
 import theme from "@/theme/ThemeConfig";
 import OTPInput from "react-otp-input";
 import TextComponent from "../../Atoms/TextComponent";
@@ -50,17 +47,17 @@ const RemitterInfoEditModal = ({
     };
   }, [timer]);
 
-  const apiResponses = useSelector(
-    (state: RootState) => state.apiResponse.responses
-  );
+  // const apiResponses = useSelector(
+  //   (state: RootState) => state.apiResponse.responses
+  // );
 
-  const loginData = apiResponses?.loginData
-    ? decryptData(apiResponses?.loginData)
-    : null;
+  // const loginData = apiResponses?.loginData
+  //   ? decryptData(apiResponses?.loginData)
+  //   : null;
 
-  const ipAddress = apiResponses?.ipAddress
-    ? decryptData(apiResponses?.ipAddress)
-    : null;
+  // const ipAddress = apiResponses?.ipAddress
+  //   ? decryptData(apiResponses?.ipAddress)
+  //   : null;
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,7 +73,7 @@ const RemitterInfoEditModal = ({
     otp: "",
   };
 
-  const handleSubmit = async (values: EditRemitterProps) => {
+  const handleSubmit = async () => {
     try {
       setIsLoading(true);
 

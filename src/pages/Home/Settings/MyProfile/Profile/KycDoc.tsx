@@ -1,4 +1,4 @@
-import { ViewDocSvgIcon } from "@/assets/svg";
+import { OpenEyeSvgIcon } from "@/assets/svg";
 import { KycDocList } from "@/Common/interface";
 import TableComponent from "@/components/Molecules/TableComponent";
 import { RootState } from "@/Redux/Store";
@@ -80,7 +80,7 @@ const KycDoc = () => {
               window.open(fileUrl, "_blank");
             }}
           >
-            <ViewDocSvgIcon color={theme.palette.red.DEFAULT} />
+            <OpenEyeSvgIcon color={theme.palette.red.DEFAULT} />
           </UnstyledButton>
         </div>
       ),
@@ -89,7 +89,6 @@ const KycDoc = () => {
     },
   ];
 
-  console.log(UserProfileData?.kycDocs);
   return (
     <div>
       <div className="shadow-black-900/100 bg-transparent shadow-lg">

@@ -1,11 +1,4 @@
-import {
-  PgPrepaidSvgIcon,
-  PGTatkalSvgIcon,
-  PGTezMasterSvgIcon,
-  PGTezOneSvgIcon,
-  PGTezTwoSvgIcon,
-  PGTOneSvgIcon,
-} from "@/assets/svg/Products/PG";
+import { PgPrepaidSvgIcon } from "@/assets/svg/Products/PG";
 import TextComponent from "@/components/Atoms/TextComponent";
 import PGCard from "@/components/Molecules/PGCard";
 import PGFormModal from "./PGForm";
@@ -14,82 +7,43 @@ import { UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { useNavigate } from "react-router-dom";
 import { BackSvgIcon } from "@/assets/svg";
+import { createTriangularLayout, decryptData } from "@/Utils/helper";
+import { useSelector } from "react-redux";
+import { RootState } from "@/Redux/Store";
 
 const PGScreen = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [showDrawerForm, setShowDrawerForm] = useState(false);
-  const [openedAs, setOpenedAs] = useState<
-    "prepaid" | "tatkal" | "tez1" | "tone" | "tez2" | "tezMaster"
-  >("prepaid");
+  const [openedAs, setOpenedAs] = useState<string>("");
 
-  const handleIconClick = (
-    type: "prepaid" | "tatkal" | "tez1" | "tone" | "tez2" | "tezMaster"
-  ) => {
+  const apiResponses = useSelector(
+    (state: RootState) => state.apiResponse.responses
+  );
+
+  const loginData = apiResponses?.loginData
+    ? decryptData(apiResponses?.loginData)
+    : null;
+
+  const handleIconClick = (type: string) => {
     setOpenedAs(type);
     setShowDrawerForm(true);
   };
 
-  const row1 = [
-    {
-      id: 1,
-      image: <PgPrepaidSvgIcon color="red" />,
-      title: "PG-PrePaid",
-      onClick: () => {
-        handleIconClick("prepaid");
-      },
-    },
-    {
-      id: 2,
-      image: <PGTatkalSvgIcon color="red" />,
-      title: "PG-",
-      Subtitle: "(PostPaid)",
-      onClick: () => {
-        handleIconClick("tatkal");
-      },
-    },
-    {
-      id: 3,
-      image: <PGTezOneSvgIcon color="red" />,
-      title: "PG-TEZ-1",
-      Subtitle: "(PostPaid)",
-      onClick: () => {
-        handleIconClick("tez1");
-      },
-    },
-  ];
+  const paymentGatewayProduct = loginData?.products?.find(
+    (product: any) => product.productName === "Payment Gateway"
+  );
 
-  const row2 = [
-    {
-      id: 4,
-      image: <PGTOneSvgIcon color="red" />,
-      title: "PG-T+1",
-      Subtitle: "(PostPaid)",
-      onClick: () => {
-        handleIconClick("tone");
-      },
-    },
-    {
-      id: 5,
-      image: <PGTezTwoSvgIcon color="red" />,
-      title: "PG-TEZ-2",
-      Subtitle: "(PostPaid)",
-      onClick: () => {
-        handleIconClick("tez2");
-      },
-    },
-  ];
+  const cardsData =
+    paymentGatewayProduct?.subProducts?.map((subProduct: any) => {
+      return {
+        id: subProduct.subProductId,
+        title: subProduct.subProductName,
+        schemeCode: subProduct.schemeCode,
+      };
+    }) || [];
 
-  const row3 = [
-    {
-      id: 6,
-      image: <PGTezMasterSvgIcon color="red" />,
-      title: "PG-TEZ-Master",
-      onClick: () => {
-        handleIconClick("tezMaster");
-      },
-    },
-  ];
+  const groupedCards = createTriangularLayout(cardsData);
 
   return (
     <>
@@ -105,42 +59,21 @@ const PGScreen = () => {
           Payment Gateway
         </TextComponent>
 
-        <div className="flex justify-center gap-28 my-12">
-          {row1.map((product) => (
-            <PGCard
-              key={product.id}
-              image={product.image}
-              title={product.title}
-              Subtitle={product.Subtitle}
-              onClick={product.onClick}
-            />
+        <div className="flex flex-col items-center gap-6 mt-10">
+          {groupedCards.map((row, rowIndex) => (
+            <div key={rowIndex} className="flex justify-center gap-8 flex-wrap">
+              {row.map((card) => (
+                <PGCard
+                  key={card.id}
+                  image={<PgPrepaidSvgIcon color={theme.palette.red.DEFAULT} />}
+                  title={card.title}
+                  onClick={() => handleIconClick(card.title)}
+                />
+              ))}
+            </div>
           ))}
         </div>
 
-        <div className="flex justify-center gap-24 mb-12 mt-[-10px]">
-          <div className="w-20" />
-          {row2.map((product) => (
-            <PGCard
-              key={product.id}
-              image={product.image}
-              title={product.title}
-              Subtitle={product.Subtitle}
-              onClick={product.onClick}
-            />
-          ))}
-          <div className="w-20" />
-        </div>
-
-        <div className="flex justify-center mt-[-10px]">
-          {row3.map((product) => (
-            <PGCard
-              key={product.id}
-              image={product.image}
-              title={product.title}
-              onClick={product.onClick}
-            />
-          ))}
-        </div>
         <PGFormModal
           opened={showDrawerForm}
           onClose={() => setShowDrawerForm(false)}

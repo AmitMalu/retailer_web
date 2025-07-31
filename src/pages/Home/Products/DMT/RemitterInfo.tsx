@@ -1,14 +1,10 @@
 import { useTheme } from "@mui/system";
 import { useNavigate } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { RemitterInfoData } from "@/Common/interface";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
-import { useSelector } from "react-redux";
-import { RootState } from "@/Redux/Store";
-import { decryptData } from "@/Utils/helper";
-import { handleCustomError } from "@/Utils/handleCustomError";
 import Loader from "@/components/Atoms/Loader";
 import { UnstyledButton } from "@mantine/core";
 import {
@@ -33,7 +29,7 @@ const RemitterInfo = () => {
   const [showEkycDrawerForm, setShowEkycDrawerForm] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isSeacrh, setIsSeacrh] = useState(false);
-  const [searchValues, setSearchValues] = useState<Record<string, string>>({});
+  // const [searchValues, setSearchValues] = useState<Record<string, string>>({});
   const [selectedRowData, setSelectedRowData] = useState<RemitterInfoData | []>(
     []
   );
@@ -44,38 +40,44 @@ const RemitterInfo = () => {
     RemitterInfoData | []
   >([]);
 
-  const apiResponses = useSelector(
-    (state: RootState) => state.apiResponse.responses
+  console.log(
+    setIsRemitterInfoList,
+    setItemsPerPage,
+    setCurrentPage,
+    setIsLoading
   );
+  // const apiResponses = useSelector(
+  //   (state: RootState) => state.apiResponse.responses
+  // );
 
-  const loginData = apiResponses?.loginData
-    ? decryptData(apiResponses?.loginData)
-    : null;
+  // const loginData = apiResponses?.loginData
+  //   ? decryptData(apiResponses?.loginData)
+  //   : null;
 
-  const GetPayoutDataSubmit = async () => {
-    try {
-      setIsLoading(true);
-      //   let bodyRequest = {
-      //     fromDate: "",
-      //     toDate: "",
+  // const GetPayoutDataSubmit = async () => {
+  //   try {
+  //     setIsLoading(true);
+  //     //   let bodyRequest = {
+  //     //     fromDate: "",
+  //     //     toDate: "",
 
-      //     page: values.page,
-      //     size: values.size,
-      //   };
-      //   const response = await Wallet_Report({}, bodyRequest);
+  //     //     page: values.page,
+  //     //     size: values.size,
+  //     //   };
+  //     //   const response = await Wallet_Report({}, bodyRequest);
 
-      //   if (response?.status === 200) {
-      //     setIsInfoList(response?.data?.data?.content);
-      //     showSuccessNotification(response?.data?.message);
-      //   } else {
-      //     showErrorNotification(response?.data?.message);
-      //   }
-    } catch (error) {
-      await handleCustomError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     //   if (response?.status === 200) {
+  //     //     setIsInfoList(response?.data?.data?.content);
+  //     //     showSuccessNotification(response?.data?.message);
+  //     //   } else {
+  //     //     showErrorNotification(response?.data?.message);
+  //     //   }
+  //   } catch (error) {
+  //     await handleCustomError(error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   const tableColumns = [
     {
       key: "beneficiaryName",
@@ -106,7 +108,7 @@ const RemitterInfo = () => {
       label: "Transfer",
       searchKey: "amount",
       sortable: true,
-      render: (value: string) => (
+      render: () => (
         <div className="flex items-center gap-2 justify-center">
           <div className="w-[20%]  ">
             <DropdownComponent
@@ -115,7 +117,7 @@ const RemitterInfo = () => {
                 { value: "POSTPAID", label: "POSTPAID" },
               ]}
               value={""}
-              onChange={(value) => {}}
+              onChange={() => {}}
               className="w-max"
             />
           </div>
@@ -126,7 +128,7 @@ const RemitterInfo = () => {
                 { value: "NEFT", label: "NEFT" },
               ]}
               value={""}
-              onChange={(value) => {}}
+              onChange={() => {}}
               className="w-max"
             />
           </div>
@@ -173,68 +175,68 @@ const RemitterInfo = () => {
     },
   ];
 
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleSearchWithValues = (
-    columnKey: string,
-    value: string
-    // values: WalletParams
-  ) => {
-    try {
-      const column = tableColumns.find((col) => col.key === columnKey);
-      if (!column) return;
+  // const handleSearchWithValues = (
+  //   columnKey: string,
+  //   value: string
+  //   // values: WalletParams
+  // ) => {
+  //   try {
+  //     const column = tableColumns.find((col) => col.key === columnKey);
+  //     if (!column) return;
 
-      const searchKey = column.searchKey || column.key;
-      const newSearchValues = { ...searchValues };
+  //     const searchKey = column.searchKey || column.key;
+  //     const newSearchValues = { ...searchValues };
 
-      if (value) {
-        newSearchValues[searchKey] = value;
-      } else {
-        delete newSearchValues[searchKey];
-      }
+  //     if (value) {
+  //       newSearchValues[searchKey] = value;
+  //     } else {
+  //       delete newSearchValues[searchKey];
+  //     }
 
-      setSearchValues(newSearchValues);
+  //     setSearchValues(newSearchValues);
 
-      //   if (values.fromDate && values.toDate) {
-      //     const bodyRequest = {
-      //       fromDate: "",
-      //       toDate: "",
-      //       hierarchyId: values.hierarchyId || loginData?.hierarchyId,
-      //       walletType: values.walletType,
-      //       subProductName: values.subProductName,
-      //       status: values.status,
-      //       page: values.page,
-      //       size: values.size,
-      //     };
+  //     //   if (values.fromDate && values.toDate) {
+  //     //     const bodyRequest = {
+  //     //       fromDate: "",
+  //     //       toDate: "",
+  //     //       hierarchyId: values.hierarchyId || loginData?.hierarchyId,
+  //     //       walletType: values.walletType,
+  //     //       subProductName: values.subProductName,
+  //     //       status: values.status,
+  //     //       page: values.page,
+  //     //       size: values.size,
+  //     //     };
 
-      //     if (timeoutRef.current) {
-      //       clearTimeout(timeoutRef.current);
-      //     }
+  //     //     if (timeoutRef.current) {
+  //     //       clearTimeout(timeoutRef.current);
+  //     //     }
 
-      //     timeoutRef.current = setTimeout(() => {
-      //       setIsLoading(true);
-      //         Wallet_Report(newSearchValues, bodyRequest)
-      //           .then((response) => {
-      //             if (response?.status === 200) {
-      //               setIsInfoList(response?.data?.data?.content);
-      //             } else {
-      //               showErrorNotification(response?.data?.message);
-      //               setIsInfoList([]);
-      //             }
-      //           })
-      //           .catch((error) => {
-      //             handleCustomError(error);
-      //             setIsInfoList([]);
-      //           })
-      //           .finally(() => {
-      //             setIsLoading(false);
-      //           });
-      //     }, 900);
-      //   }
-    } catch (error) {
-      handleCustomError(error);
-    }
-  };
+  //     //     timeoutRef.current = setTimeout(() => {
+  //     //       setIsLoading(true);
+  //     //         Wallet_Report(newSearchValues, bodyRequest)
+  //     //           .then((response) => {
+  //     //             if (response?.status === 200) {
+  //     //               setIsInfoList(response?.data?.data?.content);
+  //     //             } else {
+  //     //               showErrorNotification(response?.data?.message);
+  //     //               setIsInfoList([]);
+  //     //             }
+  //     //           })
+  //     //           .catch((error) => {
+  //     //             handleCustomError(error);
+  //     //             setIsInfoList([]);
+  //     //           })
+  //     //           .finally(() => {
+  //     //             setIsLoading(false);
+  //     //           });
+  //     //     }, 900);
+  //     //   }
+  //   } catch (error) {
+  //     handleCustomError(error);
+  //   }
+  // };
 
   return (
     <>

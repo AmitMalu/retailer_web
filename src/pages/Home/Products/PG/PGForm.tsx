@@ -349,9 +349,9 @@ const PGFormModal = ({
                           withAsterisk
                           onChange={(value) => {
                             setFieldValue("productId", value);
-                            const newProduct = loginData?.products?.find(
-                              (p: any) => p.productId === value
-                            );
+                            // const newProduct = loginData?.products?.find(
+                            //   (p: any) => p.productId === value
+                            // );
                             // const firstSubProduct =
                             //   newProduct?.subProducts?.[0];
                             // setFieldValue(
