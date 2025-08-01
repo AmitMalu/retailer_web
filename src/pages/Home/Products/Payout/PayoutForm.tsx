@@ -6,10 +6,6 @@ import { Modal } from "@mantine/core";
 import { useState } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import {
-  showErrorNotification,
-  showSuccessNotification,
-} from "@/Utils/notifications";
 import { decryptData } from "@/Utils/helper";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
@@ -50,7 +46,7 @@ const PayoutFormModal = ({
     accountName: "",
   };
 
-  const handlePayoutSubmit = async (values: PayoutFormBodyProps) => {
+  const handlePayoutSubmit = async () => {
     try {
       setIsLoading(true);
       //   const payload = {

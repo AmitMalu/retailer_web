@@ -45,6 +45,7 @@ export default function BaseLayout({
               top: 0,
               right: 0,
               left: sidebarWidth,
+              zIndex: 1000,
             }),
             scrollbarWidth: "none",
           }}
@@ -53,7 +54,7 @@ export default function BaseLayout({
         </div>
 
         <div
-          className="flex flex-1 flex-col h-screen"
+          className="flex flex-1 flex-col h-screen overflow-auto"
           style={{
             marginLeft: `${sidebarWidth + 70}px`,
             scrollbarWidth: "none",

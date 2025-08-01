@@ -20,8 +20,10 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
+import { useTheme } from "@mui/system";
 
 const SetPasswordScreen: React.FC = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -111,7 +113,9 @@ const SetPasswordScreen: React.FC = () => {
                           style={{ cursor: "pointer" }}
                         >
                           {showNewPassword ? (
-                            <OpenEyeSvgIcon />
+                            <OpenEyeSvgIcon
+                              color={theme.palette.background.default}
+                            />
                           ) : (
                             <CloseEyeSvgIcon />
                           )}
@@ -138,7 +142,9 @@ const SetPasswordScreen: React.FC = () => {
                           style={{ cursor: "pointer" }}
                         >
                           {showPassword ? (
-                            <OpenEyeSvgIcon />
+                            <OpenEyeSvgIcon
+                              color={theme.palette.background.default}
+                            />
                           ) : (
                             <CloseEyeSvgIcon />
                           )}

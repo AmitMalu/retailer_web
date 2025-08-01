@@ -2,14 +2,11 @@ import { BackSvgIcon, FingerprintSvgIcon } from "@/assets/svg";
 import { RemitterEkycFormProps } from "@/Common/interface";
 import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
-import { RootState } from "@/Redux/Store";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { decryptData } from "@/Utils/helper";
 import { Checkbox, Radio, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { Formik } from "formik";
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 
@@ -18,13 +15,13 @@ const RemitterEkyc = () => {
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
 
-  const apiResponses = useSelector(
-    (state: RootState) => state.apiResponse.responses
-  );
+  // const apiResponses = useSelector(
+  //   (state: RootState) => state.apiResponse.responses
+  // );
 
-  const loginData = apiResponses?.loginData
-    ? decryptData(apiResponses?.loginData)
-    : null;
+  // const loginData = apiResponses?.loginData
+  //   ? decryptData(apiResponses?.loginData)
+  //   : null;
 
   const validationSchema = Yup.object().shape({
     device: Yup.string().required("Required"),
@@ -38,7 +35,7 @@ const RemitterEkyc = () => {
     alert: false,
   };
 
-  const handleSubmit = async (values: RemitterEkycFormProps) => {
+  const handleSubmit = async () => {
     try {
       setIsLoading(true);
 
@@ -92,7 +89,7 @@ const RemitterEkyc = () => {
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
-            {({ values, handleChange, errors, touched, setFieldValue }) => {
+            {({ values, setFieldValue }) => {
               return (
                 <div className="w-full flex-col flex items-start justify-start gap-3">
                   <div className="flex w-full gap-2 items-center justify-between mt-6 rounded-xl border-2 border-red-light p-4">

@@ -1,10 +1,6 @@
 import { PartnerRegistrationModalProps } from "@/Common/interface";
 import { Modal } from "@mantine/core";
 import React, { useRef, useState } from "react";
-import { decryptData } from "@/Utils/helper";
-import { handleCustomError } from "@/Utils/handleCustomError";
-import { useSelector } from "react-redux";
-import { RootState } from "@/Redux/Store";
 import theme from "@/theme/ThemeConfig";
 import TextComponent from "@/components/Atoms/TextComponent";
 import ImFullLogo from "@/assets/svg/ImFullLogo";
@@ -247,44 +243,44 @@ const RemitterReceiptModal = ({
   // rowData,
   //   openedAs,
 }: PartnerRegistrationModalProps) => {
-  const apiResponses = useSelector(
-    (state: RootState) => state.apiResponse.responses
-  );
+  // const apiResponses = useSelector(
+  //   (state: RootState) => state.apiResponse.responses
+  // );
 
-  const loginData = apiResponses?.loginData
-    ? decryptData(apiResponses?.loginData)
-    : null;
+  // const loginData = apiResponses?.loginData
+  //   ? decryptData(apiResponses?.loginData)
+  //   : null;
 
-  const ipAddress = apiResponses?.ipAddress
-    ? decryptData(apiResponses?.ipAddress)
-    : null;
+  // const ipAddress = apiResponses?.ipAddress
+  //   ? decryptData(apiResponses?.ipAddress)
+  //   : null;
 
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
-  const GetReceipt = async () => {
-    try {
-      setIsLoading(true);
+  // const GetReceipt = async () => {
+  //   try {
+  //     setIsLoading(true);
 
-      // const data: any = {
-      //   name: values?.name,
-      //   address: values?.address,
-      //   otp: values?.otp,
-      // };
+  //     // const data: any = {
+  //     //   name: values?.name,
+  //     //   address: values?.address,
+  //     //   otp: values?.otp,
+  //     // };
 
-      //   const response = await Create_Retailer(data);
-      //   if (response?.status === 201 || response?.data?.statusCode === "201") {
-      //     showSuccessNotification(response?.data?.message);
-      //     onClose();
-      //   } else {
-      //     showErrorNotification(response?.data?.message || "Unable to create");
-      //   }
-    } catch (error: any) {
-      await handleCustomError(error);
-      setIsLoading(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     //   const response = await Create_Retailer(data);
+  //     //   if (response?.status === 201 || response?.data?.statusCode === "201") {
+  //     //     showSuccessNotification(response?.data?.message);
+  //     //     onClose();
+  //     //   } else {
+  //     //     showErrorNotification(response?.data?.message || "Unable to create");
+  //     //   }
+  //   } catch (error: any) {
+  //     await handleCustomError(error);
+  //     setIsLoading(false);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const receiptRef = useRef<HTMLDivElement>(null);
   const [printOrientation, setPrintOrientation] = useState<

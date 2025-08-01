@@ -1,13 +1,11 @@
 import { BackSvgIcon } from "@/assets/svg";
 import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
-import { RootState } from "@/Redux/Store";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { decryptData, MobileNoRegex } from "@/Utils/helper";
+import { MobileNoRegex } from "@/Utils/helper";
 import { UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -20,13 +18,13 @@ const RemitterRegister = () => {
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
 
-  const apiResponses = useSelector(
-    (state: RootState) => state.apiResponse.responses
-  );
+  // const apiResponses = useSelector(
+  //   (state: RootState) => state.apiResponse.responses
+  // );
 
-  const loginData = apiResponses?.loginData
-    ? decryptData(apiResponses?.loginData)
-    : null;
+  // const loginData = apiResponses?.loginData
+  //   ? decryptData(apiResponses?.loginData)
+  //   : null;
 
   const validationSchema = Yup.object().shape({
     aadhaarNumber: Yup.string()
@@ -45,7 +43,7 @@ const RemitterRegister = () => {
     otp: "",
   };
 
-  const handleSubmit = async (values: RegisterRemitterFormProps) => {
+  const handleSubmit = async () => {
     try {
       setIsLoading(true);
 
@@ -100,8 +98,7 @@ const RemitterRegister = () => {
             enableReinitialize={true}
           >
             {(formik) => {
-              const { handleSubmit, handleChange, errors, touched, values } =
-                formik;
+              const { handleChange, errors, touched, values } = formik;
               return (
                 <>
                   <div className="mt-3 flex flex-col items-start justify-center gap-3 border-2 border-red-light p-4 rounded-lg w-[calc(40%-12px)]">

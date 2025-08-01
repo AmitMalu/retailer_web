@@ -1,5 +1,5 @@
 import TableComponent from "@/components/Molecules/TableComponent";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTheme } from "@mui/system";
 import TextComponent from "@/components/Atoms/TextComponent";
 import { PayOutInfoData, WalletParams } from "@/Common/interface";
@@ -59,7 +59,7 @@ const InfoTable = () => {
       ifscCode: "HDFC0005678",
     },
   ]);
-
+  console.log(setIsInfoList);
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
@@ -73,16 +73,16 @@ const InfoTable = () => {
       setIsLoading(true);
       setCurrentPage(values.page);
       setItemsPerPage(values.size);
-      let bodyRequest = {
-        fromDate: "",
-        toDate: "",
-        hierarchyId: values.hierarchyId || loginData?.hierarchyId,
-        walletType: values.walletType,
-        subProductName: values.subProductName,
-        status: values.status,
-        page: values.page,
-        size: values.size,
-      };
+      // let bodyRequest = {
+      //   fromDate: "",
+      //   toDate: "",
+      //   hierarchyId: values.hierarchyId || loginData?.hierarchyId,
+      //   walletType: values.walletType,
+      //   subProductName: values.subProductName,
+      //   status: values.status,
+      //   page: values.page,
+      //   size: values.size,
+      // };
       //   const response = await Wallet_Report({}, bodyRequest);
 
       //   if (response?.status === 200) {
@@ -128,7 +128,7 @@ const InfoTable = () => {
       label: "Transfer",
       searchKey: "amount",
       sortable: true,
-      render: (value: string) => (
+      render: () => (
         <div className="flex items-center gap-2 justify-center">
           <div className="w-[20%]  ">
             <DropdownComponent
@@ -137,7 +137,7 @@ const InfoTable = () => {
                 { value: "NEFT", label: "NEFT" },
               ]}
               value={""}
-              onChange={(value) => {}}
+              onChange={() => {}}
               className="w-max"
             />
           </div>
@@ -198,16 +198,16 @@ const InfoTable = () => {
       setSearchValues(newSearchValues);
 
       if (values.fromDate && values.toDate) {
-        const bodyRequest = {
-          fromDate: "",
-          toDate: "",
-          hierarchyId: values.hierarchyId || loginData?.hierarchyId,
-          walletType: values.walletType,
-          subProductName: values.subProductName,
-          status: values.status,
-          page: values.page,
-          size: values.size,
-        };
+        // const bodyRequest = {
+        //   fromDate: "",
+        //   toDate: "",
+        //   hierarchyId: values.hierarchyId || loginData?.hierarchyId,
+        //   walletType: values.walletType,
+        //   subProductName: values.subProductName,
+        //   status: values.status,
+        //   page: values.page,
+        //   size: values.size,
+        // };
 
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
@@ -311,7 +311,7 @@ const InfoTable = () => {
           validationSchema={validationSchema}
           onSubmit={GetPayoutDataSubmit}
         >
-          {({ values, handleSubmit, errors, touched, setFieldValue }) => {
+          {({ values }) => {
             return (
               <>
                 <div className="mt-6">

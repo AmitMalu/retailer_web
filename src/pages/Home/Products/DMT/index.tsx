@@ -26,7 +26,12 @@ const DMTScreen = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isNewRemitter, setIsNewRemitter] = useState(false);
   const [isRemitterReceipt, setIsRemitterReceipt] = useState(true);
-
+  console.log(
+    selectedRowData,
+    setIsRemitterReceipt,
+    setIsNewRemitter,
+    setIsRemitterList
+  );
   const validationSchema = Yup.object({
     mobileNumber: Yup.string()
       .max(10, "Enter valid Number")
@@ -85,7 +90,7 @@ const DMTScreen = () => {
               setSelectedRowData(row);
             }}
           >
-            <OpenEyeSvgIcon />
+            <OpenEyeSvgIcon color={theme.palette.background.default} />
           </UnstyledButton>
         </div>
       ),

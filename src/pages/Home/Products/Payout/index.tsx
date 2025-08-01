@@ -6,36 +6,42 @@ import PayoutCard from "@/components/Molecules/PayoutCard";
 import { PGTezMasterSvgIcon } from "@/assets/svg/Products/PG";
 import { UnstyledButton } from "@mantine/core";
 import { BackSvgIcon } from "@/assets/svg";
+import { createTriangularLayout, decryptData } from "@/Utils/helper";
+import { useSelector } from "react-redux";
+import { RootState } from "@/Redux/Store";
 
 export default function PayoutScreen() {
   const theme = useTheme();
   const [openedAs, setOpenedAs] = useState<"payoutFour" | "payout">("payout");
-
   const navigate = useNavigate();
+
+  const apiResponses = useSelector(
+    (state: RootState) => state.apiResponse.responses
+  );
+
+  const loginData = apiResponses?.loginData
+    ? decryptData(apiResponses?.loginData)
+    : null;
 
   const handleIconClick = (type: "payout" | "payoutFour") => {
     setOpenedAs(type);
     navigate(`/products/payoutScreen/Info`);
   };
 
-  const row1 = [
-    {
-      id: 1,
-      image: <PGTezMasterSvgIcon color={theme.palette.red.DEFAULT} />,
-      title: "PAYOUT 4",
-      onClick: () => {
-        handleIconClick("payoutFour");
-      },
-    },
-    {
-      id: 2,
-      image: <PGTezMasterSvgIcon color={theme.palette.red.DEFAULT} />,
-      title: "PAYOUT",
-      onClick: () => {
-        handleIconClick("payout");
-      },
-    },
-  ];
+  const payoutProduct = loginData?.products?.find(
+    (product: any) => product.productName === "PAYOUT"
+  );
+
+  const cardsData =
+    payoutProduct?.subProducts?.map((subProduct: any) => {
+      return {
+        id: subProduct.subProductId,
+        title: subProduct.subProductName,
+        schemeCode: subProduct.schemeCode,
+      };
+    }) || [];
+
+  const groupedCards = createTriangularLayout(cardsData);
 
   return (
     <>
@@ -51,14 +57,20 @@ export default function PayoutScreen() {
           Payout
         </TextComponent>
 
-        <div className="flex justify-center gap-28 my-12">
-          {row1.map((product) => (
-            <PayoutCard
-              key={product.id}
-              image={product.image}
-              title={product.title}
-              onClick={product.onClick}
-            />
+        <div className="flex flex-col items-center gap-6 mt-8">
+          {groupedCards.map((row, rowIndex) => (
+            <div key={rowIndex} className="flex justify-center gap-6 flex-wrap">
+              {row.map((card) => (
+                <PayoutCard
+                  key={card.id}
+                  image={
+                    <PGTezMasterSvgIcon color={theme.palette.red.DEFAULT} />
+                  }
+                  title={card.title}
+                  onClick={() => handleIconClick(card.title)}
+                />
+              ))}
+            </div>
           ))}
         </div>
       </div>

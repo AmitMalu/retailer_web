@@ -183,7 +183,9 @@ const ChangePassowrd: React.FC = () => {
                           style={{ cursor: "pointer" }}
                         >
                           {showOldPassword ? (
-                            <OpenEyeSvgIcon />
+                            <OpenEyeSvgIcon
+                              color={theme.palette.background.default}
+                            />
                           ) : (
                             <CloseEyeSvgIcon />
                           )}
@@ -210,7 +212,9 @@ const ChangePassowrd: React.FC = () => {
                           style={{ cursor: "pointer" }}
                         >
                           {showNewPassword ? (
-                            <OpenEyeSvgIcon />
+                            <OpenEyeSvgIcon
+                              color={theme.palette.background.default}
+                            />
                           ) : (
                             <CloseEyeSvgIcon />
                           )}
@@ -237,7 +241,9 @@ const ChangePassowrd: React.FC = () => {
                           style={{ cursor: "pointer" }}
                         >
                           {showPassword ? (
-                            <OpenEyeSvgIcon />
+                            <OpenEyeSvgIcon
+                              color={theme.palette.background.default}
+                            />
                           ) : (
                             <CloseEyeSvgIcon />
                           )}

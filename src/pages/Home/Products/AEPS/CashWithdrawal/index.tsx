@@ -1,6 +1,7 @@
 import { BackSvgIcon, FingerprintSvgIcon } from "@/assets/svg";
 import TextComponent from "@/components/Atoms/TextComponent";
 import AepsCard from "@/components/Molecules/AepsCard";
+import { createTriangularLayout } from "@/Utils/helper";
 import { UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { useNavigate } from "react-router-dom";
@@ -9,74 +10,22 @@ const CashWithdrawal = () => {
   const theme = useTheme();
   const navigate = useNavigate();
 
-  const handleIconClick = (
-    type:
-      | "aepsOne"
-      | "aepsTwo"
-      | "aepsThree"
-      | "aepsFour"
-      | "aepsFive"
-      | "aepsSix"
-  ) => {
+  const handleIconClick = (type: string) => {
     navigate(`/products/aepsScreen/cashWithdrawal/aepsForm`, {
       state: { openedAs: type },
     });
   };
 
-  const row1 = [
-    {
-      id: 1,
-      image: <FingerprintSvgIcon color={theme.palette.red.DEFAULT} />,
-      title: "AEPS1",
-      onClick: () => {
-        handleIconClick("aepsOne");
-      },
-    },
-    {
-      id: 2,
-      image: <FingerprintSvgIcon color={theme.palette.red.DEFAULT} />,
-      title: "AEPS2",
-      onClick: () => {
-        handleIconClick("aepsTwo");
-      },
-    },
-    {
-      id: 3,
-      image: <FingerprintSvgIcon color={theme.palette.red.DEFAULT} />,
-      title: "AEPS3",
-      onClick: () => {
-        handleIconClick("aepsThree");
-      },
-    },
+  const cardsData = [
+    { id: 1, title: "AEPS1" },
+    { id: 2, title: "AEPS2" },
+    { id: 3, title: "AEPS3" },
+    { id: 4, title: "AEPS4" },
+    { id: 5, title: "AEPS5" },
+    { id: 6, title: "AEPS6" },
   ];
-  const row2 = [
-    {
-      id: 1,
-      image: <FingerprintSvgIcon color={theme.palette.red.DEFAULT} />,
-      title: "AEPS4",
-      onClick: () => {
-        handleIconClick("aepsFour");
-      },
-    },
-    {
-      id: 2,
-      image: <FingerprintSvgIcon color={theme.palette.red.DEFAULT} />,
-      title: "AEPS5",
-      onClick: () => {
-        handleIconClick("aepsFive");
-      },
-    },
-  ];
-  const row3 = [
-    {
-      id: 1,
-      image: <FingerprintSvgIcon color={theme.palette.red.DEFAULT} />,
-      title: "AEPS6",
-      onClick: () => {
-        handleIconClick("aepsSix");
-      },
-    },
-  ];
+
+  const groupedCards = createTriangularLayout(cardsData);
 
   return (
     <>
@@ -92,37 +41,23 @@ const CashWithdrawal = () => {
           Cash Withdrawal
         </TextComponent>
 
-        <div className="flex justify-center gap-28 my-12">
-          {row1.map((product) => (
-            <AepsCard
-              key={product.id}
-              image={product.image}
-              title={product.title}
-              onClick={product.onClick}
-            />
-          ))}
-        </div>
-        <div className="flex justify-center gap-16 mb-12 mt-[-32px]">
-          <div className="w-20" />
-          {row2.map((product) => (
-            <AepsCard
-              key={product.id}
-              image={product.image}
-              title={product.title}
-              onClick={product.onClick}
-            />
-          ))}
-          <div className="w-20" />
-        </div>
-
-        <div className="flex justify-center mt-[-32px]">
-          {row3.map((product) => (
-            <AepsCard
-              key={product.id}
-              image={product.image}
-              title={product.title}
-              onClick={product.onClick}
-            />
+        <div className="flex flex-col items-center gap-6 mt-8">
+          {groupedCards.map((row, rowIndex) => (
+            <div
+              key={rowIndex}
+              className="flex justify-center gap-10 flex-wrap"
+            >
+              {row.map((card) => (
+                <AepsCard
+                  key={card.id}
+                  image={
+                    <FingerprintSvgIcon color={theme.palette.red.DEFAULT} />
+                  }
+                  title={card.title}
+                  onClick={() => handleIconClick(card.title)}
+                />
+              ))}
+            </div>
           ))}
         </div>
       </div>

@@ -55,7 +55,6 @@ const MyBanks = () => {
     // },
   ];
 
-  console.log(UserProfileData?.myBanks, "UserProfileData?.myBanks");
   return (
     <div className="flex flex-col gap-4">
       <TableComponent
