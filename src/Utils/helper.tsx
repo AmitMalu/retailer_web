@@ -52,13 +52,43 @@ export const PinCodeRegex = /^[0-9]{6}$/;
 
 export const useIpAddress = () => {
   const dispatch = useDispatch<AppDispatch>();
+
   const fetchIpAddress = async () => {
-    try {
-      const response = await fetch("https://api.ipify.org?format=json");
-      const data = await response.json();
-      dispatch(saveApiResponse("ipAddress", data.ip));
-    } catch (error) {
-      console.error("Error fetching IP address:", error);
+    const cachedIp = localStorage.getItem("ipAddress");
+    if (cachedIp) {
+      dispatch(saveApiResponse("ipAddress", cachedIp));
+      return;
+    }
+
+    const apis = [
+      async () => {
+        const res = await fetch("https://api.ipify.org?format=json");
+        const data = await res.json();
+        return data.ip;
+      },
+      async () => {
+        const res = await fetch("https://api.myip.com/");
+        const data = await res.json();
+        return data.ip;
+      },
+      async () => {
+        const res = await fetch("https://ipv4.icanhazip.com/");
+        const text = await res.text();
+        return text.trim();
+      },
+    ];
+
+    for (const api of apis) {
+      try {
+        const ip = await api();
+        if (ip) {
+          localStorage.setItem("ipAddress", ip);
+          dispatch(saveApiResponse("ipAddress", ip));
+          break;
+        }
+      } catch (err) {
+        showErrorNotification("Unable to fetch IP Address");
+      }
     }
   };
 

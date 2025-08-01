@@ -115,7 +115,7 @@ const ChangePassowrd: React.FC = () => {
   return (
     <>
       {isLoading && <Loader />}
-      <div className="flex w-1/3 mt-10 items-center justify-center flex-col gap-5 justify-self-center">
+      <div className="flex w-1/3 mt-16 items-center justify-center flex-col gap-5 justify-self-center">
         <div className="flex items-center justify-center gap-3">
           <ProfileSvgIcon color={theme.palette.red.DEFAULT} />
           <TextComponent

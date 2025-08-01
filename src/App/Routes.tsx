@@ -171,7 +171,7 @@ const ProtectedRoute: React.FC<{ children?: React.ReactNode }> = ({}) => {
 };
 
 const ProtecteAuthRoute: React.FC<{ children?: React.ReactNode }> = ({}) => {
-  return getToken() ? <Navigate to="dashboard" /> : <Outlet />;
+  return getToken() ? <Navigate to="/dashboard" /> : <Outlet />;
 };
 
 const RouterOutlet = () => {

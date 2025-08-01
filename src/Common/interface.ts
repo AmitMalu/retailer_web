@@ -652,3 +652,16 @@ export type MposBodyProps = {
   productId: string;
   subProductId: string;
 };
+
+export type SubuserCreationProps = {
+  AccountMemberId: string;
+  userId: string;
+  userRole: string;
+  name: string;
+  mobileNumber: string;
+  emailId: string;
+  address: string;
+  zipCode: string;
+  city: string;
+  state: string;
+};
