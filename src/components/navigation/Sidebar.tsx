@@ -44,29 +44,19 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
       return false;
     }
 
-    // Ensure the paths are compared without the base URL
     const currentPath = path.startsWith("/") ? path : `/${path}`;
     const selectedPath = selectedRoute.startsWith("/")
       ? selectedRoute
       : `/${selectedRoute}`;
 
-    console.log("isActive - Current menu path:", currentPath);
-    console.log("isActive - Selected route:", selectedPath);
-
-    // Check if current path matches exactly or is a parent of the selected route
     const isPathActive =
       selectedPath === currentPath ||
       selectedPath.startsWith(`${currentPath}/`);
 
-    console.log("isActive - isPathActive:", isPathActive);
-
-    // Check subitems
     let isSubItemActive = false;
     if (subItems?.length) {
-      console.log("isActive - Checking subitems:", subItems);
       isSubItemActive = subItems.some((subItem) => {
         if (!subItem.path) {
-          console.log("isActive - Subitem has no path");
           return false;
         }
 
@@ -76,19 +66,11 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
         const isSubActive =
           selectedPath === subPath || selectedPath.startsWith(`${subPath}/`);
 
-        console.log(
-          `isActive - Checking subitem ${subPath} - active:`,
-          isSubActive
-        );
-
         if (isSubActive) return true;
 
-        // Check nested subitems
         if (subItem.subItems?.length) {
-          console.log("isActive - Checking nested subitems");
           const hasActiveNested = subItem.subItems.some((subSubItem) => {
             if (!subSubItem.path) {
-              console.log("isActive - Nested subitem has no path");
               return false;
             }
             const subSubPath = subSubItem.path.startsWith("/")
@@ -97,10 +79,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
             const isNestedActive =
               selectedPath === subSubPath ||
               selectedPath.startsWith(`${subSubPath}/`);
-            console.log(
-              `isActive - Checking nested subitem ${subSubPath} - active:`,
-              isNestedActive
-            );
+
             return isNestedActive;
           });
           if (hasActiveNested) return true;
@@ -109,7 +88,6 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
       });
     }
 
-    console.log("isActive - Final result:", isPathActive || isSubItemActive);
     return isPathActive || isSubItemActive;
   };
 

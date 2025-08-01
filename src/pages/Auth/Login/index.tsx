@@ -8,7 +8,10 @@ import ButtonComponent from "../../../components/Atoms/ButtonComponent";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../components/Atoms/Loader";
 import { login } from "@/Services/api";
-import { showErrorNotification } from "@/Utils/notifications";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "@/Utils/notifications";
 import {
   CloseEyeSvgIcon,
   LockSvgIcon,
@@ -64,6 +67,7 @@ const Login: React.FC = () => {
         navigate("/otpInput", {
           state: { userName: values.userName, login: true },
         });
+        showSuccessNotification(response?.data?.data?.otp);
       } else {
         showErrorNotification(response?.data?.message || "Unable to login");
       }
