@@ -16,26 +16,22 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../Redux/Store";
-import {
-  // setLayout,
-  // setColorScheme,
-  setNavbarPosition,
-  setSidebarStyle,
-  setLayoutVariant,
-  setThemeOption,
-  closeSettingsDrawer,
-} from "../../store/slices/settingsSlice";
-import type {
-  // LayoutType,
-  // ColorScheme,
-  NavbarPosition,
-  SidebarStyle,
-  LayoutVariant,
-  ThemeOption,
-} from "../../store/slices/settingsSlice";
-import { toggleDarkMode } from "../../store/slices/uiSlice";
 import ThemePreview from "./ThemePreview";
 import { useState } from "react";
+import {
+  LayoutVariant,
+  NavbarPosition,
+  SidebarStyle,
+  ThemeOption,
+} from "@/Common/interface";
+import {
+  closeSettingsDrawer,
+  setLayoutVariant,
+  setNavbarPosition,
+  setSidebarStyle,
+  setThemeOption,
+} from "@/Redux/Actions/settingsAction";
+import { toggleDarkMode } from "@/Redux/Actions/uiAction";
 
 export default function SettingsDrawer() {
   const dispatch = useDispatch();

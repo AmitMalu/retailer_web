@@ -368,8 +368,8 @@ const ProfileRegistrationForm = ({
                       height: 2,
                     },
                     stepIcon: {
-                      color: theme.palette.background.navBackground,
-                      backgroundColor: "red",
+                      color: theme.palette.background.paper,
+                      backgroundColor: theme.palette.red.dark,
                       width: 35,
                       height: 35,
                     },

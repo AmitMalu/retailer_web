@@ -154,7 +154,7 @@ const TableComponent: React.FC<TableProps> = ({
                 ) : (
                   <TextComponent
                     color={theme.palette.background.default}
-                    fontSize={12}
+                    fontSize={14}
                     fontWeight={400}
                     className="w-max justify-self-center"
                     align="center"

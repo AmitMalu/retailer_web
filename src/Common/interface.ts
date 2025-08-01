@@ -1,6 +1,59 @@
 import { TextInputProps } from "@mantine/core";
 import { ReactNode, ChangeEvent, MouseEventHandler } from "react";
-import type { ThemeOption } from "../../src/store/slices/settingsSlice";
+
+export type LayoutType = "default" | "compact" | "wide";
+export type ColorScheme = "blue" | "green" | "purple" | "orange" | "teal";
+export type NavbarPosition = "fixed" | "static";
+export type SidebarStyle = "full" | "compact" | "closed";
+export type LayoutVariant = "standard" | "horizontal" | "minimal" | "footer";
+export type ThemeOption =
+  | "default"
+  | "corporate"
+  | "creative"
+  | "elegant"
+  | "playful"
+  | "minimal"
+  | "dark"
+  | "mutedTeal";
+
+export type ThemeColors = {
+  primary: string;
+  secondary: string;
+  success: string;
+  warning: string;
+  error: string;
+  info: string;
+  background: string;
+  paper: string;
+  blackColor: string;
+  textPrimary: string;
+  textSecondary: string;
+  navBackground: string;
+  lightGray: string;
+  headLine: string;
+  placeholder: string;
+  authButtonBg: string;
+  authBackground: string;
+  redLightText: string;
+  red: string;
+  redLight: string;
+  redDark: string;
+  grayDefault: string;
+  grayLight: string;
+  grayDark: string;
+  greenDefault: string;
+  greenLight: string;
+};
+
+export type SettingsState = {
+  layout: LayoutType;
+  colorScheme: ColorScheme;
+  navbarPosition: NavbarPosition;
+  sidebarStyle: SidebarStyle;
+  layoutVariant: LayoutVariant;
+  themeOption: ThemeOption;
+  isSettingsOpen: boolean;
+};
 
 export type CustomError = {
   status?: number;

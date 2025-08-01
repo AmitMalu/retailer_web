@@ -566,6 +566,7 @@ const Ticketing = () => {
                         variant="filled"
                         onClick={() => handleSubmit()}
                         radius={10}
+                        width={130}
                       />
                     </div>
                   </>

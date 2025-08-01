@@ -649,8 +649,8 @@ export const PersonalSvgIcon = ({ color }: { color: string }) => (
   <svg
     fill={color}
     id="Capa_1"
-    width="70%"
-    height="70%"
+    width="60%"
+    height="60%"
     viewBox="0 0 32 32"
     xmlSpace="preserve"
   >
@@ -668,8 +668,8 @@ export const PersonalSvgIcon = ({ color }: { color: string }) => (
 export const AddressSvgIcon = ({ color }: { color: string }) => (
   <svg
     fill={color}
-    width="70%"
-    height="70%"
+    width="60%"
+    height="60%"
     viewBox="0 0 32 32"
     style={{
       fillRule: "evenodd",
@@ -688,8 +688,8 @@ export const StoreSvgIcon = ({ color }: { color: string }) => (
   <svg
     fill={color}
     id="Layer_1"
-    width="70%"
-    height="70%"
+    width="60%"
+    height="60%"
     viewBox="0 0 92 92"
     enableBackground="new 0 0 92 92"
   >
@@ -713,7 +713,7 @@ export const BankDetailsSvgIcon = ({ color }: { color: string }) => (
 );
 
 export const DocumentSvgIcon = ({ color }: { color: string }) => (
-  <svg fill={color} width="70%" height="70%" viewBox="0 0 512 512">
+  <svg fill={color} width="60%" height="60%" viewBox="0 0 512 512">
     <title>{"ionicons-v5-e"}</title>
     <path d="M298.39,248a4,4,0,0,0,2.86-6.8l-78.4-79.72a4,4,0,0,0-6.85,2.81V236a12,12,0,0,0,12,12Z" />
     <path d="M197,267A43.67,43.67,0,0,1,184,236V144H112a64.19,64.19,0,0,0-64,64V432a64,64,0,0,0,64,64H256a64,64,0,0,0,64-64V280H228A43.61,43.61,0,0,1,197,267Z" />

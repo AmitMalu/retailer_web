@@ -8,7 +8,6 @@ import {
   Stack,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleSettingsDrawer } from "../../store/slices/settingsSlice";
 import type { RootState } from "../../Redux/Store";
 import ImLogo from "@/assets/svg/imLogo";
 import { NavbarProps } from "@/Common/interface";
@@ -20,6 +19,7 @@ import {
 } from "@/assets/svg";
 import { decryptData, useWalletBalance } from "@/Utils/helper";
 import { NavLink } from "react-router-dom";
+import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
 
 export default function Navbar({
   onMenuClick,
@@ -52,7 +52,7 @@ export default function Navbar({
   }) => (
     <Paper
       elevation={0}
-      className="flex items-center justify-center w-auto py-2 px-3 cursor-pointer rounded-xl shadow-xl shadow-slate-700"
+      className="flex items-center justify-center w-auto py-2 px-3 cursor-default rounded-xl shadow-xl shadow-slate-700"
       sx={{
         transition: "all 0.2s ease-in-out",
         background: (theme) =>

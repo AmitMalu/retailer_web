@@ -4,6 +4,7 @@ import { MantineProvider } from "@mantine/core";
 import RouterOutlet from "./Routes";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "@/theme/ThemeConfig";
+import RouteChangeHandler from "@/components/RouteChangeHandler";
 
 const AppContent = () => {
   return (
@@ -16,6 +17,7 @@ const AppContent = () => {
 function App() {
   return (
     <ReduxProvider>
+      <RouteChangeHandler />
       <NotificationProvider>
         <ThemeProvider theme={theme}>
           <CssBaseline />

@@ -29,9 +29,9 @@ import PersonIcon from "@mui/icons-material/Person";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useDispatch } from "react-redux";
-import { toggleDarkMode } from "../../../store/slices/uiSlice";
-import { toggleSettingsDrawer } from "../../../store/slices/settingsSlice";
 import { HorizontalLayoutProps } from "@/Common/interface";
+import { toggleDarkMode } from "@/Redux/Actions/uiAction";
+import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
 
 export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
   const { layout, navbarPosition } = useSelector(

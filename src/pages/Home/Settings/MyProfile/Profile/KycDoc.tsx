@@ -80,7 +80,7 @@ const KycDoc = () => {
               window.open(fileUrl, "_blank");
             }}
           >
-            <OpenEyeSvgIcon color={theme.palette.red.DEFAULT} />
+            <OpenEyeSvgIcon color={theme.palette.gray.DEFAULT} />
           </UnstyledButton>
         </div>
       ),

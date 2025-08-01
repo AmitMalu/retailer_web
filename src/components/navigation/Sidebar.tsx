@@ -1,315 +1,291 @@
-import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
 import {
   Box,
-  Drawer,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Popover,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
-import { ChevronRight } from "@mui/icons-material";
+  NavLink,
+  Text,
+  ScrollArea,
+  ActionIcon,
+  Menu,
+} from "@mantine/core";
+import { IconChevronRight, IconLogout } from "@tabler/icons-react";
 import { getMenuItems } from "@/Config/menuItems";
 import { MenuItem, SidebarProps, UserRole } from "@/Common/interface";
+import { useTheme } from "@mui/material/styles";
 import { decryptData } from "@/Utils/helper";
-import TextComponent from "../Atoms/TextComponent";
-import { styled } from "@mui/material/styles";
 import { useLogoutHandling } from "@/Utils/CustomLogout";
-import { LogoutSvgIcon } from "@/assets/svg";
-
-const StyledPopover = styled(Popover)(({ theme }) => ({
-  "& .MuiPopover-paper": {
-    transition: theme.transitions.create(["transform", "opacity"], {
-      duration: theme.transitions.duration.enteringScreen,
-      easing: theme.transitions.easing.easeOut,
-    }),
-    transform: "translateX(8px)",
-    opacity: 0,
-    "&.MuiPopover-paper-enter": {
-      transform: "translateX(0)",
-      opacity: 1,
-    },
-  },
-}));
 
 export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
+  const theme = useTheme();
   const { logout } = useLogoutHandling();
   const { sidebarStyle } = useSelector((state: RootState) => state.settings);
-  const apiResponses = useSelector(
-    (state: RootState) => state.apiResponse.responses
+  const { responses: apiResponses } = useSelector(
+    (state: RootState) => state.apiResponse
   );
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses.loginData)
     : null;
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
-  if (!loginData) return null;
-
-  const isCompact = sidebarStyle === "compact";
-  const drawerWidth = isCompact ? 60 : "auto";
   const selectedRoute = useSelector(
     (state: RootState) => state.navigation.selectedRoute
   );
-  // State for submenu popover
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [activeSubMenu, setActiveSubMenu] = useState<MenuItem[]>([]);
-  // const [subMenuPosition, setSubMenuPosition] = useState({ top: 0, left: 0 });
+
+  if (!loginData) return null;
+  const isCompact = sidebarStyle === "compact";
+  const drawerWidth = isCompact ? 60 : 250;
 
   const menuItems = getMenuItems(loginData.role as UserRole);
 
-  // Update the function signature to accept MenuItem instead of MenuItem[]
-  const handleSubMenuOpen = (
-    event: React.MouseEvent<HTMLElement>,
-    item: MenuItem
-  ) => {
-    // If the item has a path and no subitems, let the Link handle navigation
-    if (
-      item.path &&
-      item.path !== "#" &&
-      (!item.subItems || item.subItems.length === 0)
-    ) {
-      if (isMobile && onClose) onClose();
-      return;
+  const isActive = (
+    path: string | undefined,
+    subItems?: MenuItem[]
+  ): boolean => {
+    if (!path) {
+      return false;
     }
 
-    // If it has subitems, toggle the submenu
-    if (item.subItems && item.subItems.length > 0) {
-      event.preventDefault();
-      event.stopPropagation();
+    // Ensure the paths are compared without the base URL
+    const currentPath = path.startsWith("/") ? path : `/${path}`;
+    const selectedPath = selectedRoute.startsWith("/")
+      ? selectedRoute
+      : `/${selectedRoute}`;
 
-      // Toggle submenu if clicking the same item
-      if (anchorEl === event.currentTarget) {
-        handleSubMenuClose();
-        return;
-      }
+    console.log("isActive - Current menu path:", currentPath);
+    console.log("isActive - Selected route:", selectedPath);
 
-      setAnchorEl(event.currentTarget);
-      setActiveSubMenu(item.subItems);
-      // const rect = event.currentTarget.getBoundingClientRect();
-      // setSubMenuPosition({
-      //   top: rect.top,
-      //   left: rect.right,
-      // });
+    // Check if current path matches exactly or is a parent of the selected route
+    const isPathActive =
+      selectedPath === currentPath ||
+      selectedPath.startsWith(`${currentPath}/`);
+
+    console.log("isActive - isPathActive:", isPathActive);
+
+    // Check subitems
+    let isSubItemActive = false;
+    if (subItems?.length) {
+      console.log("isActive - Checking subitems:", subItems);
+      isSubItemActive = subItems.some((subItem) => {
+        if (!subItem.path) {
+          console.log("isActive - Subitem has no path");
+          return false;
+        }
+
+        const subPath = subItem.path.startsWith("/")
+          ? subItem.path
+          : `/${subItem.path}`;
+        const isSubActive =
+          selectedPath === subPath || selectedPath.startsWith(`${subPath}/`);
+
+        console.log(
+          `isActive - Checking subitem ${subPath} - active:`,
+          isSubActive
+        );
+
+        if (isSubActive) return true;
+
+        // Check nested subitems
+        if (subItem.subItems?.length) {
+          console.log("isActive - Checking nested subitems");
+          const hasActiveNested = subItem.subItems.some((subSubItem) => {
+            if (!subSubItem.path) {
+              console.log("isActive - Nested subitem has no path");
+              return false;
+            }
+            const subSubPath = subSubItem.path.startsWith("/")
+              ? subSubItem.path
+              : `/${subSubItem.path}`;
+            const isNestedActive =
+              selectedPath === subSubPath ||
+              selectedPath.startsWith(`${subSubPath}/`);
+            console.log(
+              `isActive - Checking nested subitem ${subSubPath} - active:`,
+              isNestedActive
+            );
+            return isNestedActive;
+          });
+          if (hasActiveNested) return true;
+        }
+        return false;
+      });
     }
+
+    console.log("isActive - Final result:", isPathActive || isSubItemActive);
+    return isPathActive || isSubItemActive;
   };
 
-  const handleSubMenuClose = () => {
-    setAnchorEl(null);
-    setActiveSubMenu([]);
-  };
+  const renderMenuItems = (items: MenuItem[]) => {
+    return items.map((item, index) => {
+      const hasSubItems = item.subItems && item.subItems.length > 0;
+      const active = isActive(item.path, item.subItems);
 
-  const isSubMenuOpen = Boolean(anchorEl);
+      const navLinkStyles = {
+        root: {
+          borderRadius: "var(--mantine-radius-md)",
+          "&:hover": {
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? theme.palette.red.light
+                : theme.palette.red.light,
+          },
+          gap: 10,
+          display: "flex",
+          justifyContent: "start",
+          alignItems: "center",
+        },
 
-  // Close mobile menu when a menu item is clicked
-  const handleMenuItemClick = () => {
-    if (isMobile && onClose) {
-      onClose();
-    }
-    handleSubMenuClose();
+        section: {
+          '&[dataPosition="left"]': {
+            marginRight: "var(--mantine-spacing-sm)",
+          },
+          width: 30,
+        },
+
+        ...(active && {
+          root: {
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? theme.palette.red.light
+                : theme.palette.red.light,
+            color: theme.palette.red.DEFAULT,
+            borderRadius: 15,
+            "&:hover": {
+              backgroundColor:
+                theme.palette.mode === "dark"
+                  ? theme.palette.red.light
+                  : theme.palette.red.light,
+            },
+          },
+        }),
+      };
+
+      return (
+        <div
+          key={`${item.name}-${index}`}
+          style={{ marginBottom: "4px", scrollbarWidth: "none" }}
+        >
+          {hasSubItems ? (
+            <Menu
+              trigger="hover"
+              position="right-start"
+              shadow="md"
+              width={200}
+              withinPortal
+            >
+              <Menu.Target>
+                <NavLink
+                  label={!isCompact && item.name}
+                  leftSection={item.icon}
+                  rightSection={<IconChevronRight size={16} />}
+                  active={!!active}
+                  variant="filled"
+                  styles={navLinkStyles}
+                />
+              </Menu.Target>
+
+              <Menu.Dropdown>
+                {item.subItems?.map((subItem, idx) => (
+                  <Menu.Item
+                    key={`${subItem.name}-${idx}`}
+                    component={Link}
+                    to={subItem.path || "#"}
+                    onClick={() => {
+                      if (onClose) onClose();
+                    }}
+                    style={{
+                      color: isActive(subItem.path)
+                        ? theme.palette.red.DEFAULT
+                        : "inherit",
+                      fontWeight: isActive(subItem.path) ? 600 : "normal",
+                    }}
+                  >
+                    {subItem.name}
+                  </Menu.Item>
+                ))}
+              </Menu.Dropdown>
+            </Menu>
+          ) : (
+            <NavLink
+              component={Link}
+              to={item.path || "#"}
+              label={!isCompact && item.name}
+              leftSection={item.icon}
+              active={!!active}
+              variant="filled"
+              styles={navLinkStyles}
+            />
+          )}
+        </div>
+      );
+    });
   };
 
   return (
-    <Box
-      sx={{
+    <div
+      style={{
+        width: drawerWidth,
+        height: "65%",
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-      style={{
+        backgroundColor: theme.palette.background.paper,
+        borderRight: `1px solid ${theme.palette.divider}`,
+        position: "absolute",
+        top: "50%",
+        transform: "translateY(-50%)",
+        overflowY: "auto",
+        borderRadius: "8px",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
         scrollbarWidth: "none",
       }}
     >
-      <Drawer
-        variant={isMobile ? "temporary" : "permanent"}
-        open={mobileOpen}
-        onClose={onClose}
-        ModalProps={{
-          keepMounted: true,
+      <ScrollArea
+        style={{
+          flex: 1,
+          padding: "16px 8px",
+          display: "flex",
+          flexDirection: "column",
+          scrollbarWidth: "none",
         }}
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-            boxSizing: "border-box",
-            border: "none",
-            backgroundColor: theme.palette.red.DEFAULT,
-            boxShadow: theme.shadows[3],
-            borderRadius: "0 16px 16px 0",
-            height: "auto",
-            position: "relative",
-            transition: theme.transitions.create("width", {
-              easing: theme.transitions.easing.sharp,
-              duration: theme.transitions.duration.enteringScreen,
-            }),
-          },
-        }}
+        type="never"
       >
-        <Box
-          sx={{
+        <div
+          style={{
             display: "flex",
             flexDirection: "column",
-            height: "100%",
-            overflow: "hidden",
-            py: 1,
+            gap: "4px",
+            margin: "auto 0",
+            scrollbarWidth: "none",
           }}
         >
-          <List sx={{ overflowY: "auto", flexGrow: 1 }}>
-            {menuItems.map((item, index) => {
-              const hasSubItems = item.subItems && item.subItems.length > 0;
-              const isActive =
-                selectedRoute === item.path ||
-                (item.subItems?.some((subItem) =>
-                  selectedRoute.startsWith(subItem.path)
-                ) ??
-                  false);
+          {renderMenuItems(menuItems)}
+        </div>
+      </ScrollArea>
 
-              const listItem = (
-                <ListItemButton
-                  onClick={(e) => handleSubMenuOpen(e, item)}
-                  selected={isActive}
-                  className="flex items-start justify-start w-auto ml-[0.3px] rounded-s-xl mb-[0.2px] "
-                  sx={{
-                    color: theme.palette.background.navBackground,
-                    "&.Mui-selected": {
-                      backgroundColor: theme.palette.background.navBackground,
-                      color: theme.palette.red.DEFAULT,
-                      "&:hover": {
-                        backgroundColor: theme.palette.background.navBackground,
-                        color: theme.palette.red.DEFAULT,
-                      },
-                    },
-                  }}
-                >
-                  <ListItemIcon
-                    className="flex items-center  justify-center"
-                    sx={{
-                      color: isActive ? theme.palette.red.DEFAULT : "inherit",
-                    }}
-                  >
-                    {item.icon}
-                  </ListItemIcon>
-                  {!isCompact && (
-                    <ListItemText
-                      primary={
-                        <TextComponent variant="body2" color="inherit">
-                          {item.name}
-                        </TextComponent>
-                      }
-                    />
-                  )}
-                  {hasSubItems && <ChevronRight fontSize="small" />}
-                </ListItemButton>
-              );
-
-              return (
-                <React.Fragment key={index}>
-                  {!hasSubItems ? (
-                    <Link
-                      to={item.path || "#"}
-                      style={{ textDecoration: "none", color: "inherit" }}
-                      onClick={() => isMobile && onClose && onClose()}
-                    >
-                      {listItem}
-                    </Link>
-                  ) : (
-                    <div>{listItem}</div>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </List>
-          <div
-            onClick={() => logout()}
-            className="flex cursor-pointer items-center justify-center gap-4 "
-          >
-            <LogoutSvgIcon color={theme.palette.background.navBackground} />
-          </div>
-        </Box>
-      </Drawer>
-
-      {/* Submenu Popover */}
-      <StyledPopover
-        open={isSubMenuOpen}
-        anchorEl={anchorEl}
-        onClose={handleSubMenuClose}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        sx={{
-          "& .MuiPopover-paper": {
-            width: "auto",
-            boxShadow: theme.shadows[8],
-            borderRadius: 2,
-            overflow: "hidden",
-            ml: 2,
-            backgroundColor: theme.palette.red.light,
-            transform: "translateX(8px)",
-            opacity: 0,
-            transition: theme.transitions.create(["transform", "opacity"], {
-              duration: theme.transitions.duration.enteringScreen,
-              easing: theme.transitions.easing.easeOut,
-            }),
-          },
-          "& .MuiPopover-paper.MuiPopover-paper-enter": {
-            transform: "translateX(0)",
-            opacity: 1,
-          },
-        }}
-        TransitionProps={{
-          timeout: {
-            enter: theme.transitions.duration.enteringScreen,
-            exit: theme.transitions.duration.leavingScreen,
-          },
+      <Box
+        p="xs"
+        style={{
+          borderTop: `1px solid ${theme.palette.divider}`,
+          marginTop: "auto",
         }}
       >
-        <List>
-          {activeSubMenu.map((subItem, index) => (
-            <ListItemButton
-              key={index}
-              component={Link}
-              to={subItem.path}
-              onClick={handleMenuItemClick}
-              selected={selectedRoute === subItem.path}
-              sx={{
-                paddingLeft: 2,
-                borderTopLeftRadius: 12,
-                borderBottomLeftRadius: 12,
-                marginLeft: 1,
-                "&.Mui-selected": {
-                  backgroundColor: theme.palette.background.navBackground,
-                  color: theme.palette.red.DEFAULT,
-                  "&:hover": {
-                    backgroundColor: theme.palette.background.navBackground,
-                    color: theme.palette.red.DEFAULT,
-                  },
-                },
-              }}
-            >
-              <ListItemText
-                primary={
-                  <TextComponent variant="body2" color="inherit">
-                    {subItem.name}
-                  </TextComponent>
-                }
-              />
-            </ListItemButton>
-          ))}
-        </List>
-      </StyledPopover>
-    </Box>
+        <ActionIcon
+          onClick={() => {
+            if (onClose) onClose();
+            logout();
+          }}
+          size="lg"
+          radius="md"
+          variant="light"
+          color="red"
+          style={{ width: "100%", height: "40px" }}
+        >
+          <IconLogout size={20} />
+          {!isCompact && (
+            <Text ml="sm" size="sm">
+              Logout
+            </Text>
+          )}
+        </ActionIcon>
+      </Box>
+    </div>
   );
 }
