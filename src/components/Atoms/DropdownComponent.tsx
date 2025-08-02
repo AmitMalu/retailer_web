@@ -149,6 +149,14 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
               top: "calc(50% - 12px)",
             },
           }}
+          MenuProps={{
+            PaperProps: {
+              style: {
+                maxHeight: 300,
+                scrollbarWidth: "none",
+              },
+            },
+          }}
         >
           {clearable && (
             <MenuItem value="">

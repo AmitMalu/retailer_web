@@ -49,7 +49,6 @@ const WalletReport = () => {
   const subproductData = apiResponses?.subProductDropdown
     ? decryptData(apiResponses?.subProductDropdown)
     : null;
-
   const uniqueSubProductTypes =
     subproductData?.map((item: any) => ({
       value: item.subProduct_name,
@@ -90,8 +89,8 @@ const WalletReport = () => {
   const initialValues: WalletParams = {
     hierarchyId: loginData?.hierarchyId,
     walletType: "",
-    fromDate: "",
-    toDate: "",
+    fromDate: null,
+    toDate: null,
     subProductName: "",
     status: "",
     page: currentPage,

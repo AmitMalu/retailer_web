@@ -2,11 +2,17 @@ import { useEffect, useRef } from "react";
 import TextComponent from "@/components/Atoms/TextComponent";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
-import { decryptData, useIpAddress, useWalletBalance } from "@/Utils/helper";
+import {
+  decryptData,
+  useIpAddress,
+  useWalletBalance,
+  useSubProductDropdown,
+} from "@/Utils/helper";
 
 export default function Dashboard() {
   const { fetchIpAddress } = useIpAddress();
   const { WalletBalanceReq } = useWalletBalance();
+  const { SubProductDropdownReq } = useSubProductDropdown();
   const isFetchingRef = useRef(false);
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
@@ -20,6 +26,7 @@ export default function Dashboard() {
       isFetchingRef.current = true;
       fetchIpAddress();
       WalletBalanceReq(loginData?.hierarchyId);
+      SubProductDropdownReq();
     }
   }, []);
 

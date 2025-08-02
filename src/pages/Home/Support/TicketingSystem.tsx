@@ -36,7 +36,6 @@ const Ticketing = () => {
   const [isTicketiData, setIsTicketiData] = useState(true);
   const [isTicketData, setIsTicketData] = useState<TransactionDetailsData>({});
   const [searchValue, setSearchValue] = useState("");
-  const { SubProductDropdownReq } = useSubProductDropdown();
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
@@ -74,7 +73,6 @@ const Ticketing = () => {
     if (!isFetchingRef.current) {
       isFetchingRef.current = true;
       GetIssueTypeList();
-      SubProductDropdownReq();
     }
   }, []);
 

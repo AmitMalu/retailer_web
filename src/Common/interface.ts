@@ -550,8 +550,8 @@ export type UserProfileData = Record<string, any>;
 export type CommissionData = Record<string, any>;
 
 export type CommissionAndChargesParams = {
-  fromDate: string;
-  toDate: string;
+  fromDate: Date | string | null;
+  toDate: Date | string | null;
   hierarchyId: string;
   walletType: string;
   subProductName: string;
@@ -563,8 +563,8 @@ export type CommissionAndChargesParams = {
 
 export type WalletParams = {
   hierarchyId: string;
-  fromDate: string;
-  toDate: string;
+  fromDate: Date | string | null;
+  toDate: Date | string | null;
   subProductName: string;
   walletType: string;
   status: string;
@@ -577,8 +577,8 @@ export type WalletData = Record<string, any>;
 
 export type NetworkTransactionParams = {
   loginHierarchyId: string;
-  fromDate: string;
-  toDate: string;
+  fromDate: Date | string | null;
+  toDate: Date | string | null;
   subProductName: string;
   partnerId: string;
   whitelabelId: string;
