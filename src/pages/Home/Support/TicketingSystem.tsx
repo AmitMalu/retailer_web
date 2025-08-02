@@ -22,7 +22,7 @@ import {
   showSuccessNotification,
 } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { decryptData, useSubProductDropdown } from "@/Utils/helper";
+import { decryptData } from "@/Utils/helper";
 import { RootState } from "@/Redux/Store";
 import { useSelector } from "react-redux";
 import { BackSvgIcon, SearchSvgIcon } from "@/assets/svg";
