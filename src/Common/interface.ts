@@ -707,14 +707,22 @@ export type MposBodyProps = {
 };
 
 export type SubuserCreationProps = {
-  AccountMemberId: string;
-  userId: string;
-  userRole: string;
+  parentAccount: string;
   name: string;
   mobileNumber: string;
+  username: string;
+  password: string;
   emailId: string;
-  address: string;
-  zipCode: string;
-  city: string;
-  state: string;
+  emailVerified: boolean;
+  dob: Date | string | null;
+  add: {
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  };
+  createdBy: string;
+  createdByIPAddress: string;
+  role_id: string;
+  subRoleId: string;
 };

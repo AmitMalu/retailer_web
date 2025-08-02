@@ -95,13 +95,15 @@ export const useIpAddress = () => {
   return { fetchIpAddress };
 };
 
-export const formatDate = (date: string | Date) => {
-  const d = new Date(date);
+export const formatDate = (date: string | Date | null): string | null => {
+  if (!date) return null;
+  const d = typeof date === "string" ? new Date(date) : date;
   return `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}`;
 };
 
-export const formatYMDdate = (date: string | Date) => {
-  const d = new Date(date);
+export const formatYMDdate = (date: string | Date | null): string | null => {
+  if (!date) return null;
+  const d = typeof date === "string" ? new Date(date) : date;
   return `${String(d.getFullYear())}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
