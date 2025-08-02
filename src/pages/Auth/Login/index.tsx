@@ -55,7 +55,7 @@ const Login: React.FC = () => {
       let bodyRequest = {
         userName: values.userName,
         password: values.password,
-        url: "https://uat.decipay.in",
+        url: "https://uat.decipay.in/",
         // url: getCurrentUrl(),
       };
       const response = await login(bodyRequest);
