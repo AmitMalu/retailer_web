@@ -1,4 +1,4 @@
-import type { ThemeColors, ThemeOption } from "../store/slices/settingsSlice";
+import { ThemeColors, ThemeOption } from "@/Common/interface";
 import { colorTokens } from "./color";
 
 export const themeColors: Record<ThemeOption, ThemeColors> = {

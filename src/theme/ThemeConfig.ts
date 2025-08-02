@@ -1,7 +1,7 @@
 import { createTheme } from "@mui/material";
 import type { PaletteColor, ThemeOptions } from "@mui/material";
 import { themeColors } from "./themeColors";
-import type { ThemeOption, ThemeColors } from "../store/slices/settingsSlice";
+import { ThemeColors, ThemeOption } from "@/Common/interface";
 
 // Extend MUI theme types
 declare module "@mui/material/styles" {

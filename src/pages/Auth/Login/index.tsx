@@ -44,11 +44,11 @@ const Login: React.FC = () => {
     url: "",
   };
 
-  const getCurrentUrl = () => {
-    const { origin, pathname } = window.location;
-    const basePath = pathname.split("/").slice(0, -1).join("/"); // Removes the last segment
-    return `${origin}${basePath}`;
-  };
+  // const getCurrentUrl = () => {
+  //   const { origin, pathname } = window.location;
+  //   const basePath = pathname.split("/").slice(0, -1).join("/"); // Removes the last segment
+  //   return `${origin}${basePath}`;
+  // };
 
   const handleSubmit = async (values: LoginRequest) => {
     try {

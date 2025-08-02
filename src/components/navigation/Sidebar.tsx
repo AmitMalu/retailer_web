@@ -16,7 +16,7 @@ import { useTheme } from "@mui/material/styles";
 import { decryptData } from "@/Utils/helper";
 import { useLogoutHandling } from "@/Utils/CustomLogout";
 
-export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
+export default function Sidebar({ onClose }: SidebarProps) {
   const theme = useTheme();
   const { logout } = useLogoutHandling();
   const { sidebarStyle } = useSelector((state: RootState) => state.settings);
