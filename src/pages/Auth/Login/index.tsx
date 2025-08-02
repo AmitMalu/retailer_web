@@ -45,9 +45,8 @@ const Login: React.FC = () => {
   };
 
   // const getCurrentUrl = () => {
-  //   const { origin, pathname } = window.location;
-  //   const basePath = pathname.split("/").slice(0, -1).join("/"); // Removes the last segment
-  //   return `${origin}${basePath}`;
+  //   const { origin } = window.location;
+  //   return `${origin}`;
   // };
 
   const handleSubmit = async (values: LoginRequest) => {
@@ -56,7 +55,7 @@ const Login: React.FC = () => {
       let bodyRequest = {
         userName: values.userName,
         password: values.password,
-        url: "https://uat.decipay.in/enterprises-portal/",
+        url: "https://uat.decipay.in",
         // url: getCurrentUrl(),
       };
       const response = await login(bodyRequest);
