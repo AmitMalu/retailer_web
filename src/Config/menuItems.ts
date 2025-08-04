@@ -95,6 +95,12 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
       roles: ["RT", "DT", "SD", "WL", "PT"],
       subItems: [
         {
+          name: "Create Sub User",
+          path: "/settings/subUser",
+          //   icon: <InventoryIcon />,
+          roles: ["RT", "DT", "SD", "WL", "PT"],
+        },
+        {
           name: "Change TPIN",
           path: "/settings/changeTPIN",
           //   icon: <InventoryIcon />,

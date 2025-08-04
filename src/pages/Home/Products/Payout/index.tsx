@@ -37,6 +37,7 @@ export default function PayoutScreen() {
         id: subProduct.subProductId,
         title: subProduct.subProductName,
         schemeCode: subProduct.schemeCode,
+        subProductId: subProduct.subProductId,
       };
     }) || [];
 
@@ -66,7 +67,7 @@ export default function PayoutScreen() {
                     <PGTezMasterSvgIcon color={theme.palette.red.DEFAULT} />
                   }
                   title={card.title}
-                  onClick={() => handleIconClick(card.title)}
+                  onClick={() => handleIconClick(card.subProductId)}
                 />
               ))}
             </div>

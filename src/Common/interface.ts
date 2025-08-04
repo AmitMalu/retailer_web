@@ -630,7 +630,7 @@ export type CreateOrderProps = {
   subProductId: string;
 };
 
-export type PayOutInfoData = Record<string, any>;
+export type PayoutBankDetails = Record<string, any>;
 
 export type PayoutFormBodyProps = {
   bank: string;
@@ -725,4 +725,24 @@ export type SubuserCreationProps = {
   createdByIPAddress: string;
   role_id: string;
   subRoleId: string;
+};
+
+export type PayoutSaveBeneficiaryProps = {
+  retailerId: string;
+  bankName: string;
+  bankHolderName: string;
+  accountNumber: string;
+  ifscCode: string;
+  createdBy: string;
+};
+
+export type PayoutSendBeneficiaryProps = {
+  retailerId: string;
+  accountNumber: string;
+  ifscCode: string;
+  amount: number;
+  beneficiaryName: string;
+  paymentMode: string;
+  subProductId: string;
+  callbackurl: string;
 };

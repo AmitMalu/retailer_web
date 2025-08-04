@@ -9,6 +9,8 @@ import {
   LoginRequest,
   NetworkTransactionParams,
   OtpRequestProps,
+  PayoutSaveBeneficiaryProps,
+  PayoutSendBeneficiaryProps,
   ResendOtpRequestProps,
   SetPasswordRequestProps,
   SubuserCreationProps,
@@ -234,3 +236,28 @@ export const Create_Order = async (data: CreateOrderProps) =>
 
 export const Create_Sub_User = async (data: SubuserCreationProps) =>
   await api.post(`${API_ROUTES.CREATE_SUB_USER}`, data, await createHeaders());
+
+export const Payout_Save_Beneficiary = async (
+  data: PayoutSaveBeneficiaryProps
+) =>
+  await api.post(`${API_ROUTES.SAVE_BENEFICIARY}`, data, await createHeaders());
+
+export const Payout_Send = async (data: PayoutSendBeneficiaryProps) =>
+  await api.post(`${API_ROUTES.SEND_PAYOUT}`, data, await createHeaders());
+
+export const Payout_Get_Bank_Details = async (ifscCode: string) =>
+  await api.get(
+    `${API_ROUTES.GET_BANK_DETAILS}/${ifscCode}`,
+    await createHeaders()
+  );
+
+export const Payout_GetAll_Payout_BankDetails = async () =>
+  await api.get(`${API_ROUTES.GET_PAYOUT_ALL_DETAILS}`, await createHeaders());
+
+export const Payout_Delete_Payout_BankDetails = async (ids: number[]) => {
+  const headers = await createHeaders();
+  return await api.delete(API_ROUTES.DELETE_PAYOUT_BENEFICIARY, {
+    ...headers,
+    data: ids,
+  });
+};

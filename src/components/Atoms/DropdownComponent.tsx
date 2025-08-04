@@ -120,6 +120,12 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
               borderColor: error ? "error.main" : "#000 !important",
               borderWidth: "1px !important",
             },
+            "& .MuiInputBase-input.Mui-disabled": {
+              WebkitTextFillColor:
+                disabled && value
+                  ? theme.palette.background.default
+                  : undefined,
+            },
             "&:hover .MuiOutlinedInput-notchedOutline": {
               borderColor: error ? "error.main" : "#000 !important",
             },

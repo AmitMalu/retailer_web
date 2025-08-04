@@ -120,11 +120,15 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
             fontWeight: 400,
             fontFamily: '"Poppins", sans-serif',
             "&.Mui-focused": {
-              color: theme.palette.text.primary,
+              color: theme.palette.background.default,
             },
             "&.Mui-error": {
               color: theme.palette.error.main,
             },
+          },
+          "& .MuiInputBase-input.Mui-disabled": {
+            WebkitTextFillColor:
+              disabled && value ? theme.palette.background.default : undefined,
           },
           "& .MuiOutlinedInput-root": {
             borderColor: theme.palette.gray.DEFAULT,

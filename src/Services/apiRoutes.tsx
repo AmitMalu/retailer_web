@@ -50,4 +50,11 @@ export const API_ROUTES = {
 
   ///////////////// CREATE SUB USER //////////////////////////
   CREATE_SUB_USER: `${BASE_URL}/api/retailer/create-agent`,
+
+  /////////////// PAYOUT ////////////////////////////////////////////
+  SAVE_BENEFICIARY: `${BASE_URL}/api/payout/save-beneficiary`,
+  SEND_PAYOUT: `${BASE_URL}/api/payout/send-payout-request`,
+  GET_BANK_DETAILS: `${BASE_URL}/api/network-banks/details-by-ifsc`,
+  GET_PAYOUT_ALL_DETAILS: `${BASE_URL}/api/payout/all`,
+  DELETE_PAYOUT_BENEFICIARY: `${BASE_URL}/api/payout/delete-beneficiaries`,
 };
