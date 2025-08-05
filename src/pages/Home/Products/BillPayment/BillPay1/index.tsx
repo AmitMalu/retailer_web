@@ -50,7 +50,7 @@ const BillPayOneScreen = () => {
                 key={card.id}
                 image={<BillPaymentSvgIcon color={theme.palette.red.DEFAULT} />}
                 title={card.title}
-                onClick={() => console.log(`${card.title} clicked`)}
+                onClick={() => {}}
               />
             ))}
           </div>

@@ -143,12 +143,12 @@ const OtpInputScreen = () => {
   const handleResendOtp = async () => {
     try {
       setIsLoading(true);
-      await Resend_Otp({
+      const response = await Resend_Otp({
         userName: username,
       });
       setTimer(30);
       setHasStartedTimer(true);
-      showSuccessNotification("OTP sent successfully");
+      showSuccessNotification(response?.data?.data?.otp);
     } catch (error: any) {
       setIsLoading(false);
       showErrorNotification(error.response?.data?.message || error.message);
@@ -217,9 +217,12 @@ const OtpInputScreen = () => {
                         {timer}
                       </TextComponent>
                     ) : (
-                      <div onClick={() => handleResendOtp()}>
+                      <div
+                        onClick={() => handleResendOtp()}
+                        className="cursor-pointer my-2"
+                      >
                         <TextComponent
-                          fontSize={14}
+                          fontSize={16}
                           fontWeight={500}
                           color={"Primary"}
                         >

@@ -90,8 +90,8 @@ const CommissionAndCharges = () => {
   const initialValues: CommissionAndChargesParams = {
     hierarchyId: loginData?.hierarchyId,
     walletType: "",
-    fromDate: "",
-    toDate: "",
+    fromDate: null,
+    toDate: null,
     subProductName: "",
     reportType: "",
     page: currentPage,

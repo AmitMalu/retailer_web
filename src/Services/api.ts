@@ -11,6 +11,7 @@ import {
   OtpRequestProps,
   ResendOtpRequestProps,
   SetPasswordRequestProps,
+  SubuserCreationProps,
   TokenGenerationRequest,
   TransactionDetailsParams,
   ValidateTransactionProps,
@@ -230,3 +231,6 @@ export const Validate_Transaction = async (data: ValidateTransactionProps) =>
 
 export const Create_Order = async (data: CreateOrderProps) =>
   await api.post(`${API_ROUTES.CREATE_ORDER}`, data, await createHeaders());
+
+export const Create_Sub_User = async (data: SubuserCreationProps) =>
+  await api.post(`${API_ROUTES.CREATE_SUB_USER}`, data, await createHeaders());

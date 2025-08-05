@@ -1,7 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import uiReducer from "../../store/slices/uiSlice";
-import productReducer from "../../store/slices/productSlice";
-import settingsReducer from "../../store/slices/settingsSlice";
+import { settingsReducer } from "../Reducers/settingsReducer";
+import { uiReducer } from "../Reducers/uiReducer";
 import apiReducer from "../Reducers/apiReducer";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -9,7 +8,6 @@ import navigationReducer from "../Reducers/navigationReducer";
 
 const rootReducer = combineReducers({
   ui: uiReducer,
-  products: productReducer,
   settings: settingsReducer,
   apiResponse: apiReducer,
   navigation: navigationReducer,
@@ -25,6 +23,12 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 const store = configureStore({
   reducer: persistedReducer,
   devTools: true,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ["persist/PERSIST"],
+      },
+    }),
 });
 
 const persistor = persistStore(store);

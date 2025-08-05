@@ -154,7 +154,7 @@ const TableComponent: React.FC<TableProps> = ({
                 ) : (
                   <TextComponent
                     color={theme.palette.background.default}
-                    fontSize={12}
+                    fontSize={14}
                     fontWeight={400}
                     className="w-max justify-self-center"
                     align="center"
@@ -283,11 +283,11 @@ const TableComponent: React.FC<TableProps> = ({
                                   const singleDate = date[0] || date[1];
                                   if (singleDate) {
                                     const formattedDate =
-                                      formatDate(singleDate);
+                                      formatDate(singleDate) || "";
                                     handleSearch(column.key, formattedDate);
                                   }
                                 } else {
-                                  const formattedDate = formatDate(date);
+                                  const formattedDate = formatDate(date) || "";
                                   handleSearch(column.key, formattedDate);
                                 }
                               } else {

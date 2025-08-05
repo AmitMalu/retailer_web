@@ -39,10 +39,10 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import PeopleIcon from "@mui/icons-material/People";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { useDispatch } from "react-redux";
-import { toggleDarkMode } from "../../../store/slices/uiSlice";
-import { toggleSettingsDrawer } from "../../../store/slices/settingsSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { MinimalLayoutProps } from "@/Common/interface";
+import { toggleDarkMode } from "@/Redux/Actions/uiAction";
+import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
 
 export default function MinimalLayout({ children }: MinimalLayoutProps) {
   const { layout, navbarPosition } = useSelector(

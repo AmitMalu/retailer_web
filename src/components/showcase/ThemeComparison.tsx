@@ -12,11 +12,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { themeOptions } from "../../theme/ThemeConfig";
-import type { ThemeOption } from "../../store/slices/settingsSlice";
 import { useDispatch } from "react-redux";
-import { setThemeOption } from "../../store/slices/settingsSlice";
 import { useNotification } from "../notifications";
-import { ThemeComparisonProps } from "@/Common/interface";
+import { ThemeComparisonProps, ThemeOption } from "@/Common/interface";
+import { setThemeOption } from "@/Redux/Actions/settingsAction";
 
 export default function ThemeComparison({
   currentTheme,

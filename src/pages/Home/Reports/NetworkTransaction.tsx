@@ -273,8 +273,8 @@ const NetworkTransaction = () => {
 
   const initialValues: NetworkTransactionParams = {
     loginHierarchyId: loginData?.hierarchyId,
-    fromDate: "",
-    toDate: "",
+    fromDate: null,
+    toDate: null,
     subProductName: "",
     whitelabelId: loginData?.role === "WL" ? loginData?.hierarchyId : "",
     superDistributorId: loginData?.role === "SD" ? loginData?.hierarchyId : "",

@@ -18,13 +18,12 @@ import { RootState } from "@/Redux/Store";
 const PayoutFormModal = ({
   opened,
   onClose,
-  rowData,
+  // rowData,
   //   openedAs,
 }: PartnerRegistrationModalProps) => {
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
-  console.log(rowData, "rowData");
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;

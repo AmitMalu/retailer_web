@@ -22,7 +22,7 @@ import {
   showSuccessNotification,
 } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { decryptData, useSubProductDropdown } from "@/Utils/helper";
+import { decryptData } from "@/Utils/helper";
 import { RootState } from "@/Redux/Store";
 import { useSelector } from "react-redux";
 import { BackSvgIcon, SearchSvgIcon } from "@/assets/svg";
@@ -36,7 +36,6 @@ const Ticketing = () => {
   const [isTicketiData, setIsTicketiData] = useState(true);
   const [isTicketData, setIsTicketData] = useState<TransactionDetailsData>({});
   const [searchValue, setSearchValue] = useState("");
-  const { SubProductDropdownReq } = useSubProductDropdown();
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
@@ -74,7 +73,6 @@ const Ticketing = () => {
     if (!isFetchingRef.current) {
       isFetchingRef.current = true;
       GetIssueTypeList();
-      SubProductDropdownReq();
     }
   }, []);
 
@@ -566,6 +564,7 @@ const Ticketing = () => {
                         variant="filled"
                         onClick={() => handleSubmit()}
                         radius={10}
+                        width={130}
                       />
                     </div>
                   </>

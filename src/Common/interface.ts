@@ -1,6 +1,59 @@
 import { TextInputProps } from "@mantine/core";
 import { ReactNode, ChangeEvent, MouseEventHandler } from "react";
-import type { ThemeOption } from "../../src/store/slices/settingsSlice";
+
+export type LayoutType = "default" | "compact" | "wide";
+export type ColorScheme = "blue" | "green" | "purple" | "orange" | "teal";
+export type NavbarPosition = "fixed" | "static";
+export type SidebarStyle = "full" | "compact" | "closed";
+export type LayoutVariant = "standard" | "horizontal" | "minimal" | "footer";
+export type ThemeOption =
+  | "default"
+  | "corporate"
+  | "creative"
+  | "elegant"
+  | "playful"
+  | "minimal"
+  | "dark"
+  | "mutedTeal";
+
+export type ThemeColors = {
+  primary: string;
+  secondary: string;
+  success: string;
+  warning: string;
+  error: string;
+  info: string;
+  background: string;
+  paper: string;
+  blackColor: string;
+  textPrimary: string;
+  textSecondary: string;
+  navBackground: string;
+  lightGray: string;
+  headLine: string;
+  placeholder: string;
+  authButtonBg: string;
+  authBackground: string;
+  redLightText: string;
+  red: string;
+  redLight: string;
+  redDark: string;
+  grayDefault: string;
+  grayLight: string;
+  grayDark: string;
+  greenDefault: string;
+  greenLight: string;
+};
+
+export type SettingsState = {
+  layout: LayoutType;
+  colorScheme: ColorScheme;
+  navbarPosition: NavbarPosition;
+  sidebarStyle: SidebarStyle;
+  layoutVariant: LayoutVariant;
+  themeOption: ThemeOption;
+  isSettingsOpen: boolean;
+};
 
 export type CustomError = {
   status?: number;
@@ -497,8 +550,8 @@ export type UserProfileData = Record<string, any>;
 export type CommissionData = Record<string, any>;
 
 export type CommissionAndChargesParams = {
-  fromDate: string;
-  toDate: string;
+  fromDate: Date | string | null;
+  toDate: Date | string | null;
   hierarchyId: string;
   walletType: string;
   subProductName: string;
@@ -510,8 +563,8 @@ export type CommissionAndChargesParams = {
 
 export type WalletParams = {
   hierarchyId: string;
-  fromDate: string;
-  toDate: string;
+  fromDate: Date | string | null;
+  toDate: Date | string | null;
   subProductName: string;
   walletType: string;
   status: string;
@@ -524,8 +577,8 @@ export type WalletData = Record<string, any>;
 
 export type NetworkTransactionParams = {
   loginHierarchyId: string;
-  fromDate: string;
-  toDate: string;
+  fromDate: Date | string | null;
+  toDate: Date | string | null;
   subProductName: string;
   partnerId: string;
   whitelabelId: string;
@@ -654,14 +707,22 @@ export type MposBodyProps = {
 };
 
 export type SubuserCreationProps = {
-  AccountMemberId: string;
-  userId: string;
-  userRole: string;
+  parentAccount: string;
   name: string;
   mobileNumber: string;
+  username: string;
+  password: string;
   emailId: string;
-  address: string;
-  zipCode: string;
-  city: string;
-  state: string;
+  emailVerified: boolean;
+  dob: Date | string | null;
+  add: {
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  };
+  createdBy: string;
+  createdByIPAddress: string;
+  role_id: string;
+  subRoleId: string;
 };

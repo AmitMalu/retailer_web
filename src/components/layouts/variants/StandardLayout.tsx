@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../Redux/Store";
 import BaseLayout from "./BaseLayout";
@@ -12,7 +12,8 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
   const { layout, navbarPosition } = useSelector(
     (state: RootState) => state.settings
   );
-  // const location = useLocation();
+  const theme = useTheme();
+  const isMobileView = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
@@ -42,7 +43,9 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
 
   return (
     <BaseLayout
-      navbar={<Navbar onMenuClick={handleDrawerToggle} isMobile={mobileOpen} />}
+      navbar={
+        <Navbar onMenuClick={handleDrawerToggle} isMobile={isMobileView} />
+      }
       sidebar={<Sidebar mobileOpen={mobileOpen} onClose={handleDrawerToggle} />}
       footer={null}
     >

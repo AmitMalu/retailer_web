@@ -8,7 +8,10 @@ import ButtonComponent from "../../../components/Atoms/ButtonComponent";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../components/Atoms/Loader";
 import { login } from "@/Services/api";
-import { showErrorNotification } from "@/Utils/notifications";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "@/Utils/notifications";
 import {
   CloseEyeSvgIcon,
   LockSvgIcon,
@@ -41,11 +44,10 @@ const Login: React.FC = () => {
     url: "",
   };
 
-  const getCurrentUrl = () => {
-    const { origin, pathname } = window.location;
-    const basePath = pathname.split("/").slice(0, -1).join("/"); // Removes the last segment
-    return `${origin}${basePath}`;
-  };
+  // const getCurrentUrl = () => {
+  //   const { origin } = window.location;
+  //   return `${origin}`;
+  // };
 
   const handleSubmit = async (values: LoginRequest) => {
     try {
@@ -53,7 +55,7 @@ const Login: React.FC = () => {
       let bodyRequest = {
         userName: values.userName,
         password: values.password,
-        url: "https://uat.decipay.in/enterprises-portal/",
+        url: "https://uat.decipay.in/",
         // url: getCurrentUrl(),
       };
       const response = await login(bodyRequest);
@@ -64,6 +66,7 @@ const Login: React.FC = () => {
         navigate("/otpInput", {
           state: { userName: values.userName, login: true },
         });
+        showSuccessNotification(response?.data?.data?.otp);
       } else {
         showErrorNotification(response?.data?.message || "Unable to login");
       }

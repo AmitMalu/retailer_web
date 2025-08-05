@@ -1,7 +1,6 @@
 import TextComponent from "@/components/Atoms/TextComponent";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/system";
-import { useState } from "react";
 import PayoutCard from "@/components/Molecules/PayoutCard";
 import { PGTezMasterSvgIcon } from "@/assets/svg/Products/PG";
 import { UnstyledButton } from "@mantine/core";
@@ -12,7 +11,6 @@ import { RootState } from "@/Redux/Store";
 
 export default function PayoutScreen() {
   const theme = useTheme();
-  const [openedAs, setOpenedAs] = useState<"payoutFour" | "payout">("payout");
   const navigate = useNavigate();
 
   const apiResponses = useSelector(
@@ -23,9 +21,10 @@ export default function PayoutScreen() {
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  const handleIconClick = (type: "payout" | "payoutFour") => {
-    setOpenedAs(type);
-    navigate(`/products/payoutScreen/Info`);
+  const handleIconClick = (type: string) => {
+    navigate(`/products/payoutScreen/Info`, {
+      state: { payoutType: type },
+    });
   };
 
   const payoutProduct = loginData?.products?.find(

@@ -36,10 +36,10 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import PhoneIcon from "@mui/icons-material/Phone";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useDispatch } from "react-redux";
-import { toggleDarkMode } from "../../../store/slices/uiSlice";
-import { toggleSettingsDrawer } from "../../../store/slices/settingsSlice";
 import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom";
 import { FooterLayoutProps } from "@/Common/interface";
+import { toggleDarkMode } from "@/Redux/Actions/uiAction";
+import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
 
 export default function FooterLayout({ children }: FooterLayoutProps) {
   const { layout, navbarPosition } = useSelector(

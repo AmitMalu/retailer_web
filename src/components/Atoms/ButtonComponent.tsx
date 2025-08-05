@@ -87,6 +87,7 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
       onClick={onClick}
       sx={buttonSx}
       {...rest}
+      type="submit"
     >
       {leftIcon && (
         <Box component="span" mr={1}>

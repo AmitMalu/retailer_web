@@ -1,12 +1,19 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// Define the initial state based on NavigationContextType
+const normalizePath = (path: string): string => {
+  const baseUrl = "/enterprises-portal";
+  if (path.startsWith(baseUrl)) {
+    return path.slice(baseUrl.length) || "/";
+  }
+  return path;
+};
+
 interface NavigationState {
   selectedRoute: string;
 }
 
 const initialState: NavigationState = {
-  selectedRoute: window.location.pathname,
+  selectedRoute: normalizePath(window.location.pathname),
 };
 
 // Create a slice for navigation state management
@@ -15,7 +22,7 @@ const navigationSlice = createSlice({
   initialState,
   reducers: {
     setSelectedRoute: (state, action: PayloadAction<string>) => {
-      state.selectedRoute = action.payload;
+      state.selectedRoute = normalizePath(action.payload);
     },
   },
 });

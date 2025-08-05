@@ -224,6 +224,7 @@ const FundReversal = () => {
                   variant="filled"
                   onClick={() => handleSubmit()}
                   radius={20}
+                  width={130}
                 />
               </div>
             </>
