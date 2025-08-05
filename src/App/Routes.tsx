@@ -57,6 +57,9 @@ const DownLineBalance = lazy(
   () => import("@/pages/Home/Reports/DownLineBalance")
 );
 const MyProfile = lazy(() => import("@/pages/Home/Settings/MyProfile"));
+const CreateSubUser = lazy(
+  () => import("@/pages/Home/Settings/MyProfile/Subuser")
+);
 const ChangeTPIN = lazy(() => import("@/pages/Home/Settings/ChangeTPin"));
 const MyCertificate = lazy(() => import("@/pages/Home/Settings/MyCertificate"));
 const LowBalanceAlert = lazy(
@@ -896,6 +899,23 @@ const RouterOutlet = () => {
               element={
                 <MainLayout>
                   <MyProfile />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="settings/subUser"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <CreateSubUser />
                 </MainLayout>
               }
             />
