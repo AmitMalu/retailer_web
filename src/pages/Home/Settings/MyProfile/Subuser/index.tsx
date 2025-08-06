@@ -52,7 +52,10 @@ const SubuserCreation = () => {
       .required("Required"),
     password: Yup.string()
       .required("Required")
-      .matches(PasswordRegex, "Enter valid password"),
+      .matches(
+        PasswordRegex,
+        "Password must be 8+ chars with uppercase, number & special character."
+      ),
     emailId: Yup.string()
       .matches(EmailRegex, "Enter valid email")
       .required("Required"),
@@ -127,7 +130,7 @@ const SubuserCreation = () => {
         setSelectedChips([]);
         setSelectedSubChips([]);
       } else {
-        showErrorNotification(response?.data);
+        showErrorNotification(response?.data?.message);
       }
     } catch (error) {
       await handleCustomError(error);
@@ -138,7 +141,7 @@ const SubuserCreation = () => {
 
   const subChipMap: Record<string, string[]> = {
     "2": ["2.1", "2.2", "2.3", "2.4"],
-    "3": ["3.1", "3.2", "3.3", "3.4"],
+    "3": ["3.1", "3.2", "3.3"],
     "4": ["4.1", "4.2", "4.3"],
     "5": ["5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8"],
   };
@@ -148,10 +151,9 @@ const SubuserCreation = () => {
     "2.2": "Wallet to Wallet",
     "2.3": "Fund Transfer",
     "2.4": "Wallet to Bank",
-    "3.1": "Create Sub User",
-    "3.2": "Change TPIN",
-    "3.3": "My Certificate",
-    "3.4": "Low BAlance Alert",
+    "3.1": "Change TPIN",
+    "3.2": "My Certificate",
+    "3.3": "Low BAlance Alert",
     "4.1": "Bio Metric Device",
     "4.2": "Ticketing System",
     "4.3": "Contact Us",

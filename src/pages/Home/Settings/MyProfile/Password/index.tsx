@@ -42,13 +42,13 @@ const ChangePassowrd: React.FC = () => {
     oldPassword: Yup.string()
       .matches(
         PasswordRegex,
-        "Password must be at least 6 characters long and include at least one letter, one number, and one special character (@#$%^&*()_+!)."
+        "Password must be 8+ chars with uppercase, number & special character."
       )
       .required("Required"),
     newPassword: Yup.string()
       .matches(
         PasswordRegex,
-        "Password must be at least 6 characters long and include at least one letter, one number, and one special character (@#$%^&*()_+!)."
+        "Password must be 8+ chars with uppercase, number & special character."
       )
       .required("Required"),
     confirmPassword: Yup.string()

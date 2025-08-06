@@ -6,6 +6,7 @@ import OtpInputScreen from "@/pages/Auth/Otp";
 import SetPasswordScreen from "@/pages/Auth/SetPassword";
 import SignUp from "@/pages/Auth/SignUp.tsx";
 import Loader from "@/components/Atoms/Loader";
+import ProtectedRoute from "./ProtectedRoutes";
 
 const Dashboard = lazy(() => import("@/pages/Home/Dashboard"));
 const CreateUser = lazy(() => import("@/pages/Home/ManageUser/CreateUser"));
@@ -94,9 +95,7 @@ const WebAndAppLogo = lazy(
 const WebsitePageContent = lazy(
   () => import("@/pages/Home/WebsiteSettings/WebsitePageContent")
 );
-
 const Login = lazy(() => import("@/pages/Auth/Login"));
-
 const PGScreen = lazy(() => import("@/pages/Home/Products/PG"));
 const PayoutScreen = lazy(() => import("@/pages/Home/Products/Payout"));
 const PayoutInfoTable = lazy(
@@ -169,9 +168,9 @@ const getToken = () => {
   return token ? true : false;
 };
 
-const ProtectedRoute: React.FC<{ children?: React.ReactNode }> = ({}) => {
-  return getToken() ? <Outlet /> : <Navigate to="/login" />;
-};
+// const ProtectedRoute: React.FC<{ children?: React.ReactNode }> = ({}) => {
+//   return getToken() ? <Outlet /> : <Navigate to="/login" />;
+// };
 
 const ProtecteAuthRoute: React.FC<{ children?: React.ReactNode }> = ({}) => {
   return getToken() ? <Navigate to="/dashboard" /> : <Outlet />;
@@ -258,7 +257,7 @@ const RouterOutlet = () => {
           <Route
             path="products"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -275,7 +274,7 @@ const RouterOutlet = () => {
           <Route
             path="products/pgScreen"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -292,7 +291,7 @@ const RouterOutlet = () => {
           <Route
             path="products/payoutScreen"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -309,7 +308,7 @@ const RouterOutlet = () => {
           <Route
             path="products/payoutScreen/Info"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -326,7 +325,7 @@ const RouterOutlet = () => {
           <Route
             path="products/aepsScreen"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -343,7 +342,7 @@ const RouterOutlet = () => {
           <Route
             path="products/aepsScreen/cashWithdrawal/aepsForm"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -360,7 +359,7 @@ const RouterOutlet = () => {
           <Route
             path="products/aepsScreen/cashWithdrawal/TwoFactorCashWithdrawal"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -378,7 +377,7 @@ const RouterOutlet = () => {
           <Route
             path="products/aepsScreen/vendors/cashWithdrawal"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -395,7 +394,7 @@ const RouterOutlet = () => {
           <Route
             path="products/aepsScreen/vendors/balanceEnquiry"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -412,7 +411,7 @@ const RouterOutlet = () => {
           <Route
             path="products/aepsScreen/balanceEnquiry/TwoFactorBalanceEnquiry"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -429,7 +428,7 @@ const RouterOutlet = () => {
           <Route
             path="products/aepsScreen/balanceEnquiry/TwoFactorBalanceEnquiry"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -446,7 +445,7 @@ const RouterOutlet = () => {
           <Route
             path="products/aepsScreen/vendors/miniStatement"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -463,7 +462,7 @@ const RouterOutlet = () => {
           <Route
             path="products/aepsScreen/miniStatement/twoFAMinistatement"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -480,7 +479,7 @@ const RouterOutlet = () => {
           <Route
             path="products/aepsScreen/miniStatement/SelectBankMiniStatement"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -497,7 +496,7 @@ const RouterOutlet = () => {
           <Route
             path="products/dmt"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -514,7 +513,7 @@ const RouterOutlet = () => {
           <Route
             path="products/dmt/RemitterInfo"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -531,7 +530,7 @@ const RouterOutlet = () => {
           <Route
             path="products/dmt/remitterRegister"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -548,7 +547,7 @@ const RouterOutlet = () => {
           <Route
             path="products/dmt/remitterRegister/ekyc"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -565,7 +564,7 @@ const RouterOutlet = () => {
           <Route
             path="products/mpos"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -582,7 +581,7 @@ const RouterOutlet = () => {
           <Route
             path="products/billPay"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -599,7 +598,7 @@ const RouterOutlet = () => {
           <Route
             path="products/billPay/products"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -616,7 +615,7 @@ const RouterOutlet = () => {
           <Route
             path="/manageUser/createUser"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -633,7 +632,7 @@ const RouterOutlet = () => {
           <Route
             path="/manageUser/debitAndCreditUser"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -650,7 +649,7 @@ const RouterOutlet = () => {
           <Route
             path="/manageUser/ViewUser"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -667,7 +666,9 @@ const RouterOutlet = () => {
           <Route
             path="reports/networkTransaction"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -684,7 +685,9 @@ const RouterOutlet = () => {
           <Route
             path="reports/accountSummary"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -701,7 +704,9 @@ const RouterOutlet = () => {
           <Route
             path="reports/WalletReport"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -718,7 +723,9 @@ const RouterOutlet = () => {
           <Route
             path="reports/searchTransaction"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -736,7 +743,9 @@ const RouterOutlet = () => {
           <Route
             path="reports/downloadReport"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -753,7 +762,7 @@ const RouterOutlet = () => {
           <Route
             path="reports/fundLoading"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -770,7 +779,7 @@ const RouterOutlet = () => {
           <Route
             path="reports/paymentLoading"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -787,7 +796,9 @@ const RouterOutlet = () => {
           <Route
             path="reports/commissionAndCharges"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -804,7 +815,7 @@ const RouterOutlet = () => {
           <Route
             path="reports/pendingTransaction"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -821,7 +832,7 @@ const RouterOutlet = () => {
           <Route
             path="reports/debitHistory"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -838,7 +849,7 @@ const RouterOutlet = () => {
           <Route
             path="reports/agentPerformance"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -855,7 +866,7 @@ const RouterOutlet = () => {
           <Route
             path="reports/bankWithdrawal"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -872,7 +883,7 @@ const RouterOutlet = () => {
           <Route
             path="reports/downLineBalance"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -889,7 +900,9 @@ const RouterOutlet = () => {
           <Route
             path="settings/myProfile"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -906,7 +919,7 @@ const RouterOutlet = () => {
           <Route
             path="settings/subUser"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -924,7 +937,9 @@ const RouterOutlet = () => {
           <Route
             path="settings/changeTPIN"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -941,7 +956,9 @@ const RouterOutlet = () => {
           <Route
             path="settings/myCertificate"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -958,7 +975,7 @@ const RouterOutlet = () => {
           <Route
             path="settings/lowBalanceAlert"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -975,7 +992,7 @@ const RouterOutlet = () => {
           <Route
             path="settings/idCard"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -992,7 +1009,7 @@ const RouterOutlet = () => {
           <Route
             path="support/bioMetricDevice"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1009,7 +1026,9 @@ const RouterOutlet = () => {
           <Route
             path="support/ticketingSystem"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1026,7 +1045,7 @@ const RouterOutlet = () => {
           <Route
             path="support/contactUs"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "RT", "RA"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1043,7 +1062,7 @@ const RouterOutlet = () => {
           <Route
             path="support/topUpRequest"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1060,7 +1079,7 @@ const RouterOutlet = () => {
           <Route
             path="support/topUpHistory"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1077,7 +1096,7 @@ const RouterOutlet = () => {
           <Route
             path="support/addMoney"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1094,7 +1113,7 @@ const RouterOutlet = () => {
           <Route
             path="support/paymentRequest"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1111,7 +1130,7 @@ const RouterOutlet = () => {
           <Route
             path="support/paymentHistory"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1128,7 +1147,7 @@ const RouterOutlet = () => {
           <Route
             path="support/paymentBanks"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1145,7 +1164,9 @@ const RouterOutlet = () => {
           <Route
             path="/funding/walletToBank"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1162,7 +1183,9 @@ const RouterOutlet = () => {
           <Route
             path="/funding/walletToBankFund"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1179,7 +1202,9 @@ const RouterOutlet = () => {
           <Route
             path="/funding/walletToWallet"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1196,7 +1221,9 @@ const RouterOutlet = () => {
           <Route
             path="/funding/fundTransfer"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1213,7 +1240,7 @@ const RouterOutlet = () => {
           <Route
             path="/funding/fundReversal"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL", "SD", "PT", "DT"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1230,7 +1257,7 @@ const RouterOutlet = () => {
           <Route
             path="/websiteSettings/websiteData"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1247,7 +1274,7 @@ const RouterOutlet = () => {
           <Route
             path="/websiteSettings/socialMediaLinks"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1264,7 +1291,7 @@ const RouterOutlet = () => {
           <Route
             path="/websiteSettings/webAndAppLogoImage"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1281,7 +1308,7 @@ const RouterOutlet = () => {
           <Route
             path="/websiteSettings/websitePageContent"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["WL"]}>
                 <Outlet />
               </ProtectedRoute>
             }

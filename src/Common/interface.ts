@@ -125,7 +125,13 @@ export type ApiState = {
   responses: { [key: string]: any };
 };
 
-export type UserRole = "RT" | "DT" | "SD" | "WL" | "PT";
+export type UserRole = "RT" | "DT" | "SD" | "WL" | "PT" | "RA";
+
+export type ProtectedRouteProps = {
+  children: JSX.Element;
+  allowedRoles?: UserRole[];
+  requireAuth?: boolean;
+};
 
 export type MenuItem = {
   name: string;

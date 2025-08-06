@@ -1,4 +1,10 @@
 import { MenuItem, UserRole } from "@/Common/interface";
+import { RootState } from "@/Redux/Store";
+import {
+  decryptData,
+  MENU_PATH_TO_ROLE_PATTERN,
+  subRouteMapping,
+} from "@/Utils/helper";
 import {
   DashboardSvgIcon,
   FundingSvgIcon,
@@ -10,8 +16,16 @@ import {
   WebSettingsSvgIcon,
 } from "@/assets/svg";
 import React from "react";
+import { useSelector } from "react-redux";
 
 export const getMenuItems = (role: UserRole): MenuItem[] => {
+  const apiResponses = useSelector(
+    (state: RootState) => state.apiResponse.responses
+  );
+  const loginData = apiResponses?.loginData
+    ? decryptData(apiResponses.loginData)
+    : null;
+
   const allMenuItems: MenuItem[] = [
     {
       name: "Dashboard",
@@ -48,31 +62,31 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
       name: "Products",
       path: "/products",
       icon: React.createElement(ProductsSvgIcon, { color: "currentColor" }),
-      roles: ["RT"],
+      roles: ["RT", "RA"],
     },
     {
       name: "Funding",
       path: "/funding",
       icon: React.createElement(FundingSvgIcon, { color: "currentColor" }),
-      roles: ["RT", "DT", "SD", "WL", "PT"],
+      roles: ["RT", "DT", "SD", "WL", "PT", "RA"],
       subItems: [
         {
           name: "Wallet To Bank Fund",
           path: "/funding/walletToBankFund",
           //   icon: <InventoryIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT"],
+          roles: ["RT", "DT", "SD", "WL", "PT", "RA"],
         },
         {
           name: "Wallet To Wallet",
           path: "/funding/walletToWallet",
           //   icon: <InventoryIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT"],
+          roles: ["RT", "DT", "SD", "WL", "PT", "RA"],
         },
         {
           name: "Fund Transfer",
           path: "/funding/fundTransfer",
           //   icon: <InventoryIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT"],
+          roles: ["RT", "DT", "SD", "WL", "PT", "RA"],
         },
         {
           name: "Fund Reversal",
@@ -84,7 +98,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           name: "Wallet To Bank",
           path: "/funding/walletToBank",
           //   icon: <ShowChartIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT"],
+          roles: ["RT", "DT", "SD", "WL", "PT", "RA"],
         },
       ],
     },
@@ -92,7 +106,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
       name: "Settings",
       path: "/settings",
       icon: React.createElement(SettingsSvgIcon, { color: "currentColor" }),
-      roles: ["RT", "DT", "SD", "WL", "PT"],
+      roles: ["RT", "DT", "SD", "WL", "PT", "RA"],
       subItems: [
         {
           name: "Create Sub User",
@@ -104,19 +118,19 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           name: "Change TPIN",
           path: "/settings/changeTPIN",
           //   icon: <InventoryIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT"],
+          roles: ["RT", "DT", "SD", "WL", "PT", "RA"],
         },
         {
           name: "My Certificate",
           path: "/settings/myCertificate",
           //   icon: <InventoryIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT"],
+          roles: ["RT", "DT", "SD", "WL", "PT", "RA"],
         },
         {
           name: "Low balance alert",
           path: "/settings/lowBalanceAlert",
           //   icon: <InventoryIcon />,
-          roles: ["RT"],
+          roles: ["RT", "RA"],
         },
         {
           name: "ID Card",
@@ -130,25 +144,25 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
       name: "Support",
       path: "/support",
       icon: React.createElement(SupportSvgIcon, { color: "currentColor" }),
-      roles: ["RT", "DT", "SD", "WL", "PT"], // Only System Admin can see this menu
+      roles: ["RT", "DT", "SD", "WL", "PT", "RA"], // Only System Admin can see this menu
       subItems: [
         {
           name: "Bio Metric Device",
           path: "/support/bioMetricDevice",
           //   icon: <PeopleIcon />,
-          roles: ["RT"],
+          roles: ["RT", "RA"],
         },
         {
           name: "Ticketing System",
           path: "/support/ticketingSystem",
           //   icon: <AdminPanelSettingsIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT"],
+          roles: ["RT", "DT", "SD", "WL", "PT", "RA"],
         },
         {
           name: "Contact Us",
           path: "/support/contactUs",
           //   icon: <AdminPanelSettingsIcon />,
-          roles: ["RT", "SD", "WL"],
+          roles: ["RT", "SD", "WL", "RA"],
         },
         {
           name: "Top Up Request",
@@ -224,49 +238,49 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
       name: "Reports",
       path: "/reports",
       icon: React.createElement(ReportsSvgIcon, { color: "currentColor" }),
-      roles: ["DT", "RT", "SD", "WL", "PT"],
+      roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
       subItems: [
         {
           name: "Commission and Charges",
           path: "/reports/commissionAndCharges",
           //   icon: <ListIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT"],
+          roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
         },
         {
           name: "Wallet Report",
           path: "/reports/WalletReport",
           //   icon: <PendingIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT"],
+          roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
         },
         {
           name: "Network Transaction",
           path: "/reports/networkTransaction",
           //   icon: <PendingIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT"],
+          roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
         },
         {
           name: "Account Summary",
           path: "/reports/accountSummary",
           //   icon: <ListIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT"],
+          roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
         },
         {
           name: "Search Transaction",
           path: "/reports/searchTransaction",
           //   icon: <ListIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT"],
+          roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
         },
         {
           name: "Download Report",
           path: "/reports/downloadReport",
           //   icon: <ListIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT"],
+          roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
         },
         {
           name: "Fund Loading",
           path: "/reports/fundLoading",
           //   icon: <ListIcon />,
-          roles: ["RT"],
+          roles: ["RT", "RA"],
         },
         {
           name: "Payment Loading",
@@ -279,7 +293,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           name: "Pending Transaction",
           path: "/reports/pendingTransaction",
           //   icon: <ListIcon />,
-          roles: ["RT"],
+          roles: ["RT", "RA"],
         },
         {
           name: "Debit History",
@@ -309,18 +323,63 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
     },
   ];
 
-  // Filter menu items based on user role
   const filterMenuItems = (items: MenuItem[]): MenuItem[] => {
+    if (role === "RA") {
+      if (!loginData?.role_id || !loginData?.sub_role_id) {
+        return items.filter((item) => item.path === "/dashboard");
+      }
+
+      // Get valid sub_roles (remove 0 and empty strings)
+      const subRoles = loginData.sub_role_id
+        .split(",")
+        .map((s: string) => s.trim())
+        .filter((s: string) => s !== "0" && s !== "");
+
+      return items
+        .filter((item) => {
+          if (item.path === "/dashboard") return true;
+          if (item.path in MENU_PATH_TO_ROLE_PATTERN) {
+            const roleIndex = MENU_PATH_TO_ROLE_PATTERN[item.path];
+            const shouldShow = loginData.role_id[roleIndex] === "1";
+            return shouldShow;
+          }
+          return false;
+        })
+        .map((item) => {
+          if (!item.subItems || !(item.path in subRouteMapping)) return item;
+
+          const menuRoutes = subRouteMapping[item.path];
+          const filteredSubItems = item.subItems.filter((subItem) => {
+            const routeIndex = menuRoutes.findIndex((route) =>
+              subItem.path.includes(route)
+            );
+
+            if (routeIndex === -1) {
+              return false;
+            }
+
+            const subRole = `${MENU_PATH_TO_ROLE_PATTERN[item.path] + 1}.${routeIndex + 1}`;
+            const shouldShow = subRoles.includes(subRole);
+
+            return shouldShow;
+          });
+
+          return {
+            ...item,
+            subItems: filteredSubItems,
+          };
+        });
+    }
+
+    // Standard role-based filtering for non-RA roles
     return items
-      .filter((item) => !item.roles || item.roles.includes(role)) // Filter by role
-      .filter((item) => !item.hidden) // Filter out hidden items
+      .filter((item) => !item.roles || item.roles.includes(role))
+      .filter((item) => !item.hidden)
       .map((item) => ({
         ...item,
-        // Recursively filter submenus
         subItems: item.subItems ? filterMenuItems(item.subItems) : undefined,
       }))
       .filter((item) => {
-        // Remove parent menu if it has no visible submenus
         if (item.subItems && item.subItems.length === 0) {
           return false;
         }

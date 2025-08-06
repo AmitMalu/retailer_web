@@ -35,7 +35,7 @@ const SetPasswordScreen: React.FC = () => {
     newPassword: Yup.string()
       .matches(
         PasswordRegex,
-        "Password must be at least 6 characters long and include at least one letter, one number, and one special character (@#$%^&*()_+!)."
+        "Password must be 8+ chars with uppercase, number & special character."
       )
       .required("Required"),
     reEnteredPassword: Yup.string()

@@ -40,7 +40,7 @@ export const decryptData = (ciphertext: string): any => {
 };
 
 export const PasswordRegex =
-  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&*()_+!])[A-Za-z\d@#$%^&*()_+!]{6,}$/;
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*()_+!])[A-Za-z\d@#$%^&*()_+!]{8,}$/;
 
 export const MobileNoRegex = /^[0-9]{10}$/;
 
@@ -198,4 +198,79 @@ export const createTriangularLayout = (items: any[]) => {
   }
 
   return result;
+};
+
+export const MENU_PATH_TO_ROLE_PATTERN: Record<string, number> = {
+  "/products": 0,
+  "/funding": 1,
+  "/settings": 2,
+  "/support": 3,
+  "/reports": 4,
+};
+
+export const subRouteMapping: Record<string, string[]> = {
+  "/products": [],
+  "/funding": [
+    "walletToBankFund",
+    "walletToWallet",
+    "fundTransfer",
+    "walletToBank",
+  ],
+  "/settings": ["changeTPIN", "myCertificate", "lowBalanceAlert"],
+  "/support": ["bioMetricDevice", "ticketingSystem", "contactUs"],
+  "/reports": [
+    "commissionAndCharges",
+    "WalletReport",
+    "networkTransaction",
+    "accountSummary",
+    "searchTransaction",
+    "downloadReport",
+    "fundLoading",
+    "pendingTransaction",
+  ],
+};
+
+export const hasRouteAccess = (
+  path: string,
+  role: string,
+  loginData: any
+): boolean => {
+  if (path === "/dashboard") return true;
+
+  if (role !== "RA") {
+    return true;
+  }
+
+  if (!loginData?.role_id || !loginData?.sub_role_id) {
+    return false;
+  }
+
+  const menuPath = `/${path.split("/")[1]}`;
+  if (menuPath in MENU_PATH_TO_ROLE_PATTERN) {
+    const roleIndex = MENU_PATH_TO_ROLE_PATTERN[menuPath];
+    if (loginData.role_id[roleIndex] !== "1") {
+      return false;
+    }
+
+    const subPath = path.split("/").slice(2).join("/");
+    if (subPath && menuPath in subRouteMapping) {
+      const subRoutes = subRouteMapping[menuPath];
+      const routeIndex = subRoutes.findIndex((route) =>
+        subPath.startsWith(route)
+      );
+
+      if (routeIndex !== -1) {
+        const subRole = `${MENU_PATH_TO_ROLE_PATTERN[menuPath] + 1}.${routeIndex + 1}`;
+        const subRoles = loginData.sub_role_id
+          .split(",")
+          .map((s: string) => s.trim())
+          .filter((s: string) => s !== "0" && s !== "");
+
+        return subRoles.includes(subRole);
+      }
+    }
+    return true;
+  }
+
+  return false;
 };
