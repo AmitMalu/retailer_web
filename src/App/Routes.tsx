@@ -153,6 +153,9 @@ const BillPaymentScreen = lazy(
 const BillPayOneScreen = lazy(
   () => import("@/pages/Home/Products/BillPayment/BillPay1")
 );
+const FetchBillDetails = lazy(
+  () => import("@/pages/Home/Products/BillPayment/BillPay1/FetchBillDetails")
+);
 
 const getToken = () => {
   const token = document.cookie
@@ -608,6 +611,23 @@ const RouterOutlet = () => {
               element={
                 <MainLayout>
                   <BillPayOneScreen />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/billPay/products/billDetails"
+            element={
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <FetchBillDetails />
                 </MainLayout>
               }
             />

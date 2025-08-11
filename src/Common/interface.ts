@@ -752,3 +752,47 @@ export type PayoutSendBeneficiaryProps = {
   subProductId: string;
   callbackurl: string;
 };
+
+export type FetchBillDetailsProps = {
+  subProductId: string;
+  provider: string;
+  billerNumber?: string;
+  field_one?: string;
+  customerMobileNumber?: string;
+  dob?: Date | null;
+  field_two?: string;
+  field_three?: string;
+  field_four?: string;
+};
+
+export type ExtraParamContent = {
+  name: string;
+  value?: string;
+};
+
+export type ExtraParam = {
+  field_one?: string;
+  field_two?: string;
+  field_three?: string;
+  field_four?: string;
+  extraparam_content?: ExtraParamContent[];
+  [key: string]: any;
+};
+
+export type ProviderDetails = {
+  provider_id: string;
+  provider_name: string;
+  service_name: string;
+  consumerNumber?: string;
+  extra_param?: ExtraParam[];
+  _numeric?: boolean;
+  min_length?: number;
+  max_length?: number;
+  [key: string]: any;
+};
+
+export type FormValues = {
+  provider: string;
+  consumerNumber?: string;
+  [key: string]: any;
+};

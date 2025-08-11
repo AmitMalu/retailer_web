@@ -71,7 +71,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
       roles: ["RT", "DT", "SD", "WL", "PT", "RA"],
       subItems: [
         {
-          name: "Wallet To Bank Fund",
+          name: "Fund Request",
           path: "/funding/walletToBankFund",
           //   icon: <InventoryIcon />,
           roles: ["RT", "DT", "SD", "WL", "PT", "RA"],
@@ -95,7 +95,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           roles: ["DT", "SD", "WL", "PT"],
         },
         {
-          name: "Wallet To Bank",
+          name: "Move To Bank",
           path: "/funding/walletToBank",
           //   icon: <ShowChartIcon />,
           roles: ["RT", "DT", "SD", "WL", "PT", "RA"],

@@ -57,4 +57,8 @@ export const API_ROUTES = {
   GET_BANK_DETAILS: `${BASE_URL}/api/network-banks/details-by-ifsc`,
   GET_PAYOUT_ALL_DETAILS: `${BASE_URL}/api/payout/all`,
   DELETE_PAYOUT_BENEFICIARY: `${BASE_URL}/api/payout/delete-beneficiaries`,
+
+  /////////////////// BBPS ///////////////////////////////////////
+  GET_PROVIDER_LIST: `${BASE_URL}/api/bbps/provider-list`,
+  FETCH_BILL_DETAILS: `${BASE_URL}/api/bbps/fetch-bill-details`,
 };

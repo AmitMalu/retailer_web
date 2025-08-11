@@ -174,14 +174,24 @@ export const createTriangularLayout = (items: any[]) => {
   if (items.length === 0) return [];
   if (items.length <= 3) return [items];
 
+  const screenWidth = typeof window !== "undefined" ? window.innerWidth : 1024;
+
+  const getItemsPerRow = (width: number): number => {
+    if (width < 640) return 2;
+    if (width < 768) return 4;
+    if (width < 1024) return 6;
+    if (width < 1280) return 8;
+    return 9;
+  };
+
+  const maxItemsPerRow = getItemsPerRow(screenWidth);
   const result = [];
   let remaining = [...items];
 
-  let rowSize = Math.min(Math.ceil(items.length / 2) + 1, 6);
+  let rowSize = Math.min(Math.ceil(items.length / 2) + 1, maxItemsPerRow);
 
-  const minRows = 2;
-  if (items.length - rowSize < minRows - 1) {
-    rowSize = items.length - (minRows - 1);
+  if (items.length - rowSize < 1 && items.length > 1) {
+    rowSize = items.length - 1;
   }
 
   while (remaining.length > 0) {
@@ -193,7 +203,7 @@ export const createTriangularLayout = (items: any[]) => {
     remaining = remaining.slice(currentRowSize);
 
     if (rowSize > 1) {
-      rowSize--;
+      rowSize = Math.max(1, rowSize - 1);
     }
   }
 

@@ -2,6 +2,7 @@ import {
   ChangePasswordRequestProps,
   CommissionAndChargesParams,
   CreateOrderProps,
+  FetchBillDetailsProps,
   FetchCardBinDetailProps,
   ForgotPasswordRequestProps,
   FundReversalProps,
@@ -261,3 +262,13 @@ export const Payout_Delete_Payout_BankDetails = async (ids: number[]) => {
     data: ids,
   });
 };
+
+export const Get_Provider_List = async (data: { subProductId: string }) =>
+  await api.post(
+    API_ROUTES.GET_PROVIDER_LIST,
+    { subProductId: data.subProductId },
+    await createHeaders()
+  );
+
+export const Fetch_Bill_Details = async (body: FetchBillDetailsProps) =>
+  await api.post(API_ROUTES.FETCH_BILL_DETAILS, body, await createHeaders());

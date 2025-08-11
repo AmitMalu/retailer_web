@@ -79,6 +79,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
   return (
     <div className="w-full">
       <TextField
+        size="medium"
         variant={getMuiVariant()}
         fullWidth
         label={label}

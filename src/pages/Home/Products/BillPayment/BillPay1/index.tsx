@@ -1,42 +1,101 @@
 import { BackSvgIcon, BillPaymentSvgIcon } from "@/assets/svg";
 import TextComponent from "@/components/Atoms/TextComponent";
 import BbpsCard from "@/components/Molecules/BBPSCard";
-import { createTriangularLayout } from "@/Utils/helper";
+import { Get_Provider_List } from "@/Services/api";
+import { handleCustomError } from "@/Utils/handleCustomError";
+import { createTriangularLayout, decryptData } from "@/Utils/helper";
+import { showErrorNotification } from "@/Utils/notifications";
 import { UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import Loader from "@/components/Atoms/Loader";
+import { saveApiResponse } from "@/Redux/Actions/apiActions";
+import { RootState } from "@/Redux/Store";
 
 const BillPayOneScreen = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { subProductId } = location.state || {};
+  const [isLoading, setIsLoading] = useState(false);
+  const apiResponses = useSelector(
+    (state: RootState) => state.apiResponse.responses
+  );
+  const bbpsServicesData = apiResponses?.bbpsServices
+    ? decryptData(apiResponses?.bbpsServices)
+    : null;
+  const dispatch = useDispatch();
+  const isMounted = useRef(true);
 
-  const cardsData = [
-    { id: 1, title: "Broadband Postpaid" },
-    { id: 2, title: "Education Fees" },
-    { id: 3, title: "Loan Repayment" },
-    { id: 4, title: "Fastag" },
-    { id: 5, title: "Housing Society" },
-    { id: 6, title: "Hospital" },
-    { id: 7, title: "Municipal Taxes" },
-    { id: 8, title: "Clubs and Association" },
-    { id: 9, title: "Insurance" },
-    { id: 10, title: "Gas" },
-    { id: 11, title: "DTH" },
-    { id: 12, title: "Subscription" },
-  ];
+  const fetchData = useCallback(async () => {
+    if (isMounted.current) {
+      try {
+        setIsLoading(true);
+        const response = await Get_Provider_List({ subProductId });
+        if (response?.status === 200) {
+          dispatch(saveApiResponse("bbpsServices", response?.data?.data));
+        } else {
+          showErrorNotification(response?.data?.message);
+        }
+      } catch (error) {
+        await handleCustomError(error);
+      } finally {
+        if (isMounted.current) {
+          setIsLoading(false);
+        }
+      }
+    }
+  }, [dispatch, subProductId]);
+
+  useEffect(() => {
+    isMounted.current = true;
+
+    if (!bbpsServicesData || bbpsServicesData.length === 0) {
+      fetchData();
+    }
+
+    return () => {
+      isMounted.current = false;
+    };
+  }, [bbpsServicesData, fetchData]);
+
+  const cardsData = Array.from(
+    new Map(
+      (bbpsServicesData || []).map((services: any) => [
+        services.service_name,
+        {
+          id: services.provider_id,
+          title: services.service_name,
+          providerName: services.provider_name,
+        },
+      ])
+    ).values()
+  );
 
   const groupedCards = createTriangularLayout(cardsData);
 
+  const handleIconClick = ({ serviceName }: { serviceName: string }) => {
+    navigate(`/products/billPay/products/billDetails`, {
+      state: {
+        serviceName: serviceName,
+        subProductId: subProductId,
+      },
+    });
+  };
+
   return (
     <>
+      {isLoading && <Loader />}
       <UnstyledButton
         onClick={() => {
-          navigate(`/products`);
+          navigate(`/products/billPay`);
         }}
       >
         <BackSvgIcon color={theme.palette.red.DEFAULT} />
       </UnstyledButton>
-      <div className="mx-auto py-10 px-4 text-center relative">
+      <div className="mx-auto px-4 text-center relative">
         <TextComponent fontSize={28} fontWeight={600} color={"primary"}>
           Bharat Bill Payment System
         </TextComponent>
@@ -50,7 +109,11 @@ const BillPayOneScreen = () => {
                 key={card.id}
                 image={<BillPaymentSvgIcon color={theme.palette.red.DEFAULT} />}
                 title={card.title}
-                onClick={() => {}}
+                onClick={() => {
+                  handleIconClick({
+                    serviceName: card.title,
+                  });
+                }}
               />
             ))}
           </div>
