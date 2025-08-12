@@ -272,3 +272,38 @@ export const Get_Provider_List = async (data: { subProductId: string }) =>
 
 export const Fetch_Bill_Details = async (body: FetchBillDetailsProps) =>
   await api.post(API_ROUTES.FETCH_BILL_DETAILS, body, await createHeaders());
+
+export const Adhaar_Verification = async (aadhaarNumber: number) =>
+  await api.post(
+    `${API_ROUTES.ADHAAR_VERIFICATION}?aadhaarNumber=${aadhaarNumber}`,
+    {},
+    await createHeaders()
+  );
+
+export const Pan_Verification = async (panNumber: string) =>
+  await api.post(
+    `${API_ROUTES.PAN_VERIFICATION}?panNumber=${panNumber}`,
+    {},
+    await createHeaders()
+  );
+
+export const Email_Verification = async (emailId: string) =>
+  await api.post(
+    `${API_ROUTES.EMAIL_VERIFICATION}`,
+    { email: emailId },
+    await createHeaders()
+  );
+
+export const Adhaar_Pan_Link = async (aadhaarNumber: number) =>
+  await api.post(
+    `${API_ROUTES.ADHAAR_PAN_LINK}?aadhaarNumber=${aadhaarNumber}`,
+    {},
+    await createHeaders()
+  );
+
+export const Voter_Id_Verification = async (voterid: string) =>
+  await api.post(
+    `${API_ROUTES.VOTER_ID_VERIFICATION}?voterid=${voterid}`,
+    {},
+    await createHeaders()
+  );
