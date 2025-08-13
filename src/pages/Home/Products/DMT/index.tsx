@@ -25,7 +25,7 @@ const DMTScreen = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isNewRemitter, setIsNewRemitter] = useState(false);
-  const [isRemitterReceipt, setIsRemitterReceipt] = useState(true);
+  const [isRemitterReceipt, setIsRemitterReceipt] = useState(false);
   console.log(
     selectedRowData,
     setIsRemitterReceipt,
