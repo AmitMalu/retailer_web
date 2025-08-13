@@ -2,8 +2,8 @@ import {
   PartnerRegistrationModalProps,
   UserProfileFormProps,
 } from "@/Common/interface";
-import { Stepper, Group, Modal } from "@mantine/core";
-import { useState } from "react";
+import { Stepper, Group, Modal, UnstyledButton } from "@mantine/core";
+import { useEffect, useRef, useState } from "react";
 import { Formik, FormikProps } from "formik";
 import * as Yup from "yup";
 import {
@@ -39,6 +39,12 @@ import {
   StoreSvgIcon,
 } from "@/assets/svg";
 import theme from "@/theme/ThemeConfig";
+import TextComponent from "../Atoms/TextComponent";
+import {
+  useAadhaarVerification,
+  useAdhaarPanVerification,
+  usePanVerification,
+} from "@/Utils/Verification";
 
 const ProfileRegistrationForm = ({
   opened,
@@ -49,6 +55,30 @@ const ProfileRegistrationForm = ({
   const [active, setActive] = useState(0);
   const [showImagePreview, setShowImagePreview] = useState(false);
   const [isimage, setImage] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { verify: verifyAadhaar } = useAadhaarVerification();
+  const { verify: verifyPan } = usePanVerification();
+  const { verify: verifyAdhaarPanLink } = useAdhaarPanVerification();
+  // const { verify: verifyEmail } = useEmailVerification();
+
+  const [verificationState, setVerificationState] = useState({
+    aadhaarAttempted: false,
+    panAttempted: false,
+    linkingDone: false,
+  });
+
+  const hasLinked = useRef(false);
+  const formikRef = useRef<FormikProps<UserProfileFormProps>>(null);
+
+  const handleClose = () => {
+    hasLinked.current = false;
+    onClose();
+    setVerificationState({
+      aadhaarAttempted: false,
+      panAttempted: false,
+      linkingDone: false,
+    });
+  };
 
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
@@ -105,6 +135,12 @@ const ProfileRegistrationForm = ({
     });
 
     if (!hasErrors) {
+      if (active === 0 && !verificationState.linkingDone) {
+        showErrorNotification(
+          "Please verify both Aadhaar and PAN before proceeding"
+        );
+        return;
+      }
       setActive((current) => (current < 4 ? current + 1 : current));
     } else {
       // Create a properly typed touched object
@@ -121,8 +157,6 @@ const ProfileRegistrationForm = ({
 
   const prevStep = () =>
     setActive((current) => (current > 0 ? current - 1 : current));
-
-  const [isLoading, setIsLoading] = useState(false);
 
   const validationSchema = Yup.object().shape({
     title: Yup.string().required("Required"),
@@ -156,7 +190,9 @@ const ProfileRegistrationForm = ({
     ifscCode: Yup.string().required("Required"),
     branchName: Yup.string().required("Required"),
     aadhaarNumber: Yup.string()
-      .max(16, "Enter valid Number")
+      .max(12, "Enter valid Number")
+      .min(12, "Enter valid Number")
+      .matches(/^[0-9]+$/, "Please enter valid number")
       .required("Required"),
     businessNumber: Yup.string().required("Required"),
     shopNumber: Yup.string().required("Required"),
@@ -201,9 +237,14 @@ const ProfileRegistrationForm = ({
     panCardImage: null,
     shopImage: null,
     businessProofImage: null,
+    isAadhaarVerified: false,
+    emailVerified: false,
+    gstNumberVerified: false,
+    panVerified: false,
+    aadhaarPanVerified: false,
   };
 
-  const handleSubmit = async (values: UserProfileFormProps) => {
+  const handleSubmit = async (values: UserProfileFormProps, resetForm: any) => {
     try {
       setIsLoading(true);
       const formData = new FormData();
@@ -259,6 +300,11 @@ const ProfileRegistrationForm = ({
         businessNumber: values?.businessNumber,
         createdBy: values?.createdBy || loginData?.mobileNumber,
         createdByIPAddress: values?.createdByIPAddress || ipAddress,
+        isAadhaarVerified: values.isAadhaarVerified,
+        emailVerified: values.emailVerified,
+        gstNumberVerified: values.gstNumberVerified,
+        panVerified: values.panVerified,
+        aadhaarPanVerified: values.aadhaarPanVerified,
       };
 
       formData.append("data", JSON.stringify(data));
@@ -267,7 +313,8 @@ const ProfileRegistrationForm = ({
         const response = await Create_Super_Distributor(formData);
         if (response?.status === 201 || response?.data?.statusCode === "201") {
           showSuccessNotification(response?.data?.message);
-          onClose();
+          handleClose();
+          resetForm();
         } else {
           showErrorNotification(response?.data?.message || "Unable to create");
         }
@@ -275,7 +322,8 @@ const ProfileRegistrationForm = ({
         const response = await Create_Partner(formData);
         if (response?.status === 201 || response?.data?.statusCode === "201") {
           showSuccessNotification(response?.data?.message);
-          onClose();
+          handleClose();
+          resetForm();
         } else {
           showErrorNotification(response?.data?.message || "Unable to create");
         }
@@ -283,7 +331,8 @@ const ProfileRegistrationForm = ({
         const response = await Create_Distributor(formData);
         if (response?.status === 201 || response?.data?.statusCode === "201") {
           showSuccessNotification(response?.data?.message);
-          onClose();
+          handleClose();
+          resetForm();
         } else {
           showErrorNotification(response?.data?.message || "Unable to create");
         }
@@ -291,7 +340,8 @@ const ProfileRegistrationForm = ({
         const response = await Create_Retailer(formData);
         if (response?.status === 201 || response?.data?.statusCode === "201") {
           showSuccessNotification(response?.data?.message);
-          onClose();
+          handleClose();
+          resetForm();
         } else {
           showErrorNotification(response?.data?.message || "Unable to create");
         }
@@ -307,7 +357,7 @@ const ProfileRegistrationForm = ({
   return (
     <Modal
       opened={opened}
-      onClose={onClose}
+      onClose={handleClose}
       title="Create Profile"
       size="xl"
       centered
@@ -348,6 +398,9 @@ const ProfileRegistrationForm = ({
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
           enableReinitialize={true}
+          innerRef={formikRef}
+          validateOnBlur={false}
+          validateOnChange={false}
         >
           {(formik) => {
             const {
@@ -358,6 +411,34 @@ const ProfileRegistrationForm = ({
               touched,
               values,
             } = formik;
+
+            useEffect(() => {
+              const linkAadhaarPan = async () => {
+                if (
+                  verificationState.aadhaarAttempted &&
+                  verificationState.panAttempted &&
+                  !hasLinked.current
+                ) {
+                  hasLinked.current = true;
+                  const success = await verifyAdhaarPanLink(
+                    Number(values.aadhaarNumber)
+                  );
+                  setVerificationState({
+                    ...verificationState,
+                    linkingDone: true,
+                  });
+                  if (success) {
+                    formik.setFieldValue("aadhaarPanVerified", true, false);
+                  }
+                }
+              };
+
+              linkAadhaarPan();
+            }, [
+              verificationState.aadhaarAttempted,
+              verificationState.panAttempted,
+            ]);
+
             return (
               <>
                 <Stepper
@@ -452,6 +533,40 @@ const ProfileRegistrationForm = ({
                           placeholder={"Enter"}
                           value={values.emailId}
                           onChange={handleChange("emailId")}
+                          // rightSection={
+                          //   <>
+                          //     {isEmailVerified ? (
+                          //       <TextComponent
+                          //         fontSize={14}
+                          //         fontWeight={700}
+                          //         color={theme.palette.greenColor.DEFAULT}
+                          //       >
+                          //         Verified
+                          //       </TextComponent>
+                          //     ) : (
+                          //       <>
+                          //         {values.emailId &&
+                          //           EmailRegex.test(values.emailId) && (
+                          //             <UnstyledButton
+                          //               onClick={() =>
+                          //                 EmailVerificationRequest(
+                          //                   values.emailId
+                          //                 )
+                          //               }
+                          //             >
+                          //               <TextComponent
+                          //                 fontSize={14}
+                          //                 fontWeight={500}
+                          //                 color={theme.palette.red.dark}
+                          //               >
+                          //                 Verify
+                          //               </TextComponent>
+                          //             </UnstyledButton>
+                          //           )}
+                          //       </>
+                          //     )}
+                          //   </>
+                          // }
                           error={
                             touched.emailId && errors.emailId
                               ? errors.emailId
@@ -473,10 +588,57 @@ const ProfileRegistrationForm = ({
                               ? errors.aadhaarNumber
                               : ""
                           }
+                          rightSection={
+                            <>
+                              {values.aadhaarNumber &&
+                              values.aadhaarNumber.length === 12 &&
+                              values.isAadhaarVerified ? (
+                                <TextComponent
+                                  fontSize={14}
+                                  fontWeight={700}
+                                  color={theme.palette.greenColor.DEFAULT}
+                                >
+                                  Verified
+                                </TextComponent>
+                              ) : (
+                                <>
+                                  {values.aadhaarNumber &&
+                                    values.aadhaarNumber.length === 12 && (
+                                      <UnstyledButton
+                                        onClick={async (e) => {
+                                          e.preventDefault();
+                                          const success = await verifyAadhaar(
+                                            values.aadhaarNumber
+                                          );
+                                          setVerificationState({
+                                            ...verificationState,
+                                            aadhaarAttempted: true,
+                                          });
+                                          if (success) {
+                                            formik.setFieldValue(
+                                              "isAadhaarVerified",
+                                              true,
+                                              false
+                                            );
+                                          }
+                                        }}
+                                      >
+                                        <TextComponent
+                                          fontSize={14}
+                                          fontWeight={500}
+                                          color={theme.palette.red.dark}
+                                        >
+                                          Verify
+                                        </TextComponent>
+                                      </UnstyledButton>
+                                    )}
+                                </>
+                              )}
+                            </>
+                          }
                           withAsterisk
-                          maxLength={16}
-                          minLength={16}
-                          type="number"
+                          maxLength={12}
+                          minLength={12}
                           className="w-max"
                         />
                       </div>
@@ -486,6 +648,56 @@ const ProfileRegistrationForm = ({
                           placeholder={"Enter"}
                           value={values.panNumber}
                           onChange={handleChange("panNumber")}
+                          maxLength={10}
+                          minLength={10}
+                          rightSection={
+                            <>
+                              {values.panNumber &&
+                              values.panNumber.length === 10 &&
+                              values.panVerified ? (
+                                <TextComponent
+                                  fontSize={14}
+                                  fontWeight={700}
+                                  color={theme.palette.greenColor.DEFAULT}
+                                >
+                                  Verified
+                                </TextComponent>
+                              ) : (
+                                <>
+                                  {values.panNumber &&
+                                    values.panNumber.length === 10 && (
+                                      <UnstyledButton
+                                        onClick={async (e) => {
+                                          e.preventDefault();
+                                          const success = await verifyPan(
+                                            values.panNumber
+                                          );
+                                          setVerificationState({
+                                            ...verificationState,
+                                            panAttempted: true,
+                                          });
+                                          if (success) {
+                                            formik.setFieldValue(
+                                              "panVerified",
+                                              true,
+                                              false
+                                            );
+                                          }
+                                        }}
+                                      >
+                                        <TextComponent
+                                          fontSize={14}
+                                          fontWeight={500}
+                                          color={theme.palette.red.dark}
+                                        >
+                                          Verify
+                                        </TextComponent>
+                                      </UnstyledButton>
+                                    )}
+                                </>
+                              )}
+                            </>
+                          }
                           error={
                             touched.panNumber && errors.panNumber
                               ? errors.panNumber
@@ -976,6 +1188,7 @@ const ProfileRegistrationForm = ({
                       }}
                       disabled={isLoading}
                       radius={10}
+                      width={100}
                     />
                   </div>
                 </Group>

@@ -61,4 +61,11 @@ export const API_ROUTES = {
   /////////////////// BBPS ///////////////////////////////////////
   GET_PROVIDER_LIST: `${BASE_URL}/api/bbps/provider-list`,
   FETCH_BILL_DETAILS: `${BASE_URL}/api/bbps/fetch-bill-details`,
+
+  /////////////////// VERIFICATION //////////////////////////////////
+  ADHAAR_VERIFICATION: `${BASE_URL}/verification/aadhaar-validate`,
+  PAN_VERIFICATION: `${BASE_URL}/verification/pan-validate`,
+  EMAIL_VERIFICATION: `${BASE_URL}/verification/email-validate`,
+  ADHAAR_PAN_LINK: `${BASE_URL}/verification/aadhaar-pan-link`,
+  VOTER_ID_VERIFICATION: `${BASE_URL}/verification/voterId-validate`,
 };

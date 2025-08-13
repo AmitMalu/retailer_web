@@ -939,7 +939,7 @@ const RouterOutlet = () => {
           <Route
             path="settings/subUser"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT"]}>
                 <Outlet />
               </ProtectedRoute>
             }

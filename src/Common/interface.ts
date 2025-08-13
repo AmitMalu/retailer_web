@@ -505,6 +505,11 @@ export type UserProfileFormProps = {
   panCardImage: File | null;
   shopImage: File | null;
   businessProofImage: File | null;
+  isAadhaarVerified: boolean;
+  emailVerified: boolean;
+  gstNumberVerified: boolean;
+  panVerified: boolean;
+  aadhaarPanVerified: boolean;
 };
 
 export type PendingPartnerActivationData = Record<string, any>;
