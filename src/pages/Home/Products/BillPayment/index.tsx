@@ -21,7 +21,7 @@ const BillPaymentScreen = () => {
     : null;
 
   const handleIconClick = (type: string) => {
-    navigate(`/products/billPay/products`, {
+    navigate(`/products/billPay/service`, {
       state: { subProductId: type },
     });
   };
