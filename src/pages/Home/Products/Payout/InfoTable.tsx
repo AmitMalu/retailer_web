@@ -115,7 +115,7 @@ const InfoTable = () => {
       label: "Transfer",
       searchKey: "transfer",
       sortable: false,
-      render: (row: PayoutBankDetails, rowIndex: number, values: any) => {
+      render: (_row: PayoutBankDetails, _rowIndex: number, values: any) => {
         const validationSchema = Yup.object().shape({
           paymentMode: Yup.string().required("Required"),
           amount: Yup.number()
