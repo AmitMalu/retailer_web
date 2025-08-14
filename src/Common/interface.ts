@@ -763,7 +763,7 @@ export type FetchBillDetailsProps = {
   provider: string;
   billerNumber?: string;
   field_one?: string;
-  customerMobileNumber?: string;
+  customerMobileNumber: string;
   dob?: Date | null;
   field_two?: string;
   field_three?: string;

@@ -52,6 +52,7 @@ const FetchBillDetails: React.FC = () => {
   const initialValues = useMemo<FormikValues>(() => {
     const values: FormikValues = {
       provider: selectedProviderDetails?.provider_id || "",
+      customerMobileNumber: "",
     };
 
     if (selectedProviderDetails) {
@@ -80,89 +81,81 @@ const FetchBillDetails: React.FC = () => {
   const validationSchema = useMemo(() => {
     const schema: Record<string, any> = {
       provider: Yup.string().required("Required"),
-    };
-
-    if (selectedProviderDetails) {
-      if (selectedProviderDetails.consumerNumber === "required") {
-        let rule = Yup.string()
-          .required("Required")
-          .max(12, "Max 12 numbers")
-          .min(12, "Min 12 numbers")
-          .matches(/^\d+$/, "Must be numeric") as any;
-
-        if (selectedProviderDetails._numeric) {
-          rule = rule.matches(/^\d+$/, "Must be numeric") as any;
+      customerMobileNumber: Yup.string()
+        .required("Required")
+        .matches(MobileNoRegex, "Number must be 10 digits"),
+      consumerNumber: Yup.string().when(
+        "selectedProviderDetails.consumerNumber",
+        {
+          is: "required",
+          then: () => Yup.string().required("Required"),
+          otherwise: () => Yup.string(),
         }
-        if (selectedProviderDetails.min_length) {
-          rule = rule.min(
-            selectedProviderDetails.min_length,
-            `Must be at least ${selectedProviderDetails.min_length} characters`
-          ) as any;
-        }
-        if (selectedProviderDetails.max_length) {
-          rule = rule.max(
-            selectedProviderDetails.max_length,
-            `Must be at most ${selectedProviderDetails.max_length} characters`
-          ) as any;
-        }
-        schema.consumerNumber = rule;
-      }
+      ),
+      ...(selectedProviderDetails?.extra_param?.reduce(
+        (acc: Record<string, any>, param: ExtraParam, idx: number) => {
+          const fields = [
+            { field: "field_one", value: param.field_one },
+            { field: "field_two", value: param.field_two },
+            { field: "field_three", value: param.field_three },
+            { field: "field_four", value: param.field_four },
+          ];
 
-      selectedProviderDetails.extra_param?.forEach(
-        (param: ExtraParam, idx: number) => {
-          const addValidation = (field: string | undefined, key: string) => {
-            if (!field) return;
+          fields.forEach(({ field, value: label }) => {
+            if (!label) return;
 
-            let rule = Yup.string().required("Required");
-            const lowerField = field.toLowerCase();
+            const fieldKey = `${field}_${idx}`;
+            const lowerLabel = label.toLowerCase();
 
-            if (lowerField.includes("mobile")) {
-              rule = rule
-                .matches(MobileNoRegex, "Enter Valid Number")
-                .required("Required") as any;
-            } else if (lowerField.includes("bu")) {
-              rule = rule
-                .max(4, "Max 4 numbers")
-                .min(4, "Min 4 numbers")
-                .matches(/^\d+$/, "Must be numeric")
-                .required("Required") as any;
+            const isMobileField = ["mobile number", "phone", "mobile"].includes(
+              lowerLabel
+            );
+            if (isMobileField) {
+              return;
             }
-            // Email validation
-            else if (lowerField.includes("email")) {
-              rule = rule
+
+            // validation for email
+            if (lowerLabel.includes("email")) {
+              acc[fieldKey] = Yup.string()
                 .matches(EmailRegex, "Enter valid email address")
-                .required("Required") as any;
-            } else if (isDOBField(field)) {
-              rule = Yup.date()
+                .required("Required");
+            }
+            // validation for dob
+            else if (isDOBField(label)) {
+              acc[fieldKey] = Yup.date()
                 .typeError("Invalid date")
-                .required("Required") as any;
-            } else if (param._numeric) {
-              rule = rule.matches(/^\d+$/, "Must be numeric") as any;
+                .required(`${label} is required`);
+            }
+            // validation for other fields
+            else {
+              acc[fieldKey] = Yup.string().required(`${label} is required`);
             }
 
+            // min/max length validations
             if (param.min_length) {
-              rule = rule.min(
+              acc[fieldKey] = acc[fieldKey].min(
                 param.min_length,
-                `Must be at least ${param.min_length}`
-              ) as any;
+                `Must be at least ${param.min_length} characters`
+              );
             }
             if (param.max_length) {
-              rule = rule.max(
+              acc[fieldKey] = acc[fieldKey].max(
                 param.max_length,
-                `Must be at most ${param.max_length}`
-              ) as any;
+                `Must be at most ${param.max_length} characters`
+              );
             }
 
-            schema[key] = rule;
-          };
+            // numeric validation
+            if (param._numeric) {
+              acc[fieldKey] = acc[fieldKey].matches(/^\d+$/, "Must be numeric");
+            }
+          });
 
-          addValidation(param.field_one, `field_one_${idx}`);
-          addValidation(param.field_two, `field_two_${idx}`);
-          addValidation(param.field_three, `field_three_${idx}`);
-          addValidation(param.field_four, `field_four_${idx}`);
-        }
-      );
-    }
+          return acc;
+        },
+        {} as Record<string, any>
+      ) || {}),
+    };
 
     return Yup.object().shape(schema);
   }, [selectedProviderDetails]);
@@ -170,16 +163,47 @@ const FetchBillDetails: React.FC = () => {
   const handleFetchDetailsSubmit = async (values: FormikValues) => {
     try {
       setIsLoading(true);
+
+      const formValues = { ...values };
+
+      if (selectedProviderDetails?.extra_param) {
+        selectedProviderDetails.extra_param.forEach(
+          (param: ExtraParam, idx: number) => {
+            const fields = [
+              { field: "field_one", value: param.field_one },
+              { field: "field_two", value: param.field_two },
+              { field: "field_three", value: param.field_three },
+              { field: "field_four", value: param.field_four },
+            ];
+
+            fields.forEach(({ field, value: label }) => {
+              if (!label) return;
+
+              const fieldKey = `${field}_${idx}`;
+              const lowerLabel = label.toLowerCase().trim();
+              if (
+                lowerLabel === "mobile number" ||
+                lowerLabel === "phone" ||
+                lowerLabel === "mobile"
+              ) {
+                formValues[fieldKey] = values.customerMobileNumber;
+              }
+            });
+          }
+        );
+      }
+
       const payload: Partial<FetchBillDetailsProps> = {
-        provider: values.provider,
+        provider: formValues.provider,
         subProductId: subProductId,
+        customerMobileNumber: formValues.customerMobileNumber,
       };
 
       if (
-        values.consumerNumber &&
+        formValues.consumerNumber &&
         selectedProviderDetails?.consumerNumber === "required"
       ) {
-        payload.billerNumber = values.consumerNumber;
+        payload.billerNumber = formValues.consumerNumber;
       }
 
       selectedProviderDetails?.extra_param?.forEach(
@@ -208,28 +232,21 @@ const FetchBillDetails: React.FC = () => {
           ];
 
           for (const { source, target, label } of fieldMappings) {
-            if (values[source] !== undefined && values[source] !== "") {
+            if (formValues[source] !== undefined && formValues[source] !== "") {
               if (label?.toLowerCase().includes("id")) {
                 continue;
               }
 
-              (payload as any)[target] = values[source];
+              (payload as any)[target] = formValues[source];
 
-              if (label?.toLowerCase().includes("mobile")) {
-                payload.customerMobileNumber = values[source];
-              }
               if (label?.toLowerCase().includes("date of birth")) {
-                const dateStr = values[source];
+                const dateStr = formValues[source];
                 payload.dob = dateStr ? new Date(dateStr) : null;
               }
             }
           }
         }
       );
-
-      if (!payload.customerMobileNumber && values.customerMobileNumber) {
-        payload.customerMobileNumber = values.customerMobileNumber;
-      }
 
       const response = await Fetch_Bill_Details(
         payload as FetchBillDetailsProps
@@ -255,7 +272,7 @@ const FetchBillDetails: React.FC = () => {
         <div className="mb-6 flex items-center gap-6 justify-start">
           <UnstyledButton
             onClick={() => {
-              navigate(`/products/billPay/products`);
+              navigate(`/products/billPay/service`);
             }}
           >
             <BackSvgIcon color={theme.palette.red.DEFAULT} />
@@ -308,12 +325,14 @@ const FetchBillDetails: React.FC = () => {
                           value: string | number | string[] | number[]
                         ) => {
                           setFieldValue("provider", value);
-                          setSelectedProviderDetails(
+
+                          const selectedProvider =
                             bbpsServicesData?.find(
                               (service: ProviderDetails) =>
                                 service.provider_id === value
-                            ) || null
-                          );
+                            ) || null;
+
+                          setSelectedProviderDetails(selectedProvider);
                         }}
                         error={
                           touched.provider && errors.provider
@@ -323,6 +342,27 @@ const FetchBillDetails: React.FC = () => {
                         className="w-max"
                       />
                     </div>
+                    {selectedProviderDetails && (
+                      <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
+                        <TextInputComponent
+                          label="Customer Mobile Number"
+                          placeholder="Enter Number"
+                          value={values.customerMobileNumber}
+                          onChange={handleChange("customerMobileNumber")}
+                          error={
+                            touched.customerMobileNumber &&
+                            errors.customerMobileNumber
+                              ? String(errors.customerMobileNumber)
+                              : ""
+                          }
+                          maxLength={10}
+                          minLength={10}
+                          withAsterisk
+                          className="w-max"
+                        />
+                      </div>
+                    )}
+
                     {selectedProviderDetails?.consumerNumber === "required" && (
                       <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
@@ -349,6 +389,14 @@ const FetchBillDetails: React.FC = () => {
                           label?: string
                         ) => {
                           if (!label) return null;
+
+                          // Skip rendering mobile number field as it's already shown by default
+                          if (
+                            label.toLowerCase().includes("mobile number") ||
+                            label.toLowerCase().includes("phone")
+                          ) {
+                            return null;
+                          }
 
                           if (isDOBField(label)) {
                             return (
