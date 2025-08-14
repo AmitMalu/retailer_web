@@ -599,7 +599,7 @@ const RouterOutlet = () => {
             />
           </Route>
           <Route
-            path="products/billPay/products"
+            path="products/billPay/service"
             element={
               <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />
@@ -616,7 +616,7 @@ const RouterOutlet = () => {
             />
           </Route>
           <Route
-            path="products/billPay/products/billDetails"
+            path="products/billPay/service/billDetails"
             element={
               <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />

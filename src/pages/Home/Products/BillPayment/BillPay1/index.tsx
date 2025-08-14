@@ -77,7 +77,7 @@ const BillPayOneScreen = () => {
   const groupedCards = createTriangularLayout(cardsData);
 
   const handleIconClick = ({ serviceName }: { serviceName: string }) => {
-    navigate(`/products/billPay/products/billDetails`, {
+    navigate(`/products/billPay/service/billDetails`, {
       state: {
         serviceName: serviceName,
         subProductId: subProductId,
