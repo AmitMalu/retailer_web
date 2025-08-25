@@ -24,6 +24,7 @@ const ForgotPassword: React.FC = () => {
   const validationSchema = Yup.object({
     userName: Yup.string()
       .max(10, "Please enter valid number")
+      .min(10, "Please enter valid number")
       .matches(MobileNoRegex, "Please enter valid number")
       .required("Required"),
   });
@@ -63,12 +64,20 @@ const ForgotPassword: React.FC = () => {
         authText='"Start smart. Stay secure. Create a password that works for you."'
       >
         <div className="flex w-full  items-center justify-center flex-col gap-5">
-          <div className="flex h-auto w-[350px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-white justify-start px-6 py-3">
+          <div className="flex h-auto w-[350px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
             <div className="flex flex-col items-center justify-center gap-3">
-              <TextComponent fontSize={30} fontWeight={500} color={"Primary"}>
+              <TextComponent
+                fontSize={30}
+                fontWeight={500}
+                color={"background.default"}
+              >
                 Forgot Password
               </TextComponent>
-              <TextComponent fontSize={12} fontWeight={500} color={"Primary"}>
+              <TextComponent
+                fontSize={12}
+                fontWeight={500}
+                color={"background.default"}
+              >
                 Please enter your registered mobile number.
               </TextComponent>
             </div>
@@ -114,7 +123,7 @@ const ForgotPassword: React.FC = () => {
                     <TextComponent
                       fontSize={14}
                       fontWeight={400}
-                      color="text.headLine"
+                      color="background.default"
                     >
                       Don't have an account yet?
                     </TextComponent>

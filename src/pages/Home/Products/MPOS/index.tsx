@@ -173,7 +173,11 @@ const MposScreen = () => {
         >
           <BackSvgIcon color={theme.palette.red.DEFAULT} />
         </UnstyledButton>
-        <TextComponent fontSize={28} fontWeight={600} color={"primary"}>
+        <TextComponent
+          fontSize={28}
+          fontWeight={600}
+          color={"background.default"}
+        >
           MPOS
         </TextComponent>
       </div>

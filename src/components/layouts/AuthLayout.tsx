@@ -12,10 +12,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
   const navigate = useNavigate();
 
   return (
-    <div
-      // style={{ backgroundImage: `url(${IMAGES.auth_bg})` }}
-      className="flex flex-col h-screen w-full gap-2 bg-cover bg-center bg-authBackground "
-    >
+    <div className="flex flex-col h-screen w-full gap-2 bg-cover bg-center bg-authBackground ">
       <div className="flex h-[90%] w-full">
         <div className="flex h-full w-1/2 flex-col items-center justify-center p-3 sm:hidden md:flex">
           <div

@@ -3,8 +3,8 @@ const ReportsSvgIcon = ({ color }: { color: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
     fill="none"
-    width={92}
-    height={91}
+    width={40}
+    height={40}
     viewBox="0 0 92 91"
   >
     <defs>

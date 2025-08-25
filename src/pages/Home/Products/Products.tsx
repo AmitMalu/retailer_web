@@ -7,7 +7,7 @@ import BillPaymenstSvgIcon from "@/assets/svg/Products/BillPayments";
 import TextComponent from "@/components/Atoms/TextComponent";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/system";
-import { AepsCardSvgIcon } from "@/assets/svg";
+import { AepsCardSvgIcon } from "@/assets/svg/Products/AepsSvgIcon";
 
 export default function Products() {
   const navigate = useNavigate();
@@ -73,9 +73,9 @@ export default function Products() {
   return (
     <div className="mx-auto py-10 px-4 text-center relative">
       <TextComponent
-        fontSize={28}
+        fontSize={24}
         fontWeight={600}
-        color={theme.palette.background.default}
+        color={"background.default"}
       >
         Products
       </TextComponent>

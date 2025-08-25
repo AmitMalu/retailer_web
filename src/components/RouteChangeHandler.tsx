@@ -3,10 +3,8 @@ import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setSelectedRoute } from "@/Redux/Reducers/navigationReducer";
 
-// Remove the base URL from the path
 const normalizePath = (pathname: string): string => {
   const baseUrl = "/enterprises-portal";
-  // Remove base URL if present
   if (pathname.startsWith(baseUrl)) {
     return pathname.slice(baseUrl.length) || "/";
   }

@@ -269,8 +269,6 @@ const ChangePassowrd: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <div className="mb-3 mt-10 flex gap-4 w-full flex-col items-center justify-center"></div>
-
                   <div className="mt-6 flex h-9 w-full items-center justify-center">
                     <ButtonComponent
                       title={"SEND OTP"}

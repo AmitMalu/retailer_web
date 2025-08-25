@@ -101,7 +101,6 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
           fontWeight: 600,
           color: "inherit",
           padding: "6px 0",
-          fontFamily: '"Poppins", sans-serif',
         }}
       >
         {title}

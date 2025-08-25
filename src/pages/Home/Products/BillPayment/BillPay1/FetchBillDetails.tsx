@@ -390,7 +390,6 @@ const FetchBillDetails: React.FC = () => {
                         ) => {
                           if (!label) return null;
 
-                          // Skip rendering mobile number field as it's already shown by default
                           if (
                             label.toLowerCase().includes("mobile number") ||
                             label.toLowerCase().includes("phone")

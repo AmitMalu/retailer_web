@@ -387,7 +387,7 @@ const SubuserCreation = () => {
                           className="self-start"
                         >
                           Menu
-                          <span className="ml-1 text-red">*</span>
+                          <span className="ml-1 text-red-dark">*</span>
                         </TextComponent>
                       </div>
 

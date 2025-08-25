@@ -3,8 +3,8 @@ const BillPaymenstSvgIcon = ({ color }: { color: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
     fill="none"
-    width={70}
-    height={73.6845703125}
+    width={50}
+    height={50}
     viewBox="0 0 70 73.6845703125"
   >
     <g>

@@ -8,7 +8,7 @@ import {
 import { handleCustomError } from "@/Utils/handleCustomError";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import { Payout_Delete_Payout_BankDetails } from "@/Services/api";
-import theme from "@/theme/ThemeConfig";
+import { useTheme } from "@mui/system";
 import { DeleteSvgIcon } from "@/assets/svg";
 
 const PayoutBankDeleteModal = ({
@@ -17,6 +17,7 @@ const PayoutBankDeleteModal = ({
   rowData,
   //   openedAs,
 }: PartnerRegistrationModalProps) => {
+  const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
 
   const PayoutDeleteSubmit = async () => {

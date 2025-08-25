@@ -38,7 +38,7 @@ import {
   PersonalSvgIcon,
   StoreSvgIcon,
 } from "@/assets/svg";
-import theme from "@/theme/ThemeConfig";
+import { useTheme } from "@mui/system";
 import TextComponent from "../Atoms/TextComponent";
 import {
   useAadhaarVerification,
@@ -52,6 +52,7 @@ const ProfileRegistrationForm = ({
   // rowData,
   openedAs,
 }: PartnerRegistrationModalProps) => {
+  const theme = useTheme();
   const [active, setActive] = useState(0);
   const [showImagePreview, setShowImagePreview] = useState(false);
   const [isimage, setImage] = useState<File | null>(null);

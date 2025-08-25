@@ -3,8 +3,8 @@ const PGSvgIcon = ({ color }: { color: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
     fill="none"
-    width={66.99874877929688}
-    height={66.994140625}
+    width={45}
+    height={45}
     viewBox="0 0 66.99874877929688 66.994140625"
   >
     <g>
