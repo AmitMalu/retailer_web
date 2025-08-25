@@ -293,7 +293,7 @@ const InfoTable = () => {
           });
       }, 900);
     } catch (error) {
-      console.error("Search error:", error);
+      handleCustomError(error);
     }
   };
 

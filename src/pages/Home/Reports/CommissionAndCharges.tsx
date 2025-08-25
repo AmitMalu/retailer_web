@@ -491,7 +491,7 @@ const CommissionAndCharges = () => {
                           onClick={() => handleExport(values)}
                           className="flex flex-row items-center justify-center gap-3 disabled:opacity-30"
                         >
-                          <ExportSvgIcon color={theme.palette.red.DEFAULT} />{" "}
+                          <ExportSvgIcon color={theme.palette.red.DEFAULT} />
                           <TextComponent
                             fontSize={18}
                             fontWeight={400}

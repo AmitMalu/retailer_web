@@ -3,7 +3,7 @@ import TextComponent from "@/components/Atoms/TextComponent";
 import BbpsCard from "@/components/Molecules/BBPSCard";
 import { Get_Provider_List } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { createTriangularLayout, decryptData } from "@/Utils/helper";
+import { decryptData } from "@/Utils/helper";
 import { showErrorNotification } from "@/Utils/notifications";
 import { UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
@@ -74,8 +74,6 @@ const BillPayOneScreen = () => {
     ).values()
   );
 
-  const groupedCards = createTriangularLayout(cardsData);
-
   const handleIconClick = ({ serviceName }: { serviceName: string }) => {
     navigate(`/products/billPay/service/billDetails`, {
       state: {
@@ -96,28 +94,30 @@ const BillPayOneScreen = () => {
         <BackSvgIcon color={theme.palette.red.DEFAULT} />
       </UnstyledButton>
       <div className="mx-auto px-4 text-center relative">
-        <TextComponent fontSize={28} fontWeight={600} color={"primary"}>
+        <TextComponent
+          fontSize={28}
+          fontWeight={600}
+          color={"background.default"}
+        >
           Bharat Bill Payment System
         </TextComponent>
       </div>
 
       <div className="flex flex-col items-center gap-6 mt-8">
-        {groupedCards.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex justify-center gap-6 flex-wrap">
-            {row.map((card) => (
-              <BbpsCard
-                key={card.id}
-                image={<BillPaymentSvgIcon color={theme.palette.red.DEFAULT} />}
-                title={card.title}
-                onClick={() => {
-                  handleIconClick({
-                    serviceName: card.title,
-                  });
-                }}
-              />
-            ))}
-          </div>
-        ))}
+        <div className="flex justify-center gap-6 flex-wrap">
+          {cardsData.map((card: any) => (
+            <BbpsCard
+              key={card.id}
+              image={<BillPaymentSvgIcon color={theme.palette.red.DEFAULT} />}
+              title={card.title}
+              onClick={() => {
+                handleIconClick({
+                  serviceName: card.title,
+                });
+              }}
+            />
+          ))}
+        </div>
       </div>
     </>
   );

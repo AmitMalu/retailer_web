@@ -178,7 +178,7 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
                 "&.Mui-selected": {
                   backgroundColor: "gray.dark",
                   "&:hover": {
-                    backgroundColor: "gray.light",
+                    backgroundColor: "gray.dark",
                   },
                 },
               }}

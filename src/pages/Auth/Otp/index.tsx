@@ -164,13 +164,21 @@ const OtpInputScreen = () => {
         authImage={<OtpAuthImage />}
         authText='"Your money, always within reach. Smart, simple, and secure fintech access."'
       >
-        <div className="flex w-full  items-center justify-center flex-col gap-5">
-          <div className="flex h-auto w-[380px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-white justify-start px-6 py-3">
+        <div className="flex w-full items-center justify-center flex-col gap-5">
+          <div className="flex h-auto w-[380px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
             <div className="flex flex-col items-center justify-center gap-3 ">
-              <TextComponent fontSize={28} fontWeight={500} color={"Primary"}>
+              <TextComponent
+                fontSize={28}
+                fontWeight={500}
+                color={"background.default"}
+              >
                 Enter OTP
               </TextComponent>
-              <TextComponent fontSize={12} fontWeight={400} color={"Primary"}>
+              <TextComponent
+                fontSize={12}
+                fontWeight={400}
+                color={"background.default"}
+              >
                 Please enter your OTP {username}
               </TextComponent>
             </div>
@@ -200,7 +208,7 @@ const OtpInputScreen = () => {
                       <TextComponent
                         fontSize={12}
                         fontWeight={400}
-                        color={"Primary"}
+                        color={"background.default"}
                         style={{ textAlign: "right" }}
                       >
                         {errors.otp}
@@ -224,7 +232,7 @@ const OtpInputScreen = () => {
                         <TextComponent
                           fontSize={16}
                           fontWeight={500}
-                          color={"Primary"}
+                          color={"background.default"}
                         >
                           Resend OTP
                         </TextComponent>
@@ -248,7 +256,7 @@ const OtpInputScreen = () => {
                     <TextComponent
                       fontSize={14}
                       fontWeight={400}
-                      color="text.headLine"
+                      color="background.default"
                     >
                       Don't have an account yet?
                     </TextComponent>

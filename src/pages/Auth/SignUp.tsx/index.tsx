@@ -64,19 +64,19 @@ const SignUp: React.FC = () => {
         authText='"Precision finance at your fingertips. Sign in. Stay ahead. Succeed."'
       >
         <div className="flex w-full  items-center justify-center flex-col gap-5">
-          <div className="flex h-auto w-[380px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-white justify-start px-6 py-3">
+          <div className="flex h-auto w-[380px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
             <div className="flex flex-col items-center justify-items-center gap-2 ">
               <TextComponent
                 fontSize={28}
                 fontWeight={500}
-                color="text.headLine"
+                color="background.default"
               >
                 Get Started Today
               </TextComponent>
               <TextComponent
                 fontSize={12}
                 fontWeight={400}
-                color="text.headLine"
+                color="background.default"
               >
                 Become a member and enjoy exclusive promotions.
               </TextComponent>
@@ -124,7 +124,7 @@ const SignUp: React.FC = () => {
                     <TextComponent
                       fontSize={12}
                       fontWeight={400}
-                      color={"text.secondary"}
+                      color={"background.default"}
                       align="right"
                     >
                       Forgot Password?
@@ -146,7 +146,7 @@ const SignUp: React.FC = () => {
                     <TextComponent
                       fontSize={14}
                       fontWeight={400}
-                      color="text.headLine"
+                      color="background.default"
                     >
                       Already have an account?
                     </TextComponent>

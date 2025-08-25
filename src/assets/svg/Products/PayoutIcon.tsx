@@ -3,8 +3,8 @@ const PayoutSvgIcon = ({ color }: { color: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
     fill="none"
-    width={59.494102478027344}
-    height={65.6484375}
+    width={45}
+    height={45}
     viewBox="0 0 59.494102478027344 65.6484375"
   >
     <g>

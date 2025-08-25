@@ -3,8 +3,8 @@ const RechargeSvgIcon = ({ color }: { color: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
     fill="none"
-    width={32.59805679321289}
-    height={51.22551345825195}
+    width={30}
+    height={40}
     viewBox="0 0 32.59805679321289 51.22551345825195"
   >
     <g>

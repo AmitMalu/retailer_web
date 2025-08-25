@@ -177,11 +177,13 @@ export const createTriangularLayout = (items: any[]) => {
   const screenWidth = typeof window !== "undefined" ? window.innerWidth : 1024;
 
   const getItemsPerRow = (width: number): number => {
-    if (width < 640) return 2;
-    if (width < 768) return 4;
-    if (width < 1024) return 6;
-    if (width < 1280) return 8;
-    return 9;
+    if (width < 440) return 1; // Mobile
+    if (width < 640) return 2; // Mobile
+    if (width < 768) return 3; // Small tablets
+    if (width < 1024) return 4; // Tablets
+    if (width < 1280) return 5; // Small desktops
+    if (width < 1536) return 6; // Standard desktops (1440p)
+    return 8; // Large screens
   };
 
   const maxItemsPerRow = getItemsPerRow(screenWidth);

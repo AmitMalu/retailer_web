@@ -76,12 +76,20 @@ const SetPasswordScreen: React.FC = () => {
         authText='"One password. Total protection. Your finances deserve the best security."'
       >
         <div className="flex w-full  items-center justify-center flex-col gap-5">
-          <div className="flex h-auto w-[380px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-white justify-start px-6 py-3">
+          <div className="flex h-auto w-[380px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
             <div className="flex flex-col items-center justify-center gap-3 ">
-              <TextComponent fontSize={30} fontWeight={500} color={"Primary"}>
+              <TextComponent
+                fontSize={30}
+                fontWeight={500}
+                color={"background.default"}
+              >
                 Set Password
               </TextComponent>
-              <TextComponent fontSize={12} fontWeight={500} color={"Primary"}>
+              <TextComponent
+                fontSize={12}
+                fontWeight={500}
+                color={"background.default"}
+              >
                 Please enter new password
               </TextComponent>
             </div>
@@ -173,7 +181,7 @@ const SetPasswordScreen: React.FC = () => {
                     <TextComponent
                       fontSize={14}
                       fontWeight={400}
-                      color="text.headLine"
+                      color="background.default"
                     >
                       Don't have an account yet?
                     </TextComponent>

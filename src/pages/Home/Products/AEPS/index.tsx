@@ -51,7 +51,11 @@ const AepsScreen = () => {
         <BackSvgIcon color={theme.palette.red.DEFAULT} />
       </UnstyledButton>
       <div className="mx-auto py-10 px-4 text-center relative">
-        <TextComponent fontSize={28} fontWeight={600} color={"primary"}>
+        <TextComponent
+          fontSize={28}
+          fontWeight={600}
+          color={"background.default"}
+        >
           AEPS Services
         </TextComponent>
 

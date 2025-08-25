@@ -84,7 +84,6 @@ const TextareaComponent: React.FC<CustomTextareaProps> = ({
             color: theme.palette.placeholder,
             fontSize: "16px",
             fontWeight: 400,
-            fontFamily: '"Poppins", sans-serif',
             "&.Mui-focused": {
               color: theme.palette.text.primary,
             },
@@ -100,7 +99,6 @@ const TextareaComponent: React.FC<CustomTextareaProps> = ({
             padding: "8.5px 14px",
             "& textarea": {
               padding: 0,
-              fontFamily: '"Poppins", sans-serif',
               fontSize: "16px",
               color: theme.palette.text.primary,
               "&::placeholder": {

@@ -1,5 +1,6 @@
 import React from "react";
 import TextComponent from "../Atoms/TextComponent";
+import { useTheme } from "@mui/system";
 
 const PayoutCard = ({
   image,
@@ -12,11 +13,12 @@ const PayoutCard = ({
   Subtitle?: string;
   onClick: () => void;
 }) => {
+  const theme = useTheme();
   return (
     <div className="relative flex flex-col items-center min-h-[120px] group">
       <div
         onClick={onClick}
-        className={`relative w-36 h-36 rounded-3xl border-2 cursor-pointer shadow-md z-10 transition-all duration-300 ease-in-out 
+        className={`relative w-32 h-32 rounded-3xl border-2 cursor-pointer shadow-md z-10 transition-all duration-300 ease-in-out 
         bg-red-light group-hover:scale-105 group-hover:shadow-lg`}
       >
         <div className="absolute inset-0 flex flex-col items-center justify-center p-2 gap-2">
@@ -29,9 +31,9 @@ const PayoutCard = ({
           </div>
           <div className="transition-colors duration-300 text-center">
             <TextComponent
-              fontSize={14}
+              fontSize={12}
               fontWeight={500}
-              color="background.default"
+              color={theme.palette.red.dark}
               className="transition-colors duration-300 "
             >
               {title}
@@ -40,7 +42,7 @@ const PayoutCard = ({
               <TextComponent
                 fontSize={14}
                 fontWeight={500}
-                color="background.default"
+                color={theme.palette.red.dark}
                 className="transition-colors duration-300 "
               >
                 {Subtitle}
