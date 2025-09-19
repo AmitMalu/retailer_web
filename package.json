@@ -15,7 +15,6 @@
     "precommit": "npm run lint-staged"
   },
   "dependencies": {
-    "@crello/react-lottie": "^0.0.11",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mantine/carousel": "^7.17.8",
@@ -98,7 +97,7 @@
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwind-clip-path": "^1.0.0",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.2.2",
+    "typescript": "^4.9.5",
     "vite": "^5.1.4"
   },
   "config": {
