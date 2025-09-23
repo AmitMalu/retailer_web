@@ -86,7 +86,7 @@ export default function Navbar({
     <>
       <AppBar
         position={navbarPosition}
-        className="flex flex-row items-center h-auto justify-between w-screen px-[3%] rounded-b-[50px] "
+        className="flex flex-row items-center h-[60px] justify-between w-screen px-[3%] rounded-b-[50px] "
         sx={{
           ...(navbarPosition === "fixed" && {
             position: "fixed",
@@ -132,7 +132,10 @@ export default function Navbar({
                   ) : (
                     <div
                       className="cursor-pointer bg-red-light rounded-md p-2"
-                      onClick={() => WalletBalanceReq(loginData?.hierarchyId)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent bubbling
+                        WalletBalanceReq(loginData?.hierarchyId);
+                      }}
                     >
                       <RefreshSvgIcon color={theme.palette.red.DEFAULT} />
                     </div>
@@ -145,7 +148,7 @@ export default function Navbar({
                 </div>
               </NavLink>
               <div
-                onClick={handleSettingsClick}
+                // onClick={handleSettingsClick}
                 className="cursor-pointer bg-red-light rounded-md p-2"
               >
                 <ThemeSettingSvgIcon color={theme.palette.red.DEFAULT} />

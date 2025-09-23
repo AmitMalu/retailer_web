@@ -187,7 +187,12 @@ const ProfileRegistrationForm = ({
       .matches(PinCodeRegex, "Please enter valid number")
       .required("Required"),
     bankName: Yup.string().required("Required"),
-    bankAccountNumber: Yup.string().required("Required"),
+    bankAccountNumber: Yup.string()
+      .transform((value) => (value ? value.replace(/\s+/g, "") : "")) // remove all spaces
+      .required("Required")
+      .matches(/^[0-9]+$/, "Must be only digits")
+      .min(9, "Must be at least 9 digits")
+      .max(20, "Must be at most 20 digits"),
     ifscCode: Yup.string().required("Required"),
     branchName: Yup.string().required("Required"),
     aadhaarNumber: Yup.string()
@@ -513,6 +518,9 @@ const ProfileRegistrationForm = ({
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Mobile Number"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.mobileNumber}
                           onChange={handleChange("mobileNumber")}
@@ -581,6 +589,9 @@ const ProfileRegistrationForm = ({
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Adhaar Number"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"XXXX-XXXX-XXXX-XXXX"}
                           value={values.aadhaarNumber}
                           onChange={handleChange("aadhaarNumber")}
@@ -592,8 +603,8 @@ const ProfileRegistrationForm = ({
                           rightSection={
                             <>
                               {values.aadhaarNumber &&
-                              values.aadhaarNumber.length === 12 &&
-                              values.isAadhaarVerified ? (
+                                values.aadhaarNumber.length === 12 &&
+                                values.isAadhaarVerified ? (
                                 <TextComponent
                                   fontSize={14}
                                   fontWeight={700}
@@ -654,8 +665,8 @@ const ProfileRegistrationForm = ({
                           rightSection={
                             <>
                               {values.panNumber &&
-                              values.panNumber.length === 10 &&
-                              values.panVerified ? (
+                                values.panNumber.length === 10 &&
+                                values.panVerified ? (
                                 <TextComponent
                                   fontSize={14}
                                   fontWeight={700}
@@ -789,6 +800,9 @@ const ProfileRegistrationForm = ({
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Zip Code"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.addessZipCode}
                           onChange={handleChange("addessZipCode")}
@@ -874,6 +888,9 @@ const ProfileRegistrationForm = ({
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Outlet Zip Code"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.outletZipCode}
                           onChange={handleChange("outletZipCode")}
@@ -883,7 +900,7 @@ const ProfileRegistrationForm = ({
                               : ""
                           }
                           withAsterisk
-                          type="number"
+                          // type="number"
                           maxLength={6}
                           className="w-max"
                         />
@@ -911,21 +928,29 @@ const ProfileRegistrationForm = ({
                               : ""
                           }
                           withAsterisk
+                          maxLength={50}
+                          allowSpecialChar={false}
+                          allowNumber={false}
                           className="w-max"
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Bank Account Number"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.bankAccountNumber}
                           onChange={handleChange("bankAccountNumber")}
                           error={
                             touched.bankAccountNumber &&
-                            errors.bankAccountNumber
+                              errors.bankAccountNumber
                               ? errors.bankAccountNumber
                               : ""
                           }
+                          maxLength={20}
+                          minLength={9}
                           withAsterisk
                           className="w-max"
                         />
@@ -982,7 +1007,7 @@ const ProfileRegistrationForm = ({
                             withAsterisk
                             error={
                               touched.aadhaarCardFrontImage &&
-                              errors.aadhaarCardFrontImage
+                                errors.aadhaarCardFrontImage
                                 ? errors.aadhaarCardFrontImage
                                 : ""
                             }
@@ -1016,7 +1041,7 @@ const ProfileRegistrationForm = ({
                             withAsterisk
                             error={
                               touched.aadhaarCardBackImage &&
-                              errors.aadhaarCardBackImage
+                                errors.aadhaarCardBackImage
                                 ? errors.aadhaarCardBackImage
                                 : ""
                             }
@@ -1116,7 +1141,7 @@ const ProfileRegistrationForm = ({
                             withAsterisk
                             error={
                               touched.businessProofImage &&
-                              errors.businessProofImage
+                                errors.businessProofImage
                                 ? errors.businessProofImage
                                 : ""
                             }

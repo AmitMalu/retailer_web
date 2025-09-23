@@ -115,7 +115,7 @@ const CommissionAndCharges = () => {
         walletType: values.walletType,
         subProductName: values.subProductName,
         reportType: values.reportType,
-        page: values.page,
+        page: Number(values.page) - 1,
         size: values.size,
       };
       const response = await Commission_And_Charges_Report({}, bodyRequest);
@@ -173,24 +173,17 @@ const CommissionAndCharges = () => {
 
   const tableColumns = [
     {
-      key: "createdOn",
-      label: "Created On",
-      searchKey: "createdOn",
-      sortable: false,
-      type: "date",
-    },
-    {
-      key: "transactionId",
+      key: "txId",
       label: "Transaction ID",
-      searchKey: "transactionId",
+      searchKey: "txId",
       sortable: false,
     },
-    {
-      key: "outletName",
-      label: "Outlet Name",
-      searchKey: "outletName",
-      sortable: false,
-    },
+    // {
+    //   key: "outletName",
+    //   label: "Outlet Name",
+    //   searchKey: "outletName",
+    //   sortable: false,
+    // },
     {
       key: "subProductName",
       label: "Sub Product Name",
@@ -204,9 +197,9 @@ const CommissionAndCharges = () => {
       sortable: false,
     },
     {
-      key: "transactionType",
+      key: "txType",
       label: "Transaction Type",
-      searchKey: "transactionType",
+      searchKey: "txType",
       sortable: false,
     },
     {
@@ -216,9 +209,9 @@ const CommissionAndCharges = () => {
       sortable: false,
     },
     {
-      key: "balanceBefore",
+      key: "balBefore",
       label: "Balance Before",
-      searchKey: "balanceBefore",
+      searchKey: "balBefore",
       sortable: false,
     },
     {
@@ -227,17 +220,24 @@ const CommissionAndCharges = () => {
       searchKey: "amount",
       sortable: true,
     },
+    // {
+    //   key: "refNo",
+    //   label: "Ref No",
+    //   searchKey: "refNo",
+    //   sortable: true,
+    // },
     {
-      key: "refNo",
-      label: "Ref No",
-      searchKey: "refNo",
-      sortable: true,
+      key: "balAfter",
+      label: "Balance After",
+      searchKey: "balAfter",
+      sortable: false,
     },
     {
-      key: "balanceAfter",
-      label: "Balance After",
-      searchKey: "balanceAfter",
+      key: "createdOn",
+      label: "Created On",
+      searchKey: "createdOn",
       sortable: false,
+      type: "date",
     },
     {
       key: "narration",
@@ -277,7 +277,7 @@ const CommissionAndCharges = () => {
           walletType: values.walletType,
           subProductName: values.subProductName,
           reportType: values.reportType,
-          page: values.page,
+          page: values.page - 1,
           size: values.size,
         };
 
@@ -374,8 +374,8 @@ const CommissionAndCharges = () => {
                               ? errors.fromDate
                               : "") +
                             (touched.toDate &&
-                            errors.toDate &&
-                            errors.toDate !== errors.fromDate
+                              errors.toDate &&
+                              errors.toDate !== errors.fromDate
                               ? (errors.fromDate ? " | " : "") + errors.toDate
                               : "")
                           }

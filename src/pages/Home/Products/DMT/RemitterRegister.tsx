@@ -105,6 +105,9 @@ const RemitterRegister = () => {
                     <div className="w-full ">
                       <TextInputComponent
                         label={"Aadhaar Number"}
+                        allowCharacter={false}
+                        allowSpace={false}
+                        allowSpecialChar={false}
                         placeholder={"Enter"}
                         value={values.aadhaarNumber}
                         onChange={handleChange("aadhaarNumber")}
@@ -121,6 +124,9 @@ const RemitterRegister = () => {
                     <div className="w-full ">
                       <TextInputComponent
                         label={"Mobile Number"}
+                        allowCharacter={false}
+                        allowSpace={false}
+                        allowSpecialChar={false}
                         placeholder={"Enter"}
                         value={values.mobileNumber}
                         onChange={handleChange("mobileNumber")}
@@ -137,7 +143,7 @@ const RemitterRegister = () => {
                       />
                     </div>
                     <div className="mb-6 flex self-end ">
-                      <UnstyledButton onClick={() => {}}>
+                      <UnstyledButton onClick={() => { }}>
                         <TextComponent
                           fontSize={20}
                           fontWeight={500}
@@ -150,6 +156,9 @@ const RemitterRegister = () => {
                     <div className="w-full ">
                       <TextInputComponent
                         label={"OTP"}
+                        allowCharacter={false}
+                        allowSpace={false}
+                        allowSpecialChar={false}
                         placeholder={"Enter"}
                         value={values.otp}
                         onChange={handleChange(".otp")}

@@ -28,7 +28,7 @@ export default function PayoutScreen() {
   };
 
   const payoutProduct = loginData?.products?.find(
-    (product: any) => product.productName === "PAYOUT"
+    (product: any) => product.productName.toLowerCase() === "payout"
   );
 
   const cardsData =

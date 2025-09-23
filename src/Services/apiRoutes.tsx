@@ -40,6 +40,7 @@ export const API_ROUTES = {
   /////////////// TICKETING SYSTEM //////////////////////////
   TRANSACTION_DETAILS: `${BASE_URL}/api/ticket/transaction-details`,
   TICKET_RAISE: `${BASE_URL}/api/ticket/raise-ticket`,
+  FETCH_RAISED_TICKET: `${BASE_URL}/api/ticket`,
   ISSUE_TYPE_DROPDOWN: `${BASE_URL}/api/ticket/issue-type-dropdown`,
   SUB_PRODUCT_DROPDOWN: `${BASE_URL}/api/sub-products/dropdown`,
 

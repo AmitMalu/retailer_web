@@ -71,51 +71,70 @@ export default function Products() {
   ];
 
   return (
-    <div className="mx-auto py-10 px-4 text-center relative">
-      <TextComponent
-        fontSize={24}
-        fontWeight={600}
-        color={"background.default"}
-      >
-        Products
-      </TextComponent>
-
-      <div className="flex justify-center gap-16 my-12">
-        {row1.map((product) => (
-          <ProductCard
-            key={product.id}
-            image={product.image}
-            title={product.title}
-            fill={false}
-            onClick={product.onClick}
-          />
-        ))}
+    <div
+      style={{
+        scrollbarWidth: "none",
+      }}
+      className="mx-auto py-2 px-4 relative flex flex-col gap-5 items-center justify-center"
+    >
+      <div>
+        <TextComponent
+          fontSize={24}
+          fontWeight={600}
+          color={"background.default"}
+        >
+          Products
+        </TextComponent>
       </div>
 
-      <div className="flex justify-center gap-16 mb-12 mt-[-32px]">
-        <div className="w-20" />
-        {row2.map((product) => (
-          <ProductCard
-            key={product.id}
-            image={product.image}
-            title={product.title}
-            fill={true}
-            onClick={product.onClick}
-          />
-        ))}
-        <div className="w-20" />
-      </div>
+      <div>
+        <div className="flex justify-center gap-12 my-1">
+          {row1.map((product) => (
+            <div className="scale-90">
+              <ProductCard
+                key={product.id}
+                image={product.image}
+                title={product.title}
+                fill={false}
+                onClick={product.onClick}
+                size={{ base: 24, md: 24, lg: 32 }}
+              />
+            </div>
+          ))}
+        </div>
 
-      <div className="flex justify-center mt-[-32px]">
-        {row3.map((product) => (
-          <ProductCard
-            key={product.id}
-            image={product.image}
-            title={product.title}
-            fill={false}
-            onClick={product.onClick}
-          />
-        ))}
+        <div className="flex justify-center gap-12 mb-1 mt-[-32px]">
+          <div className="w-20" />
+          {row2.map((product) => (
+            <div className="scale-90">
+              <ProductCard
+                key={product.id}
+                image={product.image}
+                title={product.title}
+                fill={true}
+                onClick={product.onClick}
+                size={{ base: 24, md: 24, lg: 32 }}
+              />
+            </div>
+          ))}
+          <div className="w-20" />
+        </div>
+
+        <div className="flex justify-center mt-[-32px]">
+          {row3.map((product) => (
+            <div className="scale-90">
+              <ProductCard
+                key={product.id}
+                image={product.image}
+                title={product.title}
+                fill={false}
+                onClick={product.onClick}
+                size={{ base: 24, md: 24, lg: 32 }}
+              />
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   );

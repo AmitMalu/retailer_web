@@ -117,7 +117,7 @@ const RemitterInfo = () => {
                 { value: "POSTPAID", label: "POSTPAID" },
               ]}
               value={""}
-              onChange={() => {}}
+              onChange={() => { }}
               className="w-max"
             />
           </div>
@@ -128,15 +128,18 @@ const RemitterInfo = () => {
                 { value: "NEFT", label: "NEFT" },
               ]}
               value={""}
-              onChange={() => {}}
+              onChange={() => { }}
               className="w-max"
             />
           </div>
           <div className="w-[30%]  ">
             <TextInputComponent
+              allowCharacter={false}
+              allowSpace={false}
+              allowSpecialChar={false}
               value={""}
-              onChange={() => {}}
-              type="number"
+              onChange={() => { }}
+              // type="number"
               className="w-max"
             />
           </div>
@@ -144,7 +147,7 @@ const RemitterInfo = () => {
             <ButtonComponent
               title={"TRANSFER"}
               variant="filled"
-              onClick={() => {}}
+              onClick={() => { }}
               disabled={isLoading}
               radius={10}
             />
@@ -346,28 +349,28 @@ const RemitterInfo = () => {
             page={currentPage}
             size={itemsPerPage}
             onSelectRow={(row) => setSelectedRowData(row)}
-            // onSearch={(columnKey, value) =>
-            //   handleSearchWithValues(columnKey, value, values)
-            // }
-            // onPageChange={(page) => {
-            //   setCurrentPage(page);
-            //   const updatedValues = {
-            //     ...values,
-            //     page,
-            //     size: itemsPerPage,
-            //   };
-            //   GetPayoutDataSubmit(updatedValues);
-            // }}
-            // onPageSizeChange={(size) => {
-            //   setItemsPerPage(size);
-            //   setCurrentPage(1);
-            //   const updatedValues = {
-            //     ...values,
-            //     page: 1,
-            //     size,
-            //   };
-            //   GetPayoutDataSubmit(updatedValues);
-            // }}
+          // onSearch={(columnKey, value) =>
+          //   handleSearchWithValues(columnKey, value, values)
+          // }
+          // onPageChange={(page) => {
+          //   setCurrentPage(page);
+          //   const updatedValues = {
+          //     ...values,
+          //     page,
+          //     size: itemsPerPage,
+          //   };
+          //   GetPayoutDataSubmit(updatedValues);
+          // }}
+          // onPageSizeChange={(size) => {
+          //   setItemsPerPage(size);
+          //   setCurrentPage(1);
+          //   const updatedValues = {
+          //     ...values,
+          //     page: 1,
+          //     size,
+          //   };
+          //   GetPayoutDataSubmit(updatedValues);
+          // }}
           />
         </div>
         {showDrawerForm && (

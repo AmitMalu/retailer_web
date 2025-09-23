@@ -113,6 +113,9 @@ const Login: React.FC = () => {
                   <div className="mt-10 flex w-full flex-col gap-4 items-center justify-center">
                     <TextInputComponent
                       label="Mobile Number"
+                      allowCharacter={false}
+                      allowSpace={false}
+                      allowSpecialChar={false}
                       value={values.userName}
                       onChange={handleChange("userName")}
                       error={
@@ -185,7 +188,7 @@ const Login: React.FC = () => {
                       isAuth={true}
                     />
                   </div>
-                  <div className="flex items-center justify-center gap-2 mt-2 ">
+                  {/* <div className="flex items-center justify-center gap-2 mt-2 ">
                     <TextComponent
                       fontSize={14}
                       fontWeight={400}
@@ -202,7 +205,7 @@ const Login: React.FC = () => {
                     >
                       Sign up
                     </TextComponent>
-                  </div>
+                  </div> */}
                 </>
               )}
             </Formik>

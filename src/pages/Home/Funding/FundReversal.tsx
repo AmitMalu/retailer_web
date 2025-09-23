@@ -62,10 +62,20 @@ const FundReversal = () => {
   const validationSchema = Yup.object().shape({
     childHierarchyId: Yup.string().required("Required"),
     walletType: Yup.string().required("Required"),
-    reversalAmount: Yup.string().required("Required"),
+    reversalAmount: Yup.string()
+      .required("Required")
+      .test("is-valid-number", "Enter a valid amount", (value) => {
+        if (!value) return false;
+        // regex: digits, optional single dot, max 3 decimals
+        return /^\d+(\.\d{1,3})?$/.test(value);
+      }),
     confirmAmount: Yup.string()
       .required("Required")
-      .oneOf([Yup.ref("reversalAmount")], "Amounts must match"),
+      .oneOf([Yup.ref("reversalAmount")], "Amounts must match")
+      .test("is-valid-number", "Enter a valid amount", (value) => {
+        if (!value) return false;
+        return /^\d+(\.\d{1,3})?$/.test(value);
+      }),
     narration: Yup.string().required("Required"),
   });
 
@@ -172,6 +182,11 @@ const FundReversal = () => {
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     label={"Amount"}
                     placeholder={"Enter"}
                     value={values.reversalAmount}
@@ -181,7 +196,7 @@ const FundReversal = () => {
                         ? errors.reversalAmount
                         : ""
                     }
-                    type="number"
+                    // type="number"
                     withAsterisk
                     className="w-max"
                   />
@@ -189,6 +204,11 @@ const FundReversal = () => {
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Confirm Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.confirmAmount}
                     onChange={handleChange("confirmAmount")}
@@ -197,7 +217,7 @@ const FundReversal = () => {
                         ? errors.confirmAmount
                         : ""
                     }
-                    type="number"
+                    // type="number"
                     withAsterisk
                     className="w-max"
                   />

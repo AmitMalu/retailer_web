@@ -177,7 +177,7 @@ const SetPasswordScreen: React.FC = () => {
                       isAuth={true}
                     />
                   </div>
-                  <div className="flex items-center justify-center gap-2 mt-2 ">
+                  {/* <div className="flex items-center justify-center gap-2 mt-2 ">
                     <TextComponent
                       fontSize={14}
                       fontWeight={400}
@@ -194,7 +194,7 @@ const SetPasswordScreen: React.FC = () => {
                     >
                       Sign up
                     </TextComponent>
-                  </div>
+                  </div> */}
                 </>
               )}
             </Formik>

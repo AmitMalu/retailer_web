@@ -28,10 +28,13 @@ const WalletToWallet = () => {
     : null;
 
   const validationSchema = Yup.object().shape({
-    transferAmount: Yup.string().required("Required"),
+    transferAmount: Yup.string()
+      .required("Required")
+      .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount"),
     confirmAmount: Yup.string()
       .required("Required")
-      .oneOf([Yup.ref("transferAmount")], "Amounts must match"),
+      .oneOf([Yup.ref("transferAmount")], "Amounts must match")
+      .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount"),
     walletTypeFrom: Yup.string().required("Required"),
     walletTypeTo: Yup.string().required("Required"),
   });
@@ -152,6 +155,11 @@ const WalletToWallet = () => {
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Transfer Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.transferAmount}
                     onChange={handleChange("transferAmount")}
@@ -160,7 +168,7 @@ const WalletToWallet = () => {
                         ? errors.transferAmount
                         : ""
                     }
-                    type="number"
+                    // type="number"
                     withAsterisk
                     className="w-max"
                   />
@@ -168,6 +176,11 @@ const WalletToWallet = () => {
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Confirm Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.confirmAmount}
                     onChange={handleChange("confirmAmount")}
@@ -176,7 +189,7 @@ const WalletToWallet = () => {
                         ? errors.confirmAmount
                         : ""
                     }
-                    type="number"
+                    // type="number"
                     withAsterisk
                     className="w-max"
                   />

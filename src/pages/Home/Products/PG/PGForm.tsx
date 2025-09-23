@@ -270,6 +270,7 @@ const PGFormModal = ({
                   <div className="w-full sm:w-[calc(50%-12px)] ">
                     <TextInputComponent
                       label={"Card Bin No"}
+                      allowSpecialChar={false}
                       placeholder={"Enter"}
                       value={values.cardBinNo}
                       onChange={handleChange("cardBinNo")}
@@ -325,12 +326,15 @@ const PGFormModal = ({
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Card Holder Mobile"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.cardHolderMobileNumber}
                           onChange={handleChange("cardHolderMobileNumber")}
                           error={
                             touched.cardHolderMobileNumber &&
-                            errors.cardHolderMobileNumber
+                              errors.cardHolderMobileNumber
                               ? errors.cardHolderMobileNumber
                               : ""
                           }
@@ -390,6 +394,9 @@ const PGFormModal = ({
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Amount"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.amount}
                           onChange={handleChange("amount")}
@@ -403,6 +410,9 @@ const PGFormModal = ({
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Confirm Amount"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.confirmAmount}
                           onChange={handleChange("confirmAmount")}

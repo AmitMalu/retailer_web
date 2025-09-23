@@ -90,13 +90,13 @@ const InfoTable = () => {
       key: "bankHolderName",
       label: "Holder Name",
       searchKey: "bankHolderName",
-      sortable: true,
+      // sortable: true,
     },
     {
       key: "bankName",
       label: "Bank Name",
       searchKey: "bankName",
-      sortable: true,
+      // sortable: true,
     },
     {
       key: "accountNumber",
@@ -221,6 +221,7 @@ const InfoTable = () => {
           </Formik>
         );
       },
+      disableSearch: true
     },
     {
       key: "isVerified",
@@ -238,6 +239,7 @@ const InfoTable = () => {
           </TextComponent>
         </div>
       ),
+      disableSearch: true
     },
     {
       key: "action",
@@ -256,6 +258,7 @@ const InfoTable = () => {
       ),
       searchKey: "action",
       sortable: false,
+      disableSearch: true
     },
   ];
 
@@ -362,25 +365,25 @@ const InfoTable = () => {
             onSearch={(columnKey, value) =>
               handleSearchWithValues(columnKey, value)
             }
-            // onPageChange={(page) => {
-            //   setCurrentPage(page);
-            //   const updatedValues = {
-            //     ...values,
-            //     page,
-            //     size: itemsPerPage,
-            //   };
-            //   GetPayoutDataSubmit(updatedValues);
-            // }}
-            // onPageSizeChange={(size) => {
-            //   setItemsPerPage(size);
-            //   setCurrentPage(1);
-            //   const updatedValues = {
-            //     ...values,
-            //     page: 1,
-            //     size,
-            //   };
-            //   GetPayoutDataSubmit(updatedValues);
-            // }}
+          // onPageChange={(page) => {
+          //   setCurrentPage(page);
+          //   const updatedValues = {
+          //     ...values,
+          //     page,
+          //     size: itemsPerPage,
+          //   };
+          //   GetPayoutDataSubmit(updatedValues);
+          // }}
+          // onPageSizeChange={(size) => {
+          //   setItemsPerPage(size);
+          //   setCurrentPage(1);
+          //   const updatedValues = {
+          //     ...values,
+          //     page: 1,
+          //     size,
+          //   };
+          //   GetPayoutDataSubmit(updatedValues);
+          // }}
           />
         </div>
         <PayoutFormModal

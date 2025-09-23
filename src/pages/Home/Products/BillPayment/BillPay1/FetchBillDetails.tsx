@@ -346,12 +346,15 @@ const FetchBillDetails: React.FC = () => {
                       <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label="Customer Mobile Number"
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder="Enter Number"
                           value={values.customerMobileNumber}
                           onChange={handleChange("customerMobileNumber")}
                           error={
                             touched.customerMobileNumber &&
-                            errors.customerMobileNumber
+                              errors.customerMobileNumber
                               ? String(errors.customerMobileNumber)
                               : ""
                           }

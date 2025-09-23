@@ -22,6 +22,7 @@ import Loader from "@/components/Atoms/Loader";
 const WalletToBankFund = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isfile, setFile] = useState<File | null>(null);
+  const [formKey, setFormKey] = useState(0)
 
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
@@ -37,11 +38,19 @@ const WalletToBankFund = () => {
     depositType: Yup.string().required("Required"),
     transactionId: Yup.string().required("Required"),
     bankName: Yup.string().required("Required"),
-    bankAccountNumber: Yup.string().required("Required"),
-    amount: Yup.string().required("Required"),
+    bankAccountNumber: Yup.string()
+      .transform((value) => (value ? value.replace(/\s+/g, "") : "")) // remove all spaces
+      .required("Required")
+      .matches(/^[0-9]+$/, "Must be only digits")
+      .min(9, "Must be at least 9 digits")
+      .max(20, "Must be at most 20 digits"),
+    amount: Yup.string()
+      .required("Required")
+      .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount"), // number check
     confirmAmount: Yup.string()
       .required("Required")
-      .oneOf([Yup.ref("amount")], "Amounts must match"),
+      .oneOf([Yup.ref("amount")], "Amounts must match")
+      .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount"),
     depositDate: Yup.date().required("Required"),
     narration: Yup.string().required("Required"),
     depositSlip: Yup.mixed()
@@ -104,6 +113,7 @@ const WalletToBankFund = () => {
             depositSlip: null,
           },
         });
+        setFormKey((prev) => prev + 1)
         setFile(null);
       } else {
         showErrorNotification(response?.data?.message);
@@ -133,6 +143,7 @@ const WalletToBankFund = () => {
           </div>
         </div>
         <Formik<FundRequestProps>
+          key={formKey}
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleFundRequest}
@@ -191,12 +202,18 @@ const WalletToBankFund = () => {
                       touched.bankName && errors.bankName ? errors.bankName : ""
                     }
                     withAsterisk
+                    maxLength={50}
+                    allowSpecialChar={false}
+                    allowNumber={false}
                     className="w-max"
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Bank Account Number"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
                     placeholder={"Enter"}
                     value={values.bankAccountNumber}
                     onChange={handleChange("bankAccountNumber")}
@@ -205,8 +222,10 @@ const WalletToBankFund = () => {
                         ? errors.bankAccountNumber
                         : ""
                     }
-                    type="number"
+                    // type="number"
                     withAsterisk
+                    minLength={9}
+                    maxLength={20}
                     className="w-max"
                   />
                 </div>
@@ -218,7 +237,7 @@ const WalletToBankFund = () => {
                     onChange={handleChange("bankAccountHolderName")}
                     error={
                       touched.bankAccountHolderName &&
-                      errors.bankAccountHolderName
+                        errors.bankAccountHolderName
                         ? errors.bankAccountHolderName
                         : ""
                     }
@@ -247,18 +266,28 @@ const WalletToBankFund = () => {
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.amount}
                     onChange={handleChange("amount")}
                     error={touched.amount && errors.amount ? errors.amount : ""}
                     withAsterisk
-                    type="number"
+                    // type="number"
                     className="w-max"
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Confirm Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.confirmAmount}
                     onChange={handleChange("confirmAmount")}
@@ -267,7 +296,7 @@ const WalletToBankFund = () => {
                         ? errors.confirmAmount
                         : ""
                     }
-                    type="number"
+                    // type="number"
                     withAsterisk
                     className="w-max"
                   />

@@ -12,6 +12,7 @@ import {
   OtpRequestProps,
   PayoutSaveBeneficiaryProps,
   PayoutSendBeneficiaryProps,
+  RaisedTicketParams,
   ResendOtpRequestProps,
   SetPasswordRequestProps,
   SubuserCreationProps,
@@ -208,6 +209,15 @@ export const Transaction_Details = async (data: TransactionDetailsParams) =>
     data,
     await createHeaders()
   );
+
+export const fetch_raised_tickets = async (params: RaisedTicketParams) => {
+  const queryParams = new URLSearchParams(params).toString();
+
+  return await api.get(
+    `${API_ROUTES.FETCH_RAISED_TICKET}?${queryParams}`,
+    await createHeaders()
+  );
+};
 
 export const Raise_Ticket = async (data: FormData) =>
   await api.post(

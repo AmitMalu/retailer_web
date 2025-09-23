@@ -60,10 +60,20 @@ const FundTransfer = () => {
 
   const validationSchema = Yup.object().shape({
     toHierarchyId: Yup.string().required("Required"),
-    amount: Yup.string().required("Required"),
+    amount: Yup.string()
+      .required("Required")
+      .test("is-valid-number", "Enter a valid amount", (value) => {
+        if (!value) return false;
+        // regex: optional leading digits, optional decimal point, max 3 decimals
+        return /^(?:\d+|\d*\.\d{1,3})$/.test(value);
+      }),
     confirmAmount: Yup.string()
       .required("Required")
-      .oneOf([Yup.ref("amount")], "Amounts must match"),
+      .oneOf([Yup.ref("amount")], "Amounts must match")
+      .test("is-valid-number", "Enter a valid amount", (value) => {
+        if (!value) return false;
+        return /^(?:\d+|\d*\.\d{1,3})$/.test(value);
+      }),
     fromWalletType: Yup.string().required("Required"),
     toWalletType: Yup.string().required("Required"),
     narration: Yup.string().required("Required"),
@@ -196,18 +206,28 @@ const FundTransfer = () => {
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.amount}
                     onChange={handleChange("amount")}
                     error={touched.amount && errors.amount ? errors.amount : ""}
                     withAsterisk
                     className="w-max"
-                    type="number"
+                  // type="number"
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Confirm Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.confirmAmount}
                     onChange={handleChange("confirmAmount")}
@@ -216,7 +236,7 @@ const FundTransfer = () => {
                         ? errors.confirmAmount
                         : ""
                     }
-                    type="number"
+                    // type="number"
                     withAsterisk
                     className="w-max"
                   />

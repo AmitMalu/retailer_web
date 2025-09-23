@@ -197,6 +197,14 @@ export type CustomTextInputProps = Omit<
   variant?: "default" | "filled" | "unstyled";
   withAsterisk?: boolean | false;
   isAuth?: boolean;
+  allowNumber?: boolean;
+  allowDecimal?: boolean;
+  decimalPlaces?: number;
+  allowCharacter?: boolean;
+  allowSpecialChar?: boolean;
+  allowSpace?: boolean;
+  allowedChars?: string;
+  capitalize?: boolean;
 };
 
 export type CustomTextProps = {
@@ -222,7 +230,7 @@ export type ButtonComponentProps = {
   rightIcon?: React.ReactNode;
   disabled?: boolean;
   loading?: boolean;
-  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "small" | "medium" | "large";
   fullWidth?: boolean;
   radius?: number;
   color?: string;
@@ -317,6 +325,7 @@ export type TableColumn = {
   searchKey?: string;
   sortable?: boolean;
   searchable?: boolean;
+  disableSearch?: boolean;
   type?: string;
   align?: "left" | "center" | "right";
 };
@@ -420,6 +429,7 @@ export type ProductCardProps = {
   title: string;
   fill: boolean;
   onClick: () => void;
+  size?: number | { base: number; md?: number; lg?: number };
 };
 
 export type FundRequestProps = {
@@ -607,6 +617,13 @@ export type NetworkTransactionData = Record<string, any>;
 export type TransactionDetailsParams = {
   transactionId: string;
   hierarchyId: string;
+};
+
+export type RaisedTicketParams = {
+  page: number;
+  size: number;
+  raisedBy: string;
+  [key: string]: any;
 };
 
 export type TransactionDetailsData = Record<string, any>;

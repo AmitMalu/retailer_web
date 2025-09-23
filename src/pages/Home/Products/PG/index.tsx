@@ -31,7 +31,7 @@ const PGScreen = () => {
   };
 
   const paymentGatewayProduct = loginData?.products?.find(
-    (product: any) => product.productName === "Payment Gateway"
+    (product: any) => product.productName.toLowerCase() === "payment gateway"
   );
 
   const cardsData =

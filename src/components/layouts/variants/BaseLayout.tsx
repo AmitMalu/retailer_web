@@ -21,6 +21,7 @@ export default function BaseLayout({
         scrollbarWidth: "none",
       }}
     >
+      {/* Sidebar */}
       <div
         className="flex fixed h-screen w-screen overflow-auto"
         style={{
@@ -31,14 +32,15 @@ export default function BaseLayout({
       </div>
 
       <div
-        className="flex flex-1 flex-col min-h-screen"
+        className="flex flex-1 flex-col min-h-0"
         style={{
-          scrollbarWidth: "none",
           width: `calc(100vw - ${sidebarWidth}px)`,
+          scrollbarWidth: "none",
         }}
       >
+        {/* NAVBAR */}
         <div
-          className="flex w-full h-auto"
+          className="flex w-full h-[70px]"
           style={{
             ...(navbarPosition === "fixed" && {
               position: "fixed",
@@ -53,11 +55,13 @@ export default function BaseLayout({
           {navbar}
         </div>
 
+        {/* Main Content */}
         <div
-          className="flex flex-1 flex-col h-screen overflow-auto"
+          className="flex flex-col flex-1 overflow-auto"
           style={{
             marginLeft: `${sidebarWidth + 100}px`,
             scrollbarWidth: "none",
+            marginTop: navbarPosition === "fixed" ? "70px" : "0px"
           }}
         >
           {children}
@@ -68,6 +72,6 @@ export default function BaseLayout({
           <div className="flex w-full sticky bottom-0 z-[1100]">{footer}</div>
         )}
       </div>
-    </div>
+    </div >
   );
 }

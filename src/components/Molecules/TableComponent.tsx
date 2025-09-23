@@ -138,14 +138,14 @@ const TableComponent: React.FC<TableProps> = ({
             return (
               <Table.Td
                 key={cellKey}
-                className="w-max items-center justify-center text-center"
+                className={`w-max items-center justify-center text-center bg-${isActionColumn
+                  ? theme.palette.background.paperColor
+                  : "transparent"
+                  } `}
                 style={{
                   position: isActionColumn ? "sticky" : "relative",
                   right: isActionColumn ? 0 : "auto",
                   zIndex: isActionColumn ? 2 : 1,
-                  backgroundColor: isActionColumn
-                    ? theme.palette.background.paperColor
-                    : "transparent",
                   minWidth: isActionColumn ? "120px" : "auto",
                 }}
               >
@@ -160,16 +160,17 @@ const TableComponent: React.FC<TableProps> = ({
                     align="center"
                   >
                     {item[column.key] === undefined ||
-                    item[column.key] === null ||
-                    item[column.key] === ""
+                      item[column.key] === null ||
+                      item[column.key] === ""
                       ? "-"
                       : item[column.key]}
                   </TextComponent>
                 )}
               </Table.Td>
             );
-          })}
-      </Table.Tr>
+          })
+        }
+      </Table.Tr >
     );
   });
 
@@ -221,9 +222,8 @@ const TableComponent: React.FC<TableProps> = ({
                         right: isActionColumn ? 0 : "auto",
                         zIndex: isActionColumn ? 3 : 2,
                       }}
-                      className={`items-center justify-center bg-background-paper text-center ${
-                        column.sortable ? "cursor-pointer" : "cursor-default"
-                      }`}
+                      className={`items-center justify-center bg-background-paper text-center ${column.sortable ? "cursor-pointer" : "cursor-default"
+                        }`}
                     >
                       <div
                         className="flex w-max items-center justify-center gap-1 justify-self-center text-center"
@@ -268,57 +268,59 @@ const TableComponent: React.FC<TableProps> = ({
                           zIndex: isActionColumn ? 3 : 2,
                         }}
                       >
-                        {column.type === "date" ? (
-                          <CustomDateComponent
-                            value={
-                              searchValues[column.key]
-                                ? parseDateString(searchValues[column.key])
-                                : null
-                            }
-                            onChange={(
-                              date: Date | [Date | null, Date | null] | null
-                            ) => {
-                              if (date) {
-                                if (Array.isArray(date)) {
-                                  const singleDate = date[0] || date[1];
-                                  if (singleDate) {
-                                    const formattedDate =
-                                      formatDate(singleDate) || "";
+
+                        {column.disableSearch ? null :
+                          (column.type === "date" ? (
+                            <CustomDateComponent
+                              value={
+                                searchValues[column.key]
+                                  ? parseDateString(searchValues[column.key])
+                                  : null
+                              }
+                              onChange={(
+                                date: Date | [Date | null, Date | null] | null
+                              ) => {
+                                if (date) {
+                                  if (Array.isArray(date)) {
+                                    const singleDate = date[0] || date[1];
+                                    if (singleDate) {
+                                      const formattedDate =
+                                        formatDate(singleDate) || "";
+                                      handleSearch(column.key, formattedDate);
+                                    }
+                                  } else {
+                                    const formattedDate = formatDate(date) || "";
                                     handleSearch(column.key, formattedDate);
                                   }
                                 } else {
-                                  const formattedDate = formatDate(date) || "";
-                                  handleSearch(column.key, formattedDate);
+                                  handleSearch(column.key, "");
                                 }
-                              } else {
-                                handleSearch(column.key, "");
-                              }
-                            }}
-                            className="w-full font-medium "
-                            dateFormat="DD-MM-YYYY"
-                          />
-                        ) : column.type === "time" ? (
-                          <TimeComponent
-                            value={searchValues[column.key] || ""}
-                            onChange={(value) =>
-                              handleSearch(column.key, value)
-                            }
-                            withSeconds={true}
-                            maxTime={new Date().toLocaleTimeString()}
-                            className="w-full font-medium"
-                          />
-                        ) : (
-                          <div>
-                            <TextInputComponent
-                              value={searchValues[column.key] || ""}
-                              onChange={(e) =>
-                                handleSearch(column.key, e.target.value)
-                              }
-                              withAsterisk
-                              className="w-max font-medium h-5"
+                              }}
+                              className="w-full font-medium "
+                              dateFormat="DD-MM-YYYY"
                             />
-                          </div>
-                        )}
+                          ) : column.type === "time" ? (
+                            <TimeComponent
+                              value={searchValues[column.key] || ""}
+                              onChange={(value) =>
+                                handleSearch(column.key, value)
+                              }
+                              withSeconds={true}
+                              maxTime={new Date().toLocaleTimeString()}
+                              className="w-full font-medium"
+                            />
+                          ) : (
+                            <div>
+                              <TextInputComponent
+                                value={searchValues[column.key] || ""}
+                                onChange={(e) =>
+                                  handleSearch(column.key, e.target.value)
+                                }
+                                withAsterisk
+                                className="w-max font-medium h-5"
+                              />
+                            </div>
+                          ))}
                       </Table.Th>
                     );
                   })}
@@ -375,9 +377,8 @@ const TableComponent: React.FC<TableProps> = ({
                 />
               </div>
               <TextComponent fontSize={12} fontWeight={400}>
-                {`Showing ${startIndex + 1}-${startIndex + paginatedData.length} of ${
-                  data.length
-                } Records`}
+                {`Showing ${startIndex + 1}-${startIndex + paginatedData.length} of ${data.length
+                  } Records`}
               </TextComponent>
             </div>
             <Pagination

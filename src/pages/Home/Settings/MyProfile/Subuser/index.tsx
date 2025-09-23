@@ -243,6 +243,9 @@ const SubuserCreation = () => {
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                         <TextInputComponent
                           label={"Mobile"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.mobileNumber}
                           onChange={handleChange("mobileNumber")}
@@ -363,6 +366,9 @@ const SubuserCreation = () => {
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                         <TextInputComponent
                           label={"Zipcode"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.add.zipCode}
                           onChange={handleChange("add.zipCode")}

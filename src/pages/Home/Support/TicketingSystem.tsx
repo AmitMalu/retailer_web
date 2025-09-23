@@ -13,6 +13,7 @@ import {
 } from "@/Common/interface";
 import TextareaComponent from "@/components/Atoms/TextareaComponent";
 import {
+  fetch_raised_tickets,
   Issue_Type_Dropdown,
   Raise_Ticket,
   Transaction_Details,
@@ -36,6 +37,8 @@ const Ticketing = () => {
   const [isTicketiData, setIsTicketiData] = useState(true);
   const [isTicketData, setIsTicketData] = useState<TransactionDetailsData>({});
   const [searchValue, setSearchValue] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
@@ -146,6 +149,7 @@ const Ticketing = () => {
       setIsLoading(false);
     }
   };
+
   const uniqueIssueTypes = Array.from(
     new Set(issueTypeList.map((item: any) => item.issueType))
   ).map((issueType, index) => ({
@@ -159,6 +163,30 @@ const Ticketing = () => {
       value: item.subProduct_name,
       label: item.subProduct_name,
     })) || [];
+
+  const FetchRaisedTickets = async () => {
+    let reqParams = {
+      page: currentPage - 1,
+      size: itemsPerPage,
+      raisedBy: loginData?.hierarchyId,
+    };
+    try {
+      const response = await fetch_raised_tickets(reqParams);
+      if (response?.status === 200) {
+        // setIsUserList(response?.data?.data?.content);
+        console.log(response?.data?.data?.content);
+
+      } else {
+        showErrorNotification(response?.data?.message);
+      }
+    } catch (error) {
+      await handleCustomError(error);
+    }
+  };
+
+  useEffect(() => {
+    FetchRaisedTickets();
+  }, [])
 
   return (
     <>

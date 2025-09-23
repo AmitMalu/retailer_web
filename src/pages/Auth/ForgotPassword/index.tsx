@@ -16,6 +16,7 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
+import { ArrowLeft } from "@mui/icons-material";
 
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
@@ -91,6 +92,9 @@ const ForgotPassword: React.FC = () => {
                   <div className="mt-10 flex w-full flex-col items-center justify-center">
                     <TextInputComponent
                       label={"Mobile Number"}
+                      allowCharacter={false}
+                      allowSpace={false}
+                      allowSpecialChar={false}
                       value={values.userName}
                       onChange={handleChange("userName")}
                       maxLength={10}
@@ -107,19 +111,31 @@ const ForgotPassword: React.FC = () => {
                       isAuth={true}
                     />
                   </div>
-                  <div className="mt-6 flex w-full items-center justify-center">
+                  <div className="mt-6 flex w-full items-center justify-between">
+                    <div>
+                      <ButtonComponent
+                        width={80}
+                        title={"BACK"}
+                        variant="light"
+                        onClick={() => navigate("/login")}
+                        leftIcon={<ArrowLeft />}
+                        radius={28}
+                      />
+                    </div>
                     <ButtonComponent
+                      width={120}
                       title={"CONTINUE"}
                       variant="filled"
                       onClick={() => handleSubmit()}
                       loading={isLoading}
                       radius={28}
+                      fontSize={14}
                       fullWidth={true}
                       disabled={isLoading || !values.userName}
                       isAuth={true}
                     />
                   </div>
-                  <div className="flex items-center justify-center gap-2 mt-2 ">
+                  {/* <div className="flex items-center justify-center gap-2 mt-2 ">
                     <TextComponent
                       fontSize={14}
                       fontWeight={400}
@@ -136,7 +152,7 @@ const ForgotPassword: React.FC = () => {
                     >
                       Sign up
                     </TextComponent>
-                  </div>
+                  </div> */}
                 </>
               )}
             </Formik>
