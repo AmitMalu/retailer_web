@@ -7,7 +7,7 @@ import {
   Paper,
   Stack,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import type { RootState } from "../../Redux/Store";
 import ImLogo from "@/assets/svg/imLogo";
 import { NavbarProps } from "@/Common/interface";
@@ -19,13 +19,13 @@ import {
 } from "@/assets/svg";
 import { decryptData, useWalletBalance } from "@/Utils/helper";
 import { NavLink } from "react-router-dom";
-import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
+// import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
 
 export default function Navbar({
   onMenuClick,
   isMobile: isMobileProp,
 }: NavbarProps) {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const { navbarPosition } = useSelector((state: RootState) => state.settings);
   const theme = useTheme();
   const isMobileView = useMediaQuery(theme.breakpoints.down("md"));
@@ -39,9 +39,9 @@ export default function Navbar({
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
-  const handleSettingsClick = () => {
-    dispatch(toggleSettingsDrawer());
-  };
+  // const handleSettingsClick = () => {
+  //   dispatch(toggleSettingsDrawer());
+  // };
   const { WalletBalanceReq, isLoading } = useWalletBalance();
   const WalletDisplay = ({
     title,

@@ -5,15 +5,18 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import TextComponent from "../../../components/Atoms/TextComponent";
 import Loader from "../../../components/Atoms/Loader";
-import { OtpRequestProps, VerifyTokenRequest } from "@/Common/interface";
+import {
+  OtpRequestProps,
+  //  VerifyTokenRequest 
+} from "@/Common/interface";
 import OtpInput from "react-otp-input";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import {
   Resend_Otp,
-  Token_generation,
+  // Token_generation,
   Verify_Forget_Otp,
   Verify_Otp,
-  Verify_Token,
+  // Verify_Token,
 } from "@/Services/api";
 import {
   showErrorNotification,
@@ -57,37 +60,37 @@ const OtpInputScreen = () => {
     };
   }, [timer]);
 
-  const GenerateCredentials = async (userName: string) => {
-    try {
-      let bodyRequest = {
-        userName: userName || "",
-      };
-      const CredentialsResponse = await Token_generation(bodyRequest);
-      VerifyToken(CredentialsResponse?.data);
-    } catch (error: any) {
-      showErrorNotification(error.response?.data?.message || error.message);
-    }
-  };
-  const VerifyToken = async (values: VerifyTokenRequest) => {
-    try {
-      const tokenParts = values?.token?.split("|") || [];
-      const tokenValue = tokenParts[1] || "";
-      const hierarchyType = tokenParts[0] || "RT";
+  // const GenerateCredentials = async (userName: string) => {
+  //   try {
+  //     let bodyRequest = {
+  //       userName: userName || "",
+  //     };
+  //     const CredentialsResponse = await Token_generation(bodyRequest);
+  //     VerifyToken(CredentialsResponse?.data);
+  //   } catch (error: any) {
+  //     showErrorNotification(error.response?.data?.message || error.message);
+  //   }
+  // };
+  // const VerifyToken = async (values: VerifyTokenRequest) => {
+  //   try {
+  //     const tokenParts = values?.token?.split("|") || [];
+  //     const tokenValue = tokenParts[1] || "";
+  //     const hierarchyType = tokenParts[0] || "RT";
 
-      let bodyRequest = {
-        token: tokenValue || "",
-        hierarchyType: hierarchyType,
-      };
-      const tokenResponse = await Verify_Token(bodyRequest);
-      document.cookie = `authToken=${encodeURIComponent(values?.token)}; expires=${new Date(Date.now() + 7 * 864e5).toUTCString()}; path=/; SameSite=Strict`;
-      if (tokenValue && tokenResponse?.status === 200) {
-        showSuccessNotification("Logged In Successfully");
-        navigate("/dashboard");
-      }
-    } catch (error: any) {
-      showErrorNotification(error.response?.data?.message || error.message);
-    }
-  };
+  //     let bodyRequest = {
+  //       token: tokenValue || "",
+  //       hierarchyType: hierarchyType,
+  //     };
+  //     const tokenResponse = await Verify_Token(bodyRequest);
+  //     document.cookie = `authToken=${encodeURIComponent(values?.token)}; expires=${new Date(Date.now() + 7 * 864e5).toUTCString()}; path=/; SameSite=Strict`;
+  //     if (tokenValue && tokenResponse?.status === 200) {
+  //       showSuccessNotification("Logged In Successfully");
+  //       navigate("/dashboard");
+  //     }
+  //   } catch (error: any) {
+  //     showErrorNotification(error.response?.data?.message || error.message);
+  //   }
+  // };
 
   const validationSchema = Yup.object({
     otp: Yup.string().required("Required"),
@@ -113,7 +116,10 @@ const OtpInputScreen = () => {
           response?.data?.statusCode === "200"
         ) {
           dispatch(saveApiResponse("loginData", response?.data?.data));
-          GenerateCredentials(values.userName);
+          document.cookie = `authToken=${encodeURIComponent(response?.data?.data?.token)}; expires=${new Date(Date.now() + 7 * 864e5).toUTCString()}; path=/; SameSite=Strict`;
+          showSuccessNotification("Logged In Successfully");
+          navigate("/dashboard");
+          // GenerateCredentials(values.userName);
         } else {
           showErrorNotification(response?.data?.message || "Invalid OTP");
         }

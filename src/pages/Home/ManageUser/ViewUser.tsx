@@ -282,6 +282,8 @@ const ViewUser = () => {
       handleCustomError(error);
     }
   };
+  console.log(isUserList,"isUserList");
+  
 
   return (
     <div className="">

@@ -2,7 +2,7 @@ import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "@mui/material";
-import TicketComponent from "@/components/Molecules/TicketComponent";
+// import TicketComponent from "@/components/Molecules/TicketComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import { Formik } from "formik";
@@ -30,12 +30,18 @@ import { BackSvgIcon, SearchSvgIcon } from "@/assets/svg";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import FileInputComponent from "@/components/Atoms/FileInputComponent";
 import { UnstyledButton } from "@mantine/core";
+import moment from "moment";
+import TableComponent from "@/components/Molecules/TableComponent";
+import ColumsSelectionModal from "@/components/Molecules/ColumsSelectionModal";
+// import { maxWidth } from "@mui/system";
 
 const Ticketing = () => {
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
-  const [isTicketiData, setIsTicketiData] = useState(true);
+  const [showTicketForm, setShowTicketForm] = useState(false);
   const [isTicketData, setIsTicketData] = useState<TransactionDetailsData>({});
+  const [ticketList, setTicketList] = useState([]);
+  const [showColumnModal, setShowColumnModal] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -79,6 +85,7 @@ const Ticketing = () => {
     }
   }, []);
 
+  // When Search by TxId from Search bar
   const FetchUserList = async () => {
     try {
       let bodyRequest = {
@@ -137,7 +144,7 @@ const Ticketing = () => {
       const response = await Raise_Ticket(formData);
       if (response?.status === 200 || response?.data?.statusCode === "200") {
         showSuccessNotification(response?.data?.message);
-        setIsTicketiData(true);
+        setShowTicketForm(false);
         setSearchValue("");
       } else {
         showErrorNotification(response?.data?.message || "Unable to raise");
@@ -164,6 +171,203 @@ const Ticketing = () => {
       label: item.subProduct_name,
     })) || [];
 
+
+  const tableColumns = [
+    {
+      key: "transactionId",
+      label: "Transaction ID",
+      render: (row: any) => {
+
+        return (
+          <div className="flex items-center justify-center w-[200]" title={row}>
+            <TextComponent
+              color={theme.palette.background.default}
+              fontSize={12}
+              fontWeight={400}
+              truncate
+              lineClamp={1}
+            >
+              {row || "-"}
+            </TextComponent>
+          </div>
+        );
+      },
+      searchKey: "transactionId",
+      sortable: false,
+    },
+    {
+      key: "issueType",
+      label: "Issue Type",
+      searchKey: "issueType",
+      sortable: false,
+    },
+    {
+      key: "description",
+      label: "Description",
+      render: (row: any) => (
+        <div className="flex items-center justify-center w-[200]" title={row}>
+          <TextComponent
+            color={theme.palette.background.default}
+            fontSize={12}
+            fontWeight={400}
+            truncate
+            lineClamp={2}
+          >
+            {row || "-"}
+          </TextComponent>
+        </div>
+      ),
+      searchKey: "description",
+      sortable: false,
+    },
+    {
+      key: "email",
+      label: "Email",
+      searchKey: "email",
+      sortable: false,
+    },
+    {
+      key: "mobileNumber",
+      label: "Mobile Number",
+      searchKey: "mobileNumber",
+      sortable: false,
+    },
+    {
+      key: "subProductName",
+      label: "Sub Product",
+      searchKey: "subProductName",
+      sortable: false,
+    },
+    {
+      key: "status",
+      label: "Status",
+      searchKey: "status",
+      sortable: false,
+    },
+    {
+      key: "screenshotImage",
+      label: "Screenshot",
+      render: (row: any) => (
+        <div className="flex items-center justify-center">
+          {row ? (
+            <img
+              src={row}
+              alt="img"
+              className="h-10 w-10 rounded object-cover"
+            />
+          ) : (
+            "-"
+          )}
+        </div>
+      ),
+      searchKey: "screenshotImage",
+      sortable: false,
+    },
+    {
+      key: "raisedBy",
+      label: "Raised By",
+      searchKey: "raisedBy",
+      sortable: false,
+    },
+    {
+      key: "createdAt",
+      label: "Created At",
+      render: (row: any) => (
+        <div className="flex items-center justify-center">
+          <TextComponent
+            color={theme.palette.background.default}
+            fontSize={12}
+            fontWeight={400}
+          >
+            {row
+              ? moment(row).format("YYYY-MM-DD")
+              : "-"}
+          </TextComponent>
+        </div>
+      ),
+      searchKey: "createdAt",
+      type: "date",
+      sortable: false,
+    },
+    {
+      key: "updatedAt",
+      label: "Updated At",
+      render: (row: any) => (
+        <div className="flex items-center justify-center">
+          <TextComponent
+            color={theme.palette.background.default}
+            fontSize={12}
+            fontWeight={400}
+          >
+            {row
+              ? moment(row).format("YYYY-MM-DD")
+              : "-"}
+          </TextComponent>
+        </div>
+      ),
+      searchKey: "updatedAt",
+      type: "date",
+      sortable: false,
+    },
+    {
+      key: "tranStatus",
+      label: "Tran Status",
+      searchKey: "tranStatus",
+      sortable: false,
+    },
+    {
+      key: "balBeforeTran",
+      label: "Balance Before",
+      searchKey: "balBeforeTran",
+      sortable: false,
+    },
+    {
+      key: "balAfterTran",
+      label: "Balance After",
+      searchKey: "balAfterTran",
+      sortable: false,
+    },
+    {
+      key: "dateOfTransaction",
+      label: "Transaction Date",
+      render: (row: any) => (
+        <div className="flex items-center justify-center">
+          <TextComponent
+            color={theme.palette.background.default}
+            fontSize={12}
+            fontWeight={400}
+          >
+            {row
+              ? moment(row).format("YYYY-MM-DD")
+              : "-"}
+          </TextComponent>
+        </div>
+      ),
+      searchKey: "dateOfTransaction",
+      type: "date",
+      sortable: false,
+    },
+    {
+      key: "amount",
+      label: "Amount",
+      searchKey: "amount",
+      sortable: false,
+    },
+  ];
+
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(
+    tableColumns.filter((col) => col.key !== "action").map((col) => col.key)
+  );
+
+  // Only include visible columns and always add the action column at the end
+  const filteredTableColumns = [
+    ...tableColumns.filter(
+      (col) => visibleColumns.includes(col.key) && col.key !== "action"
+    ),
+    tableColumns.find((col) => col.key === "action")!,
+  ];
+
+
   const FetchRaisedTickets = async () => {
     let reqParams = {
       page: currentPage - 1,
@@ -173,8 +377,10 @@ const Ticketing = () => {
     try {
       const response = await fetch_raised_tickets(reqParams);
       if (response?.status === 200) {
-        // setIsUserList(response?.data?.data?.content);
-        console.log(response?.data?.data?.content);
+        setTicketList(response?.data?.data?.content);
+        setCurrentPage(response?.data?.data.number + 1)
+        setItemsPerPage(response?.data?.data.size)
+        // console.log(response?.data?.data?.content);
 
       } else {
         showErrorNotification(response?.data?.message);
@@ -186,15 +392,16 @@ const Ticketing = () => {
 
   useEffect(() => {
     FetchRaisedTickets();
-  }, [])
+  }, [currentPage, itemsPerPage])
 
   return (
     <>
       {isLoading && <Loader />}
       <div className="flex w-full flex-col flex-wrap items-start justify-start">
-        {isTicketiData ? (
+        {!showTicketForm ? (
           <div className="w-full items-start justify-start">
             <div className="flex items-center justify-between">
+              {/* Heading & Sub Heading */}
               <div>
                 <TextComponent
                   fontSize={30}
@@ -211,8 +418,11 @@ const Ticketing = () => {
                   Your most recent account ticket
                 </TextComponent>
               </div>
+
+              {/* Search Bar and Create New Ticket button */}
               <div className="flex items-center justify-between gap-3">
-                <div className="mt-5">
+                {/* Search by TxId Search Bar */}
+                {/* <div className="mt-5">
                   <TextInputComponent
                     placeholder="Search by transaction ID"
                     value={searchValue}
@@ -229,13 +439,15 @@ const Ticketing = () => {
                     }
                     isAuth={true}
                   />
-                </div>
+                </div> */}
+
+                {/* Create New Ticket Button */}
                 <div className="mt-5">
                   <ButtonComponent
                     title="Create New Ticket"
                     variant="filled"
                     onClick={() => {
-                      setIsTicketiData(false);
+                      setShowTicketForm(true);
                       setSearchValue("");
                     }}
                     radius={5}
@@ -245,7 +457,35 @@ const Ticketing = () => {
             </div>
 
             <div className="w-full mt-5">
-              {isTicketData && Object.keys(isTicketData).length > 0 ? (
+              {/* <div className="shadow-black-900/100 bg-transparent shadow-lg"> */}
+              <TableComponent
+                data={Array.isArray(ticketList) ? ticketList : [ticketList]}
+                columns={filteredTableColumns}
+                page={currentPage}
+                size={itemsPerPage}
+                onPageChange={(page) => {
+                  setCurrentPage(page);
+                }}
+                onPageSizeChange={(size) => {
+                  setItemsPerPage(size);
+                  setCurrentPage(1);
+                }
+                }
+              // showSearch={isSeacrh}
+              // onCurrentPageData={setCurrentPageData}
+              // onSearch={(columnKey, value) =>
+              //   handleSearchWithValues(columnKey, value)
+              // }
+              />
+              {/* </div> */}
+              <ColumsSelectionModal
+                open={showColumnModal}
+                onClose={() => setShowColumnModal(false)}
+                data={tableColumns}
+                visibleColumns={visibleColumns}
+                setVisibleColumns={setVisibleColumns}
+              />
+              {/* {isTicketData && Object.keys(isTicketData).length > 0 ? (
                 <>
                   <div className="mb-2 flex w-full items-center justify-between ">
                     <div className="flex items-center justify-center w-1/6">
@@ -317,20 +557,24 @@ const Ticketing = () => {
                     No Ticket Available
                   </TextComponent>
                 </div>
-              )}
+              )} */}
             </div>
           </div>
         ) : (
+          // Ticket Form Page
           <div className="w-full items-start justify-start">
+            {/* Back Button */}
             <UnstyledButton
               onClick={() => {
-                setIsTicketiData(true);
+                setShowTicketForm(false);
                 setSearchValue("");
               }}
               className="mb-4"
             >
               <BackSvgIcon color={theme.palette.red.DEFAULT} />
             </UnstyledButton>
+
+            {/* Heading & Sub Heading */}
             <div>
               <TextComponent
                 fontSize={30}
@@ -347,7 +591,9 @@ const Ticketing = () => {
                 Facing an issue? We're just a ticket away.
               </TextComponent>
             </div>
+
             <div>
+              {/* Search Bar */}
               <div className="mt-5 w-[calc(20%-12px)] ">
                 <TextInputComponent
                   placeholder="Search by transaction ID"
@@ -366,6 +612,8 @@ const Ticketing = () => {
                   }
                 />
               </div>
+
+              {/* When Search from TxId Data displayed if Available */}
               {isTicketData && Object.keys(isTicketData).length > 0 && (
                 <div className="mt-4 w-full flex flex-wrap items-start justify-between gap-2 ">
                   <div className="w-full sm:w-[calc(18%-12px)] lg:w-[calc(18%-16px)] gap-2">
@@ -483,6 +731,8 @@ const Ticketing = () => {
                 </div>
               )}
             </div>
+
+            {/* //Create New Ticket Form */}
             <div>
               <Formik<TicketingSystemProps>
                 initialValues={initialValues}

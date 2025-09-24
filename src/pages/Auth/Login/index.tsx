@@ -18,7 +18,7 @@ import {
   OpenEyeSvgIcon,
   UserNameSvgIcon,
 } from "@/assets/svg";
-import { MobileNoRegex } from "@/Utils/helper";
+import { encryptCredentials, MobileNoRegex } from "@/Utils/helper";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { LoginRequest } from "@/Common/interface";
 import LoginImage from "@/assets/svg/Auth/login";
@@ -52,9 +52,16 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: LoginRequest) => {
     try {
       setIsLoading(true);
+
+      const { encryptedUsername, encryptedPassword, salt, iv } = encryptCredentials(values.userName, values.password);
+
       let bodyRequest = {
-        userName: values.userName,
-        password: values.password,
+        // userName: values.userName,
+        // password: values.password,
+        userName: encryptedUsername,
+        password: encryptedPassword,
+        salt,
+        iv,
         url: "https://uat.decipay.in/",
         // url: getCurrentUrl(),
       };
