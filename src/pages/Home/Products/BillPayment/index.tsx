@@ -27,7 +27,7 @@ const BillPaymentScreen = () => {
   };
 
   const bbpsProduct = loginData?.products?.find(
-    (product: any) => product.productName.toLowerCase() === "BBPS"
+    (product: any) => product.productName.toLowerCase() === "bbps"
   );
 
   const cardsData =

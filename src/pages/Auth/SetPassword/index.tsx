@@ -21,6 +21,7 @@ import {
   showSuccessNotification,
 } from "@/Utils/notifications";
 import { useTheme } from "@mui/system";
+import { ArrowLeft } from "@mui/icons-material";
 
 const SetPasswordScreen: React.FC = () => {
   const theme = useTheme();
@@ -161,13 +162,25 @@ const SetPasswordScreen: React.FC = () => {
                     />
                   </div>
 
-                  <div className="mt-6 flex w-full items-center justify-center">
+                  <div className="mt-6 flex w-full items-center justify-between">
+                    <div>
+                      <ButtonComponent
+                        width={80}
+                        title={"BACK"}
+                        variant="light"
+                        onClick={() => navigate("/login")}
+                        leftIcon={<ArrowLeft />}
+                        radius={28}
+                      />
+                    </div>
                     <ButtonComponent
+                      width={120}
                       title={"CONTINUE"}
                       variant="filled"
                       onClick={() => handleSubmit()}
                       loading={isLoading}
                       radius={28}
+                      fontSize={14}
                       fullWidth={true}
                       disabled={
                         isLoading ||

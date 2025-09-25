@@ -30,6 +30,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
   placeholder,
   value,
   onChange,
+  autoComplete,
   error,
   disabled = false,
   type = "text",
@@ -131,6 +132,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
         placeholder={placeholder}
         value={value}
         onChange={handleChange}
+        autoComplete={autoComplete}
         error={!!error}
         disabled={disabled}
         type={type}

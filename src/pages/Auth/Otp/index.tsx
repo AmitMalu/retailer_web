@@ -27,6 +27,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/Redux/Store";
 import OtpAuthImage from "@/assets/svg/Auth/Otp";
 import { useTheme } from "@mui/system";
+import { ArrowLeft } from "@mui/icons-material";
 
 const OtpInputScreen = () => {
   const theme = useTheme();
@@ -246,13 +247,31 @@ const OtpInputScreen = () => {
                     )}
                   </div>
 
-                  <div className="mt-6 flex h-9 w-full items-center justify-center">
+                  <div className="mt-6 flex h-9 w-full items-center justify-between">
+                    <div>
+                      <ButtonComponent
+                        width={80}
+                        title={"BACK"}
+                        variant="light"
+                        onClick={() => {
+                          if (isLogin) {
+                            navigate("/login")
+                          } else {
+                            navigate("/forgotPassword")
+                          }
+                        }}
+                        leftIcon={<ArrowLeft />}
+                        radius={28}
+                      />
+                    </div>
                     <ButtonComponent
+                      width={120}
                       title={"VERIFY"}
                       variant="filled"
                       onClick={() => handleSubmit()}
                       loading={isLoading}
                       radius={28}
+                      fontSize={14}
                       fullWidth
                       disabled={isLoading || !values.otp}
                       isAuth={true}

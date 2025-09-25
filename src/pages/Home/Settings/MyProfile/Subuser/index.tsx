@@ -243,6 +243,7 @@ const SubuserCreation = () => {
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                         <TextInputComponent
                           label={"Mobile"}
+                          autoComplete="off"
                           allowCharacter={false}
                           allowSpace={false}
                           allowSpecialChar={false}
@@ -264,6 +265,7 @@ const SubuserCreation = () => {
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                         <TextInputComponent
                           label="Password"
+                          autoComplete="new-password"
                           value={values.password}
                           onChange={handleChange("password")}
                           error={
@@ -293,6 +295,7 @@ const SubuserCreation = () => {
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                         <TextInputComponent
                           label={"Email"}
+                          autoComplete="off"
                           placeholder={"Enter"}
                           value={values.emailId}
                           onChange={handleChange("emailId")}
