@@ -1,6 +1,7 @@
 import {
   ChangePasswordRequestProps,
   CommissionAndChargesParams,
+  CommissionAndChargesRequest,
   CreateOrderProps,
   FetchBillDetailsProps,
   FetchCardBinDetailProps,
@@ -166,7 +167,7 @@ export const Create_Retailer = async (data: FormData) =>
 
 export const Commission_And_Charges_Report = async (
   params: Record<string, string>,
-  bodyRequest: CommissionAndChargesParams
+  bodyRequest: CommissionAndChargesRequest
 ) => {
   const queryParams = new URLSearchParams(params).toString();
 
@@ -211,12 +212,16 @@ export const Transaction_Details = async (data: TransactionDetailsParams) =>
   );
 
 export const fetch_raised_tickets = async (params: RaisedTicketParams) => {
-  const queryParams = new URLSearchParams(params).toString();
+  // Convert all values to string for URLSearchParams
+  const queryParams = new URLSearchParams(
+    Object.fromEntries(
+      Object.entries(params).map(([key, value]) => [key, String(value ?? "")])
+    )
+  ).toString();
 
-  return await api.get(
-    `${API_ROUTES.FETCH_RAISED_TICKET}?${queryParams}`,
-    await createHeaders()
-  );
+  const url = `${API_ROUTES.FETCH_RAISED_TICKET}${queryParams ? `?${queryParams}` : ""}`;
+
+  return await api.get(url, await createHeaders());
 };
 
 export const Raise_Ticket = async (data: FormData) =>

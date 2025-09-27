@@ -26,22 +26,9 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
   multiple = false,
   // withCheckIcon = true,
   className = "",
+  allowDeselect = false
 }) => {
   const theme = useTheme();
-
-  const handleChange = (event: SelectChangeEvent<any>) => {
-    const newValue = event.target.value;
-
-    if (multiple) {
-      const updatedValue = Array.isArray(newValue)
-        ? newValue
-        : [String(newValue)];
-
-      onChange?.(updatedValue);
-    } else {
-      onChange?.(newValue);
-    }
-  };
 
   const menuItems = data.map((item) => {
     if (typeof item === "string") {
@@ -50,12 +37,33 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
     return item;
   });
 
+  const handleChange = (event: SelectChangeEvent<any>) => {
+
+    const newValue = event.target.value;
+    console.log(newValue, value);
+
+    if (multiple) {
+      const updatedValue = Array.isArray(newValue) ? newValue : [String(newValue)];
+
+      if (allowDeselect && JSON.stringify(updatedValue) === JSON.stringify(value)) {
+        onChange?.([]);
+      } else {
+        onChange?.(updatedValue);
+      }
+    } else {
+      if (allowDeselect && newValue === value) {
+        onChange?.("");
+      } else {
+        onChange?.(newValue);
+      }
+    }
+  };
+
   return (
     <Box
       sx={{
         mb: 0.125,
         width: "100%",
-
         position: "relative",
       }}
     >
@@ -173,6 +181,11 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
             <MenuItem
               key={item.value}
               value={item.value}
+              onClick={() => {
+                if (!multiple && allowDeselect && item.value === value) {
+                  onChange?.(""); // deselect
+                }
+              }}
               sx={{
                 fontSize: "14px",
                 "&.Mui-selected": {

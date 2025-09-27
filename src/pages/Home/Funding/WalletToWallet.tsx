@@ -28,13 +28,27 @@ const WalletToWallet = () => {
     : null;
 
   const validationSchema = Yup.object().shape({
+    // transferAmount: Yup.string()
+    //   .required("Required")
+    //   .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount"),
+    // confirmAmount: Yup.string()
+    //   .required("Required")
+    //   .oneOf([Yup.ref("transferAmount")], "Amounts must match")
+    //   .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount"),
     transferAmount: Yup.string()
       .required("Required")
-      .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount"),
+      .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount")
+      .test(
+        "non-zero",
+        "Amount must be greater than 0",
+        (value) => {
+          if (!value) return false; // required check
+          return parseFloat(value) > 0;
+        }
+      ),
     confirmAmount: Yup.string()
       .required("Required")
-      .oneOf([Yup.ref("transferAmount")], "Amounts must match")
-      .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount"),
+      .oneOf([Yup.ref("transferAmount")], "Amounts must match"),
     walletTypeFrom: Yup.string().required("Required"),
     walletTypeTo: Yup.string().required("Required"),
   });

@@ -100,7 +100,7 @@ const DMTScreen = () => {
       label: "Date/Time",
       searchKey: "createdOn",
       sortable: false,
-      type: "date",
+      type: "date" as const,
     },
     {
       key: "accountNumber",

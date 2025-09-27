@@ -18,7 +18,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
           <div
             onClick={() => navigate("/login")}
             className="mb-6 -mt-12 flex h-auto w-full items-start justify-start"
-            title="v1.0.1 (24/09)"
+            title="v1.0.1 (27/09)"
           >
             <ImShortLogo />
           </div>

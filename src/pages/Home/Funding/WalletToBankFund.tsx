@@ -1,6 +1,6 @@
 import { FundRequestProps } from "@/Common/interface";
 import { RootState } from "@/Redux/Store";
-import { decryptData } from "@/Utils/helper";
+import { decryptData, singleDateValidationSchema } from "@/Utils/helper";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Formik, FormikHelpers } from "formik";
@@ -18,6 +18,10 @@ import {
 } from "@/Utils/notifications";
 import { Prefund_Request } from "@/Services/api";
 import Loader from "@/components/Atoms/Loader";
+import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePicker";
+import { IconCalendar } from "@tabler/icons-react";
+import { DateValue } from "@mantine/dates";
+import moment from "moment";
 
 const WalletToBankFund = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +55,7 @@ const WalletToBankFund = () => {
       .required("Required")
       .oneOf([Yup.ref("amount")], "Amounts must match")
       .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount"),
-    depositDate: Yup.date().required("Required"),
+    depositDate: singleDateValidationSchema,
     narration: Yup.string().required("Required"),
     depositSlip: Yup.mixed()
       .nullable()
@@ -70,7 +74,7 @@ const WalletToBankFund = () => {
     bankAccountNumber: "",
     amount: "",
     confirmAmount: "",
-    depositDate: "",
+    depositDate: null,
     narration: "",
     depositSlip: null,
     bankAccountHolderName: "",
@@ -101,7 +105,7 @@ const WalletToBankFund = () => {
         narration: values.narration,
         paymentMode: values.paymentMode,
         ipAddress: ipAddress,
-        depositDate: values?.depositDate,
+        depositDate: values.depositDate ? moment(values.depositDate).format("YYYY-MM-DD") : null,
       });
       formData.append("data", jsonData);
       const response = await Prefund_Request(formData);
@@ -302,7 +306,7 @@ const WalletToBankFund = () => {
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                  <CustomDateComponent
+                  {/* <CustomDateComponent
                     label={"Deposit Date"}
                     placeholder={"00/00/0000"}
                     value={
@@ -328,6 +332,16 @@ const WalletToBankFund = () => {
                     withAsterisk
                     dateFormat="YYYY-MM-DD"
                     className="w-48"
+                  /> */}
+                  <FormikDatePicker
+                    name="depositDate"
+                    placeholder="Select a Date"
+                    size="lg"
+                    required
+                    maxDate={new Date}
+                    valueFormat="YYYY-MM-DD"
+                    leftIcon={<IconCalendar size={24} />}
+                    styles={{ input: { height: "55px", fontSize: "18px" } }}
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">

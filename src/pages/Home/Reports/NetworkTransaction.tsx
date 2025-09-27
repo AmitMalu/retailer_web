@@ -374,7 +374,7 @@ const NetworkTransaction = () => {
       label: "Created On",
       searchKey: "createdOn",
       sortable: false,
-      type: "date",
+      type: "date" as const,
     },
     {
       key: "transactionId",

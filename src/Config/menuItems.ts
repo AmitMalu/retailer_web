@@ -86,7 +86,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           name: "Fund Transfer",
           path: "/funding/fundTransfer",
           //   icon: <InventoryIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT", "RA"],
+          roles: ["DT", "SD", "WL", "PT", "RA"],
         },
         {
           name: "Fund Reversal",

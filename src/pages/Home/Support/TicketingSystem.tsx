@@ -8,6 +8,7 @@ import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import {
+  RaisedTicketParams,
   TicketingSystemProps,
   TransactionDetailsData,
 } from "@/Common/interface";
@@ -26,7 +27,7 @@ import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { RootState } from "@/Redux/Store";
 import { useSelector } from "react-redux";
-import { BackSvgIcon, SearchSvgIcon } from "@/assets/svg";
+import { BackSvgIcon, FilterSvgIcon, SearchSvgIcon } from "@/assets/svg";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import FileInputComponent from "@/components/Atoms/FileInputComponent";
 import { UnstyledButton } from "@mantine/core";
@@ -43,10 +44,14 @@ const Ticketing = () => {
   const [ticketList, setTicketList] = useState([]);
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [searchValues, setSearchValues] = useState<Record<string, string>>({});
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(10);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [isSeacrh, setIsSeacrh] = useState(false);
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
+
   );
 
   const loginData = apiResponses?.loginData
@@ -146,6 +151,7 @@ const Ticketing = () => {
         showSuccessNotification(response?.data?.message);
         setShowTicketForm(false);
         setSearchValue("");
+        FetchRaisedTickets(page, size, searchValues);
       } else {
         showErrorNotification(response?.data?.message || "Unable to raise");
       }
@@ -177,7 +183,6 @@ const Ticketing = () => {
       key: "transactionId",
       label: "Transaction ID",
       render: (row: any) => {
-
         return (
           <div className="flex items-center justify-center w-[200]" title={row}>
             <TextComponent
@@ -231,6 +236,7 @@ const Ticketing = () => {
       label: "Mobile Number",
       searchKey: "mobileNumber",
       sortable: false,
+      type: "number" as const
     },
     {
       key: "subProductName",
@@ -244,25 +250,25 @@ const Ticketing = () => {
       searchKey: "status",
       sortable: false,
     },
-    {
-      key: "screenshotImage",
-      label: "Screenshot",
-      render: (row: any) => (
-        <div className="flex items-center justify-center">
-          {row ? (
-            <img
-              src={row}
-              alt="img"
-              className="h-10 w-10 rounded object-cover"
-            />
-          ) : (
-            "-"
-          )}
-        </div>
-      ),
-      searchKey: "screenshotImage",
-      sortable: false,
-    },
+    // {
+    //   key: "screenshotImage",
+    //   label: "Screenshot",
+    //   render: (row: any) => (
+    //     <div className="flex items-center justify-center">
+    //       {row ? (
+    //         <img
+    //           src={row}
+    //           alt="img"
+    //           className="h-10 w-10 rounded object-cover"
+    //         />
+    //       ) : (
+    //         "-"
+    //       )}
+    //     </div>
+    //   ),
+    //   searchKey: "screenshotImage",
+    //   sortable: false,
+    // },
     {
       key: "raisedBy",
       label: "Raised By",
@@ -286,7 +292,7 @@ const Ticketing = () => {
         </div>
       ),
       searchKey: "createdAt",
-      type: "date",
+      type: "date" as const,
       sortable: false,
     },
     {
@@ -306,7 +312,7 @@ const Ticketing = () => {
         </div>
       ),
       searchKey: "updatedAt",
-      type: "date",
+      type: "date" as const,
       sortable: false,
     },
     {
@@ -320,12 +326,14 @@ const Ticketing = () => {
       label: "Balance Before",
       searchKey: "balBeforeTran",
       sortable: false,
+      type: "number" as const
     },
     {
       key: "balAfterTran",
       label: "Balance After",
       searchKey: "balAfterTran",
       sortable: false,
+      type: "number" as const
     },
     {
       key: "dateOfTransaction",
@@ -344,7 +352,7 @@ const Ticketing = () => {
         </div>
       ),
       searchKey: "dateOfTransaction",
-      type: "date",
+      type: "date" as const,
       sortable: false,
     },
     {
@@ -352,6 +360,7 @@ const Ticketing = () => {
       label: "Amount",
       searchKey: "amount",
       sortable: false,
+      type: "number" as const
     },
   ];
 
@@ -367,32 +376,50 @@ const Ticketing = () => {
     tableColumns.find((col) => col.key === "action")!,
   ];
 
+  const handleSearchWithValues = (columnKey: string, value: string) => {
+    const newSearchValues = { ...searchValues };
 
-  const FetchRaisedTickets = async () => {
-    let reqParams = {
-      page: currentPage - 1,
-      size: itemsPerPage,
+    if (value) {
+      newSearchValues[columnKey] = value;
+    } else {
+      delete newSearchValues[columnKey];
+    }
+
+    setSearchValues(newSearchValues);
+    setPage(1); // ✅ Reset to first page when search changes
+  };
+
+
+  const FetchRaisedTickets = async (pageNum = 1, pageSize = 10, filters: Record<string, any> = {}) => {
+    const reqParams: RaisedTicketParams = {
+      page: pageNum - 1, // API is 0-indexed
+      size: pageSize,
       raisedBy: loginData?.hierarchyId,
+      ...filters, // dynamic filters
     };
+
     try {
       const response = await fetch_raised_tickets(reqParams);
       if (response?.status === 200) {
         setTicketList(response?.data?.data?.content);
-        setCurrentPage(response?.data?.data.number + 1)
-        setItemsPerPage(response?.data?.data.size)
+        setTotalRecords(response?.data?.data?.totalElements || 0);
         // console.log(response?.data?.data?.content);
 
       } else {
         showErrorNotification(response?.data?.message);
+        setTicketList([]);
+        setTotalRecords(0);
       }
     } catch (error) {
       await handleCustomError(error);
+      setTicketList([]);
+      setTotalRecords(0);
     }
   };
 
   useEffect(() => {
-    FetchRaisedTickets();
-  }, [currentPage, itemsPerPage])
+    FetchRaisedTickets(page, size, searchValues);
+  }, [page, size, searchValues])
 
   return (
     <>
@@ -440,6 +467,24 @@ const Ticketing = () => {
                     isAuth={true}
                   />
                 </div> */}
+                <div className="flex items-center justify-end gap-2">
+                  <div className="flex w-max items-center mt-6 justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px] ">
+                    <UnstyledButton
+                      onClick={() => setIsSeacrh(!isSeacrh)}
+                      className="flex w-max items-center justify-center gap-2 "
+                    >
+                      <FilterSvgIcon color={theme.palette.red.DEFAULT} />
+                      <TextComponent
+                        fontSize={16}
+                        fontWeight={400}
+                        color={theme.palette.red.DEFAULT}
+                        align="center"
+                      >
+                        Filter
+                      </TextComponent>
+                    </UnstyledButton>
+                  </div>
+                </div>
 
                 {/* Create New Ticket Button */}
                 <div className="mt-5">
@@ -461,21 +506,19 @@ const Ticketing = () => {
               <TableComponent
                 data={Array.isArray(ticketList) ? ticketList : [ticketList]}
                 columns={filteredTableColumns}
-                page={currentPage}
-                size={itemsPerPage}
-                onPageChange={(page) => {
-                  setCurrentPage(page);
+                showSearch={isSeacrh}
+                onSearch={(columnKey, value) =>
+                  handleSearchWithValues(columnKey, value)
+                }
+                page={page}
+                size={size}
+                onPageChange={setPage}
+                onPageSizeChange={(newSize) => {
+                  setSize(newSize);
+                  setPage(1); // reset to first page when size changes
                 }}
-                onPageSizeChange={(size) => {
-                  setItemsPerPage(size);
-                  setCurrentPage(1);
-                }
-                }
-              // showSearch={isSeacrh}
-              // onCurrentPageData={setCurrentPageData}
-              // onSearch={(columnKey, value) =>
-              //   handleSearchWithValues(columnKey, value)
-              // }
+                serverSide={true}
+                totalRecords={totalRecords}
               />
               {/* </div> */}
               <ColumsSelectionModal

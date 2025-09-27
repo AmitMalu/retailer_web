@@ -168,7 +168,7 @@ const WalletReport = () => {
       label: "Created On",
       searchKey: "createdOn",
       sortable: false,
-      type: "date",
+      type: "date" as const,
     },
     {
       key: "transactionId",
@@ -352,8 +352,8 @@ const WalletReport = () => {
                             ? errors.fromDate
                             : "") +
                           (touched.toDate &&
-                          errors.toDate &&
-                          errors.toDate !== errors.fromDate
+                            errors.toDate &&
+                            errors.toDate !== errors.fromDate
                             ? (errors.fromDate ? " | " : "") + errors.toDate
                             : "")
                         }

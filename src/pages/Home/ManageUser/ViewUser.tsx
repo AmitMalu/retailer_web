@@ -8,16 +8,14 @@ import {
   showSuccessNotification,
 } from "@/Utils/notifications";
 import { useTheme } from "@mui/system";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Child_Member_List } from "@/Services/api";
 import { Menu, UnstyledButton } from "@mantine/core";
 import {
-  BlockedSvgIcon,
   ColsSvgIcon,
   ExportSvgIcon,
   FilterSvgIcon,
-  NotBlockedSvgIcon,
   ViewUserSvgIcon,
 } from "@/assets/svg";
 import TableComponent from "@/components/Molecules/TableComponent";
@@ -33,7 +31,10 @@ const ViewUser = () => {
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
   const [isUserList, setIsUserList] = useState<ViewUserList[]>([]);
   const [currentPageData, setCurrentPageData] = useState<ViewUserList[]>([]);
-  const isFetchingRef = useRef<boolean>(false);
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(10);
+  const [totalRecords, setTotalRecords] = useState(0);
+  // const isFetchingRef = useRef<boolean>(false);
 
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
@@ -43,38 +44,18 @@ const ViewUser = () => {
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  useEffect(() => {
-    if (!isFetchingRef.current) {
-      isFetchingRef.current = true;
-      FetchUserList();
-    }
-  }, []);
-
-  const FetchUserList = async () => {
-    try {
-      const response = await Child_Member_List(loginData?.hierarchyId);
-      if (response?.status === 200) {
-        setIsUserList(response?.data?.data?.content);
-      } else {
-        showErrorNotification(response?.data?.message);
-      }
-    } catch (error) {
-      await handleCustomError(error);
-    }
-  };
-
   const tableColumns = [
     {
       key: "network",
       label: "Network",
-      render: (row: ViewUserList) => (
+      render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-center">
           <TextComponent
             color={theme.palette.greenColor.DEFAULT}
             fontSize={12}
             fontWeight={400}
           >
-            {row.toString() || "-"}
+            {row?.network?.toString() || "-"}
           </TextComponent>
         </div>
       ),
@@ -84,19 +65,19 @@ const ViewUser = () => {
     {
       key: "createdOn",
       label: "Created On",
-      render: (row: ViewUserList) => (
+      render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-center">
           <TextComponent
             color={theme.palette.background.default}
             fontSize={12}
             fontWeight={400}
           >
-            {moment(row.createdOn).format("YYYY-MM-DD") || "-"}
+            {moment(row?.createdOn).format("YYYY-MM-DD") || "-"}
           </TextComponent>
         </div>
       ),
       searchKey: "createdOn",
-      type: "date",
+      type: "date" as const,
       sortable: false,
     },
     {
@@ -104,73 +85,90 @@ const ViewUser = () => {
       label: "User ID",
       searchKey: "userId",
       sortable: false,
+      // type: "text" as const
+
     },
     {
       key: "name",
       label: "User Name",
-      render: (row: ViewUserList) => (
+      render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-center">
           <TextComponent
             color={theme.palette.red.DEFAULT}
             fontSize={12}
             fontWeight={400}
           >
-            {row.toString() || "-"}
+            {row.name.toString() || "-"}
           </TextComponent>
         </div>
       ),
       searchKey: "name",
       sortable: false,
+      // type: "text" as const
+
     },
     {
       key: "mobileNumber",
       label: "Mobile Number",
       searchKey: "mobileNumber",
       sortable: false,
+      type: "number" as const
+
     },
     {
       key: "emailId",
       label: "Email ID",
       searchKey: "emailId",
       sortable: false,
+      // type: "text" as const
+
     },
     {
       key: "status",
       label: "Status",
-      render: (row: ViewUserList) => (
+      render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-self-center w-max bg-GreenColor-light px-1 py-1 rounded text-center justify-center">
           <TextComponent
             color={theme.palette.greenColor.DEFAULT}
             fontSize={12}
             fontWeight={400}
           >
-            {row.toString() || "-"}
+            {row?.status?.toString() || "-"}
           </TextComponent>
         </div>
       ),
       searchKey: "status",
       sortable: false,
+      type: "boolean" as const,
+      options: [
+        { label: "APPROVED", value: "APPROVED" },
+        { label: "PENDING", value: "PENDING" },
+        { label: "REJECTED", value: "REJECTED" },
+      ]
     },
     {
       key: "isBlocked",
       label: "Is Blocked",
-      render: (row: ViewUserList) => (
+      render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-center">
           <TextComponent
             color={theme.palette.red.DEFAULT}
             fontSize={12}
             fontWeight={400}
           >
-            {row.isBlocked === true ? (
-              <BlockedSvgIcon color={theme.palette.greenColor.DEFAULT} />
-            ) : (
+            {String(row.isBlocked)}
+            {/* {row?.isBlocked === true ? (
               <NotBlockedSvgIcon color={theme.palette.red.DEFAULT} />
-            )}
+            ) : (
+              <BlockedSvgIcon color={theme.palette.greenColor.DEFAULT} />
+            )} */}
           </TextComponent>
         </div>
       ),
       searchKey: "isBlocked",
       sortable: false,
+      type: "boolean" as const
+
     },
   ];
 
@@ -185,6 +183,38 @@ const ViewUser = () => {
     ),
     tableColumns.find((col) => col.key === "action")!,
   ];
+
+  useEffect(() => {
+    if (loginData?.hierarchyId) {
+      FetchUserList(page, size, searchValues);
+    }
+  }, [page, size, searchValues]);
+
+  const FetchUserList = async (pageNum = 1, pageSize = size, filters = {}) => {
+    try {
+      setIsLoading(true);
+      const params = {
+        page: (pageNum - 1).toString(), // API is 0-indexed
+        size: pageSize.toString(),
+        ...filters,
+      };
+      const response = await Child_Member_List(loginData?.hierarchyId, params);
+      if (response?.status === 200) {
+        setIsUserList(response?.data?.data?.content);
+        setTotalRecords(response?.data?.data?.totalElements || 0);
+      } else {
+        showErrorNotification(response?.data?.message);
+        setIsUserList([]);
+        setTotalRecords(0);
+      }
+    } catch (error) {
+      await handleCustomError(error);
+      setIsUserList([]);
+      setTotalRecords(0);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleExport = (exportType: "all" | "currentPage") => {
     const dataToExport = exportType === "all" ? isUserList : currentPageData;
@@ -227,63 +257,20 @@ const ViewUser = () => {
       `Exported ${exportType === "all" ? "all" : "current page"} data successfully`
     );
   };
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleSearchWithValues = (columnKey: string, value: string) => {
-    try {
-      const column = tableColumns.find((col) => col.key === columnKey);
-      if (!column) return;
+    const newSearchValues = { ...searchValues };
 
-      const searchKey = column.searchKey || column.key;
-      const newSearchValues = { ...searchValues };
-
-      if (value) {
-        newSearchValues[searchKey] = value;
-      } else {
-        delete newSearchValues[searchKey];
-      }
-
-      setSearchValues(newSearchValues);
-
-      if (loginData?.hierarchyId) {
-        const bodyRequest = {
-          ...Object.fromEntries(
-            Object.entries(newSearchValues).map(([key, value]) => [
-              key === columnKey ? searchKey : key,
-              value,
-            ])
-          ),
-        };
-
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
-
-        timeoutRef.current = setTimeout(() => {
-          Child_Member_List(loginData?.hierarchyId, bodyRequest)
-            .then((response) => {
-              if (response?.status === 200) {
-                setIsUserList(response?.data?.data?.content);
-              } else {
-                showErrorNotification(response?.data?.message);
-                setIsUserList([]);
-              }
-            })
-            .catch((error) => {
-              handleCustomError(error);
-              setIsUserList([]);
-            })
-            .finally(() => {
-              setIsLoading(false);
-            });
-        }, 900);
-      }
-    } catch (error) {
-      handleCustomError(error);
+    if (value) {
+      newSearchValues[columnKey] = value;
+    } else {
+      delete newSearchValues[columnKey];
     }
+
+    setSearchValues(newSearchValues);
+    setPage(1); // ✅ Reset to first page when search changes
   };
-  console.log(isUserList,"isUserList");
-  
 
   return (
     <div className="">
@@ -370,6 +357,15 @@ const ViewUser = () => {
           onSearch={(columnKey, value) =>
             handleSearchWithValues(columnKey, value)
           }
+          page={page}
+          size={size}
+          onPageChange={setPage}
+          onPageSizeChange={(newSize) => {
+            setSize(newSize);
+            setPage(1); // reset to first page when size changes
+          }}
+          serverSide={true}
+          totalRecords={totalRecords}
         />
       </div>
       <ColumsSelectionModal

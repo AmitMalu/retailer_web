@@ -146,6 +146,14 @@ const PGFormModal = ({
       const response = await Create_Order(payload);
       if (response?.status === 200 || response?.data?.statusCode === 200) {
         showSuccessNotification(response?.data?.message);
+        // Parse the data because your API sends it as a string
+        const orderData = JSON.parse(response.data.data);
+
+        if (orderData.paymentLink) {
+          // Open payment link in new tab
+          window.open(orderData.paymentLink, "_blank");
+        }
+        setIsBinDetails(false);
         onClose();
       } else {
         showErrorNotification(response?.data?.message || "Unable to create");
@@ -252,6 +260,7 @@ const PGFormModal = ({
                   <div className="w-full sm:w-[calc(50%-12px)] ">
                     <DropdownComponent
                       label="Card Type"
+                      disabled={!!isBinDetails}
                       data={[
                         { value: "Card", label: "Card" },
                         { value: "Other", label: "Other" },
@@ -270,6 +279,7 @@ const PGFormModal = ({
                   <div className="w-full sm:w-[calc(50%-12px)] ">
                     <TextInputComponent
                       label={"Card Bin No"}
+                      disabled={!!isBinDetails}
                       allowSpecialChar={false}
                       placeholder={"Enter"}
                       value={values.cardBinNo}
@@ -289,6 +299,7 @@ const PGFormModal = ({
                     <>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <DropdownComponent
+                          disabled={!!isBinDetails}
                           label="Payment Method"
                           data={[
                             { value: "credit", label: "Credit" },
@@ -305,7 +316,6 @@ const PGFormModal = ({
                               : ""
                           }
                           className="w-max"
-                          disabled={true}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">

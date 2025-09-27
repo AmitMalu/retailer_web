@@ -1,21 +1,18 @@
 import { useRef, useState } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { CommissionAndChargesParams, CommissionData } from "@/Common/interface";
+import { CommissionAndChargesParams, CommissionAndChargesRequest, CommissionData } from "@/Common/interface";
 import {
+  dateRangeValidationSchema,
   decryptData,
   formatYMDdate,
-  isSameOrAfter,
-  isSameOrBefore,
 } from "@/Utils/helper";
 import {
   showErrorNotification,
-  showSuccessNotification,
 } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
-import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import { UnstyledButton } from "@mantine/core";
 import TableComponent from "@/components/Molecules/TableComponent";
@@ -25,7 +22,10 @@ import { ColsSvgIcon, ExportSvgIcon, FilterSvgIcon } from "@/assets/svg";
 import ColumsSelectionModal from "@/components/Molecules/ColumsSelectionModal";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
-import DropdownComponent from "@/components/Atoms/DropdownComponent";
+import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
+import { DatesRangeValue } from "@mantine/dates";
+import moment from "moment";
+import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 
 const CommissionAndCharges = () => {
   const theme = useTheme();
@@ -60,28 +60,29 @@ const CommissionAndCharges = () => {
   today.setHours(0, 0, 0, 0);
 
   const validationSchema = Yup.object({
-    fromDate: Yup.date()
-      .required("Required")
-      .test("max-today", "Invalid Date", function (value) {
-        if (!value) return true;
-        return isSameOrBefore(value, today);
-      })
-      .test("date-range", "Invalid Date", function (value) {
-        const toDate = this.parent.toDate;
-        if (!value || !toDate) return true;
-        return isSameOrBefore(value, toDate);
-      }),
-    toDate: Yup.date()
-      .required("Required")
-      .test("max-today", "Invalid Date", function (value) {
-        if (!value) return true;
-        return isSameOrBefore(value, today);
-      })
-      .test("date-range", "Invalid Date", function (value) {
-        const fromDate = this.parent.fromDate;
-        if (!value || !fromDate) return true;
-        return isSameOrAfter(value, fromDate);
-      }),
+    // fromDate: Yup.date()
+    //   .required("Required")
+    //   .test("max-today", "Invalid Date", function (value) {
+    //     if (!value) return true;
+    //     return isSameOrBefore(value, today);
+    //   })
+    //   .test("date-range", "Invalid Date", function (value) {
+    //     const toDate = this.parent.toDate;
+    //     if (!value || !toDate) return true;
+    //     return isSameOrBefore(value, toDate);
+    //   }),
+    // toDate: Yup.date()
+    //   .required("Required")
+    //   .test("max-today", "Invalid Date", function (value) {
+    //     if (!value) return true;
+    //     return isSameOrBefore(value, today);
+    //   })
+    //   .test("date-range", "Invalid Date", function (value) {
+    //     const fromDate = this.parent.fromDate;
+    //     if (!value || !fromDate) return true;
+    //     return isSameOrAfter(value, fromDate);
+    //   }),
+    dateRange: dateRangeValidationSchema,
     walletType: Yup.string().required("Required"),
     subProductName: Yup.string().required("Required"),
     reportType: Yup.string().required("Required"),
@@ -90,8 +91,10 @@ const CommissionAndCharges = () => {
   const initialValues: CommissionAndChargesParams = {
     hierarchyId: loginData?.hierarchyId,
     walletType: "",
-    fromDate: null,
-    toDate: null,
+    dateRange: [
+      moment().subtract(6, "days").toDate(), // from: 6 days ago
+      moment().toDate(), // to: today
+    ] as DatesRangeValue,
     subProductName: "",
     reportType: "",
     page: currentPage,
@@ -108,9 +111,11 @@ const CommissionAndCharges = () => {
       setIsLoading(true);
       setCurrentPage(values.page);
       setItemsPerPage(values.size);
-      let bodyRequest = {
-        fromDate: formatYMDdate(values.fromDate),
-        toDate: formatYMDdate(values.toDate),
+      const [fromDate, toDate] = values.dateRange || [];
+
+      let bodyRequest: CommissionAndChargesRequest = {
+        fromDate: fromDate ? formatYMDdate(fromDate) : null,
+        toDate: toDate ? formatYMDdate(toDate) : null,
         hierarchyId: values.hierarchyId || loginData?.hierarchyId,
         walletType: values.walletType,
         subProductName: values.subProductName,
@@ -121,8 +126,14 @@ const CommissionAndCharges = () => {
       const response = await Commission_And_Charges_Report({}, bodyRequest);
 
       if (response?.status === 200) {
-        setIsCommissionReportList(response?.data?.data?.content);
-        showSuccessNotification(response?.data?.message);
+        const content = response?.data?.data?.content || [];
+
+        setIsCommissionReportList(content);
+
+        if (content.length <= 0) {
+          showErrorNotification("No records found");
+        }
+
       } else {
         showErrorNotification(response?.data?.message);
       }
@@ -218,7 +229,7 @@ const CommissionAndCharges = () => {
       key: "amount",
       label: "Amount",
       searchKey: "amount",
-      sortable: true,
+      // sortable: true,
     },
     // {
     //   key: "refNo",
@@ -237,7 +248,7 @@ const CommissionAndCharges = () => {
       label: "Created On",
       searchKey: "createdOn",
       sortable: false,
-      type: "date",
+      type: "date" as const,
     },
     {
       key: "narration",
@@ -270,9 +281,11 @@ const CommissionAndCharges = () => {
       setSearchValues(newSearchValues);
 
       if (values.fromDate && values.toDate) {
-        const bodyRequest = {
-          fromDate: formatYMDdate(values.fromDate),
-          toDate: formatYMDdate(values.toDate),
+        const [fromDate, toDate] = values.dateRange || [];
+
+        let bodyRequest: CommissionAndChargesRequest = {
+          fromDate: fromDate ? formatYMDdate(fromDate) : null,
+          toDate: toDate ? formatYMDdate(toDate) : null,
           hierarchyId: values.hierarchyId || loginData?.hierarchyId,
           walletType: values.walletType,
           subProductName: values.subProductName,
@@ -346,7 +359,7 @@ const CommissionAndCharges = () => {
                   <div className="flex w-full flex-wrap items-center justify-between gap-4">
                     <div className="flex w-full flex-wrap items-center justify-start gap-4">
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        <CustomDateComponent
+                        {/* <CustomDateComponent
                           label="Date Range"
                           type="range"
                           value={[
@@ -380,10 +393,17 @@ const CommissionAndCharges = () => {
                               : "")
                           }
                           customButtons={true}
+                        /> */}
+                        <FormikDateRangePicker
+                          name="dateRange"
+                          label="Date Range"
+                          size="xs"
+                          shortcuts
+                          required
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        <DropdownComponent
+                        {/* <DropdownComponent
                           label="Wallet Type"
                           data={[
                             { value: "POSTPAID", label: "POSTPAID" },
@@ -400,10 +420,22 @@ const CommissionAndCharges = () => {
                               : ""
                           }
                           className="w-max"
+                        /> */}
+                        <FormikSelectComponent
+                          name="walletType"
+                          label="Wallet Type"
+                          placeholder="Select Wallet Type"
+                          allowDeselect
+                          data={[
+                            { value: "POSTPAID", label: "POSTPAID" },
+                            { value: "PREPAID", label: "PREPAID" },
+                          ]}
+                          withAsterisk
+                          size="xs"
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        <DropdownComponent
+                        {/* <DropdownComponent
                           label="Sub Product"
                           data={uniqueSubProductTypes}
                           value={values.subProductName}
@@ -417,10 +449,20 @@ const CommissionAndCharges = () => {
                               : ""
                           }
                           className="w-max"
+                        /> */}
+                        <FormikSelectComponent
+                          name="subProductName"
+                          label="Sub Product"
+                          placeholder="Select Sub Product"
+                          data={uniqueSubProductTypes}
+                          allowDeselect
+                          searchable
+                          withAsterisk
+                          size="xs"
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        <DropdownComponent
+                        {/* <DropdownComponent
                           label="Report Type"
                           data={[
                             { value: "COMMISSION", label: "COMMISSION" },
@@ -437,21 +479,35 @@ const CommissionAndCharges = () => {
                               : ""
                           }
                           className="w-max"
+                        /> */}
+                        <FormikSelectComponent
+                          name="reportType"
+                          label="Report Type"
+                          placeholder="Select Report Type"
+                          allowDeselect
+                          data={[
+                            { value: "COMMISSION", label: "COMMISSION" },
+                            { value: "CHARGE", label: "CHARGE" },
+                          ]}
+                          withAsterisk
+                          size="xs"
+                        />
+                      </div>
+                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)] flex justify-end items-end">
+                        <ButtonComponent
+                          title="View"
+                          variant="filled"
+                          fontSize={14}
+                          onClick={() => {
+                            setFieldValue("download", false);
+                            handleSubmit();
+                          }}
+                          radius={29}
+                          width={100}
                         />
                       </div>
                     </div>
-                    <div className="flex items-center justify-end w-full">
-                      <ButtonComponent
-                        title="View"
-                        variant="filled"
-                        onClick={() => {
-                          setFieldValue("download", false);
-                          handleSubmit();
-                        }}
-                        radius={29}
-                        width={100}
-                      />
-                    </div>
+                    {/* <div className="flex items-center justify-end w-full"> */}
                   </div>
                 </div>
                 {isCommissionReportList &&

@@ -6,6 +6,7 @@ import { showErrorNotification } from "./notifications";
 import { handleCustomError } from "./handleCustomError";
 import { Sub_Product_Dropdown, Wallet_Balance } from "@/Services/api";
 import { useState } from "react";
+import * as Yup from 'yup'
 
 const KEY = CryptoJS.enc.Hex.parse(
   "a7f3d9c6e8421fb62e7e5c3410b974e2d5c6a8f90fd13b4aa12f658f9a34bc29"
@@ -47,7 +48,6 @@ export function encryptCredentials(username: string, password: string) {
     encryptedPassword,
   };
 }
-
 
 export const encryptData = (data: object | string): string => {
   const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), KEY, {
@@ -143,6 +143,38 @@ export const formatYMDdate = (date: string | Date | null): string | null => {
   return `${String(d.getFullYear())}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
+export const singleDateValidationSchema = Yup.date()
+  .nullable()
+  .required("Date is required");
+
+export const dateRangeValidationSchema = Yup.array()
+  .of(Yup.date().nullable())
+  .test("date-range-validation", function (value) {
+    const [start, end] = value || [];
+    const { path, createError } = this;
+
+    if (!start && !end) {
+      return createError({ path, message: "Date range is required" });
+    }
+
+    if (start && !end) {
+      return createError({ path, message: "End date is required" });
+    }
+
+    if (!start && end) {
+      return createError({ path, message: "Start date is required" });
+    }
+
+    if (start && end && new Date(start) > new Date(end)) {
+      return createError({
+        path,
+        message: "Start date must be before or equal to end date",
+      });
+    }
+
+    return true;
+  });
+
 export const useWalletBalance = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [isLoading, setIsLoading] = useState(false);
@@ -186,6 +218,18 @@ export const isSameOrAfter = (input: Date | null, compareTo: Date | null) => {
           input.getDate() >= compareTo.getDate())))
   );
 };
+
+export const ellipsisCellStyle = {
+  maxWidth: 160,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+};
+
+export const YesNoSelectData = [
+  { label: "true", value: "true" },
+  { label: "false", value: "false" },
+];
 
 export const useSubProductDropdown = () => {
   const dispatch = useDispatch<AppDispatch>();

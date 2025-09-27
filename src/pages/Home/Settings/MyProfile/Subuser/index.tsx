@@ -5,6 +5,7 @@ import {
   formatYMDdate,
   MobileNoRegex,
   PasswordRegex,
+  singleDateValidationSchema,
 } from "@/Utils/helper";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -17,7 +18,7 @@ import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import TextComponent from "@/components/Atoms/TextComponent";
 import { Chip, Group } from "@mantine/core";
-import { useTheme } from "@mui/system";
+import { borderRadius, useTheme } from "@mui/system";
 import { CloseEyeSvgIcon, OpenEyeSvgIcon } from "@/assets/svg";
 import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
 import { Create_Sub_User } from "@/Services/api";
@@ -25,6 +26,9 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
+import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePicker";
+import { IconCalendar } from "@tabler/icons-react";
+import moment from "moment";
 
 const SubuserCreation = () => {
   const theme = useTheme();
@@ -59,7 +63,7 @@ const SubuserCreation = () => {
     emailId: Yup.string()
       .matches(EmailRegex, "Enter valid email")
       .required("Required"),
-    dob: Yup.string().required("Required"),
+    dob: singleDateValidationSchema,
     add: Yup.object().shape({
       address: Yup.string().required("Required"),
       city: Yup.string().required("Required"),
@@ -108,7 +112,7 @@ const SubuserCreation = () => {
         password: values?.password,
         emailId: values?.emailId,
         emailVerified: true,
-        dob: formatYMDdate(values?.dob),
+        dob: values.dob ? moment(values.dob).format("YYYY-MM-DD") : null,
         add: {
           address: values?.add?.address,
           city: values?.add?.city,
@@ -310,7 +314,7 @@ const SubuserCreation = () => {
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                        <CustomDateComponent
+                        {/* <CustomDateComponent
                           label="Date of Birth"
                           value={values.dob ? new Date(values.dob) : null}
                           onChange={(value) => setFieldValue("dob", value)}
@@ -319,6 +323,16 @@ const SubuserCreation = () => {
                           dateFormat="YYYY-MM-DD"
                           withAsterisk
                           className="w-max"
+                        /> */}
+                        <FormikDatePicker
+                          name="dob"
+                          placeholder="Select a DOB"
+                          size="lg"
+                          required
+                          maxDate={new Date}
+                          valueFormat="YYYY-MM-DD"
+                          leftIcon={<IconCalendar size={24} />}
+                          styles={{ input: { height: "55px", fontSize: "18px", borderRadius: "6px" } }}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">

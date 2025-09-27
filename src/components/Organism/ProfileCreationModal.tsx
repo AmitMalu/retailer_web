@@ -23,7 +23,7 @@ import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
-import FileInputComponent from "@/components/Atoms/FileInputComponent";
+// import FileInputComponent from "@/components/Atoms/FileInputComponent";
 import { RootState } from "@/Redux/Store";
 import {
   Create_Distributor,
@@ -45,6 +45,9 @@ import {
   useAdhaarPanVerification,
   usePanVerification,
 } from "@/Utils/Verification";
+import CustomDatePicker from "../Atoms/NewComponents/CustomDatePicker";
+import { CalendarIcon } from "@mui/x-date-pickers";
+import FileInputComponent from "../Atoms/NewComponents/FileInputComponent";
 
 const ProfileRegistrationForm = ({
   opened,
@@ -166,7 +169,7 @@ const ProfileRegistrationForm = ({
       .matches(MobileNoRegex, "Please enter valid number")
       .required("Required"),
     emailId: Yup.string()
-      .matches(EmailRegex, "Please enter valid number")
+      .matches(EmailRegex, "Please enter valid Email")
       .required("Required"),
     parentAccount: Yup.string().required("Required"),
     name: Yup.string().required("Required"),
@@ -193,17 +196,19 @@ const ProfileRegistrationForm = ({
       .matches(/^[0-9]+$/, "Must be only digits")
       .min(9, "Must be at least 9 digits")
       .max(20, "Must be at most 20 digits"),
-    ifscCode: Yup.string().required("Required"),
+    ifscCode: Yup.string()
+      .required("Required")
+      .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Enter valid IFSC code"),
     branchName: Yup.string().required("Required"),
     aadhaarNumber: Yup.string()
-      .max(12, "Enter valid Number")
-      .min(12, "Enter valid Number")
-      .matches(/^[0-9]+$/, "Please enter valid number")
+      .max(12, "Please Enter valid Aadhaar Number")
+      .min(12, "Please Enter valid Aadhaar Number")
+      .matches(/^[0-9]+$/, "Please enter valid Aadhaar number")
       .required("Required"),
     businessNumber: Yup.string().required("Required"),
     shopNumber: Yup.string().required("Required"),
     panNumber: Yup.string()
-      .matches(PanRegex, "Please enter valid number")
+      .matches(PanRegex, "Please enter valid PAN Number")
       .required("Required"),
     aadhaarCardFrontImage: Yup.string().required("Required"),
     aadhaarCardBackImage: Yup.string().required("Required"),
@@ -298,7 +303,7 @@ const ProfileRegistrationForm = ({
           bankName: values?.bankName,
           bankAccountNumber: values?.bankAccountNumber,
           ifscCode: values?.ifscCode,
-          branchName: values?.branchName,
+          // branchName: values?.branchName,
         },
         aadhaarNumber: values?.aadhaarNumber,
         panNumber: values?.panNumber,
@@ -490,12 +495,15 @@ const ProfileRegistrationForm = ({
                             touched.title && errors.title ? errors.title : ""
                           }
                           className="w-max"
+                          clearable
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
+                          allowNumber={false}
+                          allowSpecialChar={false}
                           label={"Name"}
-                          placeholder={"Enter"}
+                          placeholder={"Enter Name"}
                           value={values.name}
                           onChange={handleChange("name")}
                           error={touched.name && errors.name ? errors.name : ""}
@@ -504,7 +512,7 @@ const ProfileRegistrationForm = ({
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
-                        <CustomDateComponent
+                        {/* <CustomDateComponent
                           label="Date of Birth"
                           value={values.dob}
                           onChange={(value) => setFieldValue("dob", value)}
@@ -513,6 +521,27 @@ const ProfileRegistrationForm = ({
                           dateFormat="YYYY-MM-DD"
                           withAsterisk
                           className="w-max"
+                        /> */}
+                        <CustomDatePicker
+                          // label="Date of Birth"
+                          name="dob"
+                          value={values.dob}
+                          onChange={(value) => setFieldValue("dob", value)}
+                          error={touched.dob && errors.dob ? errors.dob : ""}
+                          placeholder="Select DOB"
+                          valueFormat="YYYY-MM-DD"
+                          radius={6}
+                          size="lg"
+                          rightSection={<CalendarIcon />}
+                          required
+                          maxDate={new Date()}
+                          styles={{
+                            input: {
+                              height: "55px", // exact height
+                              fontSize: "16px",
+                              fontWeight: "600"
+                            },
+                          }}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -521,7 +550,7 @@ const ProfileRegistrationForm = ({
                           allowCharacter={false}
                           allowSpace={false}
                           allowSpecialChar={false}
-                          placeholder={"Enter"}
+                          placeholder={"Enter Mobile Number"}
                           value={values.mobileNumber}
                           onChange={handleChange("mobileNumber")}
                           error={
@@ -542,6 +571,9 @@ const ProfileRegistrationForm = ({
                           placeholder={"Enter"}
                           value={values.emailId}
                           onChange={handleChange("emailId")}
+                          allowSpace={false}
+                          allowSpecialChar={false}
+                          allowedChars="@._-"
                           // rightSection={
                           //   <>
                           //     {isEmailVerified ? (
@@ -662,6 +694,9 @@ const ProfileRegistrationForm = ({
                           onChange={handleChange("panNumber")}
                           maxLength={10}
                           minLength={10}
+                          capitalize
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           rightSection={
                             <>
                               {values.panNumber &&
@@ -732,6 +767,7 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          maxLength={40}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -747,6 +783,7 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          maxLength={40}
                         />
                       </div>
                     </div>
@@ -771,6 +808,8 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          allowSpecialChar={false}       // allow only certain symbols
+                          allowedChars={",./-#"}        // whitelist these symbols
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -782,6 +821,9 @@ const ProfileRegistrationForm = ({
                           error={touched.city && errors.city ? errors.city : ""}
                           withAsterisk
                           className="w-max"
+                          allowNumber={false}        // no digits
+                          allowSpecialChar={false}    // allow only specified symbols
+                          allowedChars={`-'`}        // allow hyphen and apostrophe
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -795,6 +837,9 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          allowNumber={false}
+                          allowSpecialChar={false}
+                          allowedChars={`-'`}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -838,6 +883,8 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          allowedChars={`-'`}    // allow hyphen and apostrophe
+                          allowSpecialChar={false}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -853,6 +900,9 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          allowedChars={`.,-/'`}   // allow common address symbols
+                          allowSpecialChar={false}
+
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -868,6 +918,8 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          allowedChars={`-'`}
+                          allowSpecialChar={false}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -883,6 +935,8 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          allowedChars={`-'`}
+                          allowSpecialChar={false}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -968,6 +1022,10 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          capitalize
+                          allowSpecialChar={false}     // block special characters
+                          allowSpace={false}
+                          maxLength={15}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -996,7 +1054,7 @@ const ProfileRegistrationForm = ({
                     <div className="mt-5 flex w-full flex-wrap items-start justify-start gap-4">
                       <div className="flex w-full items-center justify-between gap-8">
                         <div className="w-full sm:w-[calc(50%-12px)] ">
-                          <FileInputComponent
+                          {/* <FileInputComponent
                             accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
                             label={"Aadhar Card Front"}
                             onChange={(file) => {
@@ -1011,27 +1069,27 @@ const ProfileRegistrationForm = ({
                                 ? errors.aadhaarCardFrontImage
                                 : ""
                             }
+                          /> */}
+                          <FileInputComponent
+                            label="Aadhaar Card Front"
+                            name="aadhaarCardFrontImage"
+                            placeholder="Choose"
+                            accept="image/png,image/jpeg, image/jpg,"
+                            value={values?.aadhaarCardFrontImage || null}
+                            onChange={(file) => setFieldValue("aadhaarCardFrontImage", file)}
+                            withAsterisk
+                            showPreviewIcon={true}
+                            error={
+                              touched.aadhaarCardFrontImage && errors.aadhaarCardFrontImage
+                                ? errors.aadhaarCardFrontImage
+                                : ""
+                            }
                           />
                         </div>
-
-                        {values?.aadhaarCardFrontImage && (
-                          <div className="mt-2 flex w-32 items-end justify-end gap-8">
-                            <ButtonComponent
-                              title="Preview"
-                              variant="outline"
-                              onClick={() => {
-                                setShowImagePreview(true);
-                                setImage(values?.aadhaarCardFrontImage || null);
-                              }}
-                              radius={15}
-                            />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex w-full items-center justify-between gap-8">
                         <div className="w-full sm:w-[calc(50%-12px)] ">
                           <FileInputComponent
-                            accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
+                            name="aadhaarCardBackImage"
+                            accept="image/png,image/jpeg, image/jpg,"
                             label={"Aadhar Card Back"}
                             onChange={(file) => {
                               setFieldValue("aadhaarCardBackImage", file);
@@ -1048,7 +1106,24 @@ const ProfileRegistrationForm = ({
                           />
                         </div>
 
-                        {values?.aadhaarCardBackImage && (
+                        {/* {values?.aadhaarCardFrontImage && (
+                          <div className="mt-2 flex w-32 items-end justify-end gap-8">
+                            <ButtonComponent
+                              title="Preview"
+                              variant="outline"
+                              onClick={() => {
+                                setShowImagePreview(true);
+                                setImage(values?.aadhaarCardFrontImage || null);
+                              }}
+                              radius={15}
+                            />
+                          </div>
+                        )} */}
+                      </div>
+                      <div className="flex w-full items-center justify-between gap-8">
+
+
+                        {/* {values?.aadhaarCardBackImage && (
                           <div className="mt-2 flex w-32 items-end justify-end gap-8">
                             <ButtonComponent
                               title="Preview"
@@ -1060,12 +1135,13 @@ const ProfileRegistrationForm = ({
                               radius={15}
                             />
                           </div>
-                        )}
+                        )} */}
                       </div>
                       <div className="flex w-full items-center justify-between gap-8">
                         <div className="w-full sm:w-[calc(50%-12px)] ">
                           <FileInputComponent
-                            accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
+                            name="panCardImage"
+                            accept="image/png,image/jpeg, image/jpg,"
                             label={"Pan Card"}
                             onChange={(file) => {
                               setFieldValue("panCardImage", file);
@@ -1080,25 +1156,10 @@ const ProfileRegistrationForm = ({
                             }
                           />
                         </div>
-
-                        {values?.panCardImage && (
-                          <div className="mt-2 flex w-32 items-end justify-end gap-8">
-                            <ButtonComponent
-                              title="Preview"
-                              variant="outline"
-                              onClick={() => {
-                                setShowImagePreview(true);
-                                setImage(values?.panCardImage || null);
-                              }}
-                              radius={15}
-                            />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex w-full items-center justify-between gap-8">
                         <div className="w-full sm:w-[calc(50%-12px)] ">
                           <FileInputComponent
-                            accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
+                            name="shopImage"
+                            accept="image/png,image/jpeg, image/jpg,"
                             label={"Shop Image"}
                             onChange={(file) => {
                               setFieldValue("shopImage", file);
@@ -1114,7 +1175,24 @@ const ProfileRegistrationForm = ({
                           />
                         </div>
 
-                        {values?.shopImage && (
+                        {/* {values?.panCardImage && (
+                          <div className="mt-2 flex w-32 items-end justify-end gap-8">
+                            <ButtonComponent
+                              title="Preview"
+                              variant="outline"
+                              onClick={() => {
+                                setShowImagePreview(true);
+                                setImage(values?.panCardImage || null);
+                              }}
+                              radius={15}
+                            />
+                          </div>
+                        )} */}
+                      </div>
+                      <div className="flex w-full items-center justify-between gap-8">
+
+
+                        {/* {values?.shopImage && (
                           <div className="mt-2 flex w-32 items-end justify-end gap-8">
                             <ButtonComponent
                               title="Preview"
@@ -1126,12 +1204,13 @@ const ProfileRegistrationForm = ({
                               radius={15}
                             />
                           </div>
-                        )}
+                        )} */}
                       </div>
                       <div className="flex w-full items-center justify-between gap-8">
                         <div className="w-full sm:w-[calc(50%-12px)] ">
                           <FileInputComponent
-                            accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
+                            name="businessProofImage"
+                            accept="image/png,image/jpeg, image/jpg,"
                             label={"Business Proof Image"}
                             onChange={(file) => {
                               setFieldValue("businessProofImage", file);
@@ -1148,7 +1227,7 @@ const ProfileRegistrationForm = ({
                           />
                         </div>
 
-                        {values?.businessProofImage && (
+                        {/* {values?.businessProofImage && (
                           <div className="mt-2 flex w-32 items-end justify-end gap-8">
                             <ButtonComponent
                               title="Preview"
@@ -1160,10 +1239,10 @@ const ProfileRegistrationForm = ({
                               radius={15}
                             />
                           </div>
-                        )}
+                        )} */}
                       </div>
 
-                      {showImagePreview && isimage && (
+                      {/* {showImagePreview && isimage && (
                         <div
                           className="absolute inset-0 z-50 flex h-lvh items-center justify-center bg-black bg-opacity-60"
                           onClick={() => setShowImagePreview(false)}
@@ -1178,7 +1257,7 @@ const ProfileRegistrationForm = ({
                             className="max-h-[100vh] max-w-full object-contain"
                           />
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </Stepper.Step>
                   <Stepper.Completed>

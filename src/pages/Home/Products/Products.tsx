@@ -8,12 +8,25 @@ import TextComponent from "@/components/Atoms/TextComponent";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/system";
 import { AepsCardSvgIcon } from "@/assets/svg/Products/AepsSvgIcon";
+import { useSelector } from "react-redux";
+import { RootState } from "@/Redux/Store";
+import { decryptData } from "@/Utils/helper";
 
 export default function Products() {
   const navigate = useNavigate();
   const theme = useTheme();
 
-  const row1 = [
+  const apiResponses = useSelector(
+    (state: RootState) => state.apiResponse.responses
+  );
+
+  const loginData = apiResponses?.loginData
+    ? decryptData(apiResponses?.loginData)
+    : null;
+
+  console.log(loginData,"logindata");
+
+  const row1: any = [
     {
       id: 1,
       image: <PGSvgIcon color={theme.palette.red.DEFAULT} />,
@@ -40,7 +53,7 @@ export default function Products() {
     },
   ];
 
-  const row2 = [
+  const row2: any = [
     {
       id: 4,
       image: <RechargeSvgIcon color={theme.palette.background.paper} />,
@@ -59,7 +72,7 @@ export default function Products() {
     },
   ];
 
-  const row3 = [
+  const row3: any = [
     {
       id: 6,
       image: <BillPaymenstSvgIcon color={theme.palette.red.DEFAULT} />,
@@ -89,30 +102,30 @@ export default function Products() {
 
       <div>
         <div className="flex justify-center gap-12 my-1">
-          {row1.map((product) => (
+          {row1?.map((product: any) => (
             <div className="scale-90">
               <ProductCard
-                key={product.id}
-                image={product.image}
-                title={product.title}
+                key={product?.id}
+                image={product?.image}
+                title={product?.title}
                 fill={false}
-                onClick={product.onClick}
+                onClick={product?.onClick}
                 size={{ base: 24, md: 24, lg: 32 }}
               />
             </div>
           ))}
         </div>
 
-        <div className="flex justify-center gap-12 mb-1 mt-[-32px]">
+        <div className="flex justify-center gap-12 mb-0 mt-[-32px]">
           <div className="w-20" />
-          {row2.map((product) => (
+          {row2?.map((product: any) => (
             <div className="scale-90">
               <ProductCard
-                key={product.id}
-                image={product.image}
-                title={product.title}
+                key={product?.id}
+                image={product?.image}
+                title={product?.title}
                 fill={true}
-                onClick={product.onClick}
+                onClick={product?.onClick}
                 size={{ base: 24, md: 24, lg: 32 }}
               />
             </div>
@@ -120,7 +133,7 @@ export default function Products() {
           <div className="w-20" />
         </div>
 
-        <div className="flex justify-center mt-[-32px]">
+        {/* <div className="flex justify-center mt-[-32px]">
           {row3.map((product) => (
             <div className="scale-90">
               <ProductCard
@@ -129,6 +142,20 @@ export default function Products() {
                 title={product.title}
                 fill={false}
                 onClick={product.onClick}
+                size={{ base: 24, md: 24, lg: 32 }}
+              />
+            </div>
+          ))}
+        </div> */}
+        <div className="flex justify-center gap-12 mt-[-24px]">
+          {row3.map((product: any) => (
+            <div className="scale-90">
+              <ProductCard
+                key={product?.id}
+                image={product?.image}
+                title={product?.title}
+                fill={false}
+                onClick={product?.onClick}
                 size={{ base: 24, md: 24, lg: 32 }}
               />
             </div>

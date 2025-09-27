@@ -1,4 +1,5 @@
 import { TextInputProps } from "@mantine/core";
+import { DatesRangeValue, DateValue } from "@mantine/dates";
 import { ReactNode, ChangeEvent, MouseEventHandler } from "react";
 
 export type LayoutType = "default" | "compact" | "wide";
@@ -275,6 +276,7 @@ export interface CustomDropdownProps {
   error?: string;
   disabled?: boolean;
   clearable?: boolean;
+  allowDeselect?: boolean;
   withAsterisk?: boolean;
   multiple?: boolean;
   className?: string;
@@ -326,7 +328,8 @@ export type TableColumn = {
   sortable?: boolean;
   searchable?: boolean;
   disableSearch?: boolean;
-  type?: string;
+  type?: "text" | "date" | "time" | "dropdown" | "number" | "boolean";
+  options?: { value: string; label: string }[];
   align?: "left" | "center" | "right";
 };
 
@@ -338,12 +341,15 @@ export type TableProps = {
   onSelectRow?: (row: Record<string, any>) => void;
   onCurrentPageData?: (data: Record<string, any>[]) => void;
   onSearch?: (columnKey: string, value: string) => void;
+  searchTrigger?: "change" | "enter";
   showSearch?: boolean;
   keyField?: string;
   page?: number;
   size?: number;
   onPageChange?: (size: number) => void;
   onPageSizeChange?: (size: number) => void;
+  serverSide?: boolean;
+  totalRecords?: number; // required only when serverSide = true
 };
 
 export type CustomTextareaProps = {
@@ -439,7 +445,7 @@ export type FundRequestProps = {
   bankAccountNumber: string;
   amount: string;
   confirmAmount: string;
-  depositDate: string;
+  depositDate: DateValue;
   narration: string;
   depositSlip: File | string | null;
   bankAccountHolderName: string;
@@ -553,6 +559,8 @@ export type ColumsSelectionModalProps = {
 
 export type ViewUserAPIProps = {
   search?: string;
+  page?: string;
+  size?: string;
 };
 
 export type TicketingSystemProps = {
@@ -571,8 +579,9 @@ export type UserProfileData = Record<string, any>;
 export type CommissionData = Record<string, any>;
 
 export type CommissionAndChargesParams = {
-  fromDate: Date | string | null;
-  toDate: Date | string | null;
+  // fromDate: Date | string | null;
+  // toDate: Date | string | null;
+  dateRange: DatesRangeValue;
   hierarchyId: string;
   walletType: string;
   subProductName: string;
@@ -581,6 +590,17 @@ export type CommissionAndChargesParams = {
   size: number;
   [key: string]: any;
 };
+
+export interface CommissionAndChargesRequest {
+  fromDate: string | null;
+  toDate: string | null;
+  hierarchyId: any;
+  walletType: string;
+  subProductName: string;
+  reportType: string;
+  page: number;
+  size: number;
+}
 
 export type WalletParams = {
   hierarchyId: string;
@@ -620,10 +640,10 @@ export type TransactionDetailsParams = {
 };
 
 export type RaisedTicketParams = {
-  page: number;
-  size: number;
-  raisedBy: string;
-  [key: string]: any;
+  page?: number | string; // optional, 0-indexed
+  size?: number | string;
+  raisedBy?: string;
+  [key: string]: any; // additional filters
 };
 
 export type TransactionDetailsData = Record<string, any>;

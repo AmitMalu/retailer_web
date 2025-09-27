@@ -28,28 +28,28 @@ const WalletToBank = () => {
     values: WalletToBankProps,
     { resetForm }: FormikHelpers<WalletToBankProps>
   ) => {
-    // try {
-    //   setIsLoading(true);
-    //   const bodyData = {
-    //     requesterHierarchyId: loginData?.partner_Id,
-    //     walletBalance: values.walletBalance,
-    //     selectBank: values.selectBank,
-    //     TransactionType: values.TransactionType,
-    //     amount: Number(values.amount),
-    //     confirmAmount: Number(values.confirmAmount),
-    //   };
-    //   const response = await Fund_Request(bodyData);
-    //   if (response?.status === 200 || response?.status === 201) {
-    //     showSuccessNotification(response?.data?.message);
-    //     resetForm();
-    //   } else {
-    //     showErrorNotification(response?.data?.message);
-    //   }
-    // } catch (error) {
-    //   await handleCustomError(error);
-    // } finally {
-    //   setIsLoading(false);
-    // }
+    try {
+      // setIsLoading(true);
+      const bodyData = {
+        // requesterHierarchyId: loginData?.partner_Id,
+        walletBalance: values.walletBalance,
+        selectBank: values.selectBank,
+        TransactionType: values.TransactionType,
+        amount: Number(values.amount),
+        confirmAmount: Number(values.confirmAmount),
+      };
+      // const response = await Fund_Request(bodyData);
+      // if (response?.status === 200 || response?.status === 201) {
+      // showSuccessNotification(response?.data?.message);
+      // resetForm();
+      // } else {
+      // showErrorNotification(response?.data?.message);
+      // }
+    } catch (error) {
+      // await handleCustomError(error);
+    } finally {
+      // setIsLoading(false);
+    }
   };
 
   return (
