@@ -1,6 +1,5 @@
 import {
   ChangePasswordRequestProps,
-  CommissionAndChargesParams,
   CommissionAndChargesRequest,
   CreateOrderProps,
   FetchBillDetailsProps,
@@ -9,7 +8,8 @@ import {
   FundReversalProps,
   FundTransferProps,
   LoginRequest,
-  NetworkTransactionParams,
+  // NetworkTransactionParams,
+  NetworkTransactionRequest,
   OtpRequestProps,
   PayoutSaveBeneficiaryProps,
   PayoutSendBeneficiaryProps,
@@ -22,7 +22,9 @@ import {
   ValidateTransactionProps,
   VerifyTokenRequest,
   ViewUserAPIProps,
-  WalletParams,
+  // WalletParams,
+  WalletRequest,
+  WalletToBankProps,
   WalletToWalletProps,
 } from "@/Common/interface";
 import api from ".";
@@ -113,6 +115,9 @@ export const Fund_Reversal = async (data: FundReversalProps) =>
 export const Wallet_To_Wallet = async (data: WalletToWalletProps) =>
   await api.post(`${API_ROUTES.WALLET_TO_WALLET}`, data, await createHeaders());
 
+export const Wallet_To_Bank = async (data: WalletToBankProps) =>
+  await api.post(`${API_ROUTES.WALLET_TO_BANK}`, data, await createHeaders());
+
 export const Wallet_Balance = async (id: string) =>
   await api.get(`${API_ROUTES.WALLET_BALANCE}/${id}`, await createHeaders());
 
@@ -180,7 +185,7 @@ export const Commission_And_Charges_Report = async (
 
 export const Wallet_Report = async (
   params: Record<string, string>,
-  bodyRequest: WalletParams
+  bodyRequest: WalletRequest
 ) => {
   const queryParams = new URLSearchParams(params).toString();
 
@@ -193,7 +198,7 @@ export const Wallet_Report = async (
 
 export const Network_Transaction_Report = async (
   params: Record<string, string>,
-  bodyRequest: NetworkTransactionParams
+  bodyRequest: NetworkTransactionRequest
 ) => {
   const queryParams = new URLSearchParams(params).toString();
 

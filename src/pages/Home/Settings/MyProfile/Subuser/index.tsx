@@ -2,7 +2,6 @@ import { RootState } from "@/Redux/Store";
 import {
   decryptData,
   EmailRegex,
-  formatYMDdate,
   MobileNoRegex,
   PasswordRegex,
   singleDateValidationSchema,
@@ -18,9 +17,8 @@ import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import TextComponent from "@/components/Atoms/TextComponent";
 import { Chip, Group } from "@mantine/core";
-import { borderRadius, useTheme } from "@mui/system";
+import { useTheme } from "@mui/system";
 import { CloseEyeSvgIcon, OpenEyeSvgIcon } from "@/assets/svg";
-import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
 import { Create_Sub_User } from "@/Services/api";
 import {
   showErrorNotification,

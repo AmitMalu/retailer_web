@@ -58,6 +58,11 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let newValue = event.target.value;
 
+    // prevent leading space
+    if (newValue.startsWith(" ")) {
+      newValue = newValue.trimStart();
+    }
+
     if (type === "number" || allowDecimal) {
       if (allowDecimal) {
         // allow digits and a single dot

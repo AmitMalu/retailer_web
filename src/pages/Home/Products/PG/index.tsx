@@ -34,6 +34,9 @@ const PGScreen = () => {
     (product: any) => product.productName.toLowerCase() === "payment gateway"
   );
 
+  console.log(paymentGatewayProduct, "pgp");
+
+
   const cardsData =
     paymentGatewayProduct?.subProducts?.map((subProduct: any) => {
       return {
@@ -82,6 +85,10 @@ const PGScreen = () => {
           opened={showDrawerForm}
           onClose={() => setShowDrawerForm(false)}
           openedAs={openedAs}
+          productId={paymentGatewayProduct?.productId}
+          subProductId={paymentGatewayProduct?.subProducts?.find(
+            (sp: any) => sp.subProductName === openedAs
+          )?.subProductId}
         />
       </div>
     </>

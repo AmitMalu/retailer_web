@@ -464,7 +464,7 @@ export type FundTransferProps = {
 
 export type WalletToBankProps = {
   requesterHierarchyId: string;
-  walletBalance?: string;
+  walletType?: string;
   selectBank: string;
   TransactionType: string;
   amount?: string;
@@ -535,6 +535,8 @@ export type PartnerRegistrationModalProps = {
   onClose: () => void;
   rowData?: PendingPartnerActivationData;
   openedAs?: string;
+  productId?: string;
+  subProductId?: string;
 };
 
 export type ViewUserProps = {
@@ -604,8 +606,19 @@ export interface CommissionAndChargesRequest {
 
 export type WalletParams = {
   hierarchyId: string;
-  fromDate: Date | string | null;
-  toDate: Date | string | null;
+  dateRange: DatesRangeValue;
+  subProductName: string;
+  walletType: string;
+  status: string;
+  page: number;
+  size: number;
+  [key: string]: any;
+};
+
+export type WalletRequest = {
+  fromDate: string | null;
+  toDate: string | null;
+  hierarchyId: string;
   subProductName: string;
   walletType: string;
   status: string;
@@ -618,15 +631,32 @@ export type WalletData = Record<string, any>;
 
 export type NetworkTransactionParams = {
   loginHierarchyId: string;
-  fromDate: Date | string | null;
-  toDate: Date | string | null;
+  dateRange: DatesRangeValue;
   subProductName: string;
   partnerId: string;
   whitelabelId: string;
   superDistributorId: string;
   distributorId: string;
   retailerId: string;
-  status: string;
+  // status: string;
+  reportType: string;
+  page: number;
+  size: number;
+  [key: string]: any;
+};
+
+export type NetworkTransactionRequest = {
+  loginHierarchyId: string;
+  fromDate: string | null;
+  toDate: string | null;
+  subProductName: string;
+  partnerId: string;
+  whitelabelId: string;
+  superDistributorId: string;
+  distributorId: string;
+  retailerId: string;
+  // status: string;
+  reportType: string;
   page: number;
   size: number;
   [key: string]: any;

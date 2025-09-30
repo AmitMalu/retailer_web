@@ -24,6 +24,7 @@ export const API_ROUTES = {
   CHILD_MEMBER_LIST: `${BASE_URL}/api/dropdown-manager/child-accounts`,
   FUND_TRANSFER: `${BASE_URL}/api/fund-transfer`,
   WALLET_BALANCE: `${BASE_URL}/api/dashboard/wallet-balance`,
+  WALLET_TO_BANK: `${BASE_URL}/api/wallet-to-bank/transfer`,
 
   ///////////////// CREATE USER //////////////////////////
   CREATE_WHITE_LABEL: `${BASE_URL}/api/white-labels`,
@@ -50,7 +51,7 @@ export const API_ROUTES = {
   CREATE_ORDER: `${BASE_URL}/api/pg/create-order`,
 
   ///////////////// CREATE SUB USER //////////////////////////
-  CREATE_SUB_USER: `${BASE_URL}/api/retailer/create-agent`,
+  CREATE_SUB_USER: `${BASE_URL}/api/retailer/create-user`,
 
   /////////////// PAYOUT ////////////////////////////////////////////
   SAVE_BENEFICIARY: `${BASE_URL}/api/payout/save-beneficiary`,

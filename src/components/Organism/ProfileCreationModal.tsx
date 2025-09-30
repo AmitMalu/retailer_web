@@ -21,7 +21,6 @@ import { handleCustomError } from "@/Utils/handleCustomError";
 import { useSelector } from "react-redux";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
-import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 // import FileInputComponent from "@/components/Atoms/FileInputComponent";
 import { RootState } from "@/Redux/Store";
@@ -57,8 +56,8 @@ const ProfileRegistrationForm = ({
 }: PartnerRegistrationModalProps) => {
   const theme = useTheme();
   const [active, setActive] = useState(0);
-  const [showImagePreview, setShowImagePreview] = useState(false);
-  const [isimage, setImage] = useState<File | null>(null);
+  // const [showImagePreview, setShowImagePreview] = useState(false);
+  // const [isimage, setImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { verify: verifyAadhaar } = useAadhaarVerification();
   const { verify: verifyPan } = usePanVerification();
@@ -76,6 +75,7 @@ const ProfileRegistrationForm = ({
 
   const handleClose = () => {
     hasLinked.current = false;
+    setActive(0)
     onClose();
     setVerificationState({
       aadhaarAttempted: false,

@@ -3,11 +3,12 @@ import {
   DistributorsData,
   NetworkTransactionData,
   NetworkTransactionParams,
+  NetworkTransactionRequest,
   PartnersData,
   RetailersData,
 } from "@/Common/interface";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
-import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
+// import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
@@ -17,10 +18,11 @@ import { RootState } from "@/Redux/Store";
 import { Child_Member_List, Network_Transaction_Report } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import {
+  dateRangeValidationSchema,
   decryptData,
   formatYMDdate,
-  isSameOrAfter,
-  isSameOrBefore,
+  // isSameOrAfter,
+  // isSameOrBefore,
 } from "@/Utils/helper";
 import {
   showErrorNotification,
@@ -32,6 +34,10 @@ import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Formik } from "formik";
 import * as Yup from "yup";
+import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
+import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
+import { DatesRangeValue } from "@mantine/dates";
+import moment from "moment";
 
 const NetworkTransaction = () => {
   const theme = useTheme();
@@ -177,30 +183,31 @@ const NetworkTransaction = () => {
   today.setHours(0, 0, 0, 0);
 
   const validationSchema = Yup.object({
-    fromDate: Yup.date()
-      .required("Required")
-      .test("max-today", "Invalid Date", function (value) {
-        if (!value) return true;
-        return isSameOrBefore(value, today);
-      })
-      .test("date-range", "Invalid Date", function (value) {
-        const toDate = this.parent.toDate;
-        if (!value || !toDate) return true;
-        return isSameOrBefore(value, toDate);
-      }),
-    toDate: Yup.date()
-      .required("Required")
-      .test("max-today", "Invalid Date", function (value) {
-        if (!value) return true;
-        return isSameOrBefore(value, today);
-      })
-      .test("date-range", "Invalid Date", function (value) {
-        const fromDate = this.parent.fromDate;
-        if (!value || !fromDate) return true;
-        return isSameOrAfter(value, fromDate);
-      }),
+    // fromDate: Yup.date()
+    //   .required("Required")
+    //   .test("max-today", "Invalid Date", function (value) {
+    //     if (!value) return true;
+    //     return isSameOrBefore(value, today);
+    //   })
+    //   .test("date-range", "Invalid Date", function (value) {
+    //     const toDate = this.parent.toDate;
+    //     if (!value || !toDate) return true;
+    //     return isSameOrBefore(value, toDate);
+    //   }),
+    // toDate: Yup.date()
+    //   .required("Required")
+    //   .test("max-today", "Invalid Date", function (value) {
+    //     if (!value) return true;
+    //     return isSameOrBefore(value, today);
+    //   })
+    //   .test("date-range", "Invalid Date", function (value) {
+    //     const fromDate = this.parent.fromDate;
+    //     if (!value || !fromDate) return true;
+    //     return isSameOrAfter(value, fromDate);
+    //   }),
+    dateRange: dateRangeValidationSchema,
     subProductName: Yup.string().required("Required"),
-    status: Yup.string().required("Required"),
+    reportType: Yup.string().required("Required"),
 
     // whitelabelId: Yup.string(),
     // superDistributorId: Yup.string(),
@@ -273,15 +280,18 @@ const NetworkTransaction = () => {
 
   const initialValues: NetworkTransactionParams = {
     loginHierarchyId: loginData?.hierarchyId,
-    fromDate: null,
-    toDate: null,
+    dateRange: [
+      moment().subtract(6, "days").toDate(), // from: 6 days ago
+      moment().toDate(), // to: today
+    ] as DatesRangeValue,
     subProductName: "",
     whitelabelId: loginData?.role === "WL" ? loginData?.hierarchyId : "",
     superDistributorId: loginData?.role === "SD" ? loginData?.hierarchyId : "",
     partnerId: loginData?.role === "PT" ? loginData?.hierarchyId : "",
     distributorId: loginData?.role === "DT" ? loginData?.hierarchyId : "",
     retailerId: loginData?.role === "RT" ? loginData?.hierarchyId : "",
-    status: "",
+    // status: "",
+    reportType: "",
     page: currentPage,
     size: itemsPerPage,
     // search: "",
@@ -296,9 +306,10 @@ const NetworkTransaction = () => {
       setIsLoading(true);
       setCurrentPage(values.page);
       setItemsPerPage(values.size);
-      let bodyRequest = {
-        fromDate: formatYMDdate(values.fromDate),
-        toDate: formatYMDdate(values.toDate),
+      const [fromDate, toDate] = values.dateRange || [];
+      let bodyRequest: NetworkTransactionRequest = {
+        fromDate: fromDate ? formatYMDdate(fromDate) : null,
+        toDate: toDate ? formatYMDdate(toDate) : null,
         loginHierarchyId: values.loginHierarchyId || loginData?.hierarchyId,
         subProductName: values.subProductName,
         whitelabelId: values.whitelabelId,
@@ -306,8 +317,8 @@ const NetworkTransaction = () => {
         partnerId: values.partnerId,
         distributorId: values.distributorId,
         retailerId: values.retailerId,
-        status: values.status,
-        page: values.page,
+        reportType: values.reportType,
+        page: Number(values.page) - 1,
         size: values.size,
       };
       const response = await Network_Transaction_Report({}, bodyRequest);
@@ -327,9 +338,10 @@ const NetworkTransaction = () => {
 
   const handleExport = async (formikValues: NetworkTransactionParams) => {
     try {
+      const [fromDate, toDate] = formikValues.dateRange || [];
       const bodyRequest = {
-        fromDate: formatYMDdate(formikValues.fromDate),
-        toDate: formatYMDdate(formikValues.toDate),
+        fromDate: fromDate ? formatYMDdate(fromDate) : null,
+        toDate: toDate ? formatYMDdate(toDate) : null,
         loginHierarchyId:
           formikValues.loginHierarchyId || loginData?.hierarchyId,
         subProductName: formikValues.subProductName,
@@ -338,7 +350,7 @@ const NetworkTransaction = () => {
         partnerId: formikValues.partnerId,
         distributorId: formikValues.distributorId,
         retailerId: formikValues.retailerId,
-        status: formikValues.status,
+        reportType: formikValues.reportType,
         page: formikValues.page,
         size: formikValues.size,
       };
@@ -422,13 +434,13 @@ const NetworkTransaction = () => {
       key: "amount",
       label: "Amount",
       searchKey: "amount",
-      sortable: true,
+      // sortable: true,
     },
     {
       key: "refNo",
       label: "Ref No",
       searchKey: "refNo",
-      sortable: true,
+      // sortable: true,
     },
     {
       key: "balanceAfter",
@@ -477,7 +489,8 @@ const NetworkTransaction = () => {
           partnerId: values.partnerId,
           distributorId: values.distributorId,
           retailerId: values.retailerId,
-          status: values.status,
+          // status: values.status,
+          reportType: values.reportType,
           page: values.page,
           size: values.size,
         };
@@ -549,57 +562,24 @@ const NetworkTransaction = () => {
                   <div className="flex w-full flex-wrap items-start justify-between gap-4">
                     <div className="flex w-full flex-wrap items-start justify-start gap-4">
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        <CustomDateComponent
+                        <FormikDateRangePicker
+                          name="dateRange"
                           label="Date Range"
-                          type="range"
-                          value={[
-                            values.fromDate ? new Date(values.fromDate) : null,
-                            values.toDate ? new Date(values.toDate) : null,
-                          ]}
-                          onChange={(val) => {
-                            if (Array.isArray(val) && val.length === 2) {
-                              setFieldValue("fromDate", val[0]);
-                              setFieldValue("toDate", val[1]);
-                            }
-                          }}
-                          onShortcutSelect={(
-                            start: Date | null,
-                            end: Date | null
-                          ) => {
-                            setFieldValue("fromDate", start);
-                            setFieldValue("toDate", end);
-                          }}
-                          dateFormat="YYYY-MM-DD"
-                          className="w-72"
-                          withAsterisk
-                          error={
-                            (touched.fromDate && errors.fromDate
-                              ? errors.fromDate
-                              : "") +
-                            (touched.toDate &&
-                            errors.toDate &&
-                            errors.toDate !== errors.fromDate
-                              ? (errors.fromDate ? " | " : "") + errors.toDate
-                              : "")
-                          }
-                          customButtons={true}
+                          size="xs"
+                          shortcuts
+                          required
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        <DropdownComponent
-                          label="Sub Product Name"
+                        <FormikSelectComponent
+                          name="subProductName"
+                          label="Sub Product"
+                          placeholder="Select Sub Product"
                           data={uniqueSubProductTypes}
-                          value={values.subProductName}
+                          allowDeselect
+                          searchable
                           withAsterisk
-                          onChange={(value) =>
-                            setFieldValue("subProductName", value)
-                          }
-                          error={
-                            touched.subProductName && errors.subProductName
-                              ? errors.subProductName
-                              : ""
-                          }
-                          className="w-max"
+                          size="xs"
                         />
                       </div>
                       {loginData?.role === "WL" && (
@@ -618,7 +598,7 @@ const NetworkTransaction = () => {
                             }}
                             error={
                               touched.superDistributorId &&
-                              errors.superDistributorId
+                                errors.superDistributorId
                                 ? errors.superDistributorId
                                 : ""
                             }
@@ -628,98 +608,96 @@ const NetworkTransaction = () => {
                       )}
                       {(loginData?.role === "WL" ||
                         loginData?.role === "SD") && (
-                        <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                          <DropdownComponent
-                            label="Partner ID"
-                            data={uniquePartnerList}
-                            value={values.partnerId}
-                            withAsterisk
-                            onChange={(value) => {
-                              const id = String(
-                                Array.isArray(value) ? value[0] : value
-                              );
-                              setFieldValue("partnerId", id);
-                              handlePartnerChange(id);
-                            }}
-                            error={
-                              touched.partnerId && errors.partnerId
-                                ? errors.partnerId
-                                : ""
-                            }
-                            disabled={
-                              !values.superDistributorId &&
-                              loginData?.role === "WL"
-                            }
-                            className="w-max"
-                          />
-                        </div>
-                      )}
+                          <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
+                            <DropdownComponent
+                              label="Partner ID"
+                              data={uniquePartnerList}
+                              value={values.partnerId}
+                              withAsterisk
+                              onChange={(value) => {
+                                const id = String(
+                                  Array.isArray(value) ? value[0] : value
+                                );
+                                setFieldValue("partnerId", id);
+                                handlePartnerChange(id);
+                              }}
+                              error={
+                                touched.partnerId && errors.partnerId
+                                  ? errors.partnerId
+                                  : ""
+                              }
+                              disabled={
+                                !values.superDistributorId &&
+                                loginData?.role === "WL"
+                              }
+                              className="w-max"
+                            />
+                          </div>
+                        )}
                       {(loginData?.role === "WL" ||
                         loginData?.role === "SD" ||
                         loginData?.role === "PT") && (
-                        <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                          <DropdownComponent
-                            label="Distributor ID"
-                            data={uniqueDistributorList}
-                            value={values.distributorId}
-                            withAsterisk
-                            onChange={(value) => {
-                              const id = String(
-                                Array.isArray(value) ? value[0] : value
-                              );
-                              setFieldValue("distributorId", id);
-                              handleDistributorChange(id);
-                            }}
-                            error={
-                              touched.distributorId && errors.distributorId
-                                ? errors.distributorId
-                                : ""
-                            }
-                            disabled={!values.partnerId}
-                            className="w-max"
-                          />
-                        </div>
-                      )}
+                          <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
+                            <DropdownComponent
+                              label="Distributor ID"
+                              data={uniqueDistributorList}
+                              value={values.distributorId}
+                              withAsterisk
+                              onChange={(value) => {
+                                const id = String(
+                                  Array.isArray(value) ? value[0] : value
+                                );
+                                setFieldValue("distributorId", id);
+                                handleDistributorChange(id);
+                              }}
+                              error={
+                                touched.distributorId && errors.distributorId
+                                  ? errors.distributorId
+                                  : ""
+                              }
+                              disabled={!values.partnerId}
+                              className="w-max"
+                            />
+                          </div>
+                        )}
                       {(loginData?.role === "WL" ||
                         loginData?.role === "SD" ||
                         loginData?.role === "PT" ||
                         loginData?.role === "DT") && (
-                        <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                          <DropdownComponent
-                            label="Retailer ID"
-                            data={uniqueRetailerList}
-                            value={values.retailerId}
-                            withAsterisk
-                            onChange={(value) => {
-                              const id = String(
-                                Array.isArray(value) ? value[0] : value
-                              );
-                              setFieldValue("retailerId", id);
-                            }}
-                            error={
-                              touched.retailerId && errors.retailerId
-                                ? errors.retailerId
-                                : ""
-                            }
-                            disabled={!values.distributorId}
-                            className="w-max"
-                          />
-                        </div>
-                      )}
+                          <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
+                            <DropdownComponent
+                              label="Retailer ID"
+                              data={uniqueRetailerList}
+                              value={values.retailerId}
+                              withAsterisk
+                              onChange={(value) => {
+                                const id = String(
+                                  Array.isArray(value) ? value[0] : value
+                                );
+                                setFieldValue("retailerId", id);
+                              }}
+                              error={
+                                touched.retailerId && errors.retailerId
+                                  ? errors.retailerId
+                                  : ""
+                              }
+                              disabled={!values.distributorId}
+                              className="w-max"
+                            />
+                          </div>
+                        )}
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        <DropdownComponent
-                          label="Status"
+                        <FormikSelectComponent
+                          name="reportType"
+                          label="Report Type"
+                          placeholder="Select Report Type"
+                          allowDeselect
                           data={[
                             { value: "COMMISSION", label: "COMMISSION" },
                             { value: "CHARGE", label: "CHARGE" },
                           ]}
-                          value={values.status}
                           withAsterisk
-                          onChange={(value) => setFieldValue("status", value)}
-                          error={
-                            touched.status && errors.status ? errors.status : ""
-                          }
-                          className="w-max"
+                          size="xs"
                         />
                       </div>
                     </div>

@@ -10,14 +10,14 @@ import * as Yup from "yup";
 import {
   RaisedTicketParams,
   TicketingSystemProps,
-  TransactionDetailsData,
+  // TransactionDetailsData,
 } from "@/Common/interface";
 import TextareaComponent from "@/components/Atoms/TextareaComponent";
 import {
   fetch_raised_tickets,
   Issue_Type_Dropdown,
   Raise_Ticket,
-  Transaction_Details,
+  // Transaction_Details,
 } from "@/Services/api";
 import {
   showErrorNotification,
@@ -27,23 +27,27 @@ import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { RootState } from "@/Redux/Store";
 import { useSelector } from "react-redux";
-import { BackSvgIcon, FilterSvgIcon, SearchSvgIcon } from "@/assets/svg";
+import {
+  BackSvgIcon, FilterSvgIcon,
+  // SearchSvgIcon
+} from "@/assets/svg";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import FileInputComponent from "@/components/Atoms/FileInputComponent";
 import { UnstyledButton } from "@mantine/core";
 import moment from "moment";
 import TableComponent from "@/components/Molecules/TableComponent";
 import ColumsSelectionModal from "@/components/Molecules/ColumsSelectionModal";
+import { Refresh } from "@mui/icons-material";
 // import { maxWidth } from "@mui/system";
 
 const Ticketing = () => {
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [showTicketForm, setShowTicketForm] = useState(false);
-  const [isTicketData, setIsTicketData] = useState<TransactionDetailsData>({});
+  // const [isTicketData, setIsTicketData] = useState<TransactionDetailsData>({});
   const [ticketList, setTicketList] = useState([]);
   const [showColumnModal, setShowColumnModal] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
+  // const [searchValue, setSearchValue] = useState("");
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
@@ -91,27 +95,28 @@ const Ticketing = () => {
   }, []);
 
   // When Search by TxId from Search bar
-  const FetchUserList = async () => {
-    try {
-      let bodyRequest = {
-        transactionId: searchValue,
-        hierarchyId: loginData?.hierarchyId,
-      };
-      const response = await Transaction_Details(bodyRequest);
-      if (response?.status === 200) {
-        setIsTicketData(response?.data?.data);
-      } else {
-        showErrorNotification(response?.data?.message);
-      }
-    } catch (error) {
-      await handleCustomError(error);
-    }
-  };
+  // const FetchUserList = async () => {
+  //   try {
+  //     let bodyRequest = {
+  //       transactionId: searchValue,
+  //       hierarchyId: loginData?.hierarchyId,
+  //     };
+  //     const response = await Transaction_Details(bodyRequest);
+  //     if (response?.status === 200) {
+  //       setIsTicketData(response?.data?.data);
+  //     } else {
+  //       showErrorNotification(response?.data?.message);
+  //     }
+  //   } catch (error) {
+  //     await handleCustomError(error);
+  //   }
+  // };
 
   const initialValues: TicketingSystemProps = {
-    transactionId: isTicketData?.transaction_id
-      ? isTicketData?.transaction_id
-      : "",
+    // transactionId: isTicketData?.transaction_id
+    //   ? isTicketData?.transaction_id
+    //   : "",
+    transactionId: "",
     issueType: "",
     description: "",
     subProductName: "",
@@ -150,7 +155,7 @@ const Ticketing = () => {
       if (response?.status === 200 || response?.data?.statusCode === "200") {
         showSuccessNotification(response?.data?.message);
         setShowTicketForm(false);
-        setSearchValue("");
+        // setSearchValue("");
         FetchRaisedTickets(page, size, searchValues);
       } else {
         showErrorNotification(response?.data?.message || "Unable to raise");
@@ -417,6 +422,13 @@ const Ticketing = () => {
     }
   };
 
+  const handleRefresh = () => {
+    setIsSeacrh(false)
+    setPage(1)
+    setSize(10)
+    setSearchValues({});
+  }
+
   useEffect(() => {
     FetchRaisedTickets(page, size, searchValues);
   }, [page, size, searchValues])
@@ -470,6 +482,14 @@ const Ticketing = () => {
                 <div className="flex items-center justify-end gap-2">
                   <div className="flex w-max items-center mt-6 justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px] ">
                     <UnstyledButton
+                      onClick={handleRefresh}
+                      className="flex w-max items-center justify-center gap-2 "
+                    >
+                      <Refresh color="error" />
+                    </UnstyledButton>
+                  </div>
+                  <div className="flex w-max items-center mt-6 justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px] ">
+                    <UnstyledButton
                       onClick={() => setIsSeacrh(!isSeacrh)}
                       className="flex w-max items-center justify-center gap-2 "
                     >
@@ -493,7 +513,7 @@ const Ticketing = () => {
                     variant="filled"
                     onClick={() => {
                       setShowTicketForm(true);
-                      setSearchValue("");
+                      // setSearchValue("");
                     }}
                     radius={5}
                   />
@@ -610,7 +630,7 @@ const Ticketing = () => {
             <UnstyledButton
               onClick={() => {
                 setShowTicketForm(false);
-                setSearchValue("");
+                // setSearchValue("");
               }}
               className="mb-4"
             >
@@ -637,7 +657,7 @@ const Ticketing = () => {
 
             <div>
               {/* Search Bar */}
-              <div className="mt-5 w-[calc(20%-12px)] ">
+              {/* <div className="mt-5 w-[calc(30%-12px)] ">
                 <TextInputComponent
                   placeholder="Search by transaction ID"
                   value={searchValue}
@@ -654,10 +674,10 @@ const Ticketing = () => {
                     <SearchSvgIcon color={theme.palette.red.DEFAULT} />
                   }
                 />
-              </div>
+              </div> */}
 
               {/* When Search from TxId Data displayed if Available */}
-              {isTicketData && Object.keys(isTicketData).length > 0 && (
+              {/* {isTicketData && Object.keys(isTicketData).length > 0 && (
                 <div className="mt-4 w-full flex flex-wrap items-start justify-between gap-2 ">
                   <div className="w-full sm:w-[calc(18%-12px)] lg:w-[calc(18%-16px)] gap-2">
                     <TextComponent
@@ -723,7 +743,7 @@ const Ticketing = () => {
                       {isTicketData?.sub_product_name || "-"}
                     </TextComponent>
                   </div>
-                  {/* <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] gap-2">
+                  <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] gap-2">
                     <TextComponent
                       fontSize={18}
                       fontWeight={600}
@@ -738,7 +758,7 @@ const Ticketing = () => {
                     >
                       {UserProfileData?.address?.pinCode || "-"}
                     </TextComponent>
-                  </div> */}
+                  </div>
                   <div className="w-full sm:w-[calc(15%-12px)] lg:w-[calc(15%-16px)] gap-2">
                     <TextComponent
                       fontSize={18}
@@ -772,7 +792,7 @@ const Ticketing = () => {
                     </TextComponent>
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
 
             {/* //Create New Ticket Form */}
@@ -795,9 +815,10 @@ const Ticketing = () => {
                     <div className="flex flex-wrap items-start justify-start gap-6 mt-5">
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
-                          label={
-                            isTicketData?.transaction_id ? "" : "Transaction ID"
-                          }
+                          // label={
+                          //   isTicketData?.transaction_id ? "" : "Transaction ID"
+                          // }
+                          label="Transaction ID"
                           placeholder={"Enter"}
                           value={values.transactionId}
                           onChange={handleChange("transactionId")}
@@ -808,7 +829,7 @@ const Ticketing = () => {
                           }
                           withAsterisk
                           className="w-max"
-                          disabled={isTicketData?.transaction_id && true}
+                        // disabled={isTicketData?.transaction_id && true}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">

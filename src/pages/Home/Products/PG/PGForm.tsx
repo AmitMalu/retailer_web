@@ -28,8 +28,8 @@ import { RootState } from "@/Redux/Store";
 const PGFormModal = ({
   opened,
   onClose,
-  // rowData,
-  //   openedAs,
+  productId,
+  subProductId,
 }: PartnerRegistrationModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBinDetails, setIsBinDetails] = useState(false);
@@ -80,8 +80,8 @@ const PGFormModal = ({
     amount: "",
     confirmAmount: "",
     narration: "",
-    productId: "",
-    subProductId: "",
+    productId: productId || "",
+    subProductId: subProductId || "",
   };
 
   const handleFetchCardTypeSubmit = async (
@@ -363,42 +363,27 @@ const PGFormModal = ({
                           withAsterisk
                           onChange={(value) => {
                             setFieldValue("productId", value);
-                            // const newProduct = loginData?.products?.find(
-                            //   (p: any) => p.productId === value
-                            // );
-                            // const firstSubProduct =
-                            //   newProduct?.subProducts?.[0];
-                            // setFieldValue(
-                            //   "subProductId",
-                            //   firstSubProduct?.subProductId || ""
-                            // );
                           }}
                           error={
-                            touched.productId && errors.productId
-                              ? errors.productId
-                              : ""
+                            touched.productId && errors.productId ? errors.productId : ""
                           }
                           className="w-full"
+                          disabled={Boolean(values.productId)} // ✅ disable if value is already set
                         />
                       </div>
-                      <div className="w-full sm:w-[calc(50%-12px)] ">
+
+                      <div className="w-full sm:w-[calc(50%-12px)]">
                         <DropdownComponent
                           label="Sub Product"
                           data={subProductOptions}
                           value={values.subProductId}
                           withAsterisk
-                          onChange={(value) =>
-                            setFieldValue("subProductId", value)
-                          }
+                          onChange={(value) => setFieldValue("subProductId", value)}
                           error={
-                            touched.subProductId && errors.subProductId
-                              ? errors.subProductId
-                              : ""
+                            touched.subProductId && errors.subProductId ? errors.subProductId : ""
                           }
                           className="w-full"
-                          disabled={
-                            !values.productId || !subProductOptions.length
-                          }
+                          disabled={Boolean(values.subProductId)} // ✅ disable if value is already set
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">

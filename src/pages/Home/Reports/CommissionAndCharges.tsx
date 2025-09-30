@@ -352,7 +352,7 @@ const CommissionAndCharges = () => {
           validationSchema={validationSchema}
           onSubmit={handleReportSubmit}
         >
-          {({ values, handleSubmit, errors, touched, setFieldValue }) => {
+          {({ values, handleSubmit, setFieldValue }) => {
             return (
               <>
                 <div className="shadow-black-900/100 mt-5 flex w-full flex-col items-center justify-center gap-6 rounded-xl bg-background-paper p-3 shadow-lg 320px:mt-5 md:mt-0">

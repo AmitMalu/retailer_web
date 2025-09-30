@@ -1,10 +1,11 @@
-import { WalletData, WalletParams } from "@/Common/interface";
+import { WalletData, WalletParams, WalletRequest } from "@/Common/interface";
 import { RootState } from "@/Redux/Store";
 import {
+  dateRangeValidationSchema,
   decryptData,
   formatYMDdate,
-  isSameOrAfter,
-  isSameOrBefore,
+  // isSameOrAfter,
+  // isSameOrBefore,
 } from "@/Utils/helper";
 import { useTheme } from "@mui/system";
 import { useRef, useState } from "react";
@@ -14,7 +15,7 @@ import * as Yup from "yup";
 import { Wallet_Report } from "@/Services/api";
 import {
   showErrorNotification,
-  showSuccessNotification,
+  // showSuccessNotification,
 } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import ColumsSelectionModal from "@/components/Molecules/ColumsSelectionModal";
@@ -23,9 +24,13 @@ import TextComponent from "@/components/Atoms/TextComponent";
 import { ColsSvgIcon, ExportSvgIcon, FilterSvgIcon } from "@/assets/svg";
 import { UnstyledButton } from "@mantine/core";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
-import DropdownComponent from "@/components/Atoms/DropdownComponent";
-import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
+// import DropdownComponent from "@/components/Atoms/DropdownComponent";
+// import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
 import Loader from "@/components/Atoms/Loader";
+import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
+import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
+import moment from "moment";
+import { DatesRangeValue } from "@mantine/dates";
 
 const WalletReport = () => {
   const theme = useTheme();
@@ -59,28 +64,29 @@ const WalletReport = () => {
   today.setHours(0, 0, 0, 0);
 
   const validationSchema = Yup.object({
-    fromDate: Yup.date()
-      .required("Required")
-      .test("max-today", "Invalid Date", function (value) {
-        if (!value) return true;
-        return isSameOrBefore(value, today);
-      })
-      .test("date-range", "Invalid Date", function (value) {
-        const toDate = this.parent.toDate;
-        if (!value || !toDate) return true;
-        return isSameOrBefore(value, toDate);
-      }),
-    toDate: Yup.date()
-      .required("Required")
-      .test("max-today", "Invalid Date", function (value) {
-        if (!value) return true;
-        return isSameOrBefore(value, today);
-      })
-      .test("date-range", "Invalid Date", function (value) {
-        const fromDate = this.parent.fromDate;
-        if (!value || !fromDate) return true;
-        return isSameOrAfter(value, fromDate);
-      }),
+    // fromDate: Yup.date()
+    //   .required("Required")
+    //   .test("max-today", "Invalid Date", function (value) {
+    //     if (!value) return true;
+    //     return isSameOrBefore(value, today);
+    //   })
+    //   .test("date-range", "Invalid Date", function (value) {
+    //     const toDate = this.parent.toDate;
+    //     if (!value || !toDate) return true;
+    //     return isSameOrBefore(value, toDate);
+    //   }),
+    // toDate: Yup.date()
+    //   .required("Required")
+    //   .test("max-today", "Invalid Date", function (value) {
+    //     if (!value) return true;
+    //     return isSameOrBefore(value, today);
+    //   })
+    //   .test("date-range", "Invalid Date", function (value) {
+    //     const fromDate = this.parent.fromDate;
+    //     if (!value || !fromDate) return true;
+    //     return isSameOrAfter(value, fromDate);
+    //   }),
+    dateRange: dateRangeValidationSchema,
     walletType: Yup.string().required("Required"),
     subProductName: Yup.string().required("Required"),
     status: Yup.string().required("Required"),
@@ -89,8 +95,10 @@ const WalletReport = () => {
   const initialValues: WalletParams = {
     hierarchyId: loginData?.hierarchyId,
     walletType: "",
-    fromDate: null,
-    toDate: null,
+    dateRange: [
+      moment().subtract(6, "days").toDate(), // from: 6 days ago
+      moment().toDate(), // to: today
+    ] as DatesRangeValue,
     subProductName: "",
     status: "",
     page: currentPage,
@@ -102,21 +110,28 @@ const WalletReport = () => {
       setIsLoading(true);
       setCurrentPage(values.page);
       setItemsPerPage(values.size);
-      let bodyRequest = {
-        fromDate: formatYMDdate(values.fromDate),
-        toDate: formatYMDdate(values.toDate),
+      const [fromDate, toDate] = values.dateRange || [];
+
+      let bodyRequest: WalletRequest = {
+        fromDate: fromDate ? formatYMDdate(fromDate) : null,
+        toDate: toDate ? formatYMDdate(toDate) : null,
         hierarchyId: values.hierarchyId || loginData?.hierarchyId,
         walletType: values.walletType,
         subProductName: values.subProductName,
         status: values.status,
-        page: values.page,
+        page: Number(values.page) - 1,
         size: values.size,
       };
       const response = await Wallet_Report({}, bodyRequest);
 
       if (response?.status === 200) {
-        setIsWalletReportList(response?.data?.data?.content);
-        showSuccessNotification(response?.data?.message);
+        const content = response?.data?.data?.content || [];
+
+        setIsWalletReportList(content);
+
+        if (content.length <= 0) {
+          showErrorNotification("No records found");
+        }
       } else {
         showErrorNotification(response?.data?.message);
       }
@@ -180,7 +195,7 @@ const WalletReport = () => {
       key: "refNo",
       label: "Ref No",
       searchKey: "refNo",
-      sortable: true,
+      // sortable: true,
     },
     {
       key: "balanceBefore",
@@ -192,7 +207,7 @@ const WalletReport = () => {
       key: "amount",
       label: "Amount",
       searchKey: "amount",
-      sortable: true,
+      // sortable: true,
     },
     {
       key: "balanceAfter",
@@ -318,98 +333,59 @@ const WalletReport = () => {
           validationSchema={validationSchema}
           onSubmit={handleReportSubmit}
         >
-          {({ values, handleSubmit, errors, touched, setFieldValue }) => {
+          {({ values, handleSubmit, setFieldValue }) => {
             return (
               <>
                 <div className="shadow-black-900/100 mt-5 flex w-full flex-col items-center justify-center gap-6 rounded-xl bg-background-paper p-3 shadow-lg 320px:mt-5 md:mt-0">
                   <div className="flex w-full flex-wrap items-center justify-between gap-4">
                     <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                      <CustomDateComponent
+                      <FormikDateRangePicker
+                        name="dateRange"
                         label="Date Range"
-                        type="range"
-                        value={[
-                          values.fromDate ? new Date(values.fromDate) : null,
-                          values.toDate ? new Date(values.toDate) : null,
-                        ]}
-                        onChange={(val) => {
-                          if (Array.isArray(val) && val.length === 2) {
-                            setFieldValue("fromDate", val[0]);
-                            setFieldValue("toDate", val[1]);
-                          }
-                        }}
-                        onShortcutSelect={(
-                          start: Date | null,
-                          end: Date | null
-                        ) => {
-                          setFieldValue("fromDate", start);
-                          setFieldValue("toDate", end);
-                        }}
-                        dateFormat="YYYY-MM-DD"
-                        className="w-72"
-                        withAsterisk
-                        error={
-                          (touched.fromDate && errors.fromDate
-                            ? errors.fromDate
-                            : "") +
-                          (touched.toDate &&
-                            errors.toDate &&
-                            errors.toDate !== errors.fromDate
-                            ? (errors.fromDate ? " | " : "") + errors.toDate
-                            : "")
-                        }
-                        customButtons={true}
+                        size="xs"
+                        shortcuts
+                        required
                       />
                     </div>
                     <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                      <DropdownComponent
+                      <FormikSelectComponent
+                        name="walletType"
                         label="Wallet Type"
+                        placeholder="Select Wallet Type"
+                        allowDeselect
                         data={[
                           { value: "POSTPAID", label: "POSTPAID" },
                           { value: "PREPAID", label: "PREPAID" },
                         ]}
-                        value={values.walletType}
                         withAsterisk
-                        onChange={(value) => setFieldValue("walletType", value)}
-                        error={
-                          touched.walletType && errors.walletType
-                            ? errors.walletType
-                            : ""
-                        }
-                        className="w-max"
+                        size="xs"
                       />
                     </div>
                     <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                      <DropdownComponent
+                      <FormikSelectComponent
+                        name="subProductName"
                         label="Sub Product"
+                        placeholder="Select Sub Product"
                         data={uniqueSubProductTypes}
-                        value={values.subProductName}
+                        allowDeselect
+                        searchable
                         withAsterisk
-                        onChange={(value) =>
-                          setFieldValue("subProductName", value)
-                        }
-                        error={
-                          touched.subProductName && errors.subProductName
-                            ? errors.subProductName
-                            : ""
-                        }
-                        className="w-max"
+                        size="xs"
                       />
                     </div>
                     <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                      <DropdownComponent
+                      <FormikSelectComponent
+                        name="status"
                         label="Status"
+                        placeholder="Select Status"
+                        allowDeselect
                         data={[
                           { value: "SUCCESS", label: "SUCCESS" },
                           { value: "PENDING", label: "PENDING" },
                           { value: "FAILURE", label: "FAILURE" },
                         ]}
-                        value={values.status}
                         withAsterisk
-                        onChange={(value) => setFieldValue("status", value)}
-                        error={
-                          touched.status && errors.status ? errors.status : ""
-                        }
-                        className="w-max"
+                        size="xs"
                       />
                     </div>
 

@@ -8,7 +8,6 @@ import * as Yup from "yup";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
-import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import FileInputComponent from "@/components/Atoms/FileInputComponent";
 import TextComponent from "@/components/Atoms/TextComponent";
@@ -20,7 +19,6 @@ import { Prefund_Request } from "@/Services/api";
 import Loader from "@/components/Atoms/Loader";
 import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePicker";
 import { IconCalendar } from "@tabler/icons-react";
-import { DateValue } from "@mantine/dates";
 import moment from "moment";
 
 const WalletToBankFund = () => {
