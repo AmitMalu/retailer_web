@@ -48,6 +48,7 @@ const Ticketing = () => {
   const [ticketList, setTicketList] = useState([]);
   const [showColumnModal, setShowColumnModal] = useState(false);
   // const [searchValue, setSearchValue] = useState("");
+
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
@@ -55,7 +56,6 @@ const Ticketing = () => {
   const [isSeacrh, setIsSeacrh] = useState(false);
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
-
   );
 
   const loginData = apiResponses?.loginData
@@ -488,6 +488,7 @@ const Ticketing = () => {
                       <Refresh color="error" />
                     </UnstyledButton>
                   </div>
+
                   <div className="flex w-max items-center mt-6 justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px] ">
                     <UnstyledButton
                       onClick={() => setIsSeacrh(!isSeacrh)}
@@ -515,7 +516,8 @@ const Ticketing = () => {
                       setShowTicketForm(true);
                       // setSearchValue("");
                     }}
-                    radius={5}
+                    radius={4}
+                    width={150}
                   />
                 </div>
               </div>

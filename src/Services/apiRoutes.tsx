@@ -59,6 +59,7 @@ export const API_ROUTES = {
   GET_BANK_DETAILS: `${BASE_URL}/api/network-banks/details-by-ifsc`,
   GET_PAYOUT_ALL_DETAILS: `${BASE_URL}/api/payout/all`,
   DELETE_PAYOUT_BENEFICIARY: `${BASE_URL}/api/payout/delete-beneficiaries`,
+  EDIT_BENEFICIARY_BANK_DETAILS: `${BASE_URL}/api/payout/update-beneficiaries`,
 
   /////////////////// BBPS ///////////////////////////////////////
   GET_PROVIDER_LIST: `${BASE_URL}/api/bbps/provider-list`,
@@ -70,4 +71,8 @@ export const API_ROUTES = {
   EMAIL_VERIFICATION: `${BASE_URL}/verification/email-validate`,
   ADHAAR_PAN_LINK: `${BASE_URL}/verification/aadhaar-pan-link`,
   VOTER_ID_VERIFICATION: `${BASE_URL}/verification/voterId-validate`,
+  BANK_VERIFICATION: `${BASE_URL}/verification/bank-validate`,
+
+  /////////////////////////// bANKS ////////////////////////////////////
+  ADD_BANK: `${BASE_URL}/api/bank-details`,
 };

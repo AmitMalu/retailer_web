@@ -1,7 +1,9 @@
 import {
+  BankVerificationRequest,
   ChangePasswordRequestProps,
   CommissionAndChargesRequest,
   CreateOrderProps,
+  EditBeneficiaryBankRequest,
   FetchBillDetailsProps,
   FetchCardBinDetailProps,
   ForgotPasswordRequestProps,
@@ -11,6 +13,7 @@ import {
   // NetworkTransactionParams,
   NetworkTransactionRequest,
   OtpRequestProps,
+  PayoutBankDetailsParams,
   PayoutSaveBeneficiaryProps,
   PayoutSendBeneficiaryProps,
   RaisedTicketParams,
@@ -263,6 +266,15 @@ export const Payout_Save_Beneficiary = async (
 ) =>
   await api.post(`${API_ROUTES.SAVE_BENEFICIARY}`, data, await createHeaders());
 
+export const Edit_Beneficiary_Bank_Details = async (
+  data: EditBeneficiaryBankRequest
+) =>
+  await api.put(
+    `${API_ROUTES.EDIT_BENEFICIARY_BANK_DETAILS}/${data.id}`,
+    data,
+    await createHeaders()
+  );
+
 export const Payout_Send = async (data: PayoutSendBeneficiaryProps) =>
   await api.post(`${API_ROUTES.SEND_PAYOUT}`, data, await createHeaders());
 
@@ -272,8 +284,44 @@ export const Payout_Get_Bank_Details = async (ifscCode: string) =>
     await createHeaders()
   );
 
-export const Payout_GetAll_Payout_BankDetails = async () =>
-  await api.get(`${API_ROUTES.GET_PAYOUT_ALL_DETAILS}`, await createHeaders());
+// export const Payout_GetAll_Payout_BankDetails = async () =>
+// await api.get(`${API_ROUTES.GET_PAYOUT_ALL_DETAILS}`, await createHeaders());
+
+export const Payout_GetAll_Payout_BankDetails = async (
+  params: PayoutBankDetailsParams
+) => {
+  //////////////
+  // Convert all values to string for URLSearchParams
+  const queryParams = new URLSearchParams(
+    Object.fromEntries(
+      Object.entries(params).map(([key, value]) => [key, String(value ?? "")])
+    )
+  ).toString();
+
+  const url = `${API_ROUTES.GET_PAYOUT_ALL_DETAILS}${queryParams ? `?${queryParams}` : ""}`;
+
+  return await api.get(url, await createHeaders());
+  //////////////
+
+  // always include page & size
+  // const params = { page, size, ...(filters || {}) };
+
+  // build query string
+  // const queryParams = new URLSearchParams(
+  //   Object.entries(params).reduce(
+  //     (acc, [key, value]) => {
+  //       acc[key] = String(value);
+  //       return acc;
+  //     },
+  //     {} as Record<string, string>
+  //   )
+  // ).toString();
+
+  // return await api.get(
+  //   `${API_ROUTES.GET_PAYOUT_ALL_DETAILS}?${queryParams}`,
+  //   await createHeaders()
+  // );
+};
 
 export const Payout_Delete_Payout_BankDetails = async (ids: number[]) => {
   const headers = await createHeaders();
@@ -325,5 +373,16 @@ export const Voter_Id_Verification = async (voterid: string) =>
   await api.post(
     `${API_ROUTES.VOTER_ID_VERIFICATION}?voterid=${voterid}`,
     {},
+    await createHeaders()
+  );
+
+export const Bank_Verification = async ({
+  id_number,
+  ifsc,
+  ifsc_details,
+}: BankVerificationRequest) =>
+  await api.post(
+    `${API_ROUTES.BANK_VERIFICATION}`,
+    { id_number, ifsc, ifsc_details },
     await createHeaders()
   );

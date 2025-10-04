@@ -573,25 +573,25 @@ const CommissionAndCharges = () => {
                     onSearch={(columnKey, value) =>
                       handleSearchWithValues(columnKey, value, values)
                     }
-                    onPageChange={(page) => {
-                      setCurrentPage(page);
-                      const updatedValues = {
-                        ...values,
-                        page,
-                        size: itemsPerPage,
-                      };
-                      handleReportSubmit(updatedValues); //
-                    }}
-                    onPageSizeChange={(size) => {
-                      setItemsPerPage(size);
-                      setCurrentPage(1);
-                      const updatedValues = {
-                        ...values,
-                        page: 1,
-                        size,
-                      };
-                      handleReportSubmit(updatedValues); //
-                    }}
+                  // onPageChange={(page) => {
+                  //   setCurrentPage(page);
+                  //   const updatedValues = {
+                  //     ...values,
+                  //     page,
+                  //     size: itemsPerPage,
+                  //   };
+                  //   handleReportSubmit(updatedValues); //
+                  // }}
+                  // onPageSizeChange={(size) => {
+                  //   setItemsPerPage(size);
+                  //   setCurrentPage(1);
+                  //   const updatedValues = {
+                  //     ...values,
+                  //     page: 1,
+                  //     size,
+                  //   };
+                  //   handleReportSubmit(updatedValues); //
+                  // }}
                   />
                 </div>
               </>

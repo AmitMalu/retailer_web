@@ -209,7 +209,7 @@ const PayoutFormModal = ({
                       allowSpecialChar={false}
                       allowNumber={false}
                       className="w-max"
-                      disabled={true}
+                      // disabled={true}
                     />
                   </div>
                   <div className="w-full sm:w-[calc(50%-12px)] ">

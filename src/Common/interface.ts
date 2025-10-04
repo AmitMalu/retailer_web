@@ -350,6 +350,10 @@ export type TableProps = {
   onPageSizeChange?: (size: number) => void;
   serverSide?: boolean;
   totalRecords?: number; // required only when serverSide = true
+  enablePagination?: boolean;
+  onAddRow?: () => void; // If defined → show Add Row; if undefined → hide
+  addRowLabel?: string; // Optional text for Add Row
+  addRowIcon?: React.ReactNode; // Optional icon for Add Row
 };
 
 export type CustomTextareaProps = {
@@ -676,6 +680,12 @@ export type RaisedTicketParams = {
   [key: string]: any; // additional filters
 };
 
+export type PayoutBankDetailsParams = {
+  page?: number | string; // optional, 0-indexed
+  size?: number | string;
+  [key: string]: any; // additional filters
+};
+
 export type TransactionDetailsData = Record<string, any>;
 export type PartnersData = Record<string, any>;
 export type DistributorsData = Record<string, any>;
@@ -814,6 +824,17 @@ export type PayoutSaveBeneficiaryProps = {
   createdBy: string;
 };
 
+export type EditBeneficiaryBankRequest = {
+  id: string | number;
+  hierarchyId: string;
+  bankName: string;
+  bankHolderName: string;
+  bankAccountNumber: string;
+  ifscCode: string;
+  isVerified: boolean;
+  createdBy: string;
+};
+
 export type PayoutSendBeneficiaryProps = {
   retailerId: string;
   accountNumber: string;
@@ -835,6 +856,12 @@ export type FetchBillDetailsProps = {
   field_two?: string;
   field_three?: string;
   field_four?: string;
+};
+
+export type BankVerificationRequest = {
+  id_number: string;
+  ifsc: string;
+  ifsc_details: boolean;
 };
 
 export type ExtraParamContent = {

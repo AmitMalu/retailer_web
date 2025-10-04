@@ -33,6 +33,10 @@ const TableComponent: React.FC<TableProps> = ({
   onPageSizeChange,
   serverSide = false,         // default to client-side pagination
   totalRecords = 0,
+  enablePagination = true,
+  onAddRow,             // callback + flag
+  addRowLabel,              // optional text
+  addRowIcon,
 }) => {
   const theme = useTheme();
 
@@ -97,6 +101,10 @@ const TableComponent: React.FC<TableProps> = ({
   }, [data, sortConfig.key, sortConfig.direction]);
 
   const paginatedData = useMemo(() => {
+    if (!enablePagination) {
+      return sortedData; // 👈 show all data, ignore slicing
+    }
+
     if (serverSide) {
       // in server mode, parent already gives only current page’s data
       return Array.isArray(data) ? data : [];
@@ -460,8 +468,25 @@ const TableComponent: React.FC<TableProps> = ({
               </Table.Tr>
             )}
           </Table.Thead>
+
           {sortedData.length > 0 ? (
-            <Table.Tbody>{rows}</Table.Tbody>
+            <Table.Tbody>
+              {rows}
+              {/* Add Row button */}
+              {onAddRow && (
+                <Table.Tr>
+                  <Table.Td colSpan={columns.length} className="text-center">
+                    <button
+                      onClick={onAddRow}
+                      className="flex items-center justify-center gap-2 px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 mx-auto"
+                    >
+                      {addRowIcon || <span className="text-white font-bold text-lg">+</span>}
+                      {addRowLabel || "Add Row"}
+                    </button>
+                  </Table.Td>
+                </Table.Tr>
+              )}
+            </Table.Tbody>
           ) : (
             <Table.Caption>
               <TextComponent
@@ -488,7 +513,7 @@ const TableComponent: React.FC<TableProps> = ({
       </div>
 
       <div className="flex justify-between items-center mt-4 bg-white shadow-lg">
-        {sortedData.length > 0 && (
+        {enablePagination && sortedData.length > 0 && (
           <div className="flex items-center justify-between gap-4 w-full m-2">
             <div className="flex items-center w-1/4 gap-3">
               <div>
