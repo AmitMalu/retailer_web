@@ -4,7 +4,7 @@ import {
   PGFormBodyProps,
 } from "@/Common/interface";
 import { Modal } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Formik, FormikHelpers, useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -52,7 +52,11 @@ const PGFormModal = ({
     cardBinNo: Yup.string()
       .max(6, "Enter valid Number")
       .min(6, "Enter valid Number")
-      .required("Required"),
+      .when("cardType", {
+        is: (val: string) => val === "Card", // only required if Card Type is "Card"
+        then: (schema) => schema.required("Required"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
     ...(isBinDetails && {
       paymentMethod: Yup.string().required("Required"),
       cardHolderName: Yup.string().required("Required"),
@@ -254,6 +258,14 @@ const PGFormModal = ({
                 label: sub.subProductName,
               })) || [];
 
+            useEffect(() => {
+              if (formik.values.cardType === "Other") {
+                setIsBinDetails(true); // Directly show full form
+              } else {
+                setIsBinDetails(false); // Reset to Fetch flow
+              }
+            }, [formik.values.cardType]);
+
             return (
               <>
                 <div className="mt-3 flex flex-wrap items-start justify-start gap-3">
@@ -267,7 +279,17 @@ const PGFormModal = ({
                       ]}
                       value={values.cardType}
                       withAsterisk
-                      onChange={(value) => setFieldValue("cardType", value)}
+                      // onChange={(value) => setFieldValue("cardType", value)}
+                      onChange={(value) => {
+                        setFieldValue("cardType", value);
+                        if (value === "Other") {
+                          // reset bin and directly show form
+                          setFieldValue("cardBinNo", "");
+                          setIsBinDetails(true);
+                        } else {
+                          setIsBinDetails(false);
+                        }
+                      }}
                       error={
                         touched.cardType && errors.cardType
                           ? errors.cardType
@@ -276,35 +298,47 @@ const PGFormModal = ({
                       className="w-max"
                     />
                   </div>
-                  <div className="w-full sm:w-[calc(50%-12px)] ">
-                    <TextInputComponent
-                      label={"Card Bin No"}
-                      disabled={!!isBinDetails}
-                      allowSpecialChar={false}
-                      placeholder={"Enter"}
-                      value={values.cardBinNo}
-                      onChange={handleChange("cardBinNo")}
-                      error={
-                        touched.cardBinNo && errors.cardBinNo
-                          ? errors.cardBinNo
-                          : ""
-                      }
-                      maxLength={6}
-                      minLength={6}
-                      withAsterisk
-                      className="w-max"
-                    />
-                  </div>
+
+                  {/* Show Card Bin only if Card Type is "Card" */}
+                  {values.cardType === "Card" && (
+                    <div className="w-full sm:w-[calc(50%-12px)] ">
+                      <TextInputComponent
+                        label={"Card Bin No"}
+                        disabled={!!isBinDetails}
+                        allowSpecialChar={false}
+                        placeholder={"Enter"}
+                        value={values.cardBinNo}
+                        onChange={handleChange("cardBinNo")}
+                        error={
+                          touched.cardBinNo && errors.cardBinNo
+                            ? errors.cardBinNo
+                            : ""
+                        }
+                        maxLength={6}
+                        minLength={6}
+                        withAsterisk
+                        className="w-max"
+                      />
+                    </div>
+                  )}
+
                   {isBinDetails && (
                     <>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <DropdownComponent
-                          disabled={!!isBinDetails}
+                          disabled={values.cardType === "Card" && !!isBinDetails}
                           label="Payment Method"
-                          data={[
-                            { value: "credit", label: "Credit" },
-                            { value: "debit", label: "Debit" },
-                          ]}
+                          data={
+                            values.cardType === "Card"
+                              ? [
+                                { value: "credit", label: "Credit" },
+                                { value: "debit", label: "Debit" },
+                              ]
+                              : [
+                                { value: "netbanking", label: "Net Banking" },
+                                { value: "upi", label: "UPI" },
+                              ]
+                          }
                           value={values.paymentMethod}
                           withAsterisk
                           onChange={(value) =>

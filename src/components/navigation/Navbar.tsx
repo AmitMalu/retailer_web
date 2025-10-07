@@ -15,7 +15,7 @@ import TextComponent from "../Atoms/TextComponent";
 import {
   ProfileSvgIcon,
   RefreshSvgIcon,
-  ThemeSettingSvgIcon,
+  // ThemeSettingSvgIcon,
 } from "@/assets/svg";
 import { decryptData, useWalletBalance } from "@/Utils/helper";
 import { NavLink } from "react-router-dom";
@@ -147,12 +147,12 @@ export default function Navbar({
                   <ProfileSvgIcon color={theme.palette.red.DEFAULT} />
                 </div>
               </NavLink>
-              <div
+              {/* <div
                 // onClick={handleSettingsClick}
                 className="cursor-pointer bg-red-light rounded-md p-2"
               >
                 <ThemeSettingSvgIcon color={theme.palette.red.DEFAULT} />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

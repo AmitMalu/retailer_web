@@ -13,7 +13,7 @@ import {
   ReportsSvgIcon,
   SettingsSvgIcon,
   SupportSvgIcon,
-  WebSettingsSvgIcon,
+  // WebSettingsSvgIcon,
 } from "@/assets/svg";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -110,7 +110,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
       subItems: [
         {
           name: "Create Sub User",
-          path: "/settings/subUser",
+          path: "/settings/ViewSubUser",
           //   icon: <InventoryIcon />,
           roles: ["RT"],
         },
@@ -202,38 +202,38 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
         },
       ],
     },
-    {
-      name: "Website Settings",
-      path: "/websiteSettings",
-      icon: React.createElement(WebSettingsSvgIcon, { color: "currentColor" }),
-      roles: ["WL"], // Only System Admin can see this menu
-      subItems: [
-        {
-          name: "Website data",
-          path: "/websiteSettings/websiteData",
-          //   icon: <PeopleIcon />,
-          roles: ["WL"],
-        },
-        {
-          name: "Social Media Links",
-          path: "/websiteSettings/socialMediaLinks",
-          //   icon: <AdminPanelSettingsIcon />,
-          roles: ["WL"],
-        },
-        {
-          name: "Web And App Logo Image",
-          path: "/websiteSettings/webAndAppLogoImage",
-          //   icon: <AdminPanelSettingsIcon />,
-          roles: ["WL"],
-        },
-        {
-          name: "Website Page Content",
-          path: "/websiteSettings/websitePageContent",
-          //   icon: <AdminPanelSettingsIcon />,
-          roles: ["WL"],
-        },
-      ],
-    },
+    // {
+    //   name: "Website Settings",
+    //   path: "/websiteSettings",
+    //   icon: React.createElement(WebSettingsSvgIcon, { color: "currentColor" }),
+    //   roles: ["WL"], // Only System Admin can see this menu
+    //   subItems: [
+    //     {
+    //       name: "Website data",
+    //       path: "/websiteSettings/websiteData",
+    //       //   icon: <PeopleIcon />,
+    //       roles: ["WL"],
+    //     },
+    //     {
+    //       name: "Social Media Links",
+    //       path: "/websiteSettings/socialMediaLinks",
+    //       //   icon: <AdminPanelSettingsIcon />,
+    //       roles: ["WL"],
+    //     },
+    //     {
+    //       name: "Web And App Logo Image",
+    //       path: "/websiteSettings/webAndAppLogoImage",
+    //       //   icon: <AdminPanelSettingsIcon />,
+    //       roles: ["WL"],
+    //     },
+    //     {
+    //       name: "Website Page Content",
+    //       path: "/websiteSettings/websitePageContent",
+    //       //   icon: <AdminPanelSettingsIcon />,
+    //       roles: ["WL"],
+    //     },
+    //   ],
+    // },
     {
       name: "Reports",
       path: "/reports",

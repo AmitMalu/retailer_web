@@ -39,10 +39,9 @@ const FundTransfer = () => {
         response?.data?.statusCode === 200 ||
         response?.data?.statusCode === 201
       ) {
-        showSuccessNotification(response?.data?.message);
         setChildMemberList(response?.data?.data?.content);
       } else {
-        showErrorNotification(response?.data?.message);
+        // showErrorNotification(response?.data?.message);
       }
     } catch (error) {
       await handleCustomError(error);

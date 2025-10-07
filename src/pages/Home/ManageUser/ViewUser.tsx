@@ -199,7 +199,10 @@ const ViewUser = () => {
         ...filters,
       };
       const response = await Child_Member_List(loginData?.hierarchyId, params);
-      if (response?.status === 200) {
+      if (
+        response?.data?.statusCode === 200 ||
+        response?.data?.statusCode === 201
+      ) {
         setIsUserList(response?.data?.data?.content);
         setTotalRecords(response?.data?.data?.totalElements || 0);
       } else {

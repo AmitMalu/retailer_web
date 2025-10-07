@@ -21,10 +21,12 @@ export const API_ROUTES = {
   PREFUND_REQUEST: `${BASE_URL}/api/prefund/request`,
   WALLET_TO_WALLET: `${BASE_URL}/api/wallet-to-wallet/transfer`,
   FUND_REVERSAL: `${BASE_URL}/api/fund-reversal`,
+  FUND_REVERSAL_RESEND_OTP: `${BASE_URL}/api/fund-reversal/resend-otp`,
   CHILD_MEMBER_LIST: `${BASE_URL}/api/dropdown-manager/child-accounts`,
   FUND_TRANSFER: `${BASE_URL}/api/fund-transfer`,
   WALLET_BALANCE: `${BASE_URL}/api/dashboard/wallet-balance`,
-  WALLET_TO_BANK: `${BASE_URL}/api/wallet-to-bank/transfer`,
+  WALLET_TO_BANK: `${BASE_URL}/api/move-to-bank/send-payout-request`,
+  FETCH_HIERARCHY_BANKS: `${BASE_URL}/api/bank-details/verified`,
 
   ///////////////// CREATE USER //////////////////////////
   CREATE_WHITE_LABEL: `${BASE_URL}/api/white-labels`,
@@ -52,6 +54,7 @@ export const API_ROUTES = {
 
   ///////////////// CREATE SUB USER //////////////////////////
   CREATE_SUB_USER: `${BASE_URL}/api/retailer/create-user`,
+  FETCH_SUB_USER: `${BASE_URL}/api/retailer/users`,
 
   /////////////// PAYOUT ////////////////////////////////////////////
   SAVE_BENEFICIARY: `${BASE_URL}/api/payout/save-beneficiary`,
@@ -75,4 +78,6 @@ export const API_ROUTES = {
 
   /////////////////////////// bANKS ////////////////////////////////////
   ADD_BANK: `${BASE_URL}/api/bank-details`,
+  EDIT_BANK: `${BASE_URL}/api/bank-details`,
+  DELETE_BANK: `${BASE_URL}/api/bank-details`,
 };

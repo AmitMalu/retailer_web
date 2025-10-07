@@ -1,13 +1,16 @@
 import {
+  AddBankFormType,
   BankVerificationRequest,
   ChangePasswordRequestProps,
   CommissionAndChargesRequest,
   CreateOrderProps,
+  EditBankFormType,
   EditBeneficiaryBankRequest,
   FetchBillDetailsProps,
   FetchCardBinDetailProps,
+  FetchSubUserRequest,
   ForgotPasswordRequestProps,
-  FundReversalProps,
+  FundReversalFormType,
   FundTransferProps,
   LoginRequest,
   // NetworkTransactionParams,
@@ -25,9 +28,8 @@ import {
   ValidateTransactionProps,
   VerifyTokenRequest,
   ViewUserAPIProps,
-  // WalletParams,
   WalletRequest,
-  WalletToBankProps,
+  WalletToBankRequest,
   WalletToWalletProps,
 } from "@/Common/interface";
 import api from ".";
@@ -112,14 +114,27 @@ export const Prefund_Request = async (data: FormData) =>
 export const Fund_Transfer = async (data: FundTransferProps) =>
   await api.post(`${API_ROUTES.FUND_TRANSFER}`, data, await createHeaders());
 
-export const Fund_Reversal = async (data: FundReversalProps) =>
+export const Fund_Reversal = async (data: FundReversalFormType) =>
   await api.post(`${API_ROUTES.FUND_REVERSAL}`, data, await createHeaders());
+
+export const Resend_Otp_Fund_Reversal = async (id: string) =>
+  await api.post(
+    `${API_ROUTES.FUND_REVERSAL_RESEND_OTP}/${id}`,
+    {},
+    await createHeaders()
+  );
 
 export const Wallet_To_Wallet = async (data: WalletToWalletProps) =>
   await api.post(`${API_ROUTES.WALLET_TO_WALLET}`, data, await createHeaders());
 
-export const Wallet_To_Bank = async (data: WalletToBankProps) =>
+export const Wallet_To_Bank = async (data: WalletToBankRequest) =>
   await api.post(`${API_ROUTES.WALLET_TO_BANK}`, data, await createHeaders());
+
+export const Get_Hierarchy_Banks = async (id: string) => {
+  const url = `${API_ROUTES.FETCH_HIERARCHY_BANKS}/${id}`;
+
+  return await api.get(url, await createHeaders());
+};
 
 export const Wallet_Balance = async (id: string) =>
   await api.get(`${API_ROUTES.WALLET_BALANCE}/${id}`, await createHeaders());
@@ -258,6 +273,26 @@ export const Validate_Transaction = async (data: ValidateTransactionProps) =>
 export const Create_Order = async (data: CreateOrderProps) =>
   await api.post(`${API_ROUTES.CREATE_ORDER}`, data, await createHeaders());
 
+export const Fetch_Sub_User = async (
+  id: string | number,
+  params?: FetchSubUserRequest
+) => {
+  const safeParams = params ?? {};
+  // Convert all values to string for URLSearchParams
+  const queryParams = new URLSearchParams(
+    Object.fromEntries(
+      Object.entries(safeParams).map(([key, value]) => [
+        key,
+        String(value ?? ""),
+      ])
+    )
+  ).toString();
+
+  const url = `${API_ROUTES.FETCH_SUB_USER}/${id}${queryParams ? `?${queryParams}` : ""}`;
+
+  return await api.get(url, await createHeaders());
+};
+
 export const Create_Sub_User = async (data: SubuserCreationProps) =>
   await api.post(`${API_ROUTES.CREATE_SUB_USER}`, data, await createHeaders());
 
@@ -386,3 +421,16 @@ export const Bank_Verification = async ({
     { id_number, ifsc, ifsc_details },
     await createHeaders()
   );
+
+export const Add_Bank = async (data: AddBankFormType) =>
+  await api.post(`${API_ROUTES.ADD_BANK}`, data, await createHeaders());
+
+export const Edit_Bank = async (data: EditBankFormType) =>
+  await api.put(
+    `${API_ROUTES.EDIT_BANK}/${data.id}`,
+    data,
+    await createHeaders()
+  );
+
+export const Delete_Bank = async (id: string) =>
+  await api.delete(`${API_ROUTES.DELETE_BANK}/${id}`, await createHeaders());

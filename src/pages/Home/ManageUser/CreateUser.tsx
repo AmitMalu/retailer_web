@@ -18,7 +18,7 @@ const labels = [
   },
   {
     label: "Super Distributor",
-    style: "left-[5%] top-[40%]",
+    style: "left-[2%] top-[40%]",
   },
   {
     label: "Distributor",
@@ -169,66 +169,66 @@ const CreateUser = () => {
             {(loginData?.role == "WL" ||
               loginData?.role == "SD" ||
               loginData?.role == "PT") && (
-              <g
-                className="pointer-events-auto"
-                onClick={() => handleIconClick("DT")}
-              >
-                <circle
-                  cx="390"
-                  cy="98"
-                  r="30"
-                  fill={theme.palette.red.DEFAULT}
-                  stroke={theme.palette.red.DEFAULT}
-                  strokeWidth="2"
-                  className="cursor-pointer"
-                />
-                <foreignObject
-                  x="370"
-                  y="80"
-                  width="40"
-                  height="40"
-                  className="pointer-events-none"
+                <g
+                  className="pointer-events-auto"
+                  onClick={() => handleIconClick("DT")}
                 >
-                  <div className="flex items-center justify-center h-full cursor-pointer">
-                    <DistributoeSVgIcon
-                      color={theme.palette.background.navBackground}
-                    />
-                  </div>
-                </foreignObject>
-              </g>
-            )}
+                  <circle
+                    cx="390"
+                    cy="98"
+                    r="30"
+                    fill={theme.palette.red.DEFAULT}
+                    stroke={theme.palette.red.DEFAULT}
+                    strokeWidth="2"
+                    className="cursor-pointer"
+                  />
+                  <foreignObject
+                    x="370"
+                    y="80"
+                    width="40"
+                    height="40"
+                    className="pointer-events-none"
+                  >
+                    <div className="flex items-center justify-center h-full cursor-pointer">
+                      <DistributoeSVgIcon
+                        color={theme.palette.background.navBackground}
+                      />
+                    </div>
+                  </foreignObject>
+                </g>
+              )}
             {(loginData?.role == "WL" ||
               loginData?.role == "SD" ||
               loginData?.role == "PT" ||
               loginData?.role == "DT") && (
-              <g
-                className="pointer-events-auto"
-                onClick={() => handleIconClick("RT")}
-              >
-                <circle
-                  cx="450"
-                  cy="216"
-                  r="30"
-                  fill={theme.palette.red.DEFAULT}
-                  stroke={theme.palette.red.DEFAULT}
-                  strokeWidth="2"
-                  className="cursor-pointer"
-                />
-                <foreignObject
-                  x="430"
-                  y="195"
-                  width="40"
-                  height="40"
-                  className="pointer-events-none"
+                <g
+                  className="pointer-events-auto"
+                  onClick={() => handleIconClick("RT")}
                 >
-                  <div className="flex items-center justify-center h-full cursor-pointer">
-                    <DistributoeSVgIcon
-                      color={theme.palette.background.navBackground}
-                    />
-                  </div>
-                </foreignObject>
-              </g>
-            )}
+                  <circle
+                    cx="450"
+                    cy="216"
+                    r="30"
+                    fill={theme.palette.red.DEFAULT}
+                    stroke={theme.palette.red.DEFAULT}
+                    strokeWidth="2"
+                    className="cursor-pointer"
+                  />
+                  <foreignObject
+                    x="430"
+                    y="195"
+                    width="40"
+                    height="40"
+                    className="pointer-events-none"
+                  >
+                    <div className="flex items-center justify-center h-full cursor-pointer">
+                      <DistributoeSVgIcon
+                        color={theme.palette.background.navBackground}
+                      />
+                    </div>
+                  </foreignObject>
+                </g>
+              )}
           </svg>
         </Box>
       </div>

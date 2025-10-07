@@ -118,7 +118,7 @@ const ProfileRegistrationForm = ({
         "outletState",
         "outletZipCode",
       ],
-      3: ["bankName", "bankAccountNumber", "ifscCode", "branchName"],
+      3: ["bankName", "bankAccountNumber", "ifscCode", "branchName", "bankHolderName", "isBankVerified"],
       4: [
         "aadhaarCardFrontImage",
         "aadhaarCardBackImage",
@@ -138,8 +138,11 @@ const ProfileRegistrationForm = ({
       return fieldErrors !== undefined && fieldErrors !== "";
     });
 
+    console.log("Current Step Errors:", errors, hasErrors);
+
+
     if (!hasErrors) {
-      if (active === 0 && !verificationState.linkingDone) {
+      if (active === 0 && !verificationState.aadhaarAttempted || !verificationState.panAttempted) {
         showErrorNotification(
           "Please verify both Aadhaar and PAN before proceeding"
         );
@@ -199,6 +202,8 @@ const ProfileRegistrationForm = ({
     ifscCode: Yup.string()
       .required("Required")
       .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Enter valid IFSC code"),
+    bankHolderName: Yup.string().required("Bank Holder Name is Required"),
+    isBankVerified: Yup.boolean(),
     branchName: Yup.string().required("Required"),
     aadhaarNumber: Yup.string()
       .max(12, "Please Enter valid Aadhaar Number")
@@ -236,6 +241,8 @@ const ProfileRegistrationForm = ({
     bankName: "",
     bankAccountNumber: "",
     ifscCode: "",
+    bankHolderName: "",
+    isBankVerified: false,
     branchName: "",
     aadhaarNumber: "",
     panNumber: "",
@@ -303,6 +310,8 @@ const ProfileRegistrationForm = ({
           bankName: values?.bankName,
           bankAccountNumber: values?.bankAccountNumber,
           ifscCode: values?.ifscCode,
+          bankHolderName: values.bankHolderName,
+          isVerified: values.isBankVerified
           // branchName: values?.branchName,
         },
         aadhaarNumber: values?.aadhaarNumber,
@@ -408,10 +417,10 @@ const ProfileRegistrationForm = ({
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
-          enableReinitialize={true}
+          enableReinitialize
           innerRef={formikRef}
-          validateOnBlur={false}
-          validateOnChange={false}
+          validateOnBlur={true}
+          validateOnChange={true}
         >
           {(formik) => {
             const {
@@ -614,7 +623,6 @@ const ProfileRegistrationForm = ({
                               : ""
                           }
                           withAsterisk
-                          type="email"
                           className="w-max"
                         />
                       </div>
@@ -979,6 +987,24 @@ const ProfileRegistrationForm = ({
                           error={
                             touched.bankName && errors.bankName
                               ? errors.bankName
+                              : ""
+                          }
+                          withAsterisk
+                          maxLength={50}
+                          allowSpecialChar={false}
+                          allowNumber={false}
+                          className="w-max"
+                        />
+                      </div>
+                      <div className="w-full sm:w-[calc(50%-12px)] ">
+                        <TextInputComponent
+                          label={"Bank Hodler Name"}
+                          placeholder={"Enter Holder Name"}
+                          value={values.bankHolderName}
+                          onChange={handleChange("bankHolderName")}
+                          error={
+                            touched.bankHolderName && errors.bankHolderName
+                              ? errors.bankHolderName
                               : ""
                           }
                           withAsterisk

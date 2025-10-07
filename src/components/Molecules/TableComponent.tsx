@@ -37,6 +37,7 @@ const TableComponent: React.FC<TableProps> = ({
   onAddRow,             // callback + flag
   addRowLabel,              // optional text
   addRowIcon,
+  showNoDataFound = true, // default to true
 }) => {
   const theme = useTheme();
 
@@ -340,7 +341,7 @@ const TableComponent: React.FC<TableProps> = ({
                               }}
                               valueFormat="YYYY-MM-DD"
                               placeholder="Pick date"
-                              className="w-full font-medium"
+                              className="w-full font-medium min-w-[100px]"
                               maxDate={new Date()}
                             />
                           ) : colType === "time" ? (
@@ -472,22 +473,8 @@ const TableComponent: React.FC<TableProps> = ({
           {sortedData.length > 0 ? (
             <Table.Tbody>
               {rows}
-              {/* Add Row button */}
-              {onAddRow && (
-                <Table.Tr>
-                  <Table.Td colSpan={columns.length} className="text-center">
-                    <button
-                      onClick={onAddRow}
-                      className="flex items-center justify-center gap-2 px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 mx-auto"
-                    >
-                      {addRowIcon || <span className="text-white font-bold text-lg">+</span>}
-                      {addRowLabel || "Add Row"}
-                    </button>
-                  </Table.Td>
-                </Table.Tr>
-              )}
             </Table.Tbody>
-          ) : (
+          ) : showNoDataFound ? (
             <Table.Caption>
               <TextComponent
                 color={theme.palette.red.DEFAULT}
@@ -497,7 +484,25 @@ const TableComponent: React.FC<TableProps> = ({
                 No data Available
               </TextComponent>
             </Table.Caption>
+          ) : null}
+
+          {/* ✅ Always show Add Row button when onAddRow exists */}
+          {onAddRow && (
+            <Table.Tbody>
+              <Table.Tr>
+                <Table.Td colSpan={columns.length} className="text-center">
+                  <button
+                    onClick={onAddRow}
+                    className="flex items-center justify-center gap-2 px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 mx-auto"
+                  >
+                    {addRowIcon || <span className="text-white font-bold text-lg">+</span>}
+                    {addRowLabel || "Add Row"}
+                  </button>
+                </Table.Td>
+              </Table.Tr>
+            </Table.Tbody>
           )}
+
           {caption && (
             <Table.Caption>
               <TextComponent
@@ -505,7 +510,7 @@ const TableComponent: React.FC<TableProps> = ({
                 fontSize={16}
                 fontWeight={500}
               >
-                View all records
+                {caption || "View all records"}
               </TextComponent>
             </Table.Caption>
           )}

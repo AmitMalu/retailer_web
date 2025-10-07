@@ -16,9 +16,9 @@ import Loader from "@/components/Atoms/Loader";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import TextComponent from "@/components/Atoms/TextComponent";
-import { Chip, Group } from "@mantine/core";
+import { Chip, Group, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
-import { CloseEyeSvgIcon, OpenEyeSvgIcon } from "@/assets/svg";
+import { BackSvgIcon, CloseEyeSvgIcon, OpenEyeSvgIcon } from "@/assets/svg";
 import { Create_Sub_User } from "@/Services/api";
 import {
   showErrorNotification,
@@ -27,9 +27,11 @@ import {
 import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePicker";
 import { IconCalendar } from "@tabler/icons-react";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 const SubuserCreation = () => {
   const theme = useTheme();
+  const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false);
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
   const [selectedSubChips, setSelectedSubChips] = useState<string[]>([]);
@@ -173,7 +175,14 @@ const SubuserCreation = () => {
     <>
       {isLoading && <Loader />}
       <div>
-        <div>
+        <div className="flex gap-5">
+          <UnstyledButton
+            onClick={() => {
+              navigate(`/settings/ViewSubUser`);
+            }}
+          >
+            <BackSvgIcon color={theme.palette.red.DEFAULT} />
+          </UnstyledButton>
           <TextComponent
             fontSize={22}
             fontWeight={600}

@@ -5,19 +5,19 @@ import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import { RootState } from "@/Redux/Store";
-import { Wallet_To_Bank } from "@/Services/api";
+import { Get_Hierarchy_Banks, Wallet_To_Bank } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { Formik, FormikHelpers } from "formik";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import * as Yup from 'yup'
 
 const validationSchema = Yup.object().shape({
   walletType: Yup.string().required("Required"),
   selectBank: Yup.string().required("Required"),
-  TransactionType: Yup.string().required("Required"),
+  paymentMode: Yup.string().required("Required"),
   amount: Yup.string().required("Required"),
   confirmAmount: Yup.string()
     .required("Required")
@@ -25,10 +25,10 @@ const validationSchema = Yup.object().shape({
 });
 
 const initialValues: WalletToBankProps = {
-  requesterHierarchyId: "",
+  retailerId: "",
   walletType: "POSTPAID",
   selectBank: "",
-  TransactionType: "",
+  paymentMode: "",
   amount: "",
   confirmAmount: "",
 };
@@ -41,9 +41,49 @@ const WalletToBank = () => {
     ? decryptData(apiResponses.loginData)
     : null;
 
-  console.log(loginData, "log");
+  console.log(loginData, "logindata");
 
+
+  const subProductId = loginData?.products
+    ?.flatMap((product: any) => (product?.subProducts || []))
+    ?.find(
+      (subProduct: any) =>
+        subProduct?.subProductName?.toLowerCase().includes("mtb")
+    ).subProductId;
+
+
+  const [hierarchyBankList, setHierarchyBankList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const isFetchingRef = useRef(false);
+
+  const getHierarchyBanks = async () => {
+    try {
+      setIsLoading(true);
+      const response = await Get_Hierarchy_Banks(loginData?.hierarchyId);
+      if (response?.data?.statusCode === 200) {
+        const formatted = response.data.data.map((bank: any) => ({
+          value: bank.id.toString(),
+          label: bank.concatenatedString,
+          ...bank, // keep full details for easy lookup later
+        }));
+        setHierarchyBankList(formatted);
+      } else {
+        setHierarchyBankList([])
+        showErrorNotification(response?.data?.message);
+      }
+    } catch (error) {
+      await handleCustomError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isFetchingRef.current) {
+      isFetchingRef.current = true;
+      getHierarchyBanks();
+    }
+  }, []);
 
   const handleFundRequest = async (
     values: WalletToBankProps,
@@ -51,17 +91,28 @@ const WalletToBank = () => {
   ) => {
     try {
       setIsLoading(true);
+
+      // Find selected bank details
+      const selectedBank = hierarchyBankList?.find(
+        (bank) => bank.id == values.selectBank
+      );
+
+      if (!selectedBank) {
+        showErrorNotification("Please select a valid bank.");
+        return;
+      }
+
       const bodyData = {
-        requesterHierarchyId: loginData?.hierarchyId,
-        walletType: values.walletType,
-        selectBank: values.selectBank,
-        TransactionType: values.TransactionType,
+        retailerId: loginData?.hierarchyId,
+        accountNumber: selectedBank.bankAccountNumber,
+        ifscCode: selectedBank.ifscCode,
         amount: String(values.amount),
-        confirmAmount: String(values.confirmAmount),
+        beneficiaryName: selectedBank.bankHolderName,
+        paymentMode: values.paymentMode,
+        subProductId: subProductId ?? "",
       };
 
       const response = await Wallet_To_Bank(bodyData);
-      console.log(response, "res");
 
       const statusCodes = [200, 201];
 
@@ -75,7 +126,6 @@ const WalletToBank = () => {
         showErrorNotification(response?.data?.message);
       }
     } catch (error) {
-      resetForm();
       await handleCustomError(error);
     } finally {
       setIsLoading(false);
@@ -138,36 +188,34 @@ const WalletToBank = () => {
                   <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                     <DropdownComponent
                       label="Select Bank"
-                      data={[
-                        { value: "IMPS", label: "IMPS" },
-                        { value: "NEFT", label: "NEFT" },
-                      ]}
+                      data={hierarchyBankList.map((bank) => ({
+                        value: bank.id.toString(),
+                        label: bank.concatenatedString,
+                      }))}
                       value={values.selectBank}
                       withAsterisk
                       onChange={(value) => setFieldValue("selectBank", value)}
                       error={
-                        touched.selectBank && errors.selectBank
-                          ? errors.selectBank
-                          : ""
+                        touched.selectBank && errors.selectBank ? errors.selectBank : ""
                       }
                       className="w-max"
                     />
                   </div>
                   <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                     <DropdownComponent
-                      label="Transaction Type"
+                      label="Payment Mode"
                       data={[
                         { value: "IMPS", label: "IMPS" },
                         { value: "NEFT", label: "NEFT" },
                       ]}
-                      value={values.TransactionType}
+                      value={values.paymentMode}
                       withAsterisk
                       onChange={(value) =>
-                        setFieldValue("TransactionType", value)
+                        setFieldValue("paymentMode", value)
                       }
                       error={
-                        touched.TransactionType && errors.TransactionType
-                          ? errors.TransactionType
+                        touched.paymentMode && errors.paymentMode
+                          ? errors.paymentMode
                           : ""
                       }
                       className="w-max"

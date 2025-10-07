@@ -354,6 +354,7 @@ export type TableProps = {
   onAddRow?: () => void; // If defined → show Add Row; if undefined → hide
   addRowLabel?: string; // Optional text for Add Row
   addRowIcon?: React.ReactNode; // Optional icon for Add Row
+  showNoDataFound?: boolean; // Show "No data found" when data is empty
 };
 
 export type CustomTextareaProps = {
@@ -467,21 +468,38 @@ export type FundTransferProps = {
 };
 
 export type WalletToBankProps = {
-  requesterHierarchyId: string;
-  walletType?: string;
+  walletType: string;
+  retailerId: string;
   selectBank: string;
-  TransactionType: string;
-  amount?: string;
-  confirmAmount?: string;
+  // accountNumber: string;
+  // ifscCode: string;
+  amount: string;
+  confirmAmount: string;
+  // beneficiaryName: string;
+  paymentMode: string;
+  // subProductId: string;
 };
 
-export type FundReversalProps = {
+export type WalletToBankRequest = {
+  retailerId: string;
+  accountNumber: string;
+  ifscCode: string;
+  amount: string;
+  beneficiaryName: string;
+  paymentMode: string;
+  subProductId: string;
+};
+
+export type FundReversalFormType = {
   parentHierarchyId: string;
   childHierarchyId: string;
   walletType: string;
   reversalAmount: string;
   confirmAmount?: string;
-  narration?: string;
+  remark?: string;
+  otp?: string;
+  isResendOtp?: boolean;
+  fundReversalRequestId?: string;
 };
 
 export type WalletToWalletProps = {
@@ -517,6 +535,8 @@ export type UserProfileFormProps = {
   bankName: string;
   bankAccountNumber: string;
   ifscCode: string;
+  bankHolderName: string;
+  isBankVerified: boolean;
   branchName: string;
   createdBy: string;
   createdByIPAddress: string;
@@ -541,6 +561,32 @@ export type PartnerRegistrationModalProps = {
   openedAs?: string;
   productId?: string;
   subProductId?: string;
+};
+
+export type AddBankFormProps = {
+  opened: boolean;
+  onClose: () => void;
+};
+
+export type AddBankFormType = {
+  hierarchyId: string;
+  bankName: string;
+  isVerified: boolean;
+  bankHolderName: string;
+  bankAccountNumber: string;
+  ifscCode: string;
+  createdBy: string;
+};
+
+export type EditBankFormType = {
+  id: string;
+  hierarchyId: string;
+  bankName: string;
+  isVerified: boolean;
+  bankHolderName: string;
+  bankAccountNumber: string;
+  ifscCode: string;
+  createdBy: string;
 };
 
 export type ViewUserProps = {
@@ -792,6 +838,12 @@ export type MposBodyProps = {
   narration?: string;
   productId: string;
   subProductId: string;
+};
+
+export type FetchSubUserRequest = {
+  page?: number | string; // optional, 0-indexed
+  size?: number | string;
+  [key: string]: any; // additional filters
 };
 
 export type SubuserCreationProps = {

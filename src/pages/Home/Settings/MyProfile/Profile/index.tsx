@@ -40,7 +40,7 @@ const Profile = () => {
   const FetchUserList = async () => {
     try {
       const response = await User_Profile(loginData?.hierarchyId);
-      if (response?.status === 200) {
+      if (response?.data?.statusCode == 200) {
         dispatch(saveApiResponse("userProfile", response?.data?.data));
       } else {
         showErrorNotification(response?.data?.message);

@@ -24,7 +24,7 @@ export default function Products() {
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  console.log(loginData,"logindata");
+  console.log(loginData, "logindata");
 
   const row1: any = [
     {

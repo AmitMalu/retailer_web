@@ -405,11 +405,9 @@ const Ticketing = () => {
 
     try {
       const response = await fetch_raised_tickets(reqParams);
-      if (response?.status === 200) {
+      if (response?.data?.statusCode == 200) {
         setTicketList(response?.data?.data?.content);
         setTotalRecords(response?.data?.data?.totalElements || 0);
-        // console.log(response?.data?.data?.content);
-
       } else {
         showErrorNotification(response?.data?.message);
         setTicketList([]);
@@ -517,7 +515,6 @@ const Ticketing = () => {
                       // setSearchValue("");
                     }}
                     radius={4}
-                    width={150}
                   />
                 </div>
               </div>
