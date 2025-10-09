@@ -25,6 +25,7 @@ import {
   SubuserCreationProps,
   TokenGenerationRequest,
   TransactionDetailsParams,
+  TransactionProps,
   ValidateTransactionProps,
   VerifyTokenRequest,
   ViewUserAPIProps,
@@ -375,6 +376,9 @@ export const Get_Provider_List = async (data: { subProductId: string }) =>
 
 export const Fetch_Bill_Details = async (body: FetchBillDetailsProps) =>
   await api.post(API_ROUTES.FETCH_BILL_DETAILS, body, await createHeaders());
+
+export const Transaction = async (body: TransactionProps) =>
+  await api.post(API_ROUTES.TRANSACTION, body, await createHeaders());
 
 export const Adhaar_Verification = async (aadhaarNumber: number) =>
   await api.post(

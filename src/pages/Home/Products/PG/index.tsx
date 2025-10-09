@@ -34,9 +34,6 @@ const PGScreen = () => {
     (product: any) => product.productName.toLowerCase() === "payment gateway"
   );
 
-  console.log(paymentGatewayProduct, "pgp");
-
-
   const cardsData =
     paymentGatewayProduct?.subProducts?.map((subProduct: any) => {
       return {

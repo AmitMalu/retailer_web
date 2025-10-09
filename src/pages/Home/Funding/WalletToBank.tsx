@@ -41,9 +41,6 @@ const WalletToBank = () => {
     ? decryptData(apiResponses.loginData)
     : null;
 
-  console.log(loginData, "logindata");
-
-
   const subProductId = loginData?.products
     ?.flatMap((product: any) => (product?.subProducts || []))
     ?.find(

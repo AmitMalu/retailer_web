@@ -67,6 +67,7 @@ export const API_ROUTES = {
   /////////////////// BBPS ///////////////////////////////////////
   GET_PROVIDER_LIST: `${BASE_URL}/api/bbps/provider-list`,
   FETCH_BILL_DETAILS: `${BASE_URL}/api/bbps/fetch-bill-details`,
+  TRANSACTION: `${BASE_URL}/api/bbps/transaction`,
 
   /////////////////// VERIFICATION //////////////////////////////////
   ADHAAR_VERIFICATION: `${BASE_URL}/verification/aadhaar-validate`,

@@ -5,9 +5,6 @@ const FormikFileInput = ({ name, ...props }: any) => {
   const { setFieldValue } = useFormikContext();
   const [field, meta] = useField(name);
 
-  console.log(meta.error);
-
-
   return (
     <FileInputComponent
       {...props}

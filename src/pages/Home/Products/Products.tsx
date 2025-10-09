@@ -8,23 +8,22 @@ import TextComponent from "@/components/Atoms/TextComponent";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/system";
 import { AepsCardSvgIcon } from "@/assets/svg/Products/AepsSvgIcon";
-import { useSelector } from "react-redux";
-import { RootState } from "@/Redux/Store";
-import { decryptData } from "@/Utils/helper";
+// import { useSelector } from "react-redux";
+// import { RootState } from "@/Redux/Store";
+// import { decryptData } from "@/Utils/helper";
 
 export default function Products() {
   const navigate = useNavigate();
   const theme = useTheme();
 
-  const apiResponses = useSelector(
-    (state: RootState) => state.apiResponse.responses
-  );
+  // const apiResponses = useSelector(
+  //   (state: RootState) => state.apiResponse.responses
+  // );
 
-  const loginData = apiResponses?.loginData
-    ? decryptData(apiResponses?.loginData)
-    : null;
+  // const loginData = apiResponses?.loginData
+  //   ? decryptData(apiResponses?.loginData)
+  //   : null;
 
-  console.log(loginData, "logindata");
 
   const row1: any = [
     {

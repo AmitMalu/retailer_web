@@ -4,6 +4,7 @@ import {
   ExtraParamContent,
   FetchBillDetailsProps,
   ProviderDetails,
+  TransactionProps,
 } from "@/Common/interface";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
@@ -11,18 +12,19 @@ import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
+import TransactionSuccessModel from "@/components/Atoms/TransactionSuccessModel";
 import { RootState } from "@/Redux/Store";
-import { Fetch_Bill_Details } from "@/Services/api";
+import { Fetch_Bill_Details, Transaction } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData, EmailRegex, MobileNoRegex } from "@/Utils/helper";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
-import { UnstyledButton } from "@mantine/core";
+import { Modal, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { Formik, FormikErrors, FormikValues } from "formik";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
@@ -31,12 +33,21 @@ const FetchBillDetails: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
+  const [billModalOpened, setBillModalOpened] = useState(false);
+  const [billDetails, setBillDetails] = useState<any>(null);
+  const [amountEditable, setAmountEditable] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+
   const location = useLocation();
   const { serviceName, subProductId } = location.state || {};
 
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse?.responses
   );
+
+  const loginData = apiResponses?.loginData
+    ? decryptData(apiResponses?.loginData)
+    : null;
 
   const bbpsServicesData = apiResponses?.bbpsServices
     ? decryptData(apiResponses?.bbpsServices)
@@ -53,12 +64,13 @@ const FetchBillDetails: React.FC = () => {
     const values: FormikValues = {
       provider: selectedProviderDetails?.provider_id || "",
       customerMobileNumber: "",
+      consumerNumber: "",
     };
 
     if (selectedProviderDetails) {
-      if (selectedProviderDetails.consumerNumber === "required") {
-        values.consumerNumber = "";
-      }
+      // if (selectedProviderDetails.consumerNumber === "required") {
+      //   values.consumerNumber = "";
+      // }
 
       selectedProviderDetails.extra_param?.forEach(
         (param: ExtraParam, idx: number) => {
@@ -84,14 +96,15 @@ const FetchBillDetails: React.FC = () => {
       customerMobileNumber: Yup.string()
         .required("Required")
         .matches(MobileNoRegex, "Number must be 10 digits"),
-      consumerNumber: Yup.string().when(
-        "selectedProviderDetails.consumerNumber",
-        {
-          is: "required",
-          then: () => Yup.string().required("Required"),
-          otherwise: () => Yup.string(),
-        }
-      ),
+      consumerNumber: Yup.string().required("Required"),
+      // consumerNumber: Yup.string().when(
+      //   "selectedProviderDetails.consumerNumber",
+      //   {
+      //     is: "required",
+      //     then: () => Yup.string().required("Required"),
+      //     otherwise: () => Yup.string(),
+      //   }
+      // ),
       ...(selectedProviderDetails?.extra_param?.reduce(
         (acc: Record<string, any>, param: ExtraParam, idx: number) => {
           const fields = [
@@ -107,7 +120,7 @@ const FetchBillDetails: React.FC = () => {
             const fieldKey = `${field}_${idx}`;
             const lowerLabel = label.toLowerCase();
 
-            const isMobileField = ["mobile number", "phone", "mobile"].includes(
+            const isMobileField = ["registered mobile number", "mobile number", "phone", "mobile"].includes(
               lowerLabel
             );
             if (isMobileField) {
@@ -182,6 +195,7 @@ const FetchBillDetails: React.FC = () => {
               const fieldKey = `${field}_${idx}`;
               const lowerLabel = label.toLowerCase().trim();
               if (
+                lowerLabel === "registered mobile number" ||
                 lowerLabel === "mobile number" ||
                 lowerLabel === "phone" ||
                 lowerLabel === "mobile"
@@ -194,16 +208,17 @@ const FetchBillDetails: React.FC = () => {
       }
 
       const payload: Partial<FetchBillDetailsProps> = {
-        provider: formValues.provider,
+        provider: String(formValues.provider),
         subProductId: subProductId,
         customerMobileNumber: formValues.customerMobileNumber,
       };
 
       if (
-        formValues.consumerNumber &&
-        selectedProviderDetails?.consumerNumber === "required"
+        formValues.consumerNumber
+        // &&
+        // selectedProviderDetails?.consumerNumber === "required"
       ) {
-        payload.billerNumber = formValues.consumerNumber;
+        payload.billerNumber = String(formValues.consumerNumber);
       }
 
       selectedProviderDetails?.extra_param?.forEach(
@@ -251,8 +266,19 @@ const FetchBillDetails: React.FC = () => {
       const response = await Fetch_Bill_Details(
         payload as FetchBillDetailsProps
       );
-      if (response?.status === 200 || response?.data?.status === "200") {
+      if (response?.data?.statusCode === 200 || response?.data?.statusCode === "200") {
         showSuccessNotification(response?.data?.message);
+        if (!response?.data?.data?.billInfo) {
+          showErrorNotification("No bill details found");
+          return;
+        }
+        setBillDetails({
+          ...response?.data?.data?.billInfo,
+          formValues: values, // keep original form 1 values
+        });
+        setBillModalOpened(true);
+        setAmountEditable(response?.data?.data?.isAmountEditable === 1);
+
       } else {
         showErrorNotification(
           response?.data?.message || "Unable to fetch bill details"
@@ -265,18 +291,123 @@ const FetchBillDetails: React.FC = () => {
     }
   };
 
+  const processTransaction = async (
+    values: FormikValues,
+    resetForm: () => void
+  ) => {
+    try {
+      setIsLoading(true);
+
+      if (!billDetails || !selectedProviderDetails) {
+        showErrorNotification("Missing bill or provider details");
+        return;
+      }
+
+      // Build payload with only known required fields first
+      const payload: Partial<TransactionProps> = {
+        retailerId: loginData?.hierarchyId,
+        subProductId,
+        provider: Number(selectedProviderDetails.provider_id),
+        number: billDetails?.formValues?.consumerNumber, // biller number from form 1
+        consumerNumber: billDetails?.formValues?.customerMobileNumber, // mobile number from form 1
+        amount: Number(values.amount) || Number(billDetails?.Billamount) || 0,
+        context: billDetails?.context,
+      };
+
+      // Optional fields – add them only if they exist
+      if (billDetails?.Duedate) payload.bill_due_date = billDetails.Duedate;
+
+      if (billDetails?.formValues?.field_one) payload.field_one = billDetails?.formValues?.field_one;
+      if (billDetails?.formValues?.field_two) payload.field_two = billDetails?.formValues?.field_two;
+      if (billDetails?.formValues?.field_three) payload.field_three = billDetails?.formValues?.field_three;
+      if (billDetails?.formValues?.field_four) payload.field_four = billDetails?.formValues?.field_four;
+
+      // Clean up payload to remove any undefined, null, or empty string values
+      Object.keys(payload).forEach((key) => {
+        const value = (payload as any)[key];
+        if (value === undefined || value === null || value === "") {
+          delete (payload as any)[key];
+        }
+      });
+
+      const response = await Transaction(
+        payload as TransactionProps
+      );
+      if (response?.data?.statusCode === 200 || response?.data?.statusCode === "200") {
+        setShowSuccessModal(true);
+        showSuccessNotification(response?.data?.message);
+        setBillDetails(null);
+        setAmountEditable(false);
+        setBillModalOpened(false);
+
+        // Optional: reset provider-related data
+        setSelectedProviderDetails(null);
+        resetForm();
+        setTimeout(() => {
+          setShowSuccessModal(false);
+          navigate(`/products/billPay`);
+        }, 2000);
+      } else {
+        showErrorNotification(
+          response?.data?.message || "Transaction failed"
+        );
+      }
+    } catch (error) {
+      await handleCustomError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const billDetailsInitialValues = useMemo(() => ({
+    customerName: billDetails?.CustomerName || "",
+    billNumber: billDetails?.billNumber || "",
+    billDate: billDetails?.billDate || "",
+    dueDate: billDetails?.Duedate || "",
+    productName: billDetails?.["Product Name"] || "",
+    amount: Number(billDetails?.Billamount) || "", // only editable
+  }), [billDetails]);
+
+  const billDetailsValidationSchema = useMemo(() => {
+    if (!billDetails) return Yup.object().shape({});
+
+    return Yup.object().shape({
+      amount: Yup.number()
+        .required("Amount is required")
+        .min(
+          Number(billDetails.minBillPaidAmount),
+          `Amount should be at least ${billDetails.minBillPaidAmount}`
+        )
+        .max(
+          Number(billDetails.maxAllowPaidAmount),
+          `Amount should not exceed ${billDetails.maxAllowPaidAmount}`
+        ),
+    });
+  }, [billDetails]);
+
+  useEffect(() => {
+    if (subProductId === undefined) {
+      navigate(`/products/billPay`);
+    }
+  }, [subProductId, navigate]);
+
   return (
     <>
       {isLoading && <Loader />}
       <div className="w-full 320px:mt-12 md:mt-0">
         <div className="mb-6 flex items-center gap-6 justify-start">
+          {/* Back Button */}
           <UnstyledButton
             onClick={() => {
-              navigate(`/products/billPay/service`);
+              navigate(`/products/billPay/service`, {
+                state: { subProductId: subProductId },
+              });
             }}
           >
             <BackSvgIcon color={theme.palette.red.DEFAULT} />
           </UnstyledButton>
+
+          {/* Title */}
           <TextComponent
             fontSize={28}
             fontWeight={600}
@@ -285,6 +416,8 @@ const FetchBillDetails: React.FC = () => {
             {serviceName}
           </TextComponent>
         </div>
+
+        {/* Form */}
         <div className="mt-3 flex h-full flex-col justify-between">
           <Formik<FormikValues>
             initialValues={initialValues}
@@ -302,6 +435,7 @@ const FetchBillDetails: React.FC = () => {
                 touched,
                 values,
               } = formik;
+
               return (
                 <>
                   <div className="mt-3 flex flex-wrap items-start justify-start gap-3">
@@ -342,6 +476,7 @@ const FetchBillDetails: React.FC = () => {
                         className="w-max"
                       />
                     </div>
+
                     {selectedProviderDetails && (
                       <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
@@ -366,25 +501,26 @@ const FetchBillDetails: React.FC = () => {
                       </div>
                     )}
 
-                    {selectedProviderDetails?.consumerNumber === "required" && (
-                      <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
-                        <TextInputComponent
-                          label="Consumer Number"
-                          placeholder="Enter Consumer Number"
-                          value={values.consumerNumber || ""}
-                          onChange={handleChange("consumerNumber")}
-                          error={
-                            touched.consumerNumber && errors.consumerNumber
-                              ? String(errors.consumerNumber)
-                              : ""
-                          }
-                          maxLength={12}
-                          minLength={12}
-                          withAsterisk
-                          className="w-max"
-                        />
-                      </div>
-                    )}
+                    <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
+                      <TextInputComponent
+                        label={`${serviceName?.toLowerCase() === "credit card" ? "Last 4 Digit Of Credit Card"
+                          : serviceName?.toLowerCase() === "fast tag" ? "Vehicle Number" :
+                            "Consumer Number"}`}
+                        placeholder={`${serviceName?.toLowerCase() === "credit card" ? "Enter Last 4 Digit Of Credit Card" : "Consumer Number"}`}
+                        value={values.consumerNumber || ""}
+                        onChange={handleChange("consumerNumber")}
+                        error={
+                          touched.consumerNumber && errors.consumerNumber
+                            ? String(errors.consumerNumber)
+                            : ""
+                        }
+                        maxLength={12}
+                        minLength={12}
+                        withAsterisk
+                        className="w-max"
+                      />
+                    </div>
+
                     {selectedProviderDetails?.extra_param?.map(
                       (param: ExtraParam, idx: number) => {
                         const renderField = (
@@ -394,6 +530,7 @@ const FetchBillDetails: React.FC = () => {
                           if (!label) return null;
 
                           if (
+                            label.toLowerCase().includes("registered mobile number") ||
                             label.toLowerCase().includes("mobile number") ||
                             label.toLowerCase().includes("phone")
                           ) {
@@ -487,9 +624,10 @@ const FetchBillDetails: React.FC = () => {
                     )}
                   </div>
 
+                  {/* Submit Button */}
                   <div className="flex w-max self-end mt-5">
                     <ButtonComponent
-                      title={"Submit"}
+                      title={"FETCH DETAILS"}
                       variant="filled"
                       onClick={() => {
                         handleSubmit();
@@ -504,6 +642,131 @@ const FetchBillDetails: React.FC = () => {
             }}
           </Formik>
         </div>
+
+
+        <Modal
+          opened={billModalOpened}
+          onClose={() => setBillModalOpened(false)}
+          title="Bill Details"
+          size="xl"
+          centered
+          closeOnEscape={false}
+          closeOnClickOutside={false}
+          styles={{
+            title: {
+              fontSize: "1.5rem",
+              fontWeight: 600,
+            },
+          }}
+        >
+          <div className="flex w-full items-center justify-center flex-col gap-5">
+            <Formik
+              initialValues={billDetailsInitialValues}
+              validationSchema={billDetailsValidationSchema}
+              enableReinitialize
+              onSubmit={(values, { resetForm }) => processTransaction(values, resetForm)}
+            >
+              {({ values, handleChange, errors, touched, handleSubmit }) => (
+                <form onSubmit={handleSubmit} className="flex flex-col w-full p-4 overflow-y-auto gap-4">
+                  <TextInputComponent
+                    label="Customer Name"
+                    value={values.customerName}
+                    disabled
+                  />
+                  {/* Show these fields only if NOT Fastag */}
+                  {serviceName?.toLowerCase() !== "fast tag" && (
+                    <>
+                      {billDetails?.billNumber && (
+                        <TextInputComponent
+                          label="Bill Number"
+                          value={values.billNumber}
+                          disabled
+                        />
+                      )}
+                      <TextInputComponent label="Bill Date" value={values.billDate} disabled />
+                      <TextInputComponent label="Due Date" value={values.dueDate} disabled />
+                      {billDetails?.["Product Name"] && (
+                        <TextInputComponent
+                          label="Product Name"
+                          value={values.productName}
+                          disabled
+                        />
+                      )}
+                    </>
+                  )}
+
+                  {/* FASTag specific fields */}
+                  {serviceName?.toLowerCase() === "fast tag" && (
+                    <>
+                      {billDetails?.["FASTAG BALANCE"] && (
+                        <TextInputComponent
+                          label="FASTag Balance"
+                          value={billDetails?.["FASTAG BALANCE"]}
+                          disabled
+                        />
+                      )}
+                      {billDetails?.status && (
+                        <TextInputComponent label="Status" value={billDetails?.status} disabled />
+                      )}
+                    </>
+                  )}
+
+                  {serviceName?.toLowerCase().includes("credit") && billDetails?.["Current Outstanding Amount"] && (
+                    <TextInputComponent
+                      label="Current Outstanding Amount"
+                      value={`₹${billDetails?.["Current Outstanding Amount"]}`}
+                      disabled
+                    />
+                  )}
+
+                  {/* Editable Amount Field */}
+                  <div className="relative">
+                    <TextInputComponent
+                      label="Amount"
+                      value={values.amount}
+                      onChange={handleChange("amount")}
+                      error={
+                        touched.amount && errors.amount ? String(errors.amount) : ""
+                      }
+                      withAsterisk
+                      type="number"
+                      disabled={!amountEditable}
+                      min={billDetails?.minBillPaidAmount}
+                      max={billDetails?.maxAllowPaidAmount}
+                    />
+                    {/* Show min/max info below input */}
+                    {(billDetails?.minBillPaidAmount || billDetails?.maxAllowPaidAmount) && (
+                      <p className="text-xs text-gray-600 mt-1">
+                        {`Min: ₹${billDetails?.minBillPaidAmount || 0} | Max: ₹${billDetails?.maxAllowPaidAmount || 0}`}
+                      </p>
+                    )}
+                  </div>
+
+
+                  <div className="mt-6 flex h-9 w-full items-center justify-end">
+                    <ButtonComponent
+                      width={120}
+                      title={"SUBMIT"}
+                      variant="filled"
+                      onClick={() => null}
+                      loading={isLoading}
+                      radius={28}
+                      fontSize={14}
+                      fullWidth
+                      isAuth={true}
+                    />
+                  </div>
+                </form>
+              )}
+            </Formik>
+          </div>
+        </Modal>
+
+        {/* Success Modal */}
+        <TransactionSuccessModel
+          opened={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+        />
       </div>
     </>
   );

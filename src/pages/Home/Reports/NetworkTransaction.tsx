@@ -34,10 +34,12 @@ import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
-import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
+// import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
+// import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 import { DatesRangeValue } from "@mantine/dates";
 import moment from "moment";
+// import SelectComponent from "@/components/Atoms/NewComponents/SelectComponent";
+import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
 
 const NetworkTransaction = () => {
   const theme = useTheme();
@@ -551,27 +553,65 @@ const NetworkTransaction = () => {
         </div>
 
         <Formik<NetworkTransactionParams>
+          enableReinitialize
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleReportSubmit}
         >
           {({ values, handleSubmit, errors, touched, setFieldValue }) => {
+            console.log(errors);
+
             return (
               <>
                 <div className="shadow-black-900/100 mt-5 flex w-full flex-col items-start justify-center gap-6 rounded-xl bg-background-paper p-3 shadow-lg 320px:mt-5 md:mt-0">
                   <div className="flex w-full flex-wrap items-start justify-between gap-4">
                     <div className="flex w-full flex-wrap items-start justify-start gap-4">
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        <FormikDateRangePicker
+                        {/* <FormikDateRangePicker
                           name="dateRange"
                           label="Date Range"
                           size="xs"
                           shortcuts
                           required
+                        /> */}
+                        <CustomDateComponent
+                          label="Date Range"
+                          type="range"
+                          value={[
+                            values.fromDate ? new Date(values.fromDate) : null,
+                            values.toDate ? new Date(values.toDate) : null,
+                          ]}
+                          onChange={(val) => {
+                            if (Array.isArray(val) && val.length === 2) {
+                              setFieldValue("fromDate", val[0]);
+                              setFieldValue("toDate", val[1]);
+                            }
+                          }}
+                          onShortcutSelect={(
+                            start: Date | null,
+                            end: Date | null
+                          ) => {
+                            setFieldValue("fromDate", start);
+                            setFieldValue("toDate", end);
+                          }}
+                          dateFormat="YYYY-MM-DD"
+                          className="w-72"
+                          withAsterisk
+                          error={
+                            (touched.fromDate && errors.fromDate
+                              ? errors.fromDate
+                              : "") +
+                            (touched.toDate &&
+                              errors.toDate &&
+                              errors.toDate !== errors.fromDate
+                              ? (errors.fromDate ? " | " : "") + errors.toDate
+                              : "")
+                          }
+                          customButtons={true}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        <FormikSelectComponent
+                        {/* <FormikSelectComponent
                           name="subProductName"
                           label="Sub Product"
                           placeholder="Select Sub Product"
@@ -580,6 +620,21 @@ const NetworkTransaction = () => {
                           searchable
                           withAsterisk
                           size="xs"
+                        /> */}
+                        <DropdownComponent
+                          label="Sub Product Name"
+                          data={uniqueSubProductTypes}
+                          value={values.subProductName}
+                          withAsterisk
+                          onChange={(value) =>
+                            setFieldValue("subProductName", value)
+                          }
+                          error={
+                            touched.subProductName && errors.subProductName
+                              ? errors.subProductName
+                              : ""
+                          }
+                          className="w-max"
                         />
                       </div>
                       {loginData?.role === "WL" && (
@@ -604,6 +659,23 @@ const NetworkTransaction = () => {
                             }
                             className="w-max"
                           />
+                          {/* <SelectComponent
+                            name="superDistributorId"
+                            label="Super Distributor ID"
+                            placeholder="Select Super Distributor"
+                            data={uniqueSuperDistributorList}
+                            value={values.superDistributorId}
+                            withAsterisk
+                            allowDeselect
+                            searchable
+                            size="xs"
+                            onChange={(value) => {
+                              const id = String(value);
+                              setFieldValue("superDistributorId", id);
+                              handleSuperDistributorChange(id);
+                            }}
+                            error={touched.superDistributorId ? errors.superDistributorId : ""}
+                          /> */}
                         </div>
                       )}
                       {(loginData?.role === "WL" ||
@@ -632,6 +704,28 @@ const NetworkTransaction = () => {
                               }
                               className="w-max"
                             />
+                            {/* <SelectComponent
+                              name="partnerId"
+                              label="Partner ID"
+                              placeholder="Select Partner"
+                              data={uniquePartnerList}
+                              value={values.partnerId}
+                              withAsterisk
+                              allowDeselect
+                              searchable
+                              size="xs"
+                              onChange={(value) => {
+                                const id = String(value);
+                                setFieldValue("partnerId", id);
+                                handlePartnerChange(id);
+                              }}
+                              error={
+                                touched.partnerId && errors.partnerId ? errors.partnerId : ""
+                              }
+                              disabled={
+                                !values.superDistributorId && loginData?.role === "WL"
+                              }
+                            /> */}
                           </div>
                         )}
                       {(loginData?.role === "WL" ||
@@ -658,6 +752,28 @@ const NetworkTransaction = () => {
                               disabled={!values.partnerId}
                               className="w-max"
                             />
+                            {/* <SelectComponent
+                              name="distributorId"
+                              label="Distributor ID"
+                              placeholder="Select Distributor"
+                              data={uniqueDistributorList}
+                              value={values.distributorId}
+                              withAsterisk
+                              allowDeselect
+                              searchable
+                              size="xs"
+                              onChange={(value) => {
+                                const id = String(value);
+                                setFieldValue("distributorId", id);
+                                handleDistributorChange(id);
+                              }}
+                              error={
+                                touched.distributorId && errors.distributorId
+                                  ? errors.distributorId
+                                  : ""
+                              }
+                              disabled={!values.partnerId}
+                            /> */}
                           </div>
                         )}
                       {(loginData?.role === "WL" ||
@@ -684,10 +800,31 @@ const NetworkTransaction = () => {
                               disabled={!values.distributorId}
                               className="w-max"
                             />
+                            {/* <SelectComponent
+                              name="retailerId"
+                              label="Retailer ID"
+                              placeholder="Select Retailer"
+                              data={uniqueRetailerList}
+                              value={values.retailerId}
+                              withAsterisk
+                              allowDeselect
+                              searchable
+                              size="xs"
+                              onChange={(value) => {
+                                const id = String(value);
+                                setFieldValue("retailerId", id);
+                              }}
+                              error={
+                                touched.retailerId && errors.retailerId
+                                  ? errors.retailerId
+                                  : ""
+                              }
+                              disabled={!values.distributorId}
+                            /> */}
                           </div>
                         )}
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        <FormikSelectComponent
+                        {/* <FormikSelectComponent
                           name="reportType"
                           label="Report Type"
                           placeholder="Select Report Type"
@@ -698,6 +835,26 @@ const NetworkTransaction = () => {
                           ]}
                           withAsterisk
                           size="xs"
+                        /> */}
+                        <DropdownComponent
+                          label="Status"
+                          data={[
+                            { value: "COMMISSION", label: "COMMISSION" },
+                            { value: "CHARGE", label: "CHARGE" },
+                          ]}
+                          value={values.status}
+                          withAsterisk
+                          onChange={(value) => setFieldValue("status", value)}
+                          error={
+                            touched.status && errors.status
+                              ? typeof errors.status === "string"
+                                ? errors.status
+                                : Array.isArray(errors.status)
+                                  ? errors.status.join(" | ")
+                                  : ""
+                              : ""
+                          }
+                          className="w-max"
                         />
                       </div>
                     </div>

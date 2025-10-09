@@ -910,6 +910,21 @@ export type FetchBillDetailsProps = {
   field_four?: string;
 };
 
+export type TransactionProps = {
+  retailerId: string;
+  subProductId: string;
+  number: string; // Biller number / Consumer Number
+  provider: string | number; // provider id
+  amount: string | number;
+  context?: string;
+  bill_due_date?: string;
+  consumerNumber: string | number; // Customer Number
+  field_one?: string;
+  field_two?: string;
+  field_three?: string;
+  field_four?: string;
+};
+
 export type BankVerificationRequest = {
   id_number: string;
   ifsc: string;

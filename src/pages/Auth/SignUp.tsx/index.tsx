@@ -33,6 +33,7 @@ const SignUp: React.FC = () => {
 
   const handleSubmit = async (values: SignUpRequest) => {
     console.log(values);
+
     try {
       setIsLoading(true);
       // let bodyRequest = {

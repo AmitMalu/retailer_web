@@ -5,7 +5,7 @@ import { Get_Provider_List } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification } from "@/Utils/notifications";
-import { UnstyledButton } from "@mantine/core";
+import { Skeleton, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -29,7 +29,10 @@ const BillPayOneScreen = () => {
   const dispatch = useDispatch();
   const isMounted = useRef(true);
 
+  // Fetch Provider List
   const fetchData = useCallback(async () => {
+    if (!subProductId) return;
+
     if (isMounted.current) {
       try {
         setIsLoading(true);
@@ -59,7 +62,7 @@ const BillPayOneScreen = () => {
     return () => {
       isMounted.current = false;
     };
-  }, [bbpsServicesData, fetchData]);
+  }, [bbpsServicesData]);
 
   const cardsData = Array.from(
     new Map(
@@ -83,6 +86,27 @@ const BillPayOneScreen = () => {
     });
   };
 
+  useEffect(() => {
+    if (subProductId === undefined) {
+      navigate(`/products/billPay`);
+    }
+  }, [subProductId, navigate]);
+
+  // --- Skeleton Shimmer Cards ---
+  const shimmerCards = Array.from({ length: 6 }).map((_, index) => (
+    <div
+      key={index}
+      className="relative flex flex-col items-center min-h-[120px]"
+    >
+      <div
+        className="relative w-36 h-36 rounded-3xl border-2 border-red-dark bg-white shadow-md flex flex-col items-center justify-center gap-3"
+      >
+        <Skeleton height={45} width="30%" mb="sm" />
+        <Skeleton height={14} width="70%" radius="xl" />
+      </div>
+    </div>
+  ));
+
   return (
     <>
       {isLoading && <Loader />}
@@ -105,18 +129,16 @@ const BillPayOneScreen = () => {
 
       <div className="flex flex-col items-center gap-6 mt-8">
         <div className="flex justify-center gap-6 flex-wrap">
-          {cardsData.map((card: any) => (
-            <BbpsCard
-              key={card.id}
-              image={<BillPaymentSvgIcon color={theme.palette.red.DEFAULT} />}
-              title={card.title}
-              onClick={() => {
-                handleIconClick({
-                  serviceName: card.title,
-                });
-              }}
-            />
-          ))}
+          {isLoading
+            ? shimmerCards // show shimmering skeletons while loading
+            : cardsData.map((card: any) => (
+              <BbpsCard
+                key={card.id}
+                image={<BillPaymentSvgIcon color={theme.palette.red.DEFAULT} />}
+                title={card.title}
+                onClick={() => handleIconClick({ serviceName: card.title })}
+              />
+            ))}
         </div>
       </div>
     </>

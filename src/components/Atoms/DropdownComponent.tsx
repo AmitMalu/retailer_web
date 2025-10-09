@@ -40,7 +40,6 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
   const handleChange = (event: SelectChangeEvent<any>) => {
 
     const newValue = event.target.value;
-    console.log(newValue, value);
 
     if (multiple) {
       const updatedValue = Array.isArray(newValue) ? newValue : [String(newValue)];
