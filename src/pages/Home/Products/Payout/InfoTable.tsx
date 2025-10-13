@@ -34,7 +34,7 @@ import {
 } from "@/Utils/notifications";
 import PayoutBankDeleteModal from "@/components/Organism/PayoutBankDeleteModal";
 import { useBankVerification } from "@/Utils/Verification";
-import { CheckCircle, Refresh } from "@mui/icons-material";
+import { Refresh } from "@mui/icons-material";
 
 interface LocationState {
   payoutType?: subProductObjType;
@@ -261,7 +261,7 @@ const InfoTable = () => {
           >
             {({
               values,
-              handleChange,
+              // handleChange,
               handleSubmit,
               errors,
               touched,
