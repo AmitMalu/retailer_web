@@ -8,6 +8,7 @@ import { BackSvgIcon } from "@/assets/svg";
 import { createTriangularLayout, decryptData } from "@/Utils/helper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
+import { subProductObjType } from "@/Common/interface";
 
 export default function PayoutScreen() {
   const theme = useTheme();
@@ -21,9 +22,9 @@ export default function PayoutScreen() {
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  const handleIconClick = (type: string) => {
+  const handleIconClick = (subProduct: subProductObjType) => {
     navigate(`/products/payoutScreen/Info`, {
-      state: { payoutType: type },
+      state: { payoutType: subProduct },
     });
   };
 
@@ -71,7 +72,7 @@ export default function PayoutScreen() {
                     <PGTezMasterSvgIcon color={theme.palette.red.DEFAULT} />
                   }
                   title={card.title}
-                  onClick={() => handleIconClick(card.subProductId)}
+                  onClick={() => handleIconClick(card)}
                 />
               ))}
             </div>

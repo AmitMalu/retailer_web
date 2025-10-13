@@ -3,16 +3,20 @@ import {
   ExtraParam,
   ExtraParamContent,
   FetchBillDetailsProps,
-  ProviderDetails,
+  // ProviderDetails,
   TransactionProps,
 } from "@/Common/interface";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
-import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
-import DropdownComponent from "@/components/Atoms/DropdownComponent";
-import Loader from "@/components/Atoms/Loader";
+// import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
+// import DropdownComponent from "@/components/Atoms/DropdownComponent";
+import MyLoader from "@/components/Atoms/Loader";
+import NewTextInputComponent from "@/components/Atoms/NewComponents/TextInputComponent";
 import TextComponent from "@/components/Atoms/TextComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import TransactionSuccessModel from "@/components/Atoms/TransactionSuccessModel";
+import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePicker";
+import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
+import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import { RootState } from "@/Redux/Store";
 import { Fetch_Bill_Details, Transaction } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
@@ -21,8 +25,9 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
-import { Modal, UnstyledButton } from "@mantine/core";
+import { Loader, Modal, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
+import { IconCalendar } from "@tabler/icons-react";
 import { Formik, FormikErrors, FormikValues } from "formik";
 import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
@@ -68,22 +73,30 @@ const FetchBillDetails: React.FC = () => {
     };
 
     if (selectedProviderDetails) {
-      // if (selectedProviderDetails.consumerNumber === "required") {
-      //   values.consumerNumber = "";
-      // }
+      selectedProviderDetails.extra_param?.forEach((param: ExtraParam, idx: number) => {
+        const fields = [
+          { key: `field_one_${idx}`, value: param.field_one },
+          { key: `field_two_${idx}`, value: param.field_two },
+          { key: `field_three_${idx}`, value: param.field_three },
+          { key: `field_four_${idx}`, value: param.field_four },
+        ];
 
-      selectedProviderDetails.extra_param?.forEach(
-        (param: ExtraParam, idx: number) => {
-          if (param.field_one) values[`field_one_${idx}`] = "";
-          if (param.field_two) values[`field_two_${idx}`] = "";
-          if (param.field_three) values[`field_three_${idx}`] = "";
-          if (param.field_four) values[`field_four_${idx}`] = "";
-        }
-      );
+        fields.forEach(({ key, value: label }) => {
+          if (!label) return;
+
+          // Determine type dynamically
+          if (isDOBField(label)) {
+            values[key] = null; // Dates must be null initially
+          } else {
+            values[key] = "";   // Text/number fields default to empty string
+          }
+        });
+      });
     }
 
     return values;
   }, [selectedProviderDetails]);
+
 
   const validateForm = (): FormikErrors<FormikValues> => {
     const errors: FormikErrors<FormikValues> = {};
@@ -92,9 +105,9 @@ const FetchBillDetails: React.FC = () => {
 
   const validationSchema = useMemo(() => {
     const schema: Record<string, any> = {
-      provider: Yup.string().required("Required"),
+      provider: Yup.string().required("Provider is Required"),
       customerMobileNumber: Yup.string()
-        .required("Required")
+        .required("Mobile Number is Required")
         .matches(MobileNoRegex, "Number must be 10 digits"),
       consumerNumber: Yup.string().required("Required"),
       // consumerNumber: Yup.string().when(
@@ -131,7 +144,7 @@ const FetchBillDetails: React.FC = () => {
             if (lowerLabel.includes("email")) {
               acc[fieldKey] = Yup.string()
                 .matches(EmailRegex, "Enter valid email address")
-                .required("Required");
+                .required("Email is Required");
             }
             // validation for dob
             else if (isDOBField(label)) {
@@ -290,6 +303,7 @@ const FetchBillDetails: React.FC = () => {
       setIsLoading(false);
     }
   };
+  console.log(billDetails, "billDetails");
 
   const processTransaction = async (
     values: FormikValues,
@@ -315,12 +329,49 @@ const FetchBillDetails: React.FC = () => {
       };
 
       // Optional fields – add them only if they exist
-      if (billDetails?.Duedate) payload.bill_due_date = billDetails.Duedate;
+      // if (billDetails?.Duedate) payload.bill_due_date = billDetails.Duedate;
 
-      if (billDetails?.formValues?.field_one) payload.field_one = billDetails?.formValues?.field_one;
-      if (billDetails?.formValues?.field_two) payload.field_two = billDetails?.formValues?.field_two;
-      if (billDetails?.formValues?.field_three) payload.field_three = billDetails?.formValues?.field_three;
-      if (billDetails?.formValues?.field_four) payload.field_four = billDetails?.formValues?.field_four;
+      // if (billDetails?.formValues?.field_one) payload.field_one = billDetails?.formValues?.field_one;
+      // if (billDetails?.formValues?.field_two) payload.field_two = billDetails?.formValues?.field_two;
+      // if (billDetails?.formValues?.field_three) payload.field_three = billDetails?.formValues?.field_three;
+      // if (billDetails?.formValues?.field_four) payload.field_four = billDetails?.formValues?.field_four;
+
+      if (selectedProviderDetails?.extra_param) {
+        selectedProviderDetails.extra_param.forEach((param: ExtraParam, idx: number) => {
+          const fields = [
+            { field: "field_one", label: param.field_one },
+            { field: "field_two", label: param.field_two },
+            { field: "field_three", label: param.field_three },
+            { field: "field_four", label: param.field_four },
+          ];
+
+          fields.forEach(({ field, label }) => {
+            if (!label) return;
+
+            const key = `${field}_${idx}`;
+            const lowerLabel = label.toLowerCase().trim();
+
+            const payloadObj = payload as any;
+
+            // If it's a mobile-related field, use customerMobileNumber
+            if (
+              lowerLabel === "registered mobile number" ||
+              lowerLabel === "mobile number" ||
+              lowerLabel === "phone" ||
+              lowerLabel === "mobile"
+            ) {
+              payloadObj[field] = billDetails?.formValues?.customerMobileNumber;
+            }
+            // ✅ Otherwise map from the dynamic key (e.g. field_one_0)
+            else if (
+              billDetails?.formValues?.[key] !== undefined &&
+              billDetails?.formValues?.[key] !== ""
+            ) {
+              payloadObj[field] = billDetails.formValues[key];
+            }
+          });
+        });
+      }
 
       // Clean up payload to remove any undefined, null, or empty string values
       Object.keys(payload).forEach((key) => {
@@ -393,7 +444,7 @@ const FetchBillDetails: React.FC = () => {
 
   return (
     <>
-      {isLoading && <Loader />}
+      {isLoading && <MyLoader />}
       <div className="w-full 320px:mt-12 md:mt-0">
         <div className="mb-6 flex items-center gap-6 justify-start">
           {/* Back Button */}
@@ -430,7 +481,6 @@ const FetchBillDetails: React.FC = () => {
               const {
                 handleSubmit,
                 handleChange,
-                setFieldValue,
                 errors,
                 touched,
                 values,
@@ -440,7 +490,7 @@ const FetchBillDetails: React.FC = () => {
                 <>
                   <div className="mt-3 flex flex-wrap items-start justify-start gap-3">
                     <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)]  ">
-                      <DropdownComponent
+                      {/* <DropdownComponent
                         label="Select Provider"
                         data={
                           bbpsServicesData
@@ -474,50 +524,76 @@ const FetchBillDetails: React.FC = () => {
                             : ""
                         }
                         className="w-max"
+                      /> */}
+                      <FormikSelectComponent
+                        name="provider"
+                        placeholder="Select Provider"
+                        label="Select Provider"
+                        size="md"
+                        data={bbpsServicesData
+                          ?.filter((service: any) => service.service_name === serviceName)
+                          .map((service: any) => ({
+                            value: String(service.provider_id),
+                            label: service.provider_name,
+                          })) || []}
+                        withAsterisk
+                        searchable
+                        allowDeselect
+                        onChange={(value: any) => {
+                          const selectedProvider = bbpsServicesData?.find(
+                            (s: any) => String(s.provider_id) === value
+                          );
+                          setSelectedProviderDetails(selectedProvider);
+                        }}
                       />
                     </div>
 
                     {selectedProviderDetails && (
                       <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
-                        <TextInputComponent
+                        <FormikTextInputComponent
+                          name="customerMobileNumber"
                           label="Customer Mobile Number"
+                          size="md"
                           allowCharacter={false}
                           allowSpace={false}
                           allowSpecialChar={false}
                           placeholder="Enter Number"
-                          value={values.customerMobileNumber}
-                          onChange={handleChange("customerMobileNumber")}
-                          error={
-                            touched.customerMobileNumber &&
-                              errors.customerMobileNumber
-                              ? String(errors.customerMobileNumber)
-                              : ""
-                          }
+                          // value={values.customerMobileNumber}
+                          // onChange={handleChange("customerMobileNumber")}
+                          // error={
+                          //   touched.customerMobileNumber &&
+                          //     errors.customerMobileNumber
+                          //     ? String(errors.customerMobileNumber)
+                          //     : ""
+                          // }
                           maxLength={10}
                           minLength={10}
                           withAsterisk
-                          className="w-max"
+                          fullWidth
                         />
                       </div>
                     )}
 
                     <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
-                      <TextInputComponent
+                      <FormikTextInputComponent
+                        name="consumerNumber"
                         label={`${serviceName?.toLowerCase() === "credit card" ? "Last 4 Digit Of Credit Card"
                           : serviceName?.toLowerCase() === "fast tag" ? "Vehicle Number" :
                             "Consumer Number"}`}
                         placeholder={`${serviceName?.toLowerCase() === "credit card" ? "Enter Last 4 Digit Of Credit Card" : "Consumer Number"}`}
-                        value={values.consumerNumber || ""}
-                        onChange={handleChange("consumerNumber")}
-                        error={
-                          touched.consumerNumber && errors.consumerNumber
-                            ? String(errors.consumerNumber)
-                            : ""
-                        }
+                        // value={values.consumerNumber || ""}
+                        // onChange={handleChange("consumerNumber")}
+                        size="md"
+                        // error={
+                        //   touched.consumerNumber && errors.consumerNumber
+                        //     ? String(errors.consumerNumber)
+                        //     : ""
+                        // }
                         maxLength={12}
                         minLength={12}
+                        capitalize={serviceName?.toLowerCase() === "fast tag"}
                         withAsterisk
-                        className="w-max"
+                        fullWidth
                       />
                     </div>
 
@@ -540,7 +616,7 @@ const FetchBillDetails: React.FC = () => {
                           if (isDOBField(label)) {
                             return (
                               <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
-                                <CustomDateComponent
+                                {/* <CustomDateComponent
                                   key={fieldKey}
                                   label={label}
                                   value={values[fieldKey]}
@@ -556,15 +632,26 @@ const FetchBillDetails: React.FC = () => {
                                   dateFormat="YYYY-MM-DD"
                                   withAsterisk
                                   className="w-max"
+                                /> */}
+                                <FormikDatePicker
+                                  name={fieldKey}
+                                  label={label}
+                                  placeholder={`Select ${label}`}
+                                  size="md"
+                                  required
+                                  maxDate={new Date}
+                                  valueFormat="YYYY-MM-DD"
+                                  leftIcon={<IconCalendar size={16} />}
                                 />
                               </div>
                             );
                           }
 
                           if (param.extraparam_content?.length) {
+
                             return (
                               <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
-                                <DropdownComponent
+                                {/* <DropdownComponent
                                   key={fieldKey}
                                   label={label}
                                   data={param.extraparam_content.map(
@@ -584,6 +671,22 @@ const FetchBillDetails: React.FC = () => {
                                   }
                                   withAsterisk
                                   className="w-max"
+                                /> */}
+                                <FormikSelectComponent
+                                  name={fieldKey}
+                                  placeholder={`Select ${label}`}
+                                  label={`Select ${label}`}
+                                  size="md"
+                                  data={param?.extraparam_content?.map(
+                                    (item: ExtraParamContent) => ({
+                                      value: item.name,
+                                      label: item.name,
+                                    })
+                                  )}
+                                  withAsterisk
+                                  searchable
+                                  allowDeselect
+                                  fullWidth
                                 />
                               </div>
                             );
@@ -591,7 +694,8 @@ const FetchBillDetails: React.FC = () => {
 
                           return (
                             <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
-                              <TextInputComponent
+                              <NewTextInputComponent
+                                name={fieldKey}
                                 key={fieldKey}
                                 label={label}
                                 placeholder="Enter"
@@ -646,7 +750,7 @@ const FetchBillDetails: React.FC = () => {
 
         <Modal
           opened={billModalOpened}
-          onClose={() => setBillModalOpened(false)}
+          onClose={() => !isLoading && setBillModalOpened(false)}
           title="Bill Details"
           size="xl"
           centered
@@ -657,109 +761,118 @@ const FetchBillDetails: React.FC = () => {
               fontSize: "1.5rem",
               fontWeight: 600,
             },
+            body: {
+              overflow: isLoading ? "hidden" : "auto", // Disable scrolling while loading
+            },
           }}
         >
-          <div className="flex w-full items-center justify-center flex-col gap-5">
-            <Formik
-              initialValues={billDetailsInitialValues}
-              validationSchema={billDetailsValidationSchema}
-              enableReinitialize
-              onSubmit={(values, { resetForm }) => processTransaction(values, resetForm)}
-            >
-              {({ values, handleChange, errors, touched, handleSubmit }) => (
-                <form onSubmit={handleSubmit} className="flex flex-col w-full p-4 overflow-y-auto gap-4">
-                  <TextInputComponent
-                    label="Customer Name"
-                    value={values.customerName}
-                    disabled
-                  />
-                  {/* Show these fields only if NOT Fastag */}
-                  {serviceName?.toLowerCase() !== "fast tag" && (
-                    <>
-                      {billDetails?.billNumber && (
+          {isLoading ?
+            <div className="flex justify-center items-center h-full w-full flex-col gap-4">
+              <Loader size={100} />
+              <p className="text-lg text-gray-700">Processing your transaction...</p>
+            </div>
+            : (
+              <div className="flex w-full items-center justify-center flex-col gap-5">
+                <Formik
+                  initialValues={billDetailsInitialValues}
+                  validationSchema={billDetailsValidationSchema}
+                  enableReinitialize
+                  onSubmit={(values, { resetForm }) => processTransaction(values, resetForm)}
+                >
+                  {({ values, handleChange, errors, touched, handleSubmit }) => (
+                    <form onSubmit={handleSubmit} className="flex flex-col w-full p-4 overflow-y-auto gap-4">
+                      <TextInputComponent
+                        label="Customer Name"
+                        value={values.customerName}
+                        disabled
+                      />
+                      {/* Show these fields only if NOT Fastag */}
+                      {serviceName?.toLowerCase() !== "fast tag" && (
+                        <>
+                          {billDetails?.billNumber && (
+                            <TextInputComponent
+                              label="Bill Number"
+                              value={values.billNumber}
+                              disabled
+                            />
+                          )}
+                          <TextInputComponent label="Bill Date" value={values.billDate} disabled />
+                          <TextInputComponent label="Due Date" value={values.dueDate} disabled />
+                          {billDetails?.["Product Name"] && (
+                            <TextInputComponent
+                              label="Product Name"
+                              value={values.productName}
+                              disabled
+                            />
+                          )}
+                        </>
+                      )}
+
+                      {/* FASTag specific fields */}
+                      {serviceName?.toLowerCase() === "fast tag" && (
+                        <>
+                          {billDetails?.["FASTAG BALANCE"] && (
+                            <TextInputComponent
+                              label="FASTag Balance"
+                              value={billDetails?.["FASTAG BALANCE"]}
+                              disabled
+                            />
+                          )}
+                          {billDetails?.status && (
+                            <TextInputComponent label="Status" value={billDetails?.status} disabled />
+                          )}
+                        </>
+                      )}
+
+                      {serviceName?.toLowerCase().includes("credit") && billDetails?.["Current Outstanding Amount"] && (
                         <TextInputComponent
-                          label="Bill Number"
-                          value={values.billNumber}
+                          label="Current Outstanding Amount"
+                          value={`₹${billDetails?.["Current Outstanding Amount"]}`}
                           disabled
                         />
                       )}
-                      <TextInputComponent label="Bill Date" value={values.billDate} disabled />
-                      <TextInputComponent label="Due Date" value={values.dueDate} disabled />
-                      {billDetails?.["Product Name"] && (
+
+                      {/* Editable Amount Field */}
+                      <div className="relative">
                         <TextInputComponent
-                          label="Product Name"
-                          value={values.productName}
-                          disabled
+                          label="Amount"
+                          value={values.amount}
+                          onChange={handleChange("amount")}
+                          error={
+                            touched.amount && errors.amount ? String(errors.amount) : ""
+                          }
+                          withAsterisk
+                          type="number"
+                          disabled={!amountEditable || !!isLoading}
+                          min={billDetails?.minBillPaidAmount}
+                          max={billDetails?.maxAllowPaidAmount}
                         />
-                      )}
-                    </>
-                  )}
+                        {/* Show min/max info below input */}
+                        {(billDetails?.minBillPaidAmount || billDetails?.maxAllowPaidAmount) && (
+                          <p className="text-xs text-gray-600 mt-1">
+                            {`Min: ₹${billDetails?.minBillPaidAmount || 0} | Max: ₹${billDetails?.maxAllowPaidAmount || 0}`}
+                          </p>
+                        )}
+                      </div>
 
-                  {/* FASTag specific fields */}
-                  {serviceName?.toLowerCase() === "fast tag" && (
-                    <>
-                      {billDetails?.["FASTAG BALANCE"] && (
-                        <TextInputComponent
-                          label="FASTag Balance"
-                          value={billDetails?.["FASTAG BALANCE"]}
-                          disabled
+
+                      <div className="mt-6 flex h-9 w-full items-center justify-end">
+                        <ButtonComponent
+                          width={120}
+                          title={"SUBMIT"}
+                          variant="filled"
+                          onClick={() => null}
+                          disabled={isLoading}
+                          radius={28}
+                          fontSize={14}
+                          fullWidth
                         />
-                      )}
-                      {billDetails?.status && (
-                        <TextInputComponent label="Status" value={billDetails?.status} disabled />
-                      )}
-                    </>
+                      </div>
+                    </form>
                   )}
-
-                  {serviceName?.toLowerCase().includes("credit") && billDetails?.["Current Outstanding Amount"] && (
-                    <TextInputComponent
-                      label="Current Outstanding Amount"
-                      value={`₹${billDetails?.["Current Outstanding Amount"]}`}
-                      disabled
-                    />
-                  )}
-
-                  {/* Editable Amount Field */}
-                  <div className="relative">
-                    <TextInputComponent
-                      label="Amount"
-                      value={values.amount}
-                      onChange={handleChange("amount")}
-                      error={
-                        touched.amount && errors.amount ? String(errors.amount) : ""
-                      }
-                      withAsterisk
-                      type="number"
-                      disabled={!amountEditable}
-                      min={billDetails?.minBillPaidAmount}
-                      max={billDetails?.maxAllowPaidAmount}
-                    />
-                    {/* Show min/max info below input */}
-                    {(billDetails?.minBillPaidAmount || billDetails?.maxAllowPaidAmount) && (
-                      <p className="text-xs text-gray-600 mt-1">
-                        {`Min: ₹${billDetails?.minBillPaidAmount || 0} | Max: ₹${billDetails?.maxAllowPaidAmount || 0}`}
-                      </p>
-                    )}
-                  </div>
-
-
-                  <div className="mt-6 flex h-9 w-full items-center justify-end">
-                    <ButtonComponent
-                      width={120}
-                      title={"SUBMIT"}
-                      variant="filled"
-                      onClick={() => null}
-                      loading={isLoading}
-                      radius={28}
-                      fontSize={14}
-                      fullWidth
-                      isAuth={true}
-                    />
-                  </div>
-                </form>
-              )}
-            </Formik>
-          </div>
+                </Formik>
+              </div>
+            )}
         </Modal>
 
         {/* Success Modal */}

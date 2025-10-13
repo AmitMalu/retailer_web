@@ -314,6 +314,9 @@ export const Edit_Beneficiary_Bank_Details = async (
 export const Payout_Send = async (data: PayoutSendBeneficiaryProps) =>
   await api.post(`${API_ROUTES.SEND_PAYOUT}`, data, await createHeaders());
 
+export const Payout_Success_Callback = async (data: any) =>
+  await api.post(`${API_ROUTES.PAYOUT_SUCCESS_CALLBACK}`, data, await createHeaders());
+
 export const Payout_Get_Bank_Details = async (ifscCode: string) =>
   await api.get(
     `${API_ROUTES.GET_BANK_DETAILS}/${ifscCode}`,

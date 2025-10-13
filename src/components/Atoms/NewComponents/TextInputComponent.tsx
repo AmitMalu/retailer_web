@@ -11,7 +11,7 @@ interface TextInputComponentProps {
     placeholder?: string;
     value: string;
     oneTimeCode?: boolean;
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
     error?: string | boolean;
     required?: boolean;
@@ -100,7 +100,7 @@ const TextInputComponent = forwardRef<HTMLInputElement, TextInputComponentProps>
         if (capitalize) {
             newValue = newValue.toUpperCase();
         }
-        onChange({
+        onChange?.({
             ...event,
             target: {
                 ...event.target,
@@ -146,7 +146,7 @@ const TextInputComponent = forwardRef<HTMLInputElement, TextInputComponentProps>
             oneTimeCode
             value={value}
             onChange={(val) =>
-                onChange({
+                onChange?.({
                     target: { value: val, name: name },
                 } as React.ChangeEvent<HTMLInputElement>)
             } // mock event

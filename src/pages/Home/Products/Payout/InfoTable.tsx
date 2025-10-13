@@ -6,6 +6,7 @@ import {
   PayoutBankDetails,
   PayoutBankDetailsParams,
   PayoutSendBeneficiaryProps,
+  subProductObjType,
 } from "@/Common/interface";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
@@ -26,7 +27,7 @@ import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import PayoutFormModal from "./PayoutForm";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
-import { Edit_Beneficiary_Bank_Details, Payout_GetAll_Payout_BankDetails, Payout_Send } from "@/Services/api";
+import { Edit_Beneficiary_Bank_Details, Payout_GetAll_Payout_BankDetails, Payout_Send, Payout_Success_Callback } from "@/Services/api";
 import {
   showErrorNotification,
   showSuccessNotification,
@@ -35,11 +36,15 @@ import PayoutBankDeleteModal from "@/components/Organism/PayoutBankDeleteModal";
 import { useBankVerification } from "@/Utils/Verification";
 import { CheckCircle, Refresh } from "@mui/icons-material";
 
+interface LocationState {
+  payoutType?: subProductObjType;
+}
+
 const InfoTable = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const location = useLocation();
-  const { payoutType } = location.state || {};
+  const { payoutType } = location.state as LocationState;
 
   const [showDrawerForm, setShowDrawerForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -193,11 +198,12 @@ const InfoTable = () => {
           retailerId: loginData?.hierarchyId || "",
           accountNumber: values?.accountNumber || "",
           ifscCode: values?.ifscCode || "",
-          amount: 0,
+          amount: "0",
           beneficiaryName: values?.bankHolderName || "",
-          paymentMode: "",
-          subProductId: payoutType,
-          callbackurl: "https://uat.decipay.in/enterprises/api/payout/callback",
+          paymentMode: "IMPS",
+          subProductId: payoutType?.subProductId || "",
+          schemeCode: payoutType?.schemeCode || ""
+          // callbackurl: "https://uat.decipay.in/enterprises/api/payout/callback",
         };
         const handleSubmit = async (values: PayoutSendBeneficiaryProps) => {
           try {
@@ -210,13 +216,28 @@ const InfoTable = () => {
               beneficiaryName: values.beneficiaryName,
               paymentMode: values.paymentMode,
               subProductId: values.subProductId,
-              callbackurl: values.callbackurl,
+              schemeCode: values.schemeCode,
+
+              // callbackurl: values.callbackurl,
             };
 
             const response = await Payout_Send(payload);
-            if (response?.status === 200) {
-              showSuccessNotification("Transfer initiated successfully");
-              return true;
+            if (response?.data?.statusCode == 200) {
+              showSuccessNotification(response?.data?.message);
+              const req = {
+                subProductId: values.subProductId
+              }
+              const res2 = await Payout_Success_Callback(req)
+              if (res2?.data?.statusCode == 200) {
+                showSuccessNotification(res2?.data?.message);
+                return true;
+              } else {
+                showErrorNotification(
+                  response?.data?.message || "Transfer Initiation failed"
+                );
+                return false;
+              }
+
             } else {
               showErrorNotification(
                 response?.data?.message || "Transfer failed"
@@ -247,7 +268,7 @@ const InfoTable = () => {
               setFieldValue,
             }) => (
               <div className="flex items-center gap-2 justify-center">
-                <div className="w-24">
+                <div className="w-40 h-20 flex justify-center items-center">
                   <DropdownComponent
                     label="Transaction Type"
                     data={[
@@ -264,16 +285,29 @@ const InfoTable = () => {
                     className="w-max"
                   />
                 </div>
-                <div className="w-32">
+                <div className="w-32 h-20 flex justify-center items-center">
                   <TextInputComponent
-                    placeholder={"Enter"}
-                    value={values.amount}
-                    onChange={handleChange("amount")}
+                    placeholder={"Enter Amount"}
+                    value={values.amount ? values.amount : 0}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const val = e.target.value;
+
+                      // 🧠 If current value is 0 and user types a number → replace it
+                      if (values.amount === 0 && /^\d$/.test(val)) {
+                        setFieldValue("amount", Number(val));
+                      }
+                      // ✅ Otherwise, handle normally
+                      else if (/^\d*$/.test(val)) {
+                        setFieldValue("amount", Number(val || 0));
+                      }
+                    }}
                     error={touched.amount && errors.amount ? errors.amount : ""}
                     className="w-max"
+                    maxLength={8}
                   />
                 </div>
                 <ButtonComponent
+                  height="40px"
                   title="Transfer"
                   variant="filled"
                   onClick={() => {
@@ -297,19 +331,20 @@ const InfoTable = () => {
       render: (_value: any, _index: number, row: PayoutBankDetails) => (
         <div className="flex items-center gap-2">
           {row?.isVerified ? (
-            <div className="flex items-center gap-1">
-              <CheckCircle color={theme?.palette?.GreenColor?.DEFAULT} />
-              <TextComponent
-                fontSize={14}
-                fontWeight={500}
-                color={theme?.palette?.GreenColor?.DEFAULT}
-                align="center"
-              >
-                Verified
-              </TextComponent>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                color: "#28a745",
+                fontSize: "18px",
+                fontWeight: 500,
+              }}
+            >
+              ✅ Verified
             </div>
           ) : (
             <ButtonComponent
+              height={40}
               title="Verify"
               variant="outline"
               radius={5}
@@ -365,6 +400,13 @@ const InfoTable = () => {
   useEffect(() => {
     GetPayoutDataSubmit(page, size, searchValues);
   }, [page, size, searchValues])
+
+  useEffect(() => {
+    // if no payoutType, redirect back
+    if (!payoutType) {
+      navigate("/products/payoutScreen", { replace: true });
+    }
+  }, [payoutType]);
 
   return (
     <>

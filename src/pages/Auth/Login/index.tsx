@@ -66,7 +66,7 @@ const Login: React.FC = () => {
         // url: getCurrentUrl(),
       };
       const response = await login(bodyRequest);
-      if (
+      if (response && response?.data &&
         response?.data?.statusCode === 200 ||
         response?.data?.statusCode === "200"
       ) {
@@ -78,8 +78,14 @@ const Login: React.FC = () => {
         showErrorNotification(response?.data?.message || "Unable to login");
       }
     } catch (error: any) {
-      showErrorNotification(error.response?.data?.message || error.message);
-      setIsLoading(false);
+      console.error(error, "login error");
+      // Safely extract message
+      const errorMessage =
+        error?.response?.data?.message ||  // API returned a message
+        error?.message ||                  // Network or generic error
+        "Something went wrong. Please try again.";
+
+      showErrorNotification(errorMessage);
     } finally {
       setIsLoading(false);
     }

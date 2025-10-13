@@ -35,6 +35,7 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
+    console.error("Response error:", error?.response || error);
     // console.error("Response error:", {
     //   url: error.config?.url,
     //   status: error.response?.data?.statusCode,
@@ -48,7 +49,7 @@ api.interceptors.response.use(
       //   error?.response?.data?.message || t('AnUnknownErrorOccurred'),
       // );
     }
-
+    // return error;
     return Promise.reject(error);
   }
 );

@@ -185,7 +185,7 @@ export type CustomTextInputProps = Omit<
   required?: boolean;
   type?: "text" | "password" | "email" | "number" | "tel" | "url";
   leftSection?: React.ReactElement;
-  rightSection?: React.ReactElement;
+  rightSection?: React.ReactElement | null;
   maxLength?: number;
   minLength?: number;
   pattern?: string;
@@ -238,6 +238,7 @@ export type ButtonComponentProps = {
   fontSize?: number;
   isAuth?: boolean;
   width?: string | number;
+  height?: string | number;
 };
 
 export type CustomDatePickerProps = {
@@ -304,6 +305,12 @@ export type DynamicModalProps = {
   content: React.ReactNode;
   ButtonTitle?: string;
   onClick?: () => void;
+};
+
+export type subProductObjType = {
+  schemeCode: string;
+  subProductName: string;
+  subProductId: string;
 };
 
 export type TimeComponentProps = {
@@ -519,7 +526,12 @@ export type UserProfileFormProps = {
   parentAccount: string;
   name: string;
   aadhaarNumber: string;
+  lastVerifiedAadhaar: string | null;
+  isAadhaarVerified: boolean;
   panNumber: string;
+  lastVerifiedPan: string | null;
+  panVerified: boolean;
+  aadhaarPanVerified: boolean;
   shopNumber: string;
   businessNumber: string;
   dob: Date | null;
@@ -545,11 +557,8 @@ export type UserProfileFormProps = {
   panCardImage: File | null;
   shopImage: File | null;
   businessProofImage: File | null;
-  isAadhaarVerified: boolean;
   emailVerified: boolean;
   gstNumberVerified: boolean;
-  panVerified: boolean;
-  aadhaarPanVerified: boolean;
 };
 
 export type PendingPartnerActivationData = Record<string, any>;
@@ -891,11 +900,12 @@ export type PayoutSendBeneficiaryProps = {
   retailerId: string;
   accountNumber: string;
   ifscCode: string;
-  amount: number;
+  amount: string | number | null;
   beneficiaryName: string;
   paymentMode: string;
   subProductId: string;
-  callbackurl: string;
+  schemeCode: string;
+  // callbackurl: string;
 };
 
 export type FetchBillDetailsProps = {
