@@ -42,7 +42,21 @@ export const handleCustomError = (error: AxiosError | any): void => {
     // Handle Axios errors
     if (error.isAxiosError) {
       const axiosError = error as AxiosError<any>;
-      const responseData = axiosError.response?.data;
+      const response = axiosError?.response;
+      const responseData = axiosError?.response?.data;
+
+      // ✅ Timeout or Network Error (no response)
+      if (axiosError.code === "ECONNABORTED") {
+        showErrorNotification("Request timed out. Please try again.");
+        return;
+      }
+
+      if (!response) {
+        showErrorNotification(
+          "Unable to connect to the server. Please check your internet connection."
+        );
+        return;
+      }
 
       // ✅ Handle 401 Unauthorized
       if (axiosError.response?.status === 401) {
@@ -63,19 +77,19 @@ export const handleCustomError = (error: AxiosError | any): void => {
         responseData.messages.length > 0
       ) {
         // showErrorNotification(responseData.messages[0]);
-        showErrorNotification(responseData.messages.join("\n"));
+        showErrorNotification(responseData?.messages?.join("\n"));
         return;
       }
 
       // ✅ Handle single message string
       if (typeof responseData?.message === "string") {
-        showErrorNotification(responseData.message);
+        showErrorNotification(responseData?.message);
         return;
       }
 
       // ✅ Handle error field
       if (typeof responseData?.error === "string") {
-        showErrorNotification(responseData.error);
+        showErrorNotification(responseData?.error);
         return;
       }
 
@@ -85,8 +99,8 @@ export const handleCustomError = (error: AxiosError | any): void => {
     }
 
     // Handle non-Axios standard errors
-    if (error instanceof Error && error.message) {
-      showErrorNotification(error.message);
+    if (error instanceof Error && error?.message) {
+      showErrorNotification(error?.message);
       return;
     }
 

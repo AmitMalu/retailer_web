@@ -315,7 +315,11 @@ export const Payout_Send = async (data: PayoutSendBeneficiaryProps) =>
   await api.post(`${API_ROUTES.SEND_PAYOUT}`, data, await createHeaders());
 
 export const Payout_Success_Callback = async (data: any) =>
-  await api.post(`${API_ROUTES.PAYOUT_SUCCESS_CALLBACK}`, data, await createHeaders());
+  await api.post(
+    `${API_ROUTES.PAYOUT_SUCCESS_CALLBACK}`,
+    data,
+    await createHeaders()
+  );
 
 export const Payout_Get_Bank_Details = async (ifscCode: string) =>
   await api.get(
@@ -382,6 +386,14 @@ export const Fetch_Bill_Details = async (body: FetchBillDetailsProps) =>
 
 export const Transaction = async (body: TransactionProps) =>
   await api.post(API_ROUTES.TRANSACTION, body, await createHeaders());
+
+export const Fetch_Transaction_Receipt = async (transactionId: string) => {
+  return await api.post(
+    `${API_ROUTES.FETCH_TRANSACTION_RECEIPT}/${transactionId}`,
+    {},
+    await createHeaders()
+  );
+};
 
 export const Adhaar_Verification = async (aadhaarNumber: number) =>
   await api.post(

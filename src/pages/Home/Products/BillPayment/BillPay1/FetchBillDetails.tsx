@@ -18,14 +18,14 @@ import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePic
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import { RootState } from "@/Redux/Store";
-import { Fetch_Bill_Details, Transaction } from "@/Services/api";
+import { Fetch_Bill_Details, Fetch_Transaction_Receipt, Transaction } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData, EmailRegex, MobileNoRegex } from "@/Utils/helper";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
-import { Loader, Modal, UnstyledButton } from "@mantine/core";
+import { Drawer, Loader, Modal, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { IconCalendar } from "@tabler/icons-react";
 import { Formik, FormikErrors, FormikValues } from "formik";
@@ -33,6 +33,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import BillReciept from "./BillReciept";
 
 const FetchBillDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -42,6 +43,10 @@ const FetchBillDetails: React.FC = () => {
   const [billDetails, setBillDetails] = useState<any>(null);
   const [amountEditable, setAmountEditable] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+
+  const [receiptDrawerOpened, setReceiptDrawerOpened] = useState(false);
+  const [receiptData, setReceiptData] = useState<any>(null);
+  const [receiptLoading, setReceiptLoading] = useState(false);
 
   const location = useLocation();
   const { serviceName, subProductId } = location.state || {};
@@ -303,7 +308,6 @@ const FetchBillDetails: React.FC = () => {
       setIsLoading(false);
     }
   };
-  console.log(billDetails, "billDetails");
 
   const processTransaction = async (
     values: FormikValues,
@@ -385,19 +389,48 @@ const FetchBillDetails: React.FC = () => {
         payload as TransactionProps
       );
       if (response?.data?.statusCode === 200 || response?.data?.statusCode === "200") {
-        setShowSuccessModal(true);
+        // setShowSuccessModal(true);
         showSuccessNotification(response?.data?.message);
-        setBillDetails(null);
+        // setBillDetails(null); // Keep bill details will required in fetch reciept API
         setAmountEditable(false);
         setBillModalOpened(false);
 
         // Optional: reset provider-related data
-        setSelectedProviderDetails(null);
+        // setSelectedProviderDetails(null); // Keep provider details also might be required
         resetForm();
-        setTimeout(() => {
-          setShowSuccessModal(false);
-          navigate(`/products/billPay`);
-        }, 2000);
+        // setTimeout(() => {
+        //   setShowSuccessModal(false);
+        //   navigate(`/products/billPay`);
+        // }, 2000);
+
+        // Fetch receipt data here
+        setReceiptLoading(true);
+        try {
+          const receiptResponse = await Fetch_Transaction_Receipt(
+            String(`${response?.data?.data?.clientId}`)
+          ) as any;
+
+          const mergedReceiptData = {
+            ...(receiptResponse?.data?.data || {}), // original receipt API data (ensure it's an object)
+            // Add fallback values if missing
+            customerName:
+              billDetails?.CustomerName ||
+              "",
+            category:
+              selectedProviderDetails?.service_name ||
+              "",
+            billerName:
+              selectedProviderDetails?.provider_name ||
+              "",
+          };
+
+          setReceiptData(mergedReceiptData);
+        } catch (err) {
+          showErrorNotification("Failed to fetch receipt data");
+        } finally {
+          setReceiptLoading(false);
+          setReceiptDrawerOpened(true);
+        }
       } else {
         showErrorNotification(
           response?.data?.message || "Transaction failed"
@@ -468,7 +501,7 @@ const FetchBillDetails: React.FC = () => {
           </TextComponent>
         </div>
 
-        {/* Form */}
+        {/*Fetch Bill Details Form */}
         <div className="mt-3 flex h-full flex-col justify-between">
           <Formik<FormikValues>
             initialValues={initialValues}
@@ -547,7 +580,6 @@ const FetchBillDetails: React.FC = () => {
                         }}
                       />
                     </div>
-
                     {selectedProviderDetails && (
                       <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
                         <FormikTextInputComponent
@@ -747,7 +779,7 @@ const FetchBillDetails: React.FC = () => {
           </Formik>
         </div>
 
-
+        {/* Bill Payment Form */}
         <Modal
           opened={billModalOpened}
           onClose={() => !isLoading && setBillModalOpened(false)}
@@ -880,6 +912,30 @@ const FetchBillDetails: React.FC = () => {
           opened={showSuccessModal}
           onClose={() => setShowSuccessModal(false)}
         />
+
+        {/* Transaction Reciept */}
+        <Drawer
+          opened={receiptDrawerOpened}
+          onClose={() => {
+            setReceiptDrawerOpened(false);
+            navigate("/products/billPay"); // redirect after closing
+          }}
+          closeOnEscape={false}
+          closeOnClickOutside={false}
+          position="right"
+          size="xl"
+          overlayProps={{ backgroundOpacity: 0.4, blur: 2 }}
+          transitionProps={{ transition: "slide-right", duration: 300 }}
+          title={<div className="font-semibold text-lg">Transaction Receipt</div>}
+        >
+          {receiptLoading ? (
+            <div className="flex justify-center items-center h-60">
+              <Loader />
+            </div>
+          ) : (
+            <BillReciept data={receiptData} />
+          )}
+        </Drawer>
       </div>
     </>
   );
