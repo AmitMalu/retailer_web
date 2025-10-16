@@ -1,7 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { CommissionAndChargesParams, CommissionAndChargesRequest, CommissionData } from "@/Common/interface";
+import { CommissionAndChargesParams, CommissionAndChargesRequest, CommissionData, TableColumn } from "@/Common/interface";
 import {
   dateRangeValidationSchema,
   decryptData,
@@ -11,14 +11,14 @@ import {
   showErrorNotification,
 } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import Loader from "@/components/Atoms/Loader";
+import MyLoader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
-import { UnstyledButton } from "@mantine/core";
+import { Loader, UnstyledButton } from "@mantine/core";
 import TableComponent from "@/components/Molecules/TableComponent";
 import { useTheme } from "@mui/system";
 import { Commission_And_Charges_Report } from "@/Services/api";
-import { ColsSvgIcon, ExportSvgIcon, FilterSvgIcon } from "@/assets/svg";
+import { ColsSvgIcon, ExportSvgIcon, FilterSvgIcon, RefreshSvgIcon } from "@/assets/svg";
 import ColumsSelectionModal from "@/components/Molecules/ColumsSelectionModal";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
@@ -26,6 +26,7 @@ import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDa
 import { DatesRangeValue } from "@mantine/dates";
 import moment from "moment";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
+import { useHierarchySubHierarchy } from "@/Utils/CustomHooks/useHierarchySubHierarchy";
 
 const CommissionAndCharges = () => {
   const theme = useTheme();
@@ -38,6 +39,8 @@ const CommissionAndCharges = () => {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalRecords, setTotalRecords] = useState(0);
+
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
@@ -49,6 +52,10 @@ const CommissionAndCharges = () => {
   const subproductData = apiResponses?.subProductDropdown
     ? decryptData(apiResponses?.subProductDropdown)
     : null;
+
+  const myHierarchyCode = loginData?.hierarchyId?.split("-")[1];
+  const hierarchyOrder = ["SA", "AD", "ET", "WL", "SD", "PT", "DT", "RT"];
+  const myLevelIndex = hierarchyOrder.indexOf(myHierarchyCode);
 
   const uniqueSubProductTypes =
     subproductData?.map((item: any) => ({
@@ -83,25 +90,29 @@ const CommissionAndCharges = () => {
     //     return isSameOrAfter(value, fromDate);
     //   }),
     dateRange: dateRangeValidationSchema,
-    walletType: Yup.string().required("Required"),
     subProductName: Yup.string().required("Required"),
+    walletType: Yup.string()
+      .required("Wallet Type is Required")
+      .oneOf(["POSTPAID", "PREPAID"], "Wallet Type must be either POSTPAID or PREPAID"),
     reportType: Yup.string().required("Required"),
   });
 
   const initialValues: CommissionAndChargesParams = {
-    hierarchyId: loginData?.hierarchyId,
-    walletType: "",
+    hierarchyType: loginData?.hierarchyId?.split("-")?.[1] || "",
+    hierarchyId: "",
     dateRange: [
       moment().subtract(6, "days").toDate(), // from: 6 days ago
       moment().toDate(), // to: today
     ] as DatesRangeValue,
     subProductName: "",
+    walletType: "",
     reportType: "",
     page: currentPage,
     size: itemsPerPage,
     // search: "",
     // download: false,
   };
+  console.log(isCommissionReportList, "isCommissionReportList");
 
   const handleReportSubmit = async (
     values: CommissionAndChargesParams
@@ -116,8 +127,9 @@ const CommissionAndCharges = () => {
       let bodyRequest: CommissionAndChargesRequest = {
         fromDate: fromDate ? formatYMDdate(fromDate) : null,
         toDate: toDate ? formatYMDdate(toDate) : null,
-        hierarchyId: values.hierarchyId || loginData?.hierarchyId,
-        walletType: values.walletType,
+        hierarchyType: values.hierarchyType ?? "",
+        hierarchyId: values.hierarchyId ?? "",
+        walletType: values.walletType ?? "PREPAID",
         subProductName: values.subProductName,
         reportType: values.reportType,
         page: Number(values.page) - 1,
@@ -125,19 +137,26 @@ const CommissionAndCharges = () => {
       };
       const response = await Commission_And_Charges_Report({}, bodyRequest);
 
-      if (response?.status === 200) {
+      if ([200, "200"].includes(response?.data?.statusCode)) {
         const content = response?.data?.data?.content || [];
+        const totalElements = response?.data?.data?.totalElements || 0;
+        console.log(content, "content");
 
         setIsCommissionReportList(content);
+        setTotalRecords(totalElements);
 
         if (content.length <= 0) {
           showErrorNotification("No records found");
         }
 
       } else {
+        setIsCommissionReportList([]);
         showErrorNotification(response?.data?.message);
+        setTotalRecords(0);
       }
     } catch (error) {
+      setIsCommissionReportList([]);
+      setTotalRecords(0);
       await handleCustomError(error);
     } finally {
       setIsLoading(false);
@@ -149,6 +168,7 @@ const CommissionAndCharges = () => {
       const bodyRequest = {
         fromDate: formatYMDdate(formikValues.fromDate),
         toDate: formatYMDdate(formikValues.toDate),
+        hierarchyType: formikValues.hierarchyType || "",
         hierarchyId: formikValues.hierarchyId || loginData?.hierarchyId,
         walletType: formikValues.walletType,
         subProductName: formikValues.subProductName,
@@ -169,7 +189,7 @@ const CommissionAndCharges = () => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `Commission_&_Changes_report_${formatYMDdate(new Date())}.csv`;
+        a.download = `Commission_&_Charges_report_${formatYMDdate(new Date())}.csv`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
@@ -182,7 +202,7 @@ const CommissionAndCharges = () => {
     }
   };
 
-  const tableColumns = [
+  const tableColumns: TableColumn[] = [
     {
       key: "txId",
       label: "Transaction ID",
@@ -206,6 +226,11 @@ const CommissionAndCharges = () => {
       label: "Wallet Type",
       searchKey: "walletType",
       sortable: false,
+      type: "boolean",
+      options: [
+        { label: "PREPAID", value: "PREPAID" },
+        { label: "POSTPAID", value: "POSTPAID" },
+      ]
     },
     {
       key: "txType",
@@ -224,11 +249,13 @@ const CommissionAndCharges = () => {
       label: "Balance Before",
       searchKey: "balBefore",
       sortable: false,
+      type: "number"
     },
     {
       key: "amount",
       label: "Amount",
       searchKey: "amount",
+      type: "number"
       // sortable: true,
     },
     // {
@@ -242,6 +269,7 @@ const CommissionAndCharges = () => {
       label: "Balance After",
       searchKey: "balAfter",
       sortable: false,
+      type: "number"
     },
     {
       key: "createdOn",
@@ -286,9 +314,10 @@ const CommissionAndCharges = () => {
         let bodyRequest: CommissionAndChargesRequest = {
           fromDate: fromDate ? formatYMDdate(fromDate) : null,
           toDate: toDate ? formatYMDdate(toDate) : null,
-          hierarchyId: values.hierarchyId || loginData?.hierarchyId,
-          walletType: values.walletType,
+          hierarchyType: values.hierarchyType || "",
+          hierarchyId: values.hierarchyId || "",
           subProductName: values.subProductName,
+          walletType: values.walletType,
           reportType: values.reportType,
           page: values.page - 1,
           size: values.size,
@@ -322,6 +351,7 @@ const CommissionAndCharges = () => {
       handleCustomError(error);
     }
   };
+
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
     tableColumns.filter((col) => col.key !== "action").map((col) => col.key)
   );
@@ -335,7 +365,7 @@ const CommissionAndCharges = () => {
 
   return (
     <>
-      {isLoading && <Loader />}
+      {isLoading && <MyLoader />}
       <div className="w-full 320px:mt-12 md:mt-0">
         <div className="mb-6 ">
           <TextComponent
@@ -343,7 +373,7 @@ const CommissionAndCharges = () => {
             fontWeight={600}
             color={theme.palette.red.DEFAULT}
           >
-            Commission & Changes Report
+            Commission & Charges Report
           </TextComponent>
         </div>
 
@@ -353,6 +383,22 @@ const CommissionAndCharges = () => {
           onSubmit={handleReportSubmit}
         >
           {({ values, handleSubmit, setFieldValue }) => {
+
+            const { hierarchyList, loadingHierarchyList, subHierarchyList, loadingSubHierarchyList, subHierarchyKey, refetchHierarchy } = useHierarchySubHierarchy({
+              selectedHierarchyCode: values.hierarchyType,
+              onSubHierarchyReset: () => setFieldValue("hierarchyId", "")
+            })
+
+            const filteredHierarchyList = hierarchyList?.filter(
+              (item: any) => hierarchyOrder.indexOf(item?.value) >= myLevelIndex
+            );
+
+            useEffect(() => {
+              if (values.subProductName) {
+                handleReportSubmit(values);
+              }
+            }, [currentPage, itemsPerPage, searchValues])
+
             return (
               <>
                 <div className="shadow-black-900/100 mt-5 flex w-full flex-col items-center justify-center gap-6 rounded-xl bg-background-paper p-3 shadow-lg 320px:mt-5 md:mt-0">
@@ -404,38 +450,6 @@ const CommissionAndCharges = () => {
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
                         {/* <DropdownComponent
-                          label="Wallet Type"
-                          data={[
-                            { value: "POSTPAID", label: "POSTPAID" },
-                            { value: "PREPAID", label: "PREPAID" },
-                          ]}
-                          value={values.walletType}
-                          withAsterisk
-                          onChange={(value) =>
-                            setFieldValue("walletType", value)
-                          }
-                          error={
-                            touched.walletType && errors.walletType
-                              ? errors.walletType
-                              : ""
-                          }
-                          className="w-max"
-                        /> */}
-                        <FormikSelectComponent
-                          name="walletType"
-                          label="Wallet Type"
-                          placeholder="Select Wallet Type"
-                          allowDeselect
-                          data={[
-                            { value: "POSTPAID", label: "POSTPAID" },
-                            { value: "PREPAID", label: "PREPAID" },
-                          ]}
-                          withAsterisk
-                          size="xs"
-                        />
-                      </div>
-                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        {/* <DropdownComponent
                           label="Sub Product"
                           data={uniqueSubProductTypes}
                           value={values.subProductName}
@@ -457,6 +471,88 @@ const CommissionAndCharges = () => {
                           data={uniqueSubProductTypes}
                           allowDeselect
                           searchable
+                          withAsterisk
+                          size="xs"
+                        />
+                      </div>
+
+                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
+                        <FormikSelectComponent
+                          name="hierarchyType"
+                          size="xs"
+                          label="Hierarchy Type"
+                          placeholder="Select Hierarchy Type"
+                          nothingFoundMessage="No Hierarchy Found"
+                          data={filteredHierarchyList || []}
+                          disabled={loadingHierarchyList}
+                          searchable={true}
+                          withAsterisk
+                          required
+                          rightSection={
+                            <>
+                              {loadingHierarchyList && (
+                                <Loader size={14} color="blue" />
+                              )}
+                              {!loadingHierarchyList && hierarchyList.length < 1 && (
+                                <div
+                                  onClick={refetchHierarchy}
+                                  className="cursor-pointer"
+                                  style={{ pointerEvents: "auto", display: "flex", alignItems: "center" }}
+                                  title="Refresh Hierarchy List"
+                                >
+                                  <RefreshSvgIcon color={theme.palette.primary.DEFAULT} />
+                                </div>
+                              )}
+                            </>
+                          }
+                        />
+                      </div>
+
+                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
+                        <FormikSelectComponent
+                          key={subHierarchyKey}
+                          name="hierarchyId"
+                          size="xs"
+                          label="Hierarchy ID"
+                          placeholder="Select Hierarchy ID"
+                          data={subHierarchyList?.map((item: any) => ({
+                            label: item.displayName,
+                            value: String(item.id),
+                          }))}
+                          allowDeselect={true}
+                          searchable={true}
+                          nothingFoundMessage="Nothing Found"
+                          disabled={loadingSubHierarchyList}
+                        />
+                      </div>
+
+                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
+                        {/* <DropdownComponent
+                          label="Wallet Type"
+                          data={[
+                            { value: "POSTPAID", label: "POSTPAID" },
+                            { value: "PREPAID", label: "PREPAID" },
+                          ]}
+                          value={values.walletType}
+                          withAsterisk
+                          onChange={(value) =>
+                            setFieldValue("walletType", value)
+                          }
+                          error={
+                            touched.walletType && errors.walletType
+                              ? errors.walletType
+                              : ""
+                          }
+                          className="w-max"
+                        /> */}
+                        <FormikSelectComponent
+                          name="walletType"
+                          label="Wallet Type"
+                          placeholder="Select Wallet Type"
+                          data={[
+                            { value: "POSTPAID", label: "POSTPAID" },
+                            { value: "PREPAID", label: "PREPAID" },
+                          ]}
                           withAsterisk
                           size="xs"
                         />
@@ -573,25 +669,13 @@ const CommissionAndCharges = () => {
                     onSearch={(columnKey, value) =>
                       handleSearchWithValues(columnKey, value, values)
                     }
-                  // onPageChange={(page) => {
-                  //   setCurrentPage(page);
-                  //   const updatedValues = {
-                  //     ...values,
-                  //     page,
-                  //     size: itemsPerPage,
-                  //   };
-                  //   handleReportSubmit(updatedValues); //
-                  // }}
-                  // onPageSizeChange={(size) => {
-                  //   setItemsPerPage(size);
-                  //   setCurrentPage(1);
-                  //   const updatedValues = {
-                  //     ...values,
-                  //     page: 1,
-                  //     size,
-                  //   };
-                  //   handleReportSubmit(updatedValues); //
-                  // }}
+                    onPageChange={setCurrentPage}
+                    onPageSizeChange={(newSize) => {
+                      setItemsPerPage(newSize);
+                      setCurrentPage(1); // reset to first page when size changes
+                    }}
+                    serverSide={true}
+                    totalRecords={totalRecords}
                   />
                 </div>
               </>

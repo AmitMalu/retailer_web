@@ -83,4 +83,8 @@ export const API_ROUTES = {
   ADD_BANK: `${BASE_URL}/api/bank-details`,
   EDIT_BANK: `${BASE_URL}/api/bank-details`,
   DELETE_BANK: `${BASE_URL}/api/bank-details`,
+
+  /////////////////////////// COMMON ////////////////////////////////////
+  HIERARCHY_TYPE_LIST: `${BASE_URL}/api/hierarchy/name-code`,
+  HIERARCHY_LIST: `${BASE_URL}/api/hierarchy/hierarchy-details`
 };

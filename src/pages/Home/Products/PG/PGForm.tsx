@@ -141,10 +141,11 @@ const PGFormModal = ({
       setIsLoading(true);
       const payload = {
         amount: values.amount,
-        callbackUrl:
-          "https://uat.decipay.in/enterprises/api/pg/payment/callback",
+        // callbackUrl:
+        //   "https://uat.decipay.in/enterprises/api/pg/payment/callback",
         productId: values.productId,
         subProductId: values.subProductId,
+        initiatedBy : loginData?.hierarchyId
       };
 
       const response = await Create_Order(payload);

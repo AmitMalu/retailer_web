@@ -643,9 +643,10 @@ export type CommissionAndChargesParams = {
   // fromDate: Date | string | null;
   // toDate: Date | string | null;
   dateRange: DatesRangeValue;
+  hierarchyType: string;
   hierarchyId: string;
-  walletType: string;
   subProductName: string;
+  walletType: string;
   reportType: string;
   page: number;
   size: number;
@@ -655,6 +656,7 @@ export type CommissionAndChargesParams = {
 export interface CommissionAndChargesRequest {
   fromDate: string | null;
   toDate: string | null;
+  hierarchyType: string;
   hierarchyId: any;
   walletType: string;
   subProductName: string;
@@ -768,9 +770,10 @@ export type ValidateTransactionProps = {
 };
 export type CreateOrderProps = {
   amount: string;
-  callbackUrl: string;
+  // callbackUrl: string;
   productId: string;
   subProductId: string;
+  initiatedBy?: string;
 };
 
 export type PayoutBankDetails = Record<string, any>;

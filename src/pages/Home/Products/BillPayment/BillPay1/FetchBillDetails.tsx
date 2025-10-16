@@ -320,6 +320,7 @@ const FetchBillDetails: React.FC = () => {
         showErrorNotification("Missing bill or provider details");
         return;
       }
+      console.log(billDetails, "billdetails");
 
       // Build payload with only known required fields first
       const payload: Partial<TransactionProps> = {
@@ -330,6 +331,7 @@ const FetchBillDetails: React.FC = () => {
         consumerNumber: billDetails?.formValues?.customerMobileNumber, // mobile number from form 1
         amount: Number(values.amount) || Number(billDetails?.Billamount) || 0,
         context: billDetails?.context,
+        bill_due_date: billDetails?.Duedate
       };
 
       // Optional fields – add them only if they exist
@@ -811,97 +813,131 @@ const FetchBillDetails: React.FC = () => {
                   enableReinitialize
                   onSubmit={(values, { resetForm }) => processTransaction(values, resetForm)}
                 >
-                  {({ values, handleChange, errors, touched, handleSubmit }) => (
-                    <form onSubmit={handleSubmit} className="flex flex-col w-full p-4 overflow-y-auto gap-4">
-                      <TextInputComponent
-                        label="Customer Name"
-                        value={values.customerName}
-                        disabled
-                      />
-                      {/* Show these fields only if NOT Fastag */}
-                      {serviceName?.toLowerCase() !== "fast tag" && (
-                        <>
-                          {billDetails?.billNumber && (
-                            <TextInputComponent
-                              label="Bill Number"
-                              value={values.billNumber}
-                              disabled
-                            />
-                          )}
-                          <TextInputComponent label="Bill Date" value={values.billDate} disabled />
-                          <TextInputComponent label="Due Date" value={values.dueDate} disabled />
-                          {billDetails?.["Product Name"] && (
-                            <TextInputComponent
-                              label="Product Name"
-                              value={values.productName}
-                              disabled
-                            />
-                          )}
-                        </>
-                      )}
+                  {({ values, handleChange, errors, touched, handleSubmit }) => {
 
-                      {/* FASTag specific fields */}
-                      {serviceName?.toLowerCase() === "fast tag" && (
-                        <>
-                          {billDetails?.["FASTAG BALANCE"] && (
-                            <TextInputComponent
-                              label="FASTag Balance"
-                              value={billDetails?.["FASTAG BALANCE"]}
-                              disabled
-                            />
-                          )}
-                          {billDetails?.status && (
-                            <TextInputComponent label="Status" value={billDetails?.status} disabled />
-                          )}
-                        </>
-                      )}
+                    // ✅ Normalize all billDetails keys for consistency
+                    const normalizeKeys = (obj: Record<string, any> = {}) =>
+                      Object.keys(obj).reduce((acc: Record<string, any>, key: string) => {
+                        acc[key.toLowerCase().trim()] = obj[key];
+                        return acc;
+                      }, {} as Record<string, any>);
 
-                      {serviceName?.toLowerCase().includes("credit") && billDetails?.["Current Outstanding Amount"] && (
+                    const normalizedBillDetails = normalizeKeys(billDetails || {});
+
+
+                    // Combine all possible variations of the balance field
+                    const fastagBalance =
+                      normalizedBillDetails["fastag balance"] ||
+                      normalizedBillDetails["fasttag balance"] ||
+                      normalizedBillDetails["fastagbalance"] ||
+                      normalizedBillDetails["wallet balance"] ||
+                      normalizedBillDetails["walletbalance"] ||
+                      normalizedBillDetails["fastag"];
+
+                    // Combine all possible variations of status
+                    const status =
+                      normalizedBillDetails["status"] ||
+                      normalizedBillDetails["tag status"] ||
+                      normalizedBillDetails["vehicle tag status"];
+
+                    return (
+                      <form onSubmit={handleSubmit} className="flex flex-col w-full p-4 overflow-y-auto gap-4">
                         <TextInputComponent
-                          label="Current Outstanding Amount"
-                          value={`₹${billDetails?.["Current Outstanding Amount"]}`}
+                          label="Customer Name"
+                          value={values.customerName}
                           disabled
                         />
-                      )}
-
-                      {/* Editable Amount Field */}
-                      <div className="relative">
-                        <TextInputComponent
-                          label="Amount"
-                          value={values.amount}
-                          onChange={handleChange("amount")}
-                          error={
-                            touched.amount && errors.amount ? String(errors.amount) : ""
-                          }
-                          withAsterisk
-                          type="number"
-                          disabled={!amountEditable || !!isLoading}
-                          min={billDetails?.minBillPaidAmount}
-                          max={billDetails?.maxAllowPaidAmount}
-                        />
-                        {/* Show min/max info below input */}
-                        {(billDetails?.minBillPaidAmount || billDetails?.maxAllowPaidAmount) && (
-                          <p className="text-xs text-gray-600 mt-1">
-                            {`Min: ₹${billDetails?.minBillPaidAmount || 0} | Max: ₹${billDetails?.maxAllowPaidAmount || 0}`}
-                          </p>
+                        {/* Show these fields only if NOT Fastag */}
+                        {serviceName?.toLowerCase() !== "fast tag" && (
+                          <>
+                            {billDetails?.billNumber && (
+                              <TextInputComponent
+                                label="Bill Number"
+                                value={values.billNumber}
+                                disabled
+                              />
+                            )}
+                            <TextInputComponent label="Bill Date" value={values.billDate} disabled />
+                            <TextInputComponent label="Due Date" value={values.dueDate} disabled />
+                            {billDetails?.["Product Name"] && (
+                              <TextInputComponent
+                                label="Product Name"
+                                value={values.productName}
+                                disabled
+                              />
+                            )}
+                          </>
                         )}
-                      </div>
+
+                        {/* FASTag specific fields */}
+                        {(serviceName?.toLowerCase() === "fast tag" ||
+                          serviceName?.toLowerCase() === "fasttag") && (
+                            <>
+                              {fastagBalance && (
+                                <TextInputComponent
+                                  label="FASTag Balance"
+                                  value={fastagBalance}
+                                  disabled
+                                />
+                              )}
+
+                              {status && (
+                                <TextInputComponent
+                                  label="Status"
+                                  value={status}
+                                  disabled
+                                />
+                              )}
+                            </>
+                          )}
+
+                        {serviceName?.toLowerCase().includes("credit") && billDetails?.["Current Outstanding Amount"] && (
+                          <TextInputComponent
+                            label="Current Outstanding Amount"
+                            value={`₹${billDetails?.["Current Outstanding Amount"]}`}
+                            disabled
+                          />
+                        )}
+
+                        {/* Editable Amount Field */}
+                        <div className="relative">
+                          <TextInputComponent
+                            label="Amount"
+                            value={values.amount}
+                            onChange={handleChange("amount")}
+                            error={
+                              touched.amount && errors.amount ? String(errors.amount) : ""
+                            }
+                            withAsterisk
+                            type="number"
+                            disabled={!amountEditable || !!isLoading}
+                            min={billDetails?.minBillPaidAmount}
+                            max={billDetails?.maxAllowPaidAmount}
+                          />
+                          {/* Show min/max info below input */}
+                          {(billDetails?.minBillPaidAmount || billDetails?.maxAllowPaidAmount) && (
+                            <p className="text-xs text-gray-600 mt-1">
+                              {`Min: ₹${billDetails?.minBillPaidAmount || 0} | Max: ₹${billDetails?.maxAllowPaidAmount || 0}`}
+                            </p>
+                          )}
+                        </div>
 
 
-                      <div className="mt-6 flex h-9 w-full items-center justify-end">
-                        <ButtonComponent
-                          width={120}
-                          title={"SUBMIT"}
-                          variant="filled"
-                          onClick={() => null}
-                          disabled={isLoading}
-                          radius={28}
-                          fontSize={14}
-                          fullWidth
-                        />
-                      </div>
-                    </form>
-                  )}
+                        <div className="mt-6 flex h-9 w-full items-center justify-end">
+                          <ButtonComponent
+                            width={120}
+                            title={"SUBMIT"}
+                            variant="filled"
+                            onClick={() => null}
+                            disabled={isLoading}
+                            radius={28}
+                            fontSize={14}
+                            fullWidth
+                          />
+                        </div>
+                      </form>
+                    )
+                  }}
                 </Formik>
               </div>
             )}
