@@ -261,6 +261,17 @@ export const Issue_Type_Dropdown = async () =>
 export const Sub_Product_Dropdown = async () =>
   await api.get(`${API_ROUTES.SUB_PRODUCT_DROPDOWN}`, await createHeaders());
 
+export const Fetch_Hierarchy_Type_Dropdown = async () =>
+  await api.get(`${API_ROUTES.HIERARCHY_TYPE_LIST}`, await createHeaders());
+
+export const Fetch_Hierarchy_List_Dropdown = async (
+  selectedHierarchyCode: string
+) =>
+  await api.get(
+    `${API_ROUTES.HIERARCHY_LIST}/${selectedHierarchyCode}`,
+    await createHeaders()
+  );
+
 export const Fetch_Card_Bin_Detail = async (data: FetchCardBinDetailProps) =>
   await api.post(`${API_ROUTES.FETCH_CARD_TYPE}`, data, await createHeaders());
 

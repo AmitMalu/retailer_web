@@ -258,12 +258,12 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           //   icon: <PendingIcon />,
           roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
         },
-        {
-          name: "Account Summary",
-          path: "/reports/accountSummary",
-          //   icon: <ListIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
-        },
+        // {
+        //   name: "Account Summary",
+        //   path: "/reports/accountSummary",
+        //   //   icon: <ListIcon />,
+        //   roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
+        // },
         {
           name: "Search Transaction",
           path: "/reports/searchTransaction",
@@ -282,13 +282,12 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           //   icon: <ListIcon />,
           roles: ["RT", "RA"],
         },
-        {
-          name: "Payment Loading",
-          path: "/reports/paymentLoading",
-          //   icon: <ListIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
-
+        // {
+        //   name: "Payment Loading",
+        //   path: "/reports/paymentLoading",
+        //   //   icon: <ListIcon />,
+        //   roles: ["DT", "SD", "WL", "PT"],
+        // },
         {
           name: "Pending Transaction",
           path: "/reports/pendingTransaction",
@@ -301,12 +300,12 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           //   icon: <ListIcon />,
           roles: ["DT", "SD", "WL", "PT"],
         },
-        {
-          name: "Agent Performance",
-          path: "/reports/agentPerformance",
-          //   icon: <ListIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
+        // {
+        //   name: "Agent Performance",
+        //   path: "/reports/agentPerformance",
+        //   //   icon: <ListIcon />,
+        //   roles: ["DT", "SD", "WL", "PT"],
+        // },
         {
           name: "Bank Withdrawal",
           path: "/reports/bankWithdrawal",
