@@ -1,6 +1,6 @@
 import { Fetch_Hierarchy_List_Dropdown, Fetch_Hierarchy_Type_Dropdown } from "@/Services/api";
 import { useCallback, useEffect, useState } from "react";
-// import { showErrorNotification } from "../notifications";
+import { showErrorNotification } from "../notifications";
 import { handleCustomError } from "../handleCustomError";
 
 interface UseHierarchySubHierarchyProps {
