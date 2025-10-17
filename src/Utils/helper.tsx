@@ -7,6 +7,8 @@ import { handleCustomError } from "./handleCustomError";
 import { Sub_Product_Dropdown, Wallet_Balance } from "@/Services/api";
 import { useState } from "react";
 import * as Yup from 'yup'
+import * as Papa from "papaparse";
+import moment from "moment";
 
 const KEY = CryptoJS.enc.Hex.parse(
   "a7f3d9c6e8421fb62e7e5c3410b974e2d5c6a8f90fd13b4aa12f658f9a34bc29"
@@ -48,6 +50,69 @@ export function encryptCredentials(username: string, password: string) {
     encryptedPassword,
   };
 }
+
+export const formatDateTime = (dateString: string) => {
+  if (!dateString) return "";
+
+  const parsed = moment(dateString); // Automatically parses ISO strings
+
+  if (!parsed.isValid()) return dateString;
+
+  return parsed.format("DD-MM-YYYY HH:mm:ss");
+};
+
+
+// Common text field validation
+export const textField = (
+  field = "This field",
+  max = 100,
+  required = false,
+  allowSpecialChars = false
+) => {
+  let schema = Yup.string()
+    .transform((value) => (value ? value.trim() : value)) // Trim before validation
+    .max(max, `${field} cannot exceed ${max} characters`)
+    .nullable()
+    .notRequired(); // allow null and undefined by default
+
+  if (!allowSpecialChars) {
+    schema = schema.test(
+      "no-special-chars",
+      `${field} should not contain special characters`,
+      (value) => {
+        if (!value) return true; // skip if value is null or empty
+        return /^[A-Za-z0-9\s._\-()]*$/.test(value);
+      }
+    );
+  }
+
+  if (required) {
+    schema = schema.required(`${field} is required`);
+  }
+
+  return schema;
+};
+
+export const transactionStatusSelectData = [
+  { label: "PENDING", value: "PENDING" },
+  { label: "APPROVED", value: "APPROVED" },
+  { label: "REJECTED", value: "REJECTED" },
+];
+
+export const walletTypeSelectData = [
+  { value: "PREPAID", label: "PREPAID" },
+  { value: "POSTPAID", label: "POSTPAID" },
+];
+
+export const booleanSelectData = [
+  { label: "Yes", value: "true" },
+  { label: "No", value: "false" },
+];
+
+export const booleanSelectData2 = [
+  { label: "true", value: "true" },
+  { label: "false", value: "false" },
+];
 
 export const encryptData = (data: object | string): string => {
   const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), KEY, {
@@ -130,6 +195,29 @@ export const useIpAddress = () => {
 
   return { fetchIpAddress };
 };
+
+
+export function exportToCsv<T extends Record<string, any>>(
+  data: T[],
+  filename: string
+) {
+  if (!data || data.length === 0) {
+    console.warn("No data available to export.");
+    return;
+  }
+
+  const csv = Papa.unparse(data);
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", `${filename}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 
 export const formatDate = (date: string | Date | null): string | null => {
   if (!date) return null;

@@ -323,6 +323,28 @@ export type TimeComponentProps = {
   disabled?: boolean;
 };
 
+export type GenericTableHeader<T> = {
+  key: keyof T;
+  label?: string;
+  filterType?: "text" | "number" | "boolean" | "date" | "none";
+  filterOptions?: { label: string; value: any }[];
+  searchable?: boolean; // optionally override with this
+  renderType?: "link" | "custom" | "statusBadge"; //
+  copyable?: boolean;
+};
+
+export type FetchListParams = {
+  key: string;
+  url: string;
+  page?: number;
+  size?: number;
+  filter?: Record<string, any> | null;
+  method?: "GET" | "POST";
+  payload?: any;
+  skipPagination?: Boolean;
+  returnFullData?: Boolean;
+};
+
 export type TableColumn = {
   key: string;
   label: string | JSX.Element;
@@ -693,18 +715,35 @@ export type WalletData = Record<string, any>;
 export type NetworkTransactionParams = {
   loginHierarchyId: string;
   dateRange: DatesRangeValue;
-  subProductName: string;
   partnerId: string;
   whitelabelId: string;
   superDistributorId: string;
   distributorId: string;
   retailerId: string;
-  // status: string;
   reportType: string;
   page: number;
   size: number;
   [key: string]: any;
 };
+
+export interface SearchTransReportTableType {
+  transactionId: string;
+  hierarchyId: string;
+  walletType: string;
+  balBefore: number;
+  amount: number;
+  balAfter: number;
+  subProductName: string | null;
+  narration: string | null;
+  status: string;
+  date: string;
+  time: string;
+}
+
+export interface SearchTransReportData {
+  transactionDetails: SearchTransReportTableType[];
+  walletDetails: SearchTransReportTableType[];
+}
 
 export type NetworkTransactionRequest = {
   loginHierarchyId: string;
@@ -975,3 +1014,19 @@ export type FormValues = {
   consumerNumber?: string;
   [key: string]: any;
 };
+
+//////////////////////////REPORTS//////////////////////////////
+export interface NetworkTransactionTableType {
+  createdOn: string;
+  transactionId: string;
+  outletName: string;
+  subProductName: string;
+  walletType: string;
+  transactionType: string;
+  operator: string;
+  balanceBefore: number;
+  amount: number;
+  refNo: string;
+  balanceAfter: number;
+  narration: string;
+}

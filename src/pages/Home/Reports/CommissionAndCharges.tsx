@@ -109,10 +109,7 @@ const CommissionAndCharges = () => {
     reportType: "",
     page: currentPage,
     size: itemsPerPage,
-    // search: "",
-    // download: false,
   };
-  console.log(isCommissionReportList, "isCommissionReportList");
 
   const handleReportSubmit = async (
     values: CommissionAndChargesParams
@@ -140,7 +137,6 @@ const CommissionAndCharges = () => {
       if ([200, "200"].includes(response?.data?.statusCode)) {
         const content = response?.data?.data?.content || [];
         const totalElements = response?.data?.data?.totalElements || 0;
-        console.log(content, "content");
 
         setIsCommissionReportList(content);
         setTotalRecords(totalElements);
@@ -655,6 +651,7 @@ const CommissionAndCharges = () => {
                       </div>
                     </div>
                   )}
+
                 <div className="mt-6">
                   <TableComponent
                     data={
@@ -682,6 +679,7 @@ const CommissionAndCharges = () => {
             );
           }}
         </Formik>
+
         <ColumsSelectionModal
           open={showColumnModal}
           onClose={() => setShowColumnModal(false)}

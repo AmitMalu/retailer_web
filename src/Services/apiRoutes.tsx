@@ -23,6 +23,7 @@ export const API_ROUTES = {
   FUND_REVERSAL: `${BASE_URL}/api/fund-reversal`,
   FUND_REVERSAL_RESEND_OTP: `${BASE_URL}/api/fund-reversal/resend-otp`,
   CHILD_MEMBER_LIST: `${BASE_URL}/api/dropdown-manager/child-accounts`,
+  SINGLE_HIERARCHY_CHILD_LIST: `${BASE_URL}/api/dropdown-manager/child`,
   FUND_TRANSFER: `${BASE_URL}/api/fund-transfer`,
   WALLET_BALANCE: `${BASE_URL}/api/dashboard/wallet-balance`,
   WALLET_TO_BANK: `${BASE_URL}/api/move-to-bank/send-payout-request`,
@@ -39,6 +40,7 @@ export const API_ROUTES = {
   COMMISSION_AND_CHARGES: `${BASE_URL}/api/commission-charge/view`,
   WALLET_REPORT: `${BASE_URL}/api/my-transaction/view`,
   NETWORK_TRANSACTION_REPORT: `${BASE_URL}/api/network-transaction/view`,
+  SEARCH_TRANSACTION_REPORT: `${BASE_URL}/api/search-transaction/view`,
 
   /////////////// TICKETING SYSTEM //////////////////////////
   TRANSACTION_DETAILS: `${BASE_URL}/api/ticket/transaction-details`,

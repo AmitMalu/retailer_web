@@ -51,6 +51,7 @@ export const colorTokens = {
     light: "#EB3535",
   },
   red: {
+    MAIN: "BF0204",
     DEFAULT: "#D82226",
     light: "#FFDCDD",
     dark: "#DC2626",

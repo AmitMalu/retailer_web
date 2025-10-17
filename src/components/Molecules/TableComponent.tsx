@@ -296,34 +296,6 @@ const TableComponent: React.FC<TableProps> = ({
 
                         {column.disableSearch ? null :
                           (colType === "date" ? (
-                            // <CustomDateComponent
-                            //   value={
-                            //     searchValues[column.key]
-                            //       ? parseDateString(searchValues[column.key])
-                            //       : null
-                            //   }
-                            //   onChange={(
-                            //     date: Date | [Date | null, Date | null] | null
-                            //   ) => {
-                            //     if (date) {
-                            //       if (Array.isArray(date)) {
-                            //         const singleDate = date[0] || date[1];
-                            //         if (singleDate) {
-                            //           const formattedDate =
-                            //             formatDate(singleDate) || "";
-                            //           handleSearch(column.key, formattedDate);
-                            //         }
-                            //       } else {
-                            //         const formattedDate = formatDate(date) || "";
-                            //         handleSearch(column.key, formattedDate);
-                            //       }
-                            //     } else {
-                            //       handleSearch(column.key, "");
-                            //     }
-                            //   }}
-                            //   className="w-full font-medium "
-                            //   dateFormat="DD-MM-YYYY"
-                            // />
                             <CustomDatePicker
                               clearable
                               value={

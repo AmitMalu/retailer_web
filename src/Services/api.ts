@@ -8,6 +8,7 @@ import {
   EditBeneficiaryBankRequest,
   FetchBillDetailsProps,
   FetchCardBinDetailProps,
+  FetchListParams,
   FetchSubUserRequest,
   ForgotPasswordRequestProps,
   FundReversalFormType,
@@ -35,6 +36,10 @@ import {
 } from "@/Common/interface";
 import api from ".";
 import { API_ROUTES } from "./apiRoutes";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { savePagination } from "@/Redux/Reducers/paginationSlice";
+import { toast } from "react-toastify";
+import { handleCustomError } from "@/Utils/handleCustomError";
 
 export const isAuthenticated = () => {
   const authToken = document.cookie
@@ -150,6 +155,17 @@ export const Child_Member_List = async (
   const queryParams = new URLSearchParams(params).toString();
 
   const url = `${API_ROUTES.CHILD_MEMBER_LIST}/${id}${queryParams ? `?${queryParams}` : ""}`;
+
+  return await api.get(url, await createHeaders());
+};
+
+export const Single_Hierarchy_Child_List = async (
+  id: string,
+  params?: ViewUserAPIProps
+) => {
+  const queryParams = new URLSearchParams(params).toString();
+
+  const url = `${API_ROUTES.SINGLE_HIERARCHY_CHILD_LIST}/${id}${queryParams ? `?${queryParams}` : ""}`;
 
   return await api.get(url, await createHeaders());
 };
@@ -464,3 +480,109 @@ export const Edit_Bank = async (data: EditBankFormType) =>
 
 export const Delete_Bank = async (id: string) =>
   await api.delete(`${API_ROUTES.DELETE_BANK}/${id}`, await createHeaders());
+
+export const fetchList = createAsyncThunk(
+  "api/fetchList",
+  async (
+    {
+      key,
+      url,
+      page = 1,
+      size = 10,
+      filter = null,
+      method = "GET",
+      payload = null,
+      skipPagination = false,
+      returnFullData = false,
+    }: FetchListParams,
+    { dispatch }
+  ) => {
+    try {
+      const params = new URLSearchParams();
+
+      // Append page & size only if skipPagination is false
+      if (!skipPagination) {
+        params.append("page", String(page - 1)); // 0 - based
+        params.append("size", String(size));
+      }
+
+      // Append all filters as query params
+      if (filter && typeof filter === "object") {
+        Object.entries(filter).forEach(([k, v]) => {
+          if (v !== undefined && v !== null) {
+            params.append(k, String(v));
+          }
+        });
+      }
+
+      // Smart joiner: add `?` or `&` depending on presence of `?` in URL
+      const connector = url.includes("?") ? "&" : "?";
+      const finalUrl = `${url}${connector}${params.toString()}`;
+
+      let response;
+      if (method === "POST" && payload) {
+        response = await api.post(
+          finalUrl,
+          payload || {},
+          await createHeaders()
+        );
+      } else if (method === "POST" && !payload) {
+        response = await api.post(finalUrl, {}, await createHeaders());
+      } else {
+        response = await api.get(finalUrl, await createHeaders());
+      }
+
+      const responseData = response?.data;
+
+      if ([200, 201].includes(responseData.statusCode)) {
+        if (returnFullData) {
+          // Return the full data object
+          return responseData.data;
+        }
+
+        const {
+          content = [],
+          totalPages = 0,
+          totalElements = 0,
+          size,
+          pageSize,
+          pageNumber,
+          number,
+        } = responseData.data || {};
+
+        // Set data and meta in store
+        if (!skipPagination) {
+          dispatch(
+            savePagination({
+              key,
+              pagination: {
+                totalPages: totalPages || 0,
+                totalElements: totalElements || 0,
+                pageSize: size ?? pageSize ?? 10,
+                currentPage: (number ?? pageNumber ?? 0) + 1,
+              },
+            })
+          );
+        }
+
+        // Show toast if content is empty
+        if (!content || content.length === 0) {
+          toast.warning("No records found", {
+            autoClose: 1000,
+            className: "!text-sm",
+            position: "bottom-right",
+          });
+        }
+
+        return content;
+      } else {
+        throw new Error(responseData?.message || "Fetch failed");
+      }
+    } catch (error: any) {
+      // const errMsg =
+      //   error?.response?.data?.message || error.message || "Failed to fetch";
+      // return rejectWithValue(errMsg);
+      handleCustomError(error);
+    }
+  }
+);

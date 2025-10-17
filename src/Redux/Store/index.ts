@@ -5,12 +5,14 @@ import apiReducer from "../Reducers/apiReducer";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import navigationReducer from "../Reducers/navigationReducer";
+import paginationSlice from "../Reducers/paginationSlice";
 
 const rootReducer = combineReducers({
   ui: uiReducer,
   settings: settingsReducer,
   apiResponse: apiReducer,
   navigation: navigationReducer,
+  pagination: paginationSlice,
 });
 
 const persistConfig = {
