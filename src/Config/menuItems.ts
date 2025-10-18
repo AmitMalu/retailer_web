@@ -270,12 +270,12 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           //   icon: <ListIcon />,
           roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
         },
-        {
-          name: "Download Report",
-          path: "/reports/downloadReport",
-          //   icon: <ListIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
-        },
+        // {
+        //   name: "Download Report",
+        //   path: "/reports/downloadReport",
+        //   //   icon: <ListIcon />,
+        //   roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
+        // },
         {
           name: "Fund Loading",
           path: "/reports/fundLoading",

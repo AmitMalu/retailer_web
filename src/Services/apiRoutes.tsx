@@ -41,6 +41,7 @@ export const API_ROUTES = {
   WALLET_REPORT: `${BASE_URL}/api/my-transaction/view`,
   NETWORK_TRANSACTION_REPORT: `${BASE_URL}/api/network-transaction/view`,
   SEARCH_TRANSACTION_REPORT: `${BASE_URL}/api/search-transaction/view`,
+  DEBIT_HISTORY_REPORT: `${BASE_URL}/api/debit-credit/report`,
 
   /////////////// TICKETING SYSTEM //////////////////////////
   TRANSACTION_DETAILS: `${BASE_URL}/api/ticket/transaction-details`,

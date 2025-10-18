@@ -27,6 +27,7 @@ interface UseListProps<T> {
   expectArray?: boolean;
   skipPagination?: boolean;
   returnFullData?: boolean;
+  sendPaginationIn?: "params" | "body";
 }
 
 // Overload for array data
@@ -65,11 +66,12 @@ export function useFetchList<T>({
   expectArray = true,
   skipPagination = false,
   returnFullData = false,
+  sendPaginationIn = "params",
 }: UseListProps<T>) {
   const dispatch = useDispatch<AppDispatch>();
 
   const pagination = useSelector(
-    (state: RootState) => state.pagination["transactionReport"]
+    (state: RootState) => state.pagination["network_transaction_report"]
   ) ?? {
     pageSize: defaultPageSize || 10,
     currentPage: 1,
@@ -127,6 +129,7 @@ export function useFetchList<T>({
           payload,
           skipPagination,
           returnFullData,
+          sendPaginationIn,
         })
       ).unwrap();
 
@@ -152,6 +155,7 @@ export function useFetchList<T>({
     JSON.stringify(filter),
     refreshKey,
     payload,
+    sendPaginationIn,
   ]);
 
   useEffect(() => {

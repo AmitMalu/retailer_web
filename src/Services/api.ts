@@ -494,6 +494,7 @@ export const fetchList = createAsyncThunk(
       payload = null,
       skipPagination = false,
       returnFullData = false,
+      sendPaginationIn = "params",
     }: FetchListParams,
     { dispatch }
   ) => {
@@ -501,7 +502,7 @@ export const fetchList = createAsyncThunk(
       const params = new URLSearchParams();
 
       // Append page & size only if skipPagination is false
-      if (!skipPagination) {
+      if (!skipPagination && sendPaginationIn === "params") {
         params.append("page", String(page - 1)); // 0 - based
         params.append("size", String(size));
       }
@@ -519,15 +520,28 @@ export const fetchList = createAsyncThunk(
       const connector = url.includes("?") ? "&" : "?";
       const finalUrl = `${url}${connector}${params.toString()}`;
 
+      // ✅ If pagination needs to be sent in body
+      let finalPayload = payload || {};
+
+      if (!skipPagination && sendPaginationIn === "body") {
+        finalPayload = {
+          ...finalPayload,
+          page: page - 1,
+          size,
+        };
+      }
+
       let response;
-      if (method === "POST" && payload) {
-        response = await api.post(
-          finalUrl,
-          payload || {},
-          await createHeaders()
-        );
-      } else if (method === "POST" && !payload) {
-        response = await api.post(finalUrl, {}, await createHeaders());
+      if (method === "POST") {
+        if (Object.keys(finalPayload).length > 0) {
+          response = await api.post(
+            finalUrl,
+            finalPayload,
+            await createHeaders()
+          );
+        } else {
+          response = await api.post(finalUrl, {}, await createHeaders());
+        }
       } else {
         response = await api.get(finalUrl, await createHeaders());
       }

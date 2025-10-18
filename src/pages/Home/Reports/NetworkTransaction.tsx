@@ -13,7 +13,7 @@ import { API_ROUTES } from "@/Services/apiRoutes";
 import { useFetchList } from "@/Utils/CustomHooks/useFetchList";
 import { useThrottledFormSubmit } from "@/Utils/CustomHooks/useThrottleFormSubmit";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { decryptData, exportToCsv, formatYMDdate, walletTypeSelectData } from "@/Utils/helper";
+import { dateRangeValidationSchema, decryptData, exportToCsv, formatYMDdate } from "@/Utils/helper";
 import { Grid } from "@mantine/core";
 import { DatesRangeValue } from "@mantine/dates";
 import { useTheme } from "@mui/system";
@@ -23,6 +23,7 @@ import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
+import * as Yup from 'yup'
 import { toast } from "react-toastify";
 
 const NTW_TRANX_KEY = "network_transaction_report"
@@ -56,25 +57,27 @@ const NetworkTransaction = () => {
   });
 
   const headers: GenericTableHeader<NetworkTransactionTableType>[] = [
-    { key: "transactionId", label: "Transaction ID", filterType: "text" },
+    { key: "tranxId", label: "Transaction ID", filterType: "text" },
     { key: "subProductName", label: "Sub Product Name", filterType: "text" },
-    { key: "operator", label: "Operator", filterType: "text" },
-    { key: "outletName", label: "Outlet Name", filterType: "text" },
-    { key: "transactionType", label: "Transaction Type", filterType: "text" },
-    { key: "walletType", label: "Wallet Type", filterType: "boolean", filterOptions: walletTypeSelectData },
-    { key: "balanceBefore", label: "Balance Before", filterType: "number" },
+    // { key: "operator", label: "Operator", filterType: "text" },
+    // { key: "outletName", label: "Outlet Name", filterType: "text" },
+    // { key: "transactionType", label: "Transaction Type", filterType: "text" },
+    // { key: "walletType", label: "Wallet Type", filterType: "boolean", filterOptions: walletTypeSelectData },
+    { key: "balBefore", label: "Balance Before", filterType: "number" },
     { key: "amount", label: "Amount", filterType: "number" },
-    { key: "balanceAfter", label: "Balance After", filterType: "number" },
-    { key: "refNo", label: "Ref No", filterType: "text" },
+    { key: "balAfter", label: "Balance After", filterType: "number" },
+    { key: "actionOnBalanceAmount", label: "Action On Balance Amount", filterType: "text" },
+    { key: "status", label: "Status", filterType: "text" },
+    { key: "transactionDate", label: "Transaction Date", filterType: "date" },
+    { key: "transactionTime", label: "Transaction Time", filterType: "text" },
     { key: "narration", label: "Narration", filterType: "text" },
-    { key: "createdOn", label: "Created On", filterType: "date", searchable: true },
   ];
 
   const transformPayload = (values: any) => {
     const [fromDate, toDate] = values.dateRange || [];
     return {
 
-      fromDate: fromDate ? formatYMDdate(toDate) : null,
+      fromDate: fromDate ? formatYMDdate(fromDate) : null,
       toDate: toDate ? formatYMDdate(toDate) : null,
       loginHierarchyId: values.loginHierarchyId || loginData?.hierarchyId,
       subProductName: values.subProductName,
@@ -84,8 +87,6 @@ const NetworkTransaction = () => {
       distributorId: values.distributorId,
       retailerId: values.retailerId,
       reportType: values.reportType,
-      page: Number(values.page) - 1,
-      size: values.size,
     }
   }
 
@@ -95,7 +96,8 @@ const NetworkTransaction = () => {
     method: "POST",
     key: NTW_TRANX_KEY,
     url: viewSubmitted ? `${API_ROUTES.NETWORK_TRANSACTION_REPORT}` : undefined,
-    payload: payload
+    payload: payload,
+    sendPaginationIn: "body",
   });
 
   const initialValues: NetworkTransactionParams = {
@@ -113,6 +115,10 @@ const NetworkTransaction = () => {
     page: pagination?.currentPage,
     size: pagination?.pageSize,
   };
+
+  const validationSchema = Yup.object({
+    dateRange: dateRangeValidationSchema
+  })
 
   const [formValues, setFormValues] = useState(initialValues);
 
@@ -279,7 +285,7 @@ const NetworkTransaction = () => {
       <Formik
         initialValues={formValues}
         enableReinitialize
-        // validationSchema={Yup.object(validationSchema)}
+        validationSchema={validationSchema}
         onSubmit={throttledSubmit}
       >
         {({ values, setFieldValue }) => {

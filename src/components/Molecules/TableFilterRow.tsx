@@ -5,6 +5,8 @@ import SelectComponent from "../Atoms/NewComponents/SelectComponent";
 import { booleanSelectData2 } from "@/Utils/helper";
 import CustomDatePicker from "../Atoms/NewComponents/CustomDatePicker";
 import TextInputComponent from "../Atoms/NewComponents/TextInputComponent";
+// import TimeComponent from "../Atoms/TimeComponent";
+import CustomTimePicker from "../Atoms/NewComponents/CustomTimePicker";
 
 const TableFilterRow = <T,>({
   headers,
@@ -67,6 +69,47 @@ const TableFilterRow = <T,>({
                     }
                   }}
                   clearable
+                />
+              </Table.Td>
+            );
+          case "time":
+            return (
+              <Table.Td key={String(key)}>
+                {/* <TimeComponent
+                  value={value || ""}
+                  onChange={(val) => {
+                    if (val) {
+                      onFilterChange?.(String(key), val);
+                      onFilterSubmit?.(String(key), val);
+                    } else {
+                      onFilterChange?.(String(key), null);
+                      onFilterSubmit?.(String(key), "");
+                    }
+                  }
+                  }
+                  withSeconds={true}
+                  maxTime={new Date().toLocaleTimeString()}
+                  className="w-full font-medium"
+                /> */}
+                <CustomTimePicker
+                  value={value ?? null} // value comes from current filter state
+                  onChange={(val) => {
+                    if (!val) {
+                      onFilterChange?.(String(key), null);
+                      onFilterSubmit?.(String(key), "");
+                      return;
+                    }
+
+                    // Accept both HH:mm and HH:mm:ss formats
+                    const isComplete = /^\d{2}:\d{2}(:\d{2})?$/.test(val);
+
+                    if (isComplete) {
+                      onFilterChange?.(String(key), val);
+                      onFilterSubmit?.(String(key), val);
+                    }
+                  }}
+                  size="xs"
+                  placeholder="Pick Time"
                 />
               </Table.Td>
             );

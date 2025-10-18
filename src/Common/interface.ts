@@ -326,7 +326,7 @@ export type TimeComponentProps = {
 export type GenericTableHeader<T> = {
   key: keyof T;
   label?: string;
-  filterType?: "text" | "number" | "boolean" | "date" | "none";
+  filterType?: "text" | "number" | "boolean" | "date" | "time" | "none";
   filterOptions?: { label: string; value: any }[];
   searchable?: boolean; // optionally override with this
   renderType?: "link" | "custom" | "statusBadge"; //
@@ -343,6 +343,7 @@ export type FetchListParams = {
   payload?: any;
   skipPagination?: Boolean;
   returnFullData?: Boolean;
+  sendPaginationIn?: "params" | "body";
 };
 
 export type TableColumn = {
@@ -726,6 +727,14 @@ export type NetworkTransactionParams = {
   [key: string]: any;
 };
 
+export type DebitHistoryParams = {
+  dateRange: DatesRangeValue;
+  hierarchyType: string;
+  hierarchyId: string;
+  walletType: string;
+  [key: string]: any;
+};
+
 export interface SearchTransReportTableType {
   transactionId: string;
   hierarchyId: string;
@@ -1017,16 +1026,26 @@ export type FormValues = {
 
 //////////////////////////REPORTS//////////////////////////////
 export interface NetworkTransactionTableType {
-  createdOn: string;
-  transactionId: string;
-  outletName: string;
+  tranxId: string;
   subProductName: string;
-  walletType: string;
-  transactionType: string;
-  operator: string;
-  balanceBefore: number;
-  amount: number;
-  refNo: string;
-  balanceAfter: number;
+  balBefore: string;
+  amount: string;
+  balAfter: string;
+  actionOnBalanceAmount: string;
+  status: string;
+  transactionDate: number;
+  transactionTime: number;
   narration: string;
+}
+
+export interface DebitHistoryTableType {
+  transactionId: string;
+  transactionType: string | null;
+  service: string;
+  balBeforeTran: string | number;
+  amount: string | number;
+  balAfterTran: string | number;
+  finalBalance: string | number;
+  dateOfTransaction: string;
+  timeOfTransaction: string;
 }
