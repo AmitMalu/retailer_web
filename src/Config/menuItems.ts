@@ -306,12 +306,12 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
         //   //   icon: <ListIcon />,
         //   roles: ["DT", "SD", "WL", "PT"],
         // },
-        {
-          name: "Bank Withdrawal",
-          path: "/reports/bankWithdrawal",
-          //   icon: <ListIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
+        // {
+        //   name: "Bank Withdrawal",
+        //   path: "/reports/bankWithdrawal",
+        //   //   icon: <ListIcon />,
+        //   roles: ["DT", "SD", "WL", "PT"],
+        // },
         {
           name: "Down Line Balance",
           path: "/reports/downLineBalance",

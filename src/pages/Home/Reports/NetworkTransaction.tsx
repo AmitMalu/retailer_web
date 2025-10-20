@@ -6,7 +6,7 @@ import GenericMasterTable from "@/components/Molecules/GenericMasterTable";
 import GenericMasterToolbar from "@/components/Molecules/GenericMasterToolbar";
 import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
-import { savePagination } from "@/Redux/Reducers/paginationSlice";
+import { clearPagination, savePagination } from "@/Redux/Reducers/paginationSlice";
 import { RootState } from "@/Redux/Store";
 import { Single_Hierarchy_Child_List } from "@/Services/api";
 import { API_ROUTES } from "@/Services/apiRoutes";
@@ -47,6 +47,8 @@ const NetworkTransaction = () => {
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [submittedFilter, setSubmittedFilter] = useState<Record<string, any> | null>(null);
   const [viewSubmitted, setViewSubmitted] = useState(false);
+
+  const [refreshKey, setRefreshKey] = useState<number>(0);
 
   const [loadingState, setLoadingState] = useState({
     WL: false,
@@ -97,6 +99,7 @@ const NetworkTransaction = () => {
     key: NTW_TRANX_KEY,
     url: viewSubmitted ? `${API_ROUTES.NETWORK_TRANSACTION_REPORT}` : undefined,
     payload: payload,
+    refreshKey,
     sendPaginationIn: "body",
   });
 
@@ -154,6 +157,8 @@ const NetworkTransaction = () => {
     hierarchyId: string,
     level: "WL" | "SD" | "PT" | "DT" | "RT"
   ) => {
+    if (level == "RT") return;
+
     try {
       setLoadingState((prev) => ({ ...prev, [level]: true }));
 
@@ -245,6 +250,15 @@ const NetworkTransaction = () => {
     id: index + 1,
   }));
 
+  const handleRefresh = () => {
+    dispatch(clearPagination({ key: NTW_TRANX_KEY }));
+    setFilterValues({});
+    setSubmittedFilter(null);
+    setRefreshKey((prev) => prev + 1);
+    setFilterVisible(false);
+  };
+
+
   const throttledSubmit = useThrottledFormSubmit((values: any) => {
     setFormValues(values);
     const payload = transformPayload(values);
@@ -255,6 +269,7 @@ const NetworkTransaction = () => {
   useEffect(() => {
     return () => {
       setFormValues(initialValues); // Reset form data on unmount
+      dispatch(clearPagination({ key: NTW_TRANX_KEY }));
     }
   }, []);
 
@@ -312,7 +327,10 @@ const NetworkTransaction = () => {
                     placeholder="Select Super Distributor"
                     nothingFoundMessage="Nothing Found "
                     size="xs"
+                    allowDeselect={true}
                     onChange={(value: any) => {
+                      if (!value) return
+
                       const id = String(
                         Array.isArray(value) ? value[0] : value
                       );
@@ -322,8 +340,8 @@ const NetworkTransaction = () => {
                     data={uniqueSuperDistributorList || []}
                     disabled={!values.whitelabelId || loadingState.WL}
                     searchable={true}
-                    withAsterisk
-                    required
+                  // withAsterisk
+                  // required
                   />
                 </Grid.Col>
 
@@ -335,6 +353,8 @@ const NetworkTransaction = () => {
                     nothingFoundMessage="Nothing Found "
                     size="xs"
                     onChange={(value: any) => {
+                      if (!value) return
+
                       const id = String(
                         Array.isArray(value) ? value[0] : value
                       );
@@ -356,6 +376,7 @@ const NetworkTransaction = () => {
                     nothingFoundMessage="Nothing Found "
                     size="xs"
                     onChange={(value: any) => {
+                      if (!value) return
                       const id = String(
                         Array.isArray(value) ? value[0] : value
                       );
@@ -383,9 +404,18 @@ const NetworkTransaction = () => {
                   />
                 </Grid.Col>
 
-                <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 1.5 }}>
+                <Grid.Col span="auto">
                   <div className="flex justify-end items-center mt-4">
-                    {<ButtonComponent
+                    <GenericMasterToolbar
+                      onRefresh={handleRefresh}
+                      onExport={handleExportClick}
+                      onFilter={() => setFilterVisible((prev) => !prev)}
+                      headers={headers}
+                      loading={loading}
+                      error={error ? error.toString() : null}
+                    />
+
+                    <ButtonComponent
                       fontSize="14"
                       fullWidth={false}
                       radius={6}
@@ -397,19 +427,7 @@ const NetworkTransaction = () => {
                       textColor="#FFFFFF"
                     >
                       VIEW
-                    </ButtonComponent>}
-                  </div>
-                </Grid.Col>
-
-                <Grid.Col span="auto">
-                  <div className="flex justify-end items-end h-full">
-                    <GenericMasterToolbar
-                      onExport={handleExportClick}
-                      onFilter={() => setFilterVisible((prev) => !prev)}
-                      headers={headers}
-                      loading={loading}
-                      error={error ? error.toString() : null}
-                    />
+                    </ButtonComponent>
                   </div>
                 </Grid.Col>
               </Grid>

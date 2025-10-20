@@ -160,7 +160,7 @@ export const DownloadIcon: React.FC<React.SVGProps<SVGSVGElement>> = ({
 export const paginationBackIcon: React.FC<IconProps> = ({
   width = 20,
   height = 20,
-  color = "#12B5F1",
+  color = "#BF0204",
 }) => {
   return (
     <svg
@@ -193,7 +193,7 @@ export const paginationBackIcon: React.FC<IconProps> = ({
 export const paginationFrontIcon: React.FC<IconProps> = ({
   width = 20,
   height = 20,
-  color = "#12B5F1",
+  color = "#BF0204",
 }) => {
   return (
     <svg

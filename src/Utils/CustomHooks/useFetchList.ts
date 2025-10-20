@@ -71,7 +71,7 @@ export function useFetchList<T>({
   const dispatch = useDispatch<AppDispatch>();
 
   const pagination = useSelector(
-    (state: RootState) => state.pagination["network_transaction_report"]
+    (state: RootState) => state.pagination[key]
   ) ?? {
     pageSize: defaultPageSize || 10,
     currentPage: 1,

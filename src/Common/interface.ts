@@ -735,6 +735,11 @@ export type DebitHistoryParams = {
   [key: string]: any;
 };
 
+export type DownlineBalanceParams = {
+  dateRange: DatesRangeValue;
+  [key: string]: any;
+};
+
 export interface SearchTransReportTableType {
   transactionId: string;
   hierarchyId: string;
@@ -1048,4 +1053,13 @@ export interface DebitHistoryTableType {
   finalBalance: string | number;
   dateOfTransaction: string;
   timeOfTransaction: string;
+}
+
+export interface DownlineBalanceTableType {
+  userId: string;
+  name: string;
+  parentAccount: string;
+  prepaidBalance: string | number;
+  postpaidBalance: string | number;
+  createdOn: string;
 }

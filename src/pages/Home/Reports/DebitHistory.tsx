@@ -157,12 +157,7 @@ const DebitHistory = () => {
         enableReinitialize
         onSubmit={throttledSubmit}
       >
-        {({ values, errors }) => {
-
-          console.log(errors, "errors");
-          console.log(values, "values");
-          console.log(formValues, "formValues");
-
+        {() => {
 
           return (
             <Form className="flex flex-col gap-2 mt-4">
