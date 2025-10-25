@@ -73,6 +73,7 @@ const DownLineBalance = () => {
     key: DOWNLINE_BALANCE_KEY,
     url: viewSubmitted ? `${API_ROUTES.DOWNLINE_BALANCE_REPORT}/${loginData?.hierarchyId}` : undefined,
     payload: payload,
+    refreshKey,
     sendPaginationIn: "params",
   });
 

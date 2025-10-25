@@ -43,13 +43,13 @@ export const API_ROUTES = {
   SEARCH_TRANSACTION_REPORT: `${BASE_URL}/api/search-transaction/view`,
   DEBIT_HISTORY_REPORT: `${BASE_URL}/api/debit-credit/report`,
   DOWNLINE_BALANCE_REPORT: `${BASE_URL}/api/downline-balance/report`,
+  PENDING_TRANSACTION_REPORT: `${BASE_URL}/api/funding/settlement`,
 
   /////////////// TICKETING SYSTEM //////////////////////////
   TRANSACTION_DETAILS: `${BASE_URL}/api/ticket/transaction-details`,
   TICKET_RAISE: `${BASE_URL}/api/ticket/raise-ticket`,
   FETCH_RAISED_TICKET: `${BASE_URL}/api/ticket`,
   ISSUE_TYPE_DROPDOWN: `${BASE_URL}/api/ticket/issue-type-dropdown`,
-  SUB_PRODUCT_DROPDOWN: `${BASE_URL}/api/sub-products/dropdown`,
 
   ///////////////////// PG /////////////////////////////////
   FETCH_CARD_TYPE: `${BASE_URL}/api/transaction/fetch-card-bin-details`,
@@ -90,5 +90,8 @@ export const API_ROUTES = {
 
   /////////////////////////// COMMON ////////////////////////////////////
   HIERARCHY_TYPE_LIST: `${BASE_URL}/api/hierarchy/name-code`,
-  HIERARCHY_LIST: `${BASE_URL}/api/hierarchy/hierarchy-details`
+  HIERARCHY_LIST: `${BASE_URL}/api/hierarchy/hierarchy-details`,
+  PRODUCT_LIST: `${BASE_URL}/api/products/dropdown/active`,
+  SUB_PRODUCT_DROPDOWN: `${BASE_URL}/api/sub-products/dropdown`,
+
 };

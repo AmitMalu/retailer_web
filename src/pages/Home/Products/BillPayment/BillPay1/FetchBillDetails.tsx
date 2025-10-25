@@ -34,6 +34,7 @@ import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import BillReciept from "./BillReciept";
+import { AtoZServiceProviders } from "./Config";
 
 const FetchBillDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -59,9 +60,11 @@ const FetchBillDetails: React.FC = () => {
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  const bbpsServicesData = apiResponses?.bbpsServices
-    ? decryptData(apiResponses?.bbpsServices)
-    : null;
+  // const bbpsServicesData = apiResponses?.bbpsServices
+  //   ? decryptData(apiResponses?.bbpsServices)
+  //   : null;
+
+  const bbpsServicesData = AtoZServiceProviders
 
   const [selectedProviderDetails, setSelectedProviderDetails] = useState<{
     [key: string]: any;
@@ -577,7 +580,7 @@ const FetchBillDetails: React.FC = () => {
                         onChange={(value: any) => {
                           const selectedProvider = bbpsServicesData?.find(
                             (s: any) => String(s.provider_id) === value
-                          );
+                          ) || null;
                           setSelectedProviderDetails(selectedProvider);
                         }}
                       />

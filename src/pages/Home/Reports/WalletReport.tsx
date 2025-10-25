@@ -1,504 +1,353 @@
-import { WalletData, WalletParams, WalletRequest } from "@/Common/interface";
-import { RootState } from "@/Redux/Store";
-import {
-  dateRangeValidationSchema,
-  decryptData,
-  formatYMDdate,
-  // isSameOrAfter,
-  // isSameOrBefore,
-} from "@/Utils/helper";
-import { useTheme } from "@mui/system";
-import { useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { Formik } from "formik";
-import * as Yup from "yup";
-import { Wallet_Report } from "@/Services/api";
-import {
-  showErrorNotification,
-  // showSuccessNotification,
-} from "@/Utils/notifications";
-import { handleCustomError } from "@/Utils/handleCustomError";
-import ColumsSelectionModal from "@/components/Molecules/ColumsSelectionModal";
-import TableComponent from "@/components/Molecules/TableComponent";
-import TextComponent from "@/components/Atoms/TextComponent";
-import { ColsSvgIcon, ExportSvgIcon, FilterSvgIcon } from "@/assets/svg";
-import { UnstyledButton } from "@mantine/core";
-import ButtonComponent from "@/components/Atoms/ButtonComponent";
-// import DropdownComponent from "@/components/Atoms/DropdownComponent";
-// import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
-import Loader from "@/components/Atoms/Loader";
-import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
-import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
-import moment from "moment";
+import { GenericTableHeader, WalletReportParams, WalletReportTableType } from "@/Common/interface";
+import { clearPagination, savePagination } from "@/Redux/Reducers/paginationSlice";
+import { API_ROUTES } from "@/Services/apiRoutes";
+import { useFetchList } from "@/Utils/CustomHooks/useFetchList";
+import NewTextComponent from "@/components/Atoms/NewComponents/TextComponent";
+import { useThrottledFormSubmit } from "@/Utils/CustomHooks/useThrottleFormSubmit";
+import { dateRangeValidationSchema, decryptData, exportToCsv, formatYMDdate, textField } from "@/Utils/helper";
 import { DatesRangeValue } from "@mantine/dates";
+import { useTheme } from "@mui/system";
+import moment from "moment";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import { Form, Formik } from "formik";
+import { Grid, Loader } from "@mantine/core";
+import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
+import { IconCalendar } from "@tabler/icons-react";
+import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
+import { RefreshIcon } from "@/assets/svg";
+import ButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
+import GenericMasterToolbar from "@/components/Molecules/GenericMasterToolbar";
+import ShimmerTableRows from "@/components/Atoms/ShimmerTableRows";
+import GenericMasterTable from "@/components/Molecules/GenericMasterTable";
+import { useProductSubProduct } from "@/Utils/CustomHooks/useProductSubProduct";
+import * as Yup from "yup"
+import { useSelector } from "react-redux";
+import { RootState } from "@/Redux/Store";
+
+const KEY = "wallet_report"
 
 const WalletReport = () => {
-  const theme = useTheme();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isWalletReportList, setIsWalletReportList] = useState<WalletData | []>(
-    []
-  );
-  const [isSeacrh, setIsSeacrh] = useState(false);
-  const [searchValues, setSearchValues] = useState<Record<string, string>>({});
-  const [showColumnModal, setShowColumnModal] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const dispatch = useDispatch();
+  const theme = useTheme()
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
-
   const loginData = apiResponses?.loginData
-    ? decryptData(apiResponses?.loginData)
+    ? decryptData(apiResponses.loginData)
     : null;
 
-  const subproductData = apiResponses?.subProductDropdown
-    ? decryptData(apiResponses?.subProductDropdown)
-    : null;
-  const uniqueSubProductTypes =
-    subproductData?.map((item: any) => ({
-      value: item.subProduct_name,
-      label: item.subProduct_name,
-    })) || [];
+  const dataRef = useRef<WalletReportTableType[] | null>(null);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const [payload, setPayload] = useState<any>(null);
+  const [filterVisible, setFilterVisible] = useState(false);
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  const [submittedFilter, setSubmittedFilter] = useState<Record<string, any> | null>(null);
+  const [viewSubmitted, setViewSubmitted] = useState(false);
 
-  const validationSchema = Yup.object({
-    // fromDate: Yup.date()
-    //   .required("Required")
-    //   .test("max-today", "Invalid Date", function (value) {
-    //     if (!value) return true;
-    //     return isSameOrBefore(value, today);
-    //   })
-    //   .test("date-range", "Invalid Date", function (value) {
-    //     const toDate = this.parent.toDate;
-    //     if (!value || !toDate) return true;
-    //     return isSameOrBefore(value, toDate);
-    //   }),
-    // toDate: Yup.date()
-    //   .required("Required")
-    //   .test("max-today", "Invalid Date", function (value) {
-    //     if (!value) return true;
-    //     return isSameOrBefore(value, today);
-    //   })
-    //   .test("date-range", "Invalid Date", function (value) {
-    //     const fromDate = this.parent.fromDate;
-    //     if (!value || !fromDate) return true;
-    //     return isSameOrAfter(value, fromDate);
-    //   }),
-    dateRange: dateRangeValidationSchema,
-    walletType: Yup.string().required("Required"),
-    subProductName: Yup.string().required("Required"),
-    status: Yup.string().required("Required"),
-  });
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const initialValues: WalletParams = {
-    hierarchyId: loginData?.hierarchyId,
-    walletType: "",
+  const headers: GenericTableHeader<WalletReportTableType>[] = [
+    { key: "tranxId", label: "Transaction ID", filterType: "text" },
+    { key: "subProductName", label: "Sub Product Name", filterType: "text" },
+    // { key: "operator", label: "Operator", filterType: "text" },
+    // { key: "outletName", label: "Outlet Name", filterType: "text" },
+    // { key: "transactionType", label: "Transaction Type", filterType: "text" },
+    // { key: "walletType", label: "Wallet Type", filterType: "boolean", filterOptions: walletTypeSelectData },
+    { key: "balBefore", label: "Balance Before", filterType: "number" },
+    { key: "amount", label: "Amount", filterType: "number" },
+    { key: "balAfter", label: "Balance After", filterType: "number" },
+    { key: "actionOnBalanceAmount", label: "Action On Balance Amount", filterType: "text" },
+    { key: "status", label: "Status", filterType: "text" },
+    { key: "transactionDate", label: "Transaction Date", filterType: "date" },
+    { key: "transactionTime", label: "Transaction Time", filterType: "text" },
+    { key: "narration", label: "Narration", filterType: "text" },
+  ];
+
+  const transformPayload = (values: any) => {
+    const [fromDate, toDate] = values.dateRange || [];
+    return {
+
+      fromDate: fromDate ? formatYMDdate(fromDate) : null,
+      toDate: toDate ? formatYMDdate(toDate) : null,
+      hierarchyType: values.hierarchyType || loginData?.hierarchyId?.split("-")[1] || "",
+      hierarchyId: values.hierarchyId || loginData?.hierarchyId,
+      productId: values?.productId ?? "",
+      walletType: values.walletType ?? "",
+      status: values.status ?? "ALL",
+    }
+  }
+
+  const { data, loading, pagination, error, setPage, setPageSize } =
+    useFetchList<WalletReportTableType>({
+      method: "POST",
+      key: KEY,
+      url: viewSubmitted ? `${API_ROUTES.WALLET_REPORT}` : undefined,
+      payload,
+      refreshKey,
+      sendPaginationIn: "body",
+    });
+
+  const InitialValues: WalletReportParams = {
     dateRange: [
       moment().subtract(6, "days").toDate(), // from: 6 days ago
       moment().toDate(), // to: today
     ] as DatesRangeValue,
-    subProductName: "",
+    hierarchyType: loginData?.hierarchyId?.split("-")[1] || "",
+    hierarchyId: loginData?.hierarchyId,
+    productId: "",
+    subProductId: "",
+    walletType: "",
     status: "",
-    page: currentPage,
-    size: itemsPerPage,
   };
 
-  const handleReportSubmit = async (values: WalletParams) => {
-    try {
-      setIsLoading(true);
-      setCurrentPage(values.page);
-      setItemsPerPage(values.size);
-      const [fromDate, toDate] = values.dateRange || [];
 
-      let bodyRequest: WalletRequest = {
-        fromDate: fromDate ? formatYMDdate(fromDate) : null,
-        toDate: toDate ? formatYMDdate(toDate) : null,
-        hierarchyId: values.hierarchyId || loginData?.hierarchyId,
-        walletType: values.walletType,
-        subProductName: values.subProductName,
-        status: values.status,
-        page: Number(values.page) - 1,
-        size: values.size,
-      };
-      const response = await Wallet_Report({}, bodyRequest);
+  const validationSchema = Yup.object({
+    dateRange: dateRangeValidationSchema,
+    productId: textField("Product", 100, true, true),
+    walletType: textField("Wallet Type", 150, false, true),
+    status: textField("Status", 50, false, true),
+  })
 
-      if (response?.status === 200) {
-        const content = response?.data?.data?.content || [];
-
-        setIsWalletReportList(content);
-
-        if (content.length <= 0) {
-          showErrorNotification("No records found");
-        }
-      } else {
-        showErrorNotification(response?.data?.message);
-      }
-    } catch (error) {
-      await handleCustomError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleExport = async (formikValues: WalletParams) => {
-    try {
-      const bodyRequest = {
-        fromDate: formatYMDdate(formikValues.fromDate),
-        toDate: formatYMDdate(formikValues.toDate),
-        hierarchyId: formikValues.hierarchyId || loginData?.hierarchyId,
-        walletType: formikValues.walletType,
-        subProductName: formikValues.subProductName,
-        status: formikValues.status,
-        page: formikValues.page,
-        size: formikValues.size,
-      };
-
-      const response = await Wallet_Report(searchValues, bodyRequest);
-
-      if (response?.status === 200) {
-        const blob = new Blob([response.data], {
-          type: "application/octet-stream",
-        });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Wallet_report_${formatYMDdate(new Date())}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      } else {
-        showErrorNotification(response?.data?.message);
-      }
-    } catch (error) {
-      await handleCustomError(error);
-    }
-  };
-
-  const tableColumns = [
-    {
-      key: "createdOn",
-      label: "Created On",
-      searchKey: "createdOn",
-      sortable: false,
-      type: "date" as const,
-    },
-    {
-      key: "transactionId",
-      label: "Transaction ID",
-      searchKey: "transactionId",
-      sortable: false,
-    },
-    {
-      key: "refNo",
-      label: "Ref No",
-      searchKey: "refNo",
-      // sortable: true,
-    },
-    {
-      key: "balanceBefore",
-      label: "Balance Before",
-      searchKey: "balanceBefore",
-      sortable: false,
-    },
-    {
-      key: "amount",
-      label: "Amount",
-      searchKey: "amount",
-      // sortable: true,
-    },
-    {
-      key: "balanceAfter",
-      label: "Balance After",
-      searchKey: "balanceAfter",
-      sortable: false,
-    },
-    {
-      key: "walletType",
-      label: "Wallet Type",
-      searchKey: "walletType",
-      sortable: false,
-    },
-    {
-      key: "transactionType",
-      label: "Transaction Type",
-      searchKey: "transactionType",
-      sortable: false,
-    },
-    {
-      key: "actionType",
-      label: "Action Type",
-      searchKey: "actionType",
-      sortable: false,
-    },
-    {
-      key: "remark",
-      label: "Remark",
-      searchKey: "remark",
-      sortable: false,
-    },
-  ];
-
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handleSearchWithValues = (
-    columnKey: string,
-    value: string,
-    values: WalletParams
-  ) => {
-    try {
-      const column = tableColumns.find((col) => col.key === columnKey);
-      if (!column) return;
-
-      const searchKey = column.searchKey || column.key;
-      const newSearchValues = { ...searchValues };
-
-      if (value) {
-        newSearchValues[searchKey] = value;
-      } else {
-        delete newSearchValues[searchKey];
-      }
-
-      setSearchValues(newSearchValues);
-
-      if (values.fromDate && values.toDate) {
-        const bodyRequest = {
-          fromDate: formatYMDdate(values.fromDate),
-          toDate: formatYMDdate(values.toDate),
-          hierarchyId: values.hierarchyId || loginData?.hierarchyId,
-          walletType: values.walletType,
-          subProductName: values.subProductName,
-          status: values.status,
-          page: values.page,
-          size: values.size,
-        };
-
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
-
-        timeoutRef.current = setTimeout(() => {
-          setIsLoading(true);
-          Wallet_Report(newSearchValues, bodyRequest)
-            .then((response) => {
-              if (response?.status === 200) {
-                setIsWalletReportList(response?.data?.data?.content);
-              } else {
-                showErrorNotification(response?.data?.message);
-                setIsWalletReportList([]);
-              }
-            })
-            .catch((error) => {
-              handleCustomError(error);
-              setIsWalletReportList([]);
-            })
-            .finally(() => {
-              setIsLoading(false);
-            });
-        }, 900);
-      }
-    } catch (error) {
-      handleCustomError(error);
-    }
-  };
+  const [formValues, setFormValues] = useState(InitialValues);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
-    tableColumns.filter((col) => col.key !== "action").map((col) => col.key)
+    headers.map((h) => h.key as string)
   );
 
-  const filteredTableColumns = [
-    ...tableColumns.filter(
-      (col) => visibleColumns.includes(col.key) && col.key !== "action"
-    ),
-    tableColumns.find((col) => col.key === "action")!,
-  ];
+  const handleExportClick = () => {
+    const currentData = dataRef.current;
+    if (!currentData || currentData.length === 0) {
+      toast.warning("No data available to export.");
+      return;
+    }
+    exportToCsv(currentData, "Pending-Transaction-report");
+  };
+
+  const handleFilterChange = (key: string, value: any) => {
+    setFilterValues((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleFilterSubmit = (key: string, value: any) => {
+    dispatch(
+      savePagination({
+        key: KEY,
+        pagination: { ...pagination, currentPage: 1, pageSize: pagination.pageSize },
+      })
+    );
+    setSubmittedFilter((prev) => ({ ...prev, [key]: value }));
+  };
+
+
+  const handleRefresh = () => {
+    dispatch(clearPagination({ key: KEY }));
+    setFilterValues({});
+    setVisibleColumns(headers.map((h) => h.key as string));
+    setSubmittedFilter(null);
+    setRefreshKey((prev) => prev + 1);
+    setFilterVisible(false);
+  };
+
+  const handleToggleColumn = (key: string) => {
+    setVisibleColumns((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+  };
+
+  const handleToggleAllColumns = (selectAll: boolean) => {
+    if (selectAll) {
+      setVisibleColumns(headers.map((h) => h.key as string));
+    } else {
+      setVisibleColumns([]);
+    }
+  };
+
+  const throttledSubmit = useThrottledFormSubmit((values: any) => {
+    setFormValues(values);
+    const payload = transformPayload(values);
+    setPayload(payload);
+    setRefreshKey((prev) => prev + 1);
+    setViewSubmitted(true);
+  }, 3000);
+
+  useEffect(() => {
+    return () => {
+      setFormValues(InitialValues); // Reset form data on unmount
+      dispatch(clearPagination({ key: KEY }));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (submittedFilter) {
+      setPayload((prev: any) => ({ ...prev, ...submittedFilter }));
+    }
+  }, [submittedFilter])
+
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
 
   return (
-    <>
-      {isLoading && <Loader />}
-      <div className="w-full 320px:mt-12 md:mt-0">
-        <div className="mb-6 ">
-          <TextComponent
-            fontSize={22}
-            fontWeight={600}
-            color={theme.palette.red.DEFAULT}
-          >
-            Wallet Report
-          </TextComponent>
-        </div>
+    <div className="w-full">
+      <NewTextComponent fontSize={22} color={theme.palette.red.DEFAULT} fontFamily="Inter" fontWeight={600}>
+        WALLET REPORT
+      </NewTextComponent>
 
-        <Formik<WalletParams>
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleReportSubmit}
-        >
-          {({ values, handleSubmit, setFieldValue }) => {
-            return (
-              <>
-                <div className="shadow-black-900/100 mt-5 flex w-full flex-col items-center justify-center gap-6 rounded-xl bg-background-paper p-3 shadow-lg 320px:mt-5 md:mt-0">
-                  <div className="flex w-full flex-wrap items-center justify-between gap-4">
-                    <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                      <FormikDateRangePicker
-                        name="dateRange"
-                        label="Date Range"
-                        size="xs"
-                        shortcuts
-                        required
-                      />
-                    </div>
-                    <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                      <FormikSelectComponent
-                        name="walletType"
-                        label="Wallet Type"
-                        placeholder="Select Wallet Type"
-                        allowDeselect
-                        data={[
-                          { value: "POSTPAID", label: "POSTPAID" },
-                          { value: "PREPAID", label: "PREPAID" },
-                        ]}
-                        withAsterisk
-                        size="xs"
-                      />
-                    </div>
-                    <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                      <FormikSelectComponent
-                        name="subProductName"
-                        label="Sub Product"
-                        placeholder="Select Sub Product"
-                        data={uniqueSubProductTypes}
-                        allowDeselect
-                        searchable
-                        withAsterisk
-                        size="xs"
-                      />
-                    </div>
-                    <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                      <FormikSelectComponent
-                        name="status"
-                        label="Status"
-                        placeholder="Select Status"
-                        allowDeselect
-                        data={[
-                          { value: "SUCCESS", label: "SUCCESS" },
-                          { value: "PENDING", label: "PENDING" },
-                          { value: "FAILURE", label: "FAILURE" },
-                        ]}
-                        withAsterisk
-                        size="xs"
-                      />
-                    </div>
+      <Formik
+        initialValues={formValues}
+        enableReinitialize
+        validationSchema={validationSchema}
+        onSubmit={throttledSubmit}
+      >
+        {({ values, setFieldValue }) => {
+          const {
+            productDropdownData,
+            loadingProductList,
+            refetchProducts
+          } = useProductSubProduct({
+            selectedProductId: String(values.productId),
+            selectedSubProductId: String(values.subProductId),
+            onSubProductReset: () => setFieldValue("subProductId", ""),
+          });
 
-                    <div className="flex items-center justify-end w-max">
-                      <ButtonComponent
-                        title="View"
-                        variant="filled"
-                        onClick={() => {
-                          setFieldValue("download", false);
-                          handleSubmit();
-                        }}
-                        radius={29}
-                        width={100}
-                      />
-                    </div>
-                  </div>
-                </div>
-                {isWalletReportList && isWalletReportList.length > 0 && (
-                  <div className="flex items-center justify-end gap-2">
-                    <div className="border-1 mt-4 flex w-max items-center justify-center justify-self-end rounded-md border-red-light bg-red-light px-2 py-1">
-                      <UnstyledButton
-                        onClick={() => setIsSeacrh(!isSeacrh)}
-                        className="flex flex-row items-center justify-center gap-3 text-center disabled:opacity-30"
-                      >
-                        <FilterSvgIcon color={theme.palette.red.DEFAULT} />
-                        <TextComponent
-                          fontSize={18}
-                          fontWeight={400}
-                          color={theme.palette.red.DEFAULT}
-                          align="center"
-                        >
-                          Search
-                        </TextComponent>
-                      </UnstyledButton>
-                    </div>
-                    <div
-                      onClick={() => setShowColumnModal(true)}
-                      className="border-1 mt-4 flex w-max items-center justify-center justify-self-end rounded-md border-red-light bg-red-light px-2 py-1"
-                    >
-                      <ColsSvgIcon color={theme.palette.red.DEFAULT} />
-                      <TextComponent
-                        color={theme.palette.red.DEFAULT}
-                        fontSize={16}
-                        fontWeight={400}
-                      >
-                        Cols
-                      </TextComponent>
-                    </div>
-                    <div className="border-1 mt-4 flex w-28 items-center justify-center justify-self-end rounded-md border-red-light bg-red-light px-2 py-1">
-                      <UnstyledButton
-                        onClick={() => handleExport(values)}
-                        className="flex flex-row items-center justify-center gap-3 disabled:opacity-30"
-                      >
-                        <ExportSvgIcon color={theme.palette.red.DEFAULT} />{" "}
-                        <TextComponent
-                          fontSize={18}
-                          fontWeight={400}
-                          color={theme.palette.red.DEFAULT}
-                        >
-                          Export
-                        </TextComponent>
-                      </UnstyledButton>
-                    </div>
-                  </div>
-                )}
-                <div className="mt-6">
-                  <TableComponent
-                    data={
-                      Array.isArray(isWalletReportList)
-                        ? isWalletReportList
-                        : [isWalletReportList]
-                    }
-                    columns={filteredTableColumns}
-                    showSearch={isSeacrh}
-                    page={currentPage}
-                    size={itemsPerPage}
-                    onSearch={(columnKey, value) =>
-                      handleSearchWithValues(columnKey, value, values)
-                    }
-                    onPageChange={(page) => {
-                      setCurrentPage(page);
-                      const updatedValues = {
-                        ...values,
-                        page,
-                        size: itemsPerPage,
-                      };
-                      handleReportSubmit(updatedValues); //
-                    }}
-                    onPageSizeChange={(size) => {
-                      setItemsPerPage(size);
-                      setCurrentPage(1);
-                      const updatedValues = {
-                        ...values,
-                        page: 1,
-                        size,
-                      };
-                      handleReportSubmit(updatedValues); //
-                    }}
+          return (
+            <Form className="flex flex-col gap-2 mt-4">
+              <Grid gutter="sm">
+                <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2.5 }}>
+                  <FormikDateRangePicker
+                    name="dateRange"
+                    label="Date Range"
+                    placeholder="Select Date Range"
+                    size="xs"
+                    shortcuts
+                    required
+                    leftIcon={<IconCalendar size={16} />}
                   />
-                </div>
-              </>
-            );
-          }}
-        </Formik>
-        <ColumsSelectionModal
-          open={showColumnModal}
-          onClose={() => setShowColumnModal(false)}
-          data={tableColumns}
-          visibleColumns={visibleColumns}
-          setVisibleColumns={setVisibleColumns}
+                </Grid.Col>
+
+                <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
+                  <FormikSelectComponent
+                    key={values.productId}
+                    name="productId"
+                    label="Product"
+                    value={values.productId}
+                    placeholder="Select Product"
+                    searchable={true}
+                    nothingFoundMessage="No Product Found"
+                    size="xs"
+                    withAsterisk
+                    required
+                    data={productDropdownData}
+                    disabled={loadingProductList}
+                    rightSection={
+                      <>
+                        {loadingProductList && (
+                          <Loader size={14} color="blue" />
+                        )}
+                        {!loadingProductList && productDropdownData.length < 1 && (
+                          <div
+                            onClick={refetchProducts}
+                            className="cursor-pointer"
+                            style={{ pointerEvents: "auto", display: "flex", alignItems: "center" }}
+                            title="Refresh Products"
+                          >
+                            <RefreshIcon />
+                          </div>
+                        )}
+                      </>
+                    }
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
+                  <FormikSelectComponent
+                    name="walletType"
+                    size="xs"
+                    label="Wallet Type"
+                    placeholder="Select Wallet Type"
+                    allowDeselect={true}
+                    data={[
+                      { label: "PREPAID", value: "PREPAID" },
+                      { label: "POSTPAID", value: "POSTPAID" },
+                    ]}
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
+                  <FormikSelectComponent
+                    name="status"
+                    size="xs"
+                    label="Status"
+                    allowDeselect={true}
+                    placeholder="Status"
+                    data={[
+                      { label: "PENDING", value: "PENDING" },
+                      { label: "SUCCESS", value: "SUCCESS" },
+                      { label: "FAILURE", value: "FAILURE" },
+                    ]}
+                  />
+                </Grid.Col>
+
+                <Grid.Col span="auto">
+                  <div className="flex justify-end items-center mt-4">
+                    {<ButtonComponent
+                      fontSize="14"
+                      fullWidth={false}
+                      radius={6}
+                      size="sm"
+                      borderColor="#fff"
+                      variant="filled"
+                      type="submit"
+                      bgColor="#C30305"
+                      textColor="#FFFFFF"
+                    >
+                      VIEW
+                    </ButtonComponent>}
+                  </div>
+                </Grid.Col>
+              </Grid>
+            </Form>
+          )
+        }}
+      </Formik>
+
+      <GenericMasterToolbar
+        onRefresh={handleRefresh}
+        onExport={handleExportClick}
+        onColumnChange={handleToggleColumn}
+        visibleColumns={visibleColumns}
+        onToggleAll={handleToggleAllColumns}
+        onFilter={() => setFilterVisible((prev) => !prev)}
+        headers={headers}
+        loading={loading}
+        error={error ? error.toString() : null}
+      />
+
+      {loading ? (
+        // Render shimmer
+        <ShimmerTableRows rowCount={6} columnCount={headers.length} />
+      ) : (
+        <GenericMasterTable<WalletReportTableType>
+          data={data}
+          headers={headers.filter((h) =>
+            visibleColumns.includes(h.key as string)
+          )}
+          pagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize}
+          pageSize={pagination.pageSize}
+          message={`Showing page ${pagination.currentPage} of ${pagination.totalPages}`}
+          filterVisible={filterVisible}
+          filterValues={filterValues}
+          onFilterChange={handleFilterChange}
+          onFilterSubmit={handleFilterSubmit}
         />
-      </div>
-    </>
+      )}
+
+    </div >
   );
 };
 

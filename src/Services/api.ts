@@ -274,8 +274,24 @@ export const Raise_Ticket = async (data: FormData) =>
 export const Issue_Type_Dropdown = async () =>
   await api.get(`${API_ROUTES.ISSUE_TYPE_DROPDOWN}`, await createHeaders());
 
-export const Sub_Product_Dropdown = async () =>
-  await api.get(`${API_ROUTES.SUB_PRODUCT_DROPDOWN}`, await createHeaders());
+export const Product_Dropdown = async () => {
+  return await api.get(`${API_ROUTES.PRODUCT_LIST}`, await createHeaders());
+};
+
+export const Sub_Product_Dropdown = async (id?: string) => {
+  const url = id
+    ? `${API_ROUTES.SUB_PRODUCT_DROPDOWN}/${id}`
+    : `${API_ROUTES.SUB_PRODUCT_DROPDOWN}`;
+  return await api.get(url, await createHeaders());
+};
+
+export const Sub_Product_Settlement_Dropdown = async (id?: string) => {
+  const baseUrl = id
+    ? `${API_ROUTES.SUB_PRODUCT_DROPDOWN}/${id}`
+    : `${API_ROUTES.SUB_PRODUCT_DROPDOWN}`;
+  const url = `${baseUrl}?isSettlement=true`;
+  return await api.get(url, await createHeaders());
+};
 
 export const Fetch_Hierarchy_Type_Dropdown = async () =>
   await api.get(`${API_ROUTES.HIERARCHY_TYPE_LIST}`, await createHeaders());

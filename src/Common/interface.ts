@@ -668,11 +668,9 @@ export type CommissionAndChargesParams = {
   dateRange: DatesRangeValue;
   hierarchyType: string;
   hierarchyId: string;
-  subProductName: string;
+  productId: string;
   walletType: string;
   reportType: string;
-  page: number;
-  size: number;
   [key: string]: any;
 };
 
@@ -682,10 +680,8 @@ export interface CommissionAndChargesRequest {
   hierarchyType: string;
   hierarchyId: any;
   walletType: string;
-  subProductName: string;
+  productId: string;
   reportType: string;
-  page: number;
-  size: number;
 }
 
 export type WalletParams = {
@@ -724,6 +720,25 @@ export type NetworkTransactionParams = {
   reportType: string;
   page: number;
   size: number;
+  [key: string]: any;
+};
+
+export type WalletReportParams = {
+  dateRange: DatesRangeValue;
+  hierarchyType: string;
+  hierarchyId: string;
+  productId: string;
+  walletType: string;
+  status: string;
+  [key: string]: any;
+};
+
+export type PendingTransactionParams = {
+  dateRange: DatesRangeValue;
+  productId: string | number;
+  subProductId: string | number;
+  walletType: string;
+  tranStatus: string;
   [key: string]: any;
 };
 
@@ -1041,6 +1056,51 @@ export interface NetworkTransactionTableType {
   transactionDate: number;
   transactionTime: number;
   narration: string;
+}
+
+export interface PendingTransactionTableType {
+  txId: string;
+  userId: string;
+  subProductName: string;
+  vendor: string | null;
+  schemeName: string | null;
+  mobileNo: string | null;
+  amount: number;
+  txStatus: string;
+  txType: string | null;
+  remarks: string | null;
+  medium: string | null;
+  dateOfTransaction: string; // e.g. "2025-10-14"
+  timeOfTransaction: string; // e.g. "18:14:18.35"
+  updatedAt: string | null;
+  updatedDateOfTransaction: string | null;
+  updatedTimeOfTransaction: string | null;
+}
+
+export interface WalletReportTableType {
+  tranxId: string;
+  subProductName: string;
+  balBefore: string;
+  amount: string;
+  balAfter: string;
+  actionOnBalanceAmount: string;
+  status: string;
+  transactionDate: number;
+  transactionTime: number;
+  narration: string;
+}
+
+export interface CommissionAndChargeTableType {
+  txId: string;
+  subProductName: string;
+  walletType: string;
+  txType: string;
+  operator: string;
+  balBefore: string | number;
+  amount: string | number;
+  balAfter: string | number;
+  transactionDate: string;
+  transactionTime: string;
 }
 
 export interface DebitHistoryTableType {

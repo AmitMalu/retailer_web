@@ -124,6 +124,9 @@ const NetworkTransaction = () => {
   })
 
   const [formValues, setFormValues] = useState(initialValues);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(
+    headers.map((h) => h.key as string)
+  );
 
   const [partnersMemberList, setPartnersMemberList] = useState([]);
   const [superDistributorMemberList, setSuperDistributorMemberList] = useState([]);
@@ -253,9 +256,24 @@ const NetworkTransaction = () => {
   const handleRefresh = () => {
     dispatch(clearPagination({ key: NTW_TRANX_KEY }));
     setFilterValues({});
+    setVisibleColumns(headers.map((h) => h.key as string));
     setSubmittedFilter(null);
     setRefreshKey((prev) => prev + 1);
     setFilterVisible(false);
+  };
+
+  const handleToggleColumn = (key: string) => {
+    setVisibleColumns((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+  };
+
+  const handleToggleAllColumns = (selectAll: boolean) => {
+    if (selectAll) {
+      setVisibleColumns(headers.map((h) => h.key as string));
+    } else {
+      setVisibleColumns([]);
+    }
   };
 
 
@@ -409,6 +427,9 @@ const NetworkTransaction = () => {
                     <GenericMasterToolbar
                       onRefresh={handleRefresh}
                       onExport={handleExportClick}
+                      onColumnChange={handleToggleColumn}
+                      visibleColumns={visibleColumns}
+                      onToggleAll={handleToggleAllColumns}
                       onFilter={() => setFilterVisible((prev) => !prev)}
                       headers={headers}
                       loading={loading}
@@ -442,7 +463,9 @@ const NetworkTransaction = () => {
       ) : (
         <GenericMasterTable<NetworkTransactionTableType>
           data={data}
-          headers={headers}
+          headers={headers.filter((h) =>
+            visibleColumns.includes(h.key as string)
+          )}
           pagination
           currentPage={pagination.currentPage}
           totalPages={pagination.totalPages}

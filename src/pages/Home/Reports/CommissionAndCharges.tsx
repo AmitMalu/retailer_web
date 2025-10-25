@@ -1,25 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { Formik } from "formik";
+import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import { CommissionAndChargesParams, CommissionAndChargesRequest, CommissionData, TableColumn } from "@/Common/interface";
+import { CommissionAndChargesParams, CommissionAndChargeTableType, GenericTableHeader } from "@/Common/interface";
 import {
   dateRangeValidationSchema,
   decryptData,
+  exportToCsv,
   formatYMDdate,
+  walletTypeSelectData,
 } from "@/Utils/helper";
-import {
-  showErrorNotification,
-} from "@/Utils/notifications";
-import { handleCustomError } from "@/Utils/handleCustomError";
-import MyLoader from "@/components/Atoms/Loader";
-import TextComponent from "@/components/Atoms/TextComponent";
-import ButtonComponent from "@/components/Atoms/ButtonComponent";
-import { Loader, UnstyledButton } from "@mantine/core";
-import TableComponent from "@/components/Molecules/TableComponent";
+import { Grid, Loader } from "@mantine/core";
 import { useTheme } from "@mui/system";
-import { Commission_And_Charges_Report } from "@/Services/api";
-import { ColsSvgIcon, ExportSvgIcon, FilterSvgIcon, RefreshSvgIcon } from "@/assets/svg";
-import ColumsSelectionModal from "@/components/Molecules/ColumsSelectionModal";
+import NewTextComponent from "@/components/Atoms/NewComponents/TextComponent";
+import { RefreshSvgIcon } from "@/assets/svg";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
 import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
@@ -27,19 +20,23 @@ import { DatesRangeValue } from "@mantine/dates";
 import moment from "moment";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 import { useHierarchySubHierarchy } from "@/Utils/CustomHooks/useHierarchySubHierarchy";
+import { useDispatch } from "react-redux";
+import { useFetchList } from "@/Utils/CustomHooks/useFetchList";
+import { API_ROUTES } from "@/Services/apiRoutes";
+import { useThrottledFormSubmit } from "@/Utils/CustomHooks/useThrottleFormSubmit";
+import { clearPagination, savePagination } from "@/Redux/Reducers/paginationSlice";
+import { IconCalendar } from "@tabler/icons-react";
+import GenericMasterToolbar from "@/components/Molecules/GenericMasterToolbar";
+import ButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
+import { toast } from "react-toastify";
+import GenericMasterTable from "@/components/Molecules/GenericMasterTable";
+import ShimmerTableRows from "@/components/Atoms/ShimmerTableRows";
+
+const KEY = "commision_and_charge_report"
 
 const CommissionAndCharges = () => {
-  const theme = useTheme();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isCommissionReportList, setIsCommissionReportList] = useState<
-    CommissionData | []
-  >([]);
-  const [isSeacrh, setIsSeacrh] = useState(false);
-  const [searchValues, setSearchValues] = useState<Record<string, string>>({});
-  const [showColumnModal, setShowColumnModal] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [totalRecords, setTotalRecords] = useState(0);
+  const dispatch = useDispatch();
+  const theme = useTheme()
 
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
@@ -49,48 +46,69 @@ const CommissionAndCharges = () => {
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  const subproductData = apiResponses?.subProductDropdown
-    ? decryptData(apiResponses?.subProductDropdown)
-    : null;
+  const [payload, setPayload] = useState<any>(null);
+  const [filterVisible, setFilterVisible] = useState(false);
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
+  const [submittedFilter, setSubmittedFilter] = useState<Record<string, any> | null>(null);
+  const [viewSubmitted, setViewSubmitted] = useState(false);
+
+  const [refreshKey, setRefreshKey] = useState<number>(0);
+  const dataRef = useRef<CommissionAndChargeTableType[] | null>(null);
+
+  const productData = loginData?.products.map(
+    (item: any) => ({
+      value: item.productId,
+      label: item.productName
+    })
+  )
+
+  const headers: GenericTableHeader<CommissionAndChargeTableType>[] = [
+    { key: "txId", label: "Transaction ID", filterType: "text" },
+    { key: "subProductName", label: "Sub Product Name", filterType: "text" },
+    { key: "walletType", label: "Wallet Type", filterType: "boolean", filterOptions: walletTypeSelectData }, // Could add options if needed
+    { key: "txType", label: "Transaction Type", filterType: "text" },
+    { key: "operator", label: "Operator", filterType: "text" },
+    { key: "balBefore", label: "Balance Before", filterType: "number" },
+    { key: "amount", label: "Amount", filterType: "number" },
+    { key: "balAfter", label: "Balance After", filterType: "number" },
+    { key: "transactionDate", label: "Transaction Date", filterType: "date" },
+    { key: "transactionTime", label: "Transaction Time", filterType: "text" },
+  ];
+
+  const transformPayload = (values: any) => {
+    const [fromDate, toDate] = values.dateRange || [];
+    return {
+      fromDate: fromDate ? formatYMDdate(fromDate) : null,
+      toDate: toDate ? formatYMDdate(toDate) : null,
+      hierarchyType: values.hierarchyType ?? "",
+      hierarchyId: values.hierarchyId ?? "",
+      walletType: values.walletType ?? "PREPAID",
+      productId: values.productId,
+      reportType: values.reportType,
+    }
+  }
+
+  const {
+    data, loading, pagination, error, setPage, setPageSize
+  } = useFetchList<CommissionAndChargeTableType>({
+    method: "POST",
+    key: KEY,
+    url: viewSubmitted ? `${API_ROUTES.COMMISSION_AND_CHARGES}` : undefined,
+    payload: payload,
+    refreshKey,
+    sendPaginationIn: "body",
+  });
 
   const myHierarchyCode = loginData?.hierarchyId?.split("-")[1];
   const hierarchyOrder = ["SA", "AD", "ET", "WL", "SD", "PT", "DT", "RT"];
   const myLevelIndex = hierarchyOrder.indexOf(myHierarchyCode);
 
-  const uniqueSubProductTypes =
-    subproductData?.map((item: any) => ({
-      value: item.subProduct_name,
-      label: item.subProduct_name,
-    })) || [];
-
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   const validationSchema = Yup.object({
-    // fromDate: Yup.date()
-    //   .required("Required")
-    //   .test("max-today", "Invalid Date", function (value) {
-    //     if (!value) return true;
-    //     return isSameOrBefore(value, today);
-    //   })
-    //   .test("date-range", "Invalid Date", function (value) {
-    //     const toDate = this.parent.toDate;
-    //     if (!value || !toDate) return true;
-    //     return isSameOrBefore(value, toDate);
-    //   }),
-    // toDate: Yup.date()
-    //   .required("Required")
-    //   .test("max-today", "Invalid Date", function (value) {
-    //     if (!value) return true;
-    //     return isSameOrBefore(value, today);
-    //   })
-    //   .test("date-range", "Invalid Date", function (value) {
-    //     const fromDate = this.parent.fromDate;
-    //     if (!value || !fromDate) return true;
-    //     return isSameOrAfter(value, fromDate);
-    //   }),
     dateRange: dateRangeValidationSchema,
-    subProductName: Yup.string().required("Required"),
+    productId: Yup.string().required("Required"),
     walletType: Yup.string()
       .required("Wallet Type is Required")
       .oneOf(["POSTPAID", "PREPAID"], "Wallet Type must be either POSTPAID or PREPAID"),
@@ -104,591 +122,279 @@ const CommissionAndCharges = () => {
       moment().subtract(6, "days").toDate(), // from: 6 days ago
       moment().toDate(), // to: today
     ] as DatesRangeValue,
-    subProductName: "",
+    productId: "",
     walletType: "",
     reportType: "",
-    page: currentPage,
-    size: itemsPerPage,
   };
 
-  const handleReportSubmit = async (
-    values: CommissionAndChargesParams
-    // { resetForm }: FormikHelpers<ReportProps>,
-  ) => {
-    try {
-      setIsLoading(true);
-      setCurrentPage(values.page);
-      setItemsPerPage(values.size);
-      const [fromDate, toDate] = values.dateRange || [];
-
-      let bodyRequest: CommissionAndChargesRequest = {
-        fromDate: fromDate ? formatYMDdate(fromDate) : null,
-        toDate: toDate ? formatYMDdate(toDate) : null,
-        hierarchyType: values.hierarchyType ?? "",
-        hierarchyId: values.hierarchyId ?? "",
-        walletType: values.walletType ?? "PREPAID",
-        subProductName: values.subProductName,
-        reportType: values.reportType,
-        page: Number(values.page) - 1,
-        size: values.size,
-      };
-      const response = await Commission_And_Charges_Report({}, bodyRequest);
-
-      if ([200, "200"].includes(response?.data?.statusCode)) {
-        const content = response?.data?.data?.content || [];
-        const totalElements = response?.data?.data?.totalElements || 0;
-
-        setIsCommissionReportList(content);
-        setTotalRecords(totalElements);
-
-        if (content.length <= 0) {
-          showErrorNotification("No records found");
-        }
-
-      } else {
-        setIsCommissionReportList([]);
-        showErrorNotification(response?.data?.message);
-        setTotalRecords(0);
-      }
-    } catch (error) {
-      setIsCommissionReportList([]);
-      setTotalRecords(0);
-      await handleCustomError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleExport = async (formikValues: CommissionAndChargesParams) => {
-    try {
-      const bodyRequest = {
-        fromDate: formatYMDdate(formikValues.fromDate),
-        toDate: formatYMDdate(formikValues.toDate),
-        hierarchyType: formikValues.hierarchyType || "",
-        hierarchyId: formikValues.hierarchyId || loginData?.hierarchyId,
-        walletType: formikValues.walletType,
-        subProductName: formikValues.subProductName,
-        reportType: formikValues.reportType,
-        page: formikValues.page,
-        size: formikValues.size,
-      };
-
-      const response = await Commission_And_Charges_Report(
-        searchValues,
-        bodyRequest
-      );
-
-      if (response?.status === 200) {
-        const blob = new Blob([response.data], {
-          type: "application/octet-stream",
-        });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Commission_&_Charges_report_${formatYMDdate(new Date())}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      } else {
-        showErrorNotification(response?.data?.message);
-      }
-    } catch (error) {
-      await handleCustomError(error);
-    }
-  };
-
-  const tableColumns: TableColumn[] = [
-    {
-      key: "txId",
-      label: "Transaction ID",
-      searchKey: "txId",
-      sortable: false,
-    },
-    // {
-    //   key: "outletName",
-    //   label: "Outlet Name",
-    //   searchKey: "outletName",
-    //   sortable: false,
-    // },
-    {
-      key: "subProductName",
-      label: "Sub Product Name",
-      searchKey: "subProductName",
-      sortable: false,
-    },
-    {
-      key: "walletType",
-      label: "Wallet Type",
-      searchKey: "walletType",
-      sortable: false,
-      type: "boolean",
-      options: [
-        { label: "PREPAID", value: "PREPAID" },
-        { label: "POSTPAID", value: "POSTPAID" },
-      ]
-    },
-    {
-      key: "txType",
-      label: "Transaction Type",
-      searchKey: "txType",
-      sortable: false,
-    },
-    {
-      key: "operator",
-      label: "Operator",
-      searchKey: "operator",
-      sortable: false,
-    },
-    {
-      key: "balBefore",
-      label: "Balance Before",
-      searchKey: "balBefore",
-      sortable: false,
-      type: "number"
-    },
-    {
-      key: "amount",
-      label: "Amount",
-      searchKey: "amount",
-      type: "number"
-      // sortable: true,
-    },
-    // {
-    //   key: "refNo",
-    //   label: "Ref No",
-    //   searchKey: "refNo",
-    //   sortable: true,
-    // },
-    {
-      key: "balAfter",
-      label: "Balance After",
-      searchKey: "balAfter",
-      sortable: false,
-      type: "number"
-    },
-    {
-      key: "createdOn",
-      label: "Created On",
-      searchKey: "createdOn",
-      sortable: false,
-      type: "date" as const,
-    },
-    {
-      key: "narration",
-      label: "Narration",
-      searchKey: "narration",
-      sortable: false,
-    },
-  ];
-
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handleSearchWithValues = (
-    columnKey: string,
-    value: string,
-    values: CommissionAndChargesParams
-  ) => {
-    try {
-      const column = tableColumns.find((col) => col.key === columnKey);
-      if (!column) return;
-
-      const searchKey = column.searchKey || column.key;
-      const newSearchValues = { ...searchValues };
-
-      if (value) {
-        newSearchValues[searchKey] = value;
-      } else {
-        delete newSearchValues[searchKey];
-      }
-
-      setSearchValues(newSearchValues);
-
-      if (values.fromDate && values.toDate) {
-        const [fromDate, toDate] = values.dateRange || [];
-
-        let bodyRequest: CommissionAndChargesRequest = {
-          fromDate: fromDate ? formatYMDdate(fromDate) : null,
-          toDate: toDate ? formatYMDdate(toDate) : null,
-          hierarchyType: values.hierarchyType || "",
-          hierarchyId: values.hierarchyId || "",
-          subProductName: values.subProductName,
-          walletType: values.walletType,
-          reportType: values.reportType,
-          page: values.page - 1,
-          size: values.size,
-        };
-
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
-
-        timeoutRef.current = setTimeout(() => {
-          setIsLoading(true);
-          Commission_And_Charges_Report(newSearchValues, bodyRequest)
-            .then((response) => {
-              if (response?.status === 200) {
-                setIsCommissionReportList(response?.data?.data?.content);
-              } else {
-                showErrorNotification(response?.data?.message);
-                setIsCommissionReportList([]);
-              }
-            })
-            .catch((error) => {
-              handleCustomError(error);
-              setIsCommissionReportList([]);
-            })
-            .finally(() => {
-              setIsLoading(false);
-            });
-        }, 900);
-      }
-    } catch (error) {
-      handleCustomError(error);
-    }
-  };
+  const [formValues, setFormValues] = useState(initialValues);
 
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
-    tableColumns.filter((col) => col.key !== "action").map((col) => col.key)
+    headers.map((h) => h.key as string)
   );
 
-  const filteredTableColumns = [
-    ...tableColumns.filter(
-      (col) => visibleColumns.includes(col.key) && col.key !== "action"
-    ),
-    tableColumns.find((col) => col.key === "action")!,
-  ];
+
+  const handleRefresh = () => {
+    dispatch(clearPagination({ key: KEY }));
+    setFilterValues({});
+    setSubmittedFilter(null);
+    setVisibleColumns(headers.map((h) => h.key as string));
+    setRefreshKey((prev) => prev + 1);
+    setFilterVisible(false);
+  };
+
+  const handleExportClick = () => {
+    const currentData = dataRef.current;
+    if (!currentData || currentData.length === 0) {
+      toast.warning("No data available to export.");
+      return;
+    }
+    exportToCsv(currentData, "commission-and-charges-report");
+  };
+
+  const handleFilterChange = (key: string, value: any) => {
+    setFilterValues((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleFilterSubmit = (key: string, value: any) => {
+    dispatch(
+      savePagination({
+        key: KEY,
+        pagination: { ...pagination, currentPage: 1, pageSize: pagination.pageSize },
+      })
+    );
+    setSubmittedFilter((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleToggleColumn = (key: string) => {
+    setVisibleColumns((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+  };
+
+  const handleToggleAllColumns = (selectAll: boolean) => {
+    if (selectAll) {
+      setVisibleColumns(headers.map((h) => h.key as string));
+    } else {
+      setVisibleColumns([]);
+    }
+  };
+
+  const throttledSubmit = useThrottledFormSubmit((values: any) => {
+    setFormValues(values);
+    const payload = transformPayload(values);
+    setPayload(payload);
+    setViewSubmitted(true);
+  }, 3000);
+
+  useEffect(() => {
+    return () => {
+      setFormValues(initialValues); // Reset form data on unmount
+      dispatch(clearPagination({ key: KEY }));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (submittedFilter) {
+      setPayload((prev: any) => ({ ...prev, ...submittedFilter }));
+    }
+  }, [submittedFilter])
+
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
+
 
   return (
-    <>
-      {isLoading && <MyLoader />}
-      <div className="w-full 320px:mt-12 md:mt-0">
-        <div className="mb-6 ">
-          <TextComponent
-            fontSize={22}
-            fontWeight={600}
-            color={theme.palette.red.DEFAULT}
-          >
-            Commission & Charges Report
-          </TextComponent>
-        </div>
+    <div className="w-full">
+      <NewTextComponent fontSize={22} color={theme.palette.red.DEFAULT} fontFamily="Inter" fontWeight={600}>
+        Commission & Charges Report
+      </NewTextComponent>
 
-        <Formik<CommissionAndChargesParams>
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleReportSubmit}
-        >
-          {({ values, handleSubmit, setFieldValue }) => {
+      <Formik
+        initialValues={formValues}
+        enableReinitialize
+        validationSchema={validationSchema}
+        onSubmit={throttledSubmit}
+      >
+        {({ values, setFieldValue }) => {
 
-            const { hierarchyList, loadingHierarchyList, subHierarchyList, loadingSubHierarchyList, subHierarchyKey, refetchHierarchy } = useHierarchySubHierarchy({
-              selectedHierarchyCode: values.hierarchyType,
-              onSubHierarchyReset: () => setFieldValue("hierarchyId", "")
-            })
+          const { hierarchyList, loadingHierarchyList, subHierarchyList, loadingSubHierarchyList, subHierarchyKey, refetchHierarchy } = useHierarchySubHierarchy({
+            selectedHierarchyCode: values.hierarchyType,
+            onSubHierarchyReset: () => setFieldValue("hierarchyId", "")
+          })
 
-            const filteredHierarchyList = hierarchyList?.filter(
-              (item: any) => hierarchyOrder.indexOf(item?.value) >= myLevelIndex
-            );
+          const filteredHierarchyList = hierarchyList?.filter(
+            (item: any) => hierarchyOrder.indexOf(item?.value) >= myLevelIndex
+          );
 
-            useEffect(() => {
-              if (values.subProductName) {
-                handleReportSubmit(values);
-              }
-            }, [currentPage, itemsPerPage, searchValues])
+          return (
+            <Form className="flex flex-col gap-2 mt-4">
+              <Grid gutter="sm">
 
-            return (
-              <>
-                <div className="shadow-black-900/100 mt-5 flex w-full flex-col items-center justify-center gap-6 rounded-xl bg-background-paper p-3 shadow-lg 320px:mt-5 md:mt-0">
-                  <div className="flex w-full flex-wrap items-center justify-between gap-4">
-                    <div className="flex w-full flex-wrap items-center justify-start gap-4">
-                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        {/* <CustomDateComponent
-                          label="Date Range"
-                          type="range"
-                          value={[
-                            values.fromDate ? new Date(values.fromDate) : null,
-                            values.toDate ? new Date(values.toDate) : null,
-                          ]}
-                          onChange={(val) => {
-                            if (Array.isArray(val) && val.length === 2) {
-                              setFieldValue("fromDate", val[0]);
-                              setFieldValue("toDate", val[1]);
-                            }
-                          }}
-                          onShortcutSelect={(
-                            start: Date | null,
-                            end: Date | null
-                          ) => {
-                            setFieldValue("fromDate", start);
-                            setFieldValue("toDate", end);
-                          }}
-                          dateFormat="YYYY-MM-DD"
-                          className="w-72"
-                          withAsterisk
-                          error={
-                            (touched.fromDate && errors.fromDate
-                              ? errors.fromDate
-                              : "") +
-                            (touched.toDate &&
-                              errors.toDate &&
-                              errors.toDate !== errors.fromDate
-                              ? (errors.fromDate ? " | " : "") + errors.toDate
-                              : "")
-                          }
-                          customButtons={true}
-                        /> */}
-                        <FormikDateRangePicker
-                          name="dateRange"
-                          label="Date Range"
-                          size="xs"
-                          shortcuts
-                          required
-                        />
-                      </div>
-                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        {/* <DropdownComponent
-                          label="Sub Product"
-                          data={uniqueSubProductTypes}
-                          value={values.subProductName}
-                          withAsterisk
-                          onChange={(value) =>
-                            setFieldValue("subProductName", value)
-                          }
-                          error={
-                            touched.subProductName && errors.subProductName
-                              ? errors.subProductName
-                              : ""
-                          }
-                          className="w-max"
-                        /> */}
-                        <FormikSelectComponent
-                          name="subProductName"
-                          label="Sub Product"
-                          placeholder="Select Sub Product"
-                          data={uniqueSubProductTypes}
-                          allowDeselect
-                          searchable
-                          withAsterisk
-                          size="xs"
-                        />
-                      </div>
-
-                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        <FormikSelectComponent
-                          name="hierarchyType"
-                          size="xs"
-                          label="Hierarchy Type"
-                          placeholder="Select Hierarchy Type"
-                          nothingFoundMessage="No Hierarchy Found"
-                          data={filteredHierarchyList || []}
-                          disabled={loadingHierarchyList}
-                          searchable={true}
-                          withAsterisk
-                          required
-                          rightSection={
-                            <>
-                              {loadingHierarchyList && (
-                                <Loader size={14} color="blue" />
-                              )}
-                              {!loadingHierarchyList && hierarchyList.length < 1 && (
-                                <div
-                                  onClick={refetchHierarchy}
-                                  className="cursor-pointer"
-                                  style={{ pointerEvents: "auto", display: "flex", alignItems: "center" }}
-                                  title="Refresh Hierarchy List"
-                                >
-                                  <RefreshSvgIcon color={theme.palette.primary.DEFAULT} />
-                                </div>
-                              )}
-                            </>
-                          }
-                        />
-                      </div>
-
-                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        <FormikSelectComponent
-                          key={subHierarchyKey}
-                          name="hierarchyId"
-                          size="xs"
-                          label="Hierarchy ID"
-                          placeholder="Select Hierarchy ID"
-                          data={subHierarchyList?.map((item: any) => ({
-                            label: item.displayName,
-                            value: String(item.id),
-                          }))}
-                          allowDeselect={true}
-                          searchable={true}
-                          nothingFoundMessage="Nothing Found"
-                          disabled={loadingSubHierarchyList}
-                        />
-                      </div>
-
-                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        {/* <DropdownComponent
-                          label="Wallet Type"
-                          data={[
-                            { value: "POSTPAID", label: "POSTPAID" },
-                            { value: "PREPAID", label: "PREPAID" },
-                          ]}
-                          value={values.walletType}
-                          withAsterisk
-                          onChange={(value) =>
-                            setFieldValue("walletType", value)
-                          }
-                          error={
-                            touched.walletType && errors.walletType
-                              ? errors.walletType
-                              : ""
-                          }
-                          className="w-max"
-                        /> */}
-                        <FormikSelectComponent
-                          name="walletType"
-                          label="Wallet Type"
-                          placeholder="Select Wallet Type"
-                          data={[
-                            { value: "POSTPAID", label: "POSTPAID" },
-                            { value: "PREPAID", label: "PREPAID" },
-                          ]}
-                          withAsterisk
-                          size="xs"
-                        />
-                      </div>
-                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)]">
-                        {/* <DropdownComponent
-                          label="Report Type"
-                          data={[
-                            { value: "COMMISSION", label: "COMMISSION" },
-                            { value: "CHARGE", label: "CHARGE" },
-                          ]}
-                          value={values.reportType}
-                          withAsterisk
-                          onChange={(value) =>
-                            setFieldValue("reportType", value)
-                          }
-                          error={
-                            touched.reportType && errors.reportType
-                              ? errors.reportType
-                              : ""
-                          }
-                          className="w-max"
-                        /> */}
-                        <FormikSelectComponent
-                          name="reportType"
-                          label="Report Type"
-                          placeholder="Select Report Type"
-                          allowDeselect
-                          data={[
-                            { value: "COMMISSION", label: "COMMISSION" },
-                            { value: "CHARGE", label: "CHARGE" },
-                          ]}
-                          withAsterisk
-                          size="xs"
-                        />
-                      </div>
-                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(20%-16px)] flex justify-end items-end">
-                        <ButtonComponent
-                          title="View"
-                          variant="filled"
-                          fontSize={14}
-                          onClick={() => {
-                            setFieldValue("download", false);
-                            handleSubmit();
-                          }}
-                          radius={29}
-                          width={100}
-                        />
-                      </div>
-                    </div>
-                    {/* <div className="flex items-center justify-end w-full"> */}
-                  </div>
-                </div>
-                {isCommissionReportList &&
-                  isCommissionReportList.length > 0 && (
-                    <div className="flex items-center justify-end gap-2">
-                      <div className="border-1 mt-4 flex w-max items-center justify-center justify-self-end rounded-md border-red-light bg-red-light px-2 py-1">
-                        <UnstyledButton
-                          onClick={() => setIsSeacrh(!isSeacrh)}
-                          className="flex flex-row items-center justify-center gap-3 text-center disabled:opacity-30"
-                        >
-                          <FilterSvgIcon color={theme.palette.red.DEFAULT} />
-                          <TextComponent
-                            fontSize={18}
-                            fontWeight={400}
-                            color={theme.palette.red.DEFAULT}
-                            align="center"
-                          >
-                            Search
-                          </TextComponent>
-                        </UnstyledButton>
-                      </div>
-                      <div
-                        onClick={() => setShowColumnModal(true)}
-                        className="border-1 mt-4 flex w-max items-center justify-center justify-self-end rounded-md border-red-light bg-red-light px-2 py-1"
-                      >
-                        <ColsSvgIcon color={theme.palette.red.DEFAULT} />
-                        <TextComponent
-                          color={theme.palette.red.DEFAULT}
-                          fontSize={16}
-                          fontWeight={400}
-                        >
-                          Cols
-                        </TextComponent>
-                      </div>
-                      <div className="border-1 mt-4 flex w-28 items-center justify-center justify-self-end rounded-md border-red-light bg-red-light px-2 py-1">
-                        <UnstyledButton
-                          onClick={() => handleExport(values)}
-                          className="flex flex-row items-center justify-center gap-3 disabled:opacity-30"
-                        >
-                          <ExportSvgIcon color={theme.palette.red.DEFAULT} />
-                          <TextComponent
-                            fontSize={18}
-                            fontWeight={400}
-                            color={theme.palette.red.DEFAULT}
-                          >
-                            Export
-                          </TextComponent>
-                        </UnstyledButton>
-                      </div>
-                    </div>
-                  )}
-
-                <div className="mt-6">
-                  <TableComponent
-                    data={
-                      Array.isArray(isCommissionReportList)
-                        ? isCommissionReportList
-                        : [isCommissionReportList]
-                    }
-                    columns={filteredTableColumns}
-                    showSearch={isSeacrh}
-                    page={currentPage}
-                    size={itemsPerPage}
-                    onSearch={(columnKey, value) =>
-                      handleSearchWithValues(columnKey, value, values)
-                    }
-                    onPageChange={setCurrentPage}
-                    onPageSizeChange={(newSize) => {
-                      setItemsPerPage(newSize);
-                      setCurrentPage(1); // reset to first page when size changes
-                    }}
-                    serverSide={true}
-                    totalRecords={totalRecords}
+                <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2.5 }}>
+                  <FormikDateRangePicker
+                    name="dateRange"
+                    label="Date Range"
+                    placeholder="Select Date Range"
+                    size="xs"
+                    shortcuts
+                    required
+                    leftIcon={<IconCalendar size={16} />}
                   />
-                </div>
-              </>
-            );
-          }}
-        </Formik>
+                </Grid.Col>
 
-        <ColumsSelectionModal
-          open={showColumnModal}
-          onClose={() => setShowColumnModal(false)}
-          data={tableColumns}
-          visibleColumns={visibleColumns}
-          setVisibleColumns={setVisibleColumns}
+                <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2.5 }}>
+                  <FormikSelectComponent
+                    name="productId"
+                    label="Product"
+                    placeholder="Select Product"
+                    data={productData || []}
+                    allowDeselect
+                    searchable
+                    withAsterisk
+                    size="xs"
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={{ base: 4, xs: 4, md: 4, lg: 2 }}>
+                  <FormikSelectComponent
+                    name="hierarchyType"
+                    size="xs"
+                    label="Hierarchy Type"
+                    placeholder="Select Hierarchy Type"
+                    nothingFoundMessage="No Hierarchy Found"
+                    data={filteredHierarchyList || []}
+                    disabled={loadingHierarchyList}
+                    searchable={true}
+                    withAsterisk
+                    required
+                    rightSection={
+                      <>
+                        {loadingHierarchyList && (
+                          <Loader size={14} color="blue" />
+                        )}
+                        {!loadingHierarchyList && hierarchyList.length < 1 && (
+                          <div
+                            onClick={refetchHierarchy}
+                            className="cursor-pointer"
+                            style={{ pointerEvents: "auto", display: "flex", alignItems: "center" }}
+                            title="Refresh Hierarchy List"
+                          >
+                            <RefreshSvgIcon color={theme.palette.primary.DEFAULT} />
+                          </div>
+                        )}
+                      </>
+                    }
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={{ base: 4, xs: 4, md: 4, lg: 2.5 }}>
+                  <FormikSelectComponent
+                    key={subHierarchyKey}
+                    name="hierarchyId"
+                    size="xs"
+                    label="Hierarchy ID"
+                    placeholder="Select Hierarchy ID"
+                    data={subHierarchyList?.map((item: any) => ({
+                      label: item.displayName,
+                      value: String(item.id),
+                    }))}
+                    allowDeselect={true}
+                    searchable={true}
+                    nothingFoundMessage="Nothing Found"
+                    disabled={loadingSubHierarchyList}
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={{ base: 4, xs: 4, md: 4, lg: 2 }}>
+                  <FormikSelectComponent
+                    name="walletType"
+                    label="Wallet Type"
+                    placeholder="Select Wallet Type"
+                    data={[
+                      { value: "POSTPAID", label: "POSTPAID" },
+                      { value: "PREPAID", label: "PREPAID" },
+                    ]}
+                    withAsterisk
+                    size="xs"
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={{ base: 4, xs: 4, md: 4, lg: 2 }}>
+                  <FormikSelectComponent
+                    name="reportType"
+                    label="Report Type"
+                    placeholder="Select Report Type"
+                    allowDeselect
+                    data={[
+                      { value: "COMMISSION", label: "COMMISSION" },
+                      { value: "CHARGE", label: "CHARGE" },
+                    ]}
+                    withAsterisk
+                    size="xs"
+                  />
+                </Grid.Col>
+
+                <Grid.Col span="auto">
+                  <div className="flex justify-end items-center mt-4">
+                    <GenericMasterToolbar
+                      onRefresh={handleRefresh}
+                      onExport={handleExportClick}
+                      onColumnChange={handleToggleColumn}
+                      visibleColumns={visibleColumns}
+                      onToggleAll={handleToggleAllColumns}
+                      onFilter={() => setFilterVisible((prev) => !prev)}
+                      headers={headers}
+                      loading={loading}
+                      error={error ? error.toString() : null}
+                    />
+
+                    <ButtonComponent
+                      fontSize="14"
+                      fullWidth={false}
+                      radius={6}
+                      style={{ marginTop: "10px" }}
+                      size="sm"
+                      borderColor="#fff"
+                      variant="filled"
+                      type="submit"
+                      bgColor="#C30305"
+                      textColor="#FFFFFF"
+                    >
+                      VIEW
+                    </ButtonComponent>
+                  </div>
+                </Grid.Col>
+              </Grid>
+            </Form>
+          );
+        }}
+      </Formik>
+
+      {loading ? (
+        // Render shimmer
+        <ShimmerTableRows rowCount={6} columnCount={headers.length} />
+      ) : (
+        <GenericMasterTable<CommissionAndChargeTableType>
+          data={data}
+          headers={headers.filter((h) =>
+            visibleColumns.includes(h.key as string)
+          )}
+          pagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize}
+          pageSize={pagination.pageSize}
+          message={`Showing page ${pagination.currentPage} of ${pagination.totalPages}`}
+          filterVisible={filterVisible}
+          filterValues={filterValues}
+          onFilterChange={handleFilterChange}
+          onFilterSubmit={handleFilterSubmit}
         />
-      </div>
-    </>
+      )}
+    </div >
   );
 };
 

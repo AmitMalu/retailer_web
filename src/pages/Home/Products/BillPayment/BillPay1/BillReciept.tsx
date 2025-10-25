@@ -70,6 +70,7 @@ console.log(data);
                                 ? moment(data.createdDateTime).format("DD-MM-YYYY hh:mm A")
                                 : "-"}
                         </Table.Td>
+
                         <Table.Td fw={500}>Transaction Status</Table.Td>
                         <Table.Td>{data?.txnStatus ?? "-"}</Table.Td>
                     </Table.Tr>
@@ -77,6 +78,7 @@ console.log(data);
                     <Table.Tr>
                         <Table.Td fw={500}>Biller Name</Table.Td>
                         <Table.Td>{data?.billerName ?? "-"}</Table.Td>
+
                         <Table.Td fw={500}>Transaction Amount</Table.Td>
                         <Table.Td>{data?.txnAmount ?? "-"}</Table.Td>
                     </Table.Tr>
@@ -84,6 +86,7 @@ console.log(data);
                     <Table.Tr>
                         <Table.Td fw={500}>Customer Name</Table.Td>
                         <Table.Td>{data?.customerName ?? "-"}</Table.Td>
+                        
                         <Table.Td fw={500}>Consumer Number</Table.Td>
                         <Table.Td>{data?.consumerNumber ?? "-"}</Table.Td>
                     </Table.Tr>
@@ -97,7 +100,7 @@ console.log(data);
 
                     <Table.Tr>
                         <Table.Td fw={500}>Transaction ID</Table.Td>
-                        <Table.Td colSpan={3}>{data?.transactionId ?? "-"}</Table.Td>
+                        <Table.Td colSpan={3}>{data?.txnId ?? "-"}</Table.Td>
                     </Table.Tr>
                 </Table.Tbody>
             </Table>
