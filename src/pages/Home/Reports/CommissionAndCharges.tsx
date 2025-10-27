@@ -12,7 +12,7 @@ import {
 import { Grid, Loader } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import NewTextComponent from "@/components/Atoms/NewComponents/TextComponent";
-import { RefreshSvgIcon } from "@/assets/svg";
+import { RefreshIcon, RefreshSvgIcon } from "@/assets/svg";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
 import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
@@ -31,6 +31,7 @@ import ButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
 import { toast } from "react-toastify";
 import GenericMasterTable from "@/components/Molecules/GenericMasterTable";
 import ShimmerTableRows from "@/components/Atoms/ShimmerTableRows";
+import { useProductSubProduct } from "@/Utils/CustomHooks/useProductSubProduct";
 
 const KEY = "commision_and_charge_report"
 
@@ -54,13 +55,6 @@ const CommissionAndCharges = () => {
 
   const [refreshKey, setRefreshKey] = useState<number>(0);
   const dataRef = useRef<CommissionAndChargeTableType[] | null>(null);
-
-  const productData = loginData?.products.map(
-    (item: any) => ({
-      value: item.productId,
-      label: item.productName
-    })
-  )
 
   const headers: GenericTableHeader<CommissionAndChargeTableType>[] = [
     { key: "txId", label: "Transaction ID", filterType: "text" },
@@ -224,6 +218,12 @@ const CommissionAndCharges = () => {
             onSubHierarchyReset: () => setFieldValue("hierarchyId", "")
           })
 
+          const {
+            productDropdownData,
+            loadingProductList,
+            refetchProducts
+          } = useProductSubProduct({});
+
           const filteredHierarchyList = hierarchyList?.filter(
             (item: any) => hierarchyOrder.indexOf(item?.value) >= myLevelIndex
           );
@@ -246,14 +246,35 @@ const CommissionAndCharges = () => {
 
                 <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2.5 }}>
                   <FormikSelectComponent
+                    key={values.productId}
                     name="productId"
                     label="Product"
+                    value={values.productId}
                     placeholder="Select Product"
-                    data={productData || []}
-                    allowDeselect
-                    searchable
-                    withAsterisk
+                    searchable={true}
+                    nothingFoundMessage="No Product Found"
                     size="xs"
+                    withAsterisk
+                    required
+                    data={productDropdownData}
+                    disabled={loadingProductList}
+                    rightSection={
+                      <>
+                        {loadingProductList && (
+                          <Loader size={14} color="blue" />
+                        )}
+                        {!loadingProductList && productDropdownData.length < 1 && (
+                          <div
+                            onClick={refetchProducts}
+                            className="cursor-pointer"
+                            style={{ pointerEvents: "auto", display: "flex", alignItems: "center" }}
+                            title="Refresh Products"
+                          >
+                            <RefreshIcon />
+                          </div>
+                        )}
+                      </>
+                    }
                   />
                 </Grid.Col>
 
