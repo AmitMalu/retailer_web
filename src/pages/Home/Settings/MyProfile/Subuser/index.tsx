@@ -6,20 +6,21 @@ import {
   PasswordRegex,
   singleDateValidationSchema,
 } from "@/Utils/helper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Field, Formik, FormikHelpers } from "formik";
+import { Field, Formik, FormikHelpers, FormikProps } from "formik";
 import * as Yup from "yup";
 import { SubuserCreationProps } from "@/Common/interface";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import Loader from "@/components/Atoms/Loader";
+import MyLoader from "@/components/Atoms/Loader";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
+import NewButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
 import TextComponent from "@/components/Atoms/TextComponent";
-import { Chip, Group, UnstyledButton } from "@mantine/core";
+import { Chip, Group, Loader, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { BackSvgIcon, CloseEyeSvgIcon, OpenEyeSvgIcon } from "@/assets/svg";
-import { Create_Sub_User } from "@/Services/api";
+import { Create_Sub_User, Email_Verification } from "@/Services/api";
 import {
   showErrorNotification,
   showSuccessNotification,
@@ -36,6 +37,8 @@ const SubuserCreation = () => {
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
   const [selectedSubChips, setSelectedSubChips] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false);
+  const [emailVerifying, setEmailVerifying] = useState(false);
+
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
@@ -62,7 +65,9 @@ const SubuserCreation = () => {
       ),
     emailId: Yup.string()
       .matches(EmailRegex, "Enter valid email")
-      .required("Required"),
+      .required("Email is Required"),
+    emailVerified: Yup.boolean(),
+    lastVerifiedEmail: Yup.string().nullable(),
     dob: singleDateValidationSchema,
     add: Yup.object().shape({
       address: Yup.string().required("Required"),
@@ -84,7 +89,8 @@ const SubuserCreation = () => {
     username: "",
     password: "",
     emailId: "",
-    emailVerified: true,
+    emailVerified: false,
+    lastVerifiedEmail: null,
     dob: null,
     add: {
       address: "",
@@ -97,6 +103,31 @@ const SubuserCreation = () => {
     role_id: "",
     subRoleId: "",
   };
+
+
+  const handleEmailVerify = async (formik: FormikProps<any>) => {
+    try {
+      const resData = await Email_Verification(formik.values.emailId);
+      const isSuccess = resData?.data?.data?.status_code === 200;
+
+      if (isSuccess) {
+        formik.setFieldValue("emailVerified", true);
+        formik.setFieldError("emailId", "");
+      } else {
+        formik.setFieldValue("emailVerified", false);
+        formik.setTouched({ emailId: true });
+
+        const remark = resData?.data?.data?.message || "Email verification failed.";
+        setTimeout(() => {
+          formik.setFieldError("emailId", remark);
+        }, 0);
+      }
+    } catch (error) {
+      handleCustomError(error)
+      formik.setFieldValue("emailVerified", false);
+      formik.setFieldError("emailId", "Something went wrong during Email verification.");
+    }
+  }
 
   const handleRequest = async (
     values: SubuserCreationProps,
@@ -111,7 +142,7 @@ const SubuserCreation = () => {
         username: values?.mobileNumber,
         password: values?.password,
         emailId: values?.emailId,
-        emailVerified: true,
+        emailVerified: Boolean(values.emailVerified),
         dob: values.dob ? moment(values.dob).format("YYYY-MM-DD") : null,
         add: {
           address: values?.add?.address,
@@ -173,7 +204,7 @@ const SubuserCreation = () => {
 
   return (
     <>
-      {isLoading && <Loader />}
+      {isLoading && <MyLoader />}
       <div>
         <div className="flex gap-5">
           <UnstyledButton
@@ -198,14 +229,38 @@ const SubuserCreation = () => {
             onSubmit={handleRequest}
             enableReinitialize={true}
           >
-            {({
-              handleChange,
-              setFieldValue,
-              errors,
-              touched,
-              values,
-              handleSubmit,
-            }) => {
+            {(formik) => {
+
+              const {
+                handleChange,
+                setFieldValue,
+                errors,
+                touched,
+                values,
+                handleSubmit,
+              } = formik;
+
+              const showEmailVerifyButton =
+                formik.values.emailId &&
+                !formik.values.emailVerified &&
+                !emailVerifying &&
+                EmailRegex.test(formik.values.emailId);
+
+              const showEmailVerifiedMess =
+                formik?.values?.emailId?.length > 0 && formik?.values?.emailVerified;
+
+              useEffect(() => {
+                if (
+                  formik.values.emailVerified &&
+                  formik.values.lastVerifiedEmail &&
+                  formik.values.emailId !== formik.values.lastVerifiedEmail
+                ) {
+                  formik.setFieldValue("emailVerified", false);
+                  formik.setFieldValue("lastVerifiedEmail", null);
+                }
+              }, [formik.values.emailId]);
+
+
               const handleChipChange = (selectedValues: string[]) => {
                 setSelectedChips(selectedValues);
                 const chips = ["1", "2", "3", "4", "5"];
@@ -310,6 +365,49 @@ const SubuserCreation = () => {
                           placeholder={"Enter"}
                           value={values.emailId}
                           onChange={handleChange("emailId")}
+                          rightSection={
+                            showEmailVerifiedMess ? (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  color: "#28a745",
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                ✅ Verified
+                              </div>
+                            ) : showEmailVerifyButton ? (
+                              emailVerifying ? (
+                                <div style={{ display: "flex", alignItems: "center", height: "24px" }}>
+                                  <Loader size="xs" color="#007B55" />
+                                </div>
+                              ) : (
+                                <NewButtonComponent
+                                  fw="500"
+                                  style={{
+                                    marginRight: "0px",
+                                    padding: "0px 8px",
+                                    height: "24px",
+                                    cursor: "pointer",
+                                    fontSize: "12px",
+                                  }}
+                                  bgColor="#007B55"
+                                  textColor="white"
+                                  fontSize="12"
+                                  size="xs"
+                                  onClick={async () => {
+                                    setFieldValue("lastVerifiedEmail", values.emailId);
+                                    setEmailVerifying(true);
+                                    await handleEmailVerify(formik);
+                                    setEmailVerifying(false);
+                                  }}
+                                >
+                                  {emailVerifying ? "Verifying..." : "Verify"}
+                                </NewButtonComponent>
+                              )
+                            ) : null}
                           error={
                             touched.emailId && errors.emailId
                               ? errors.emailId

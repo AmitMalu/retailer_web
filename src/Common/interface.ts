@@ -934,6 +934,7 @@ export type SubuserCreationProps = {
   password: string;
   emailId: string;
   emailVerified: boolean;
+  lastVerifiedEmail?: string | null;
   dob: Date | string | null;
   add: {
     address: string;
