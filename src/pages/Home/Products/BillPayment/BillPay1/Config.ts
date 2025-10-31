@@ -275,6 +275,13 @@ export const AtoZServiceProviders = [
     provider_id: 115,
     provider_name: "ICICI Bank Fastag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -307,6 +314,13 @@ export const AtoZServiceProviders = [
     provider_id: 133,
     provider_name: "IndusInd Bank FASTag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -323,6 +337,13 @@ export const AtoZServiceProviders = [
     provider_id: 134,
     provider_name: "Indian Highways Management Company Ltd FASTag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 10,
@@ -339,6 +360,13 @@ export const AtoZServiceProviders = [
     provider_id: 135,
     provider_name: "Bank of Baroda - Fastag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 7,
@@ -355,6 +383,13 @@ export const AtoZServiceProviders = [
     provider_id: 136,
     provider_name: "Axis Bank FASTag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 7,
@@ -1615,6 +1650,13 @@ export const AtoZServiceProviders = [
     provider_id: 219,
     provider_name: "Connect Broadband",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -1647,6 +1689,13 @@ export const AtoZServiceProviders = [
     provider_id: 221,
     provider_name: "Hathway Broadband",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -1679,6 +1728,13 @@ export const AtoZServiceProviders = [
     provider_id: 223,
     provider_name: "TIKONA-POSTPAID",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -1991,20 +2047,30 @@ export const AtoZServiceProviders = [
     provider_id: 262,
     provider_name: "Life Insurance Corporation of India(LIC)",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [
-      {
-        field_one: null,
-        field_two: null,
-        field_three: null,
-        field_four: null,
-        extraparam_content: [],
-      },
       {
         field_one: "Email ID",
         field_two: null,
         field_three: null,
         field_four: null,
         extraparam_content: [],
+      },
+    ],
+    // 👇 new addition
+    extra_static_fields: [
+      {
+        key: "dob",
+        label: "Date of Birth",
+        type: "date", // can also be "text", "number" etc.
+        format: "DD/MM/YYYY",
+        required: true,
       },
     ],
     pay_without_fetch: false,
@@ -2038,6 +2104,13 @@ export const AtoZServiceProviders = [
     provider_id: 265,
     provider_name: "Paytm Payments Bank FASTag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 7,
@@ -2054,6 +2127,13 @@ export const AtoZServiceProviders = [
     provider_id: 266,
     provider_name: "HDFC Bank - Fastag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -2070,6 +2150,13 @@ export const AtoZServiceProviders = [
     provider_id: 267,
     provider_name: "IDFC FIRST Bank - FasTag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 7,
@@ -2086,6 +2173,13 @@ export const AtoZServiceProviders = [
     provider_id: 268,
     provider_name: "Jammu and Kashmir Bank Fastag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -2102,6 +2196,13 @@ export const AtoZServiceProviders = [
     provider_id: 269,
     provider_name: "Kotak Mahindra Bank - Fastag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -2119,6 +2220,13 @@ export const AtoZServiceProviders = [
     provider_name:
       "Transaction Analyst (T Wallet, TA Wallet and TAG-ITI Wallet)",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -2135,6 +2243,13 @@ export const AtoZServiceProviders = [
     provider_id: 271,
     provider_name: "Paul Merchants",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -2151,6 +2266,13 @@ export const AtoZServiceProviders = [
     provider_id: 272,
     provider_name: "Equitas FASTag Recharge",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -2167,6 +2289,13 @@ export const AtoZServiceProviders = [
     provider_id: 273,
     provider_name: "Federal Bank - FASTag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -4466,6 +4595,13 @@ export const AtoZServiceProviders = [
     provider_id: 415,
     provider_name: "BoB Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -4971,6 +5107,13 @@ export const AtoZServiceProviders = [
     provider_id: 444,
     provider_name: "Magma HDI - Health Insurance",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -4987,6 +5130,13 @@ export const AtoZServiceProviders = [
     provider_id: 445,
     provider_name: "Magma HDI - Non Motor Insurance",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -5003,6 +5153,13 @@ export const AtoZServiceProviders = [
     provider_id: 446,
     provider_name: "Magma HDI - Motor Insurance",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [
       {
         field_one: "Registration Number",
@@ -5041,6 +5198,13 @@ export const AtoZServiceProviders = [
     provider_id: 447,
     provider_name: "Bajaj Allianz General Insurance",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -5057,6 +5221,13 @@ export const AtoZServiceProviders = [
     provider_id: 448,
     provider_name: "Aditya Birla Health Insurance Co Limited",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -5089,6 +5260,13 @@ export const AtoZServiceProviders = [
     provider_id: 450,
     provider_name: "Kotak Life Insurance Company Limited",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [
       {
         field_one: null,
@@ -5120,6 +5298,13 @@ export const AtoZServiceProviders = [
     provider_id: 451,
     provider_name: "Ageas Federal Life Insurance Company Limited",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -5136,6 +5321,13 @@ export const AtoZServiceProviders = [
     provider_id: 452,
     provider_name: "Reliance General Insurance Company Limited",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [
       {
         field_one: null,
@@ -5916,6 +6108,13 @@ export const AtoZServiceProviders = [
     provider_id: 506,
     provider_name: "HDFC Life Insurance Co. Ltd.",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [
       {
         field_one: null,
@@ -6276,6 +6475,13 @@ export const AtoZServiceProviders = [
     provider_id: 528,
     provider_name: "SBI Life Insurance Company Limited",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [
       {
         field_one: null,
@@ -6300,6 +6506,13 @@ export const AtoZServiceProviders = [
     provider_id: 529,
     provider_name: "Royal Sundaram General Insurance Co. Limited",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -6316,6 +6529,13 @@ export const AtoZServiceProviders = [
     provider_id: 530,
     provider_name: "Aegon Life Insurance",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 12,
@@ -6332,6 +6552,13 @@ export const AtoZServiceProviders = [
     provider_id: 531,
     provider_name: "Shriram General Insurance",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -6348,6 +6575,13 @@ export const AtoZServiceProviders = [
     provider_id: 532,
     provider_name: "Max Bupa Health Insurance",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -6364,6 +6598,13 @@ export const AtoZServiceProviders = [
     provider_id: 533,
     provider_name: "Aviva Life Insurance",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [
       {
         field_one: "Date of Birth(YYYYMMDD)",
@@ -6388,6 +6629,13 @@ export const AtoZServiceProviders = [
     provider_id: 534,
     provider_name: "Bajaj Allianz Life Insurance Company Limited",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -6404,6 +6652,13 @@ export const AtoZServiceProviders = [
     provider_id: 535,
     provider_name: "Canara HSBC OBC Life Insurance",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -6420,6 +6675,13 @@ export const AtoZServiceProviders = [
     provider_id: 536,
     provider_name: "Max Life Insurance Company Limited",
     service_name: "INSURANCE",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Policy Number",
+      placeholder: "Enter Policy Number",
+      capitalize: false,
+      maxLength: 20,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 5,
@@ -6516,6 +6778,13 @@ export const AtoZServiceProviders = [
     provider_id: 545,
     provider_name: "IDBI Bank FASTag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 7,
@@ -6532,6 +6801,13 @@ export const AtoZServiceProviders = [
     provider_id: 546,
     provider_name: "IOB FASTag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -6548,6 +6824,13 @@ export const AtoZServiceProviders = [
     provider_id: 547,
     provider_name: "Karnataka Bank FASTag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -6564,6 +6847,13 @@ export const AtoZServiceProviders = [
     provider_id: 548,
     provider_name: "State Bank of India - NETC FASTag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 7,
@@ -6580,6 +6870,13 @@ export const AtoZServiceProviders = [
     provider_id: 549,
     provider_name: "UCO Bank FASTag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -6596,6 +6893,13 @@ export const AtoZServiceProviders = [
     provider_id: 550,
     provider_name: "South Indian Bank Fastag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -6612,6 +6916,13 @@ export const AtoZServiceProviders = [
     provider_id: 551,
     provider_name: "Bank of Maharashtra FASTag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -6628,6 +6939,13 @@ export const AtoZServiceProviders = [
     provider_id: 552,
     provider_name: "LivQuik Technology India Private Limited",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 0,
@@ -7452,6 +7770,13 @@ export const AtoZServiceProviders = [
     provider_id: 607,
     provider_name: "Airtel Payments Bank NETC FASTag",
     service_name: "Fast Tag",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Vehicle Number",
+      placeholder: "Enter Vehicle Number",
+      capitalize: true,
+      maxLength: 10,
+    },
     extra_param: [],
     pay_without_fetch: false,
     min_length: 5,
@@ -7596,6 +7921,13 @@ export const AtoZServiceProviders = [
     provider_id: 617,
     provider_name: "SBI Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Mobile Number",
@@ -7620,6 +7952,13 @@ export const AtoZServiceProviders = [
     provider_id: 618,
     provider_name: "AU Bank Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile No",
@@ -7644,6 +7983,13 @@ export const AtoZServiceProviders = [
     provider_id: 619,
     provider_name: "Axis Bank Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -7668,6 +8014,13 @@ export const AtoZServiceProviders = [
     provider_id: 620,
     provider_name: "Bank of Maharashtra Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -7692,6 +8045,13 @@ export const AtoZServiceProviders = [
     provider_id: 621,
     provider_name: "ICICI Credit card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -7716,6 +8076,13 @@ export const AtoZServiceProviders = [
     provider_id: 622,
     provider_name: "Canara Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Mobile number",
@@ -7740,6 +8107,13 @@ export const AtoZServiceProviders = [
     provider_id: 623,
     provider_name: "DBS Bank Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -7764,6 +8138,13 @@ export const AtoZServiceProviders = [
     provider_id: 624,
     provider_name: "Dhanlaxmi Bank Limited",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -7788,6 +8169,13 @@ export const AtoZServiceProviders = [
     provider_id: 625,
     provider_name: "Federal Bank Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -7812,6 +8200,13 @@ export const AtoZServiceProviders = [
     provider_id: 626,
     provider_name: "HDFC Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -7836,6 +8231,13 @@ export const AtoZServiceProviders = [
     provider_id: 627,
     provider_name: "IDBI Bank Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -7860,6 +8262,13 @@ export const AtoZServiceProviders = [
     provider_id: 628,
     provider_name: "IDFC FIRST Bank Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -7884,6 +8293,13 @@ export const AtoZServiceProviders = [
     provider_id: 629,
     provider_name: "One - Indian Bank Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -7908,6 +8324,13 @@ export const AtoZServiceProviders = [
     provider_id: 630,
     provider_name: "Indian bank credit card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -7932,6 +8355,13 @@ export const AtoZServiceProviders = [
     provider_id: 631,
     provider_name: "IndusInd Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -7956,6 +8386,13 @@ export const AtoZServiceProviders = [
     provider_id: 632,
     provider_name: "IOB Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -7980,6 +8417,13 @@ export const AtoZServiceProviders = [
     provider_id: 633,
     provider_name: "Kotak Mahindra Bank Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -8004,6 +8448,13 @@ export const AtoZServiceProviders = [
     provider_id: 634,
     provider_name: "One - BOBCARD Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -8028,6 +8479,13 @@ export const AtoZServiceProviders = [
     provider_id: 635,
     provider_name: "Punjab National Bank Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -8052,6 +8510,13 @@ export const AtoZServiceProviders = [
     provider_id: 636,
     provider_name: "RBL Bank Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -8076,6 +8541,13 @@ export const AtoZServiceProviders = [
     provider_id: 637,
     provider_name: "One - South Indian Bank Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -8100,6 +8572,13 @@ export const AtoZServiceProviders = [
     provider_id: 638,
     provider_name: "Yes Bank Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -8124,6 +8603,13 @@ export const AtoZServiceProviders = [
     provider_id: 639,
     provider_name: "HSBC Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -8148,6 +8634,13 @@ export const AtoZServiceProviders = [
     provider_id: 640,
     provider_name: "Saraswat Co-Operative Bank Ltd",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Registered Mobile Number",
@@ -8172,6 +8665,13 @@ export const AtoZServiceProviders = [
     provider_id: 641,
     provider_name: "Union Bank of India Credit Card",
     service_name: "Credit Card",
+    consumer_field: {
+      key: "consumerNumber",
+      label: "Last 4 Digit Of Credit Card",
+      placeholder: "Enter Last 4 Digit Of Credit Card",
+      capitalize: false,
+      maxLength: 4,
+    },
     extra_param: [
       {
         field_one: "Mobile Number",

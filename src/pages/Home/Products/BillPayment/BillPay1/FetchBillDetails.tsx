@@ -10,7 +10,6 @@ import ButtonComponent from "@/components/Atoms/ButtonComponent";
 // import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
 // import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import MyLoader from "@/components/Atoms/Loader";
-import NewTextInputComponent from "@/components/Atoms/NewComponents/TextInputComponent";
 import TextComponent from "@/components/Atoms/TextComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import TransactionSuccessModel from "@/components/Atoms/TransactionSuccessModel";
@@ -28,13 +27,14 @@ import {
 import { Drawer, Loader, Modal, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { IconCalendar } from "@tabler/icons-react";
-import { Formik, FormikErrors, FormikValues } from "formik";
+import { Formik, FormikValues } from "formik";
 import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import BillReciept from "./BillReciept";
 import { AtoZServiceProviders } from "./Config";
+import moment from "moment";
 
 const FetchBillDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -81,6 +81,7 @@ const FetchBillDetails: React.FC = () => {
     };
 
     if (selectedProviderDetails) {
+      // 1️⃣ Handle dynamic extra_param fields
       selectedProviderDetails.extra_param?.forEach((param: ExtraParam, idx: number) => {
         const fields = [
           { key: `field_one_${idx}`, value: param.field_one },
@@ -100,16 +101,26 @@ const FetchBillDetails: React.FC = () => {
           }
         });
       });
+
+      // 2️⃣ Handle new Random key static fields (like)
+      selectedProviderDetails.extra_static_fields?.forEach((field: any) => {
+        // Initialize according to type
+        if (field.type === "date") {
+          values[field.key] = null;
+        } else {
+          values[field.key] = "";
+        }
+      });
     }
 
     return values;
   }, [selectedProviderDetails]);
 
 
-  const validateForm = (): FormikErrors<FormikValues> => {
-    const errors: FormikErrors<FormikValues> = {};
-    return errors;
-  };
+  // const validateForm = (): FormikErrors<FormikValues> => {
+  //   const errors: FormikErrors<FormikValues> = {};
+  //   return errors;
+  // };
 
   const validationSchema = useMemo(() => {
     const schema: Record<string, any> = {
@@ -118,14 +129,6 @@ const FetchBillDetails: React.FC = () => {
         .required("Mobile Number is Required")
         .matches(MobileNoRegex, "Number must be 10 digits"),
       consumerNumber: Yup.string().required("Required"),
-      // consumerNumber: Yup.string().when(
-      //   "selectedProviderDetails.consumerNumber",
-      //   {
-      //     is: "required",
-      //     then: () => Yup.string().required("Required"),
-      //     otherwise: () => Yup.string(),
-      //   }
-      // ),
       ...(selectedProviderDetails?.extra_param?.reduce(
         (acc: Record<string, any>, param: ExtraParam, idx: number) => {
           const fields = [
@@ -191,6 +194,37 @@ const FetchBillDetails: React.FC = () => {
       ) || {}),
     };
 
+    // ✅ Handle extra_static_fields (new addition)
+    if (selectedProviderDetails?.extra_static_fields?.length) {
+      selectedProviderDetails.extra_static_fields.forEach((field: any) => {
+        let validator;
+
+        switch (field.type) {
+          case "date":
+            validator = Yup.date()
+              .typeError("Invalid date")
+              .nullable();
+            break;
+
+          case "number":
+            validator = Yup.number()
+              .typeError("Must be a number")
+              .nullable();
+            break;
+
+          default:
+            validator = Yup.string().nullable();
+            break;
+        }
+
+        if (field.required) {
+          validator = validator.required(`${field.label} is required`);
+        }
+
+        schema[field.key] = validator;
+      });
+    }
+
     return Yup.object().shape(schema);
   }, [selectedProviderDetails]);
 
@@ -200,6 +234,7 @@ const FetchBillDetails: React.FC = () => {
 
       const formValues = { ...values };
 
+      // 🔹 Step 1: Handle mobile mapping in extra_param
       if (selectedProviderDetails?.extra_param) {
         selectedProviderDetails.extra_param.forEach(
           (param: ExtraParam, idx: number) => {
@@ -228,20 +263,18 @@ const FetchBillDetails: React.FC = () => {
         );
       }
 
+      // 🔹 Step 2: Base payload
       const payload: Partial<FetchBillDetailsProps> = {
         provider: String(formValues.provider),
         subProductId: subProductId,
         customerMobileNumber: formValues.customerMobileNumber,
       };
 
-      if (
-        formValues.consumerNumber
-        // &&
-        // selectedProviderDetails?.consumerNumber === "required"
-      ) {
+      if (formValues.consumerNumber) {
         payload.billerNumber = String(formValues.consumerNumber);
       }
 
+      // 🔹 Step 3: Include all extra_param fields
       selectedProviderDetails?.extra_param?.forEach(
         (param: ExtraParam, idx: number) => {
           const fieldMappings = [
@@ -269,12 +302,16 @@ const FetchBillDetails: React.FC = () => {
 
           for (const { source, target, label } of fieldMappings) {
             if (formValues[source] !== undefined && formValues[source] !== "") {
-              if (label?.toLowerCase().includes("id")) {
+              // skip only non-email IDs like Customer ID, Policy ID, etc.
+              const lower = label?.toLowerCase() || "";
+
+              if (label?.includes("id") && !lower.includes("email")) {
                 continue;
               }
 
               (payload as any)[target] = formValues[source];
 
+              // handle DOB inside extra_param if exists
               if (label?.toLowerCase().includes("date of birth")) {
                 const dateStr = formValues[source];
                 payload.dob = dateStr ? new Date(dateStr) : null;
@@ -284,6 +321,31 @@ const FetchBillDetails: React.FC = () => {
         }
       );
 
+      // 🔹 Step 4: Include all extra_static_fields dynamically
+      if (selectedProviderDetails?.extra_static_fields?.length) {
+        selectedProviderDetails.extra_static_fields.forEach((field: any) => {
+          const { key, type, format } = field;
+          const value = formValues[key];
+
+          if (value !== undefined && value !== "") {
+            if (type === "date") {
+              // Try to parse date using provided format, fallback to common ones
+              const parsedDate = moment(value, [format, "DD/MM/YYYY", "YYYY-MM-DD"], true);
+
+              if (parsedDate.isValid()) {
+                // ✅ send date in backend-friendly format
+                (payload as any)[key] = parsedDate.format("DD/MM/YYYY");
+              } else {
+                console.warn(`Invalid date format for ${key}:`, value);
+              }
+            } else {
+              (payload as any)[key] = value;
+            }
+          }
+        });
+      }
+
+      // 🔹 Step 5: Call API
       const response = await Fetch_Bill_Details(
         payload as FetchBillDetailsProps
       );
@@ -512,57 +574,22 @@ const FetchBillDetails: React.FC = () => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={handleFetchDetailsSubmit}
-            validate={validateForm}
-            enableReinitialize={true}
+            validateOnMount={false}
+            validateOnBlur={true}
+            validateOnChange={true}
+            enableReinitialize
           >
             {(formik) => {
               const {
                 handleSubmit,
-                handleChange,
-                errors,
-                touched,
-                values,
               } = formik;
+
+              const consumerField = selectedProviderDetails?.consumer_field || {};
 
               return (
                 <>
                   <div className="mt-3 flex flex-wrap items-start justify-start gap-3">
                     <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)]  ">
-                      {/* <DropdownComponent
-                        label="Select Provider"
-                        data={
-                          bbpsServicesData
-                            ?.filter(
-                              (service: ProviderDetails) =>
-                                service.service_name === serviceName
-                            )
-                            .map((service: ProviderDetails) => ({
-                              value: service.provider_id,
-                              label: service.provider_name,
-                            })) || []
-                        }
-                        value={values.provider}
-                        withAsterisk
-                        onChange={(
-                          value: string | number | string[] | number[]
-                        ) => {
-                          setFieldValue("provider", value);
-
-                          const selectedProvider =
-                            bbpsServicesData?.find(
-                              (service: ProviderDetails) =>
-                                service.provider_id === value
-                            ) || null;
-
-                          setSelectedProviderDetails(selectedProvider);
-                        }}
-                        error={
-                          touched.provider && errors.provider
-                            ? String(errors.provider)
-                            : ""
-                        }
-                        className="w-max"
-                      /> */}
                       <FormikSelectComponent
                         name="provider"
                         placeholder="Select Provider"
@@ -585,6 +612,7 @@ const FetchBillDetails: React.FC = () => {
                         }}
                       />
                     </div>
+
                     {selectedProviderDetails && (
                       <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
                         <FormikTextInputComponent
@@ -595,14 +623,6 @@ const FetchBillDetails: React.FC = () => {
                           allowSpace={false}
                           allowSpecialChar={false}
                           placeholder="Enter Number"
-                          // value={values.customerMobileNumber}
-                          // onChange={handleChange("customerMobileNumber")}
-                          // error={
-                          //   touched.customerMobileNumber &&
-                          //     errors.customerMobileNumber
-                          //     ? String(errors.customerMobileNumber)
-                          //     : ""
-                          // }
                           maxLength={10}
                           minLength={10}
                           withAsterisk
@@ -611,28 +631,32 @@ const FetchBillDetails: React.FC = () => {
                       </div>
                     )}
 
-                    <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
-                      <FormikTextInputComponent
-                        name="consumerNumber"
-                        label={`${serviceName?.toLowerCase() === "credit card" ? "Last 4 Digit Of Credit Card"
-                          : serviceName?.toLowerCase() === "fast tag" ? "Vehicle Number" :
-                            "Consumer Number"}`}
-                        placeholder={`${serviceName?.toLowerCase() === "credit card" ? "Enter Last 4 Digit Of Credit Card" : "Consumer Number"}`}
+                    {selectedProviderDetails && (
+                      <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
+                        <FormikTextInputComponent
+                          name="consumerNumber"
+                          label={consumerField.label || "Consumer Number"}
+                          placeholder={consumerField.placeholder || "Enter Consumer Number"}
+                          capitalize={consumerField.capitalize || false}
+                          maxLength={consumerField.maxLength || 30}
+                          size="md"
+                          withAsterisk
+                          fullWidth
+                        // label={`${serviceName?.toLowerCase() === "credit card" ? "Last 4 Digit Of Credit Card"
+                        //   : serviceName?.toLowerCase() === "fast tag" ? "Vehicle Number" :
+                        //     "Consumer Number"}`}
+                        // placeholder={`${serviceName?.toLowerCase() === "credit card" ? "Enter Last 4 Digit Of Credit Card" : "Consumer Number"}`}
                         // value={values.consumerNumber || ""}
                         // onChange={handleChange("consumerNumber")}
-                        size="md"
                         // error={
                         //   touched.consumerNumber && errors.consumerNumber
                         //     ? String(errors.consumerNumber)
                         //     : ""
                         // }
-                        maxLength={12}
-                        minLength={12}
-                        capitalize={serviceName?.toLowerCase() === "fast tag"}
-                        withAsterisk
-                        fullWidth
-                      />
-                    </div>
+                        // capitalize={serviceName?.toLowerCase() === "fast tag"}
+                        />
+                      </div>
+                    )}
 
                     {selectedProviderDetails?.extra_param?.map(
                       (param: ExtraParam, idx: number) => {
@@ -653,23 +677,6 @@ const FetchBillDetails: React.FC = () => {
                           if (isDOBField(label)) {
                             return (
                               <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
-                                {/* <CustomDateComponent
-                                  key={fieldKey}
-                                  label={label}
-                                  value={values[fieldKey]}
-                                  onChange={(val) =>
-                                    setFieldValue(fieldKey, val)
-                                  }
-                                  error={
-                                    touched[fieldKey] && errors[fieldKey]
-                                      ? String(errors[fieldKey])
-                                      : ""
-                                  }
-                                  type="default"
-                                  dateFormat="YYYY-MM-DD"
-                                  withAsterisk
-                                  className="w-max"
-                                /> */}
                                 <FormikDatePicker
                                   name={fieldKey}
                                   label={label}
@@ -688,27 +695,6 @@ const FetchBillDetails: React.FC = () => {
 
                             return (
                               <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
-                                {/* <DropdownComponent
-                                  key={fieldKey}
-                                  label={label}
-                                  data={param.extraparam_content.map(
-                                    (item: ExtraParamContent) => ({
-                                      value: item.name,
-                                      label: item.name,
-                                    })
-                                  )}
-                                  value={values[fieldKey]}
-                                  onChange={(value) =>
-                                    setFieldValue(fieldKey, value)
-                                  }
-                                  error={
-                                    touched[fieldKey] && errors[fieldKey]
-                                      ? String(errors[fieldKey])
-                                      : ""
-                                  }
-                                  withAsterisk
-                                  className="w-max"
-                                /> */}
                                 <FormikSelectComponent
                                   name={fieldKey}
                                   placeholder={`Select ${label}`}
@@ -731,20 +717,16 @@ const FetchBillDetails: React.FC = () => {
 
                           return (
                             <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
-                              <NewTextInputComponent
+                              <FormikTextInputComponent
+                                fullWidth
                                 name={fieldKey}
                                 key={fieldKey}
                                 label={label}
-                                placeholder="Enter"
-                                value={values[fieldKey] || ""}
-                                onChange={handleChange(fieldKey)}
-                                error={
-                                  touched[fieldKey] && errors[fieldKey]
-                                    ? String(errors[fieldKey])
-                                    : ""
-                                }
+                                placeholder={`Enter ${label}`}
+                                // value={values[fieldKey] || ""}
+                                // onChange={handleChange(fieldKey)}
+                                // error={touched[fieldKey] ? String(errors[fieldKey] || "") : ""}
                                 withAsterisk
-                                className="w-max"
                               />
                             </div>
                           );
@@ -763,6 +745,73 @@ const FetchBillDetails: React.FC = () => {
                         );
                       }
                     )}
+
+                    {/* 🔹 Render Extra Static Fields */}
+                    {selectedProviderDetails?.extra_static_fields?.map((field: any) => {
+                      const { key, label, type, required } = field;
+
+                      if (!key || !label) return null;
+
+                      // Date field
+                      if (type === "date") {
+                        return (
+                          <div
+                            key={key}
+                            className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)]"
+                          >
+                            <FormikDatePicker
+                              name={key}
+                              label={label}
+                              placeholder={`Select ${label}`}
+                              size="md"
+                              required={required}
+                              maxDate={new Date()}
+                              valueFormat="YYYY-MM-DD"
+                              leftIcon={<IconCalendar size={16} />}
+                            />
+                          </div>
+                        );
+                      }
+
+                      // Number field
+                      if (type === "number") {
+                        return (
+                          <div
+                            key={key}
+                            className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)]"
+                          >
+                            <FormikTextInputComponent
+                              name={key}
+                              label={label}
+                              placeholder={`Enter ${label}`}
+                              size="md"
+                              withAsterisk={required}
+                              allowCharacter={false}
+                              allowSpace={false}
+                              allowSpecialChar={false}
+                              fullWidth
+                            />
+                          </div>
+                        );
+                      }
+
+                      // Default: text field
+                      return (
+                        <div
+                          key={key}
+                          className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)]"
+                        >
+                          <FormikTextInputComponent
+                            name={key}
+                            label={label}
+                            placeholder={`Enter ${label}`}
+                            size="md"
+                            withAsterisk={required}
+                            fullWidth
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
 
                   {/* Submit Button */}

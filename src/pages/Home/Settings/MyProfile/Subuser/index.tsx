@@ -175,31 +175,30 @@ const SubuserCreation = () => {
   };
 
   const subChipMap: Record<string, string[]> = {
-    "2": ["2.1", "2.2", "2.3", "2.4"],
+    "2": ["2.1", "2.2", "2.3"],
     "3": ["3.1", "3.2", "3.3"],
     "4": ["4.1", "4.2", "4.3"],
-    "5": ["5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8"],
+    "5": ["5.1", "5.2", "5.3", "5.4", "5.5", "5.6"],
   };
 
   const chipLabels: Record<string, string> = {
-    "2.1": "Wallet to Bank Fund",
+    "2.1": "Fund Request",
     "2.2": "Wallet to Wallet",
-    "2.3": "Fund Transfer",
-    "2.4": "Wallet to Bank",
+    "2.3": "Move to Bank",
     "3.1": "Change TPIN",
     "3.2": "My Certificate",
-    "3.3": "Low BAlance Alert",
+    "3.3": "Low Balance Alert",
     "4.1": "Bio Metric Device",
     "4.2": "Ticketing System",
     "4.3": "Contact Us",
     "5.1": "Commission and Charges",
     "5.2": "Wallet Report",
     "5.3": "Network Transaction",
-    "5.4": "Account Summary",
-    "5.5": "Search Transaction",
-    "5.6": "Download Report",
-    "5.7": "Fund Loading",
-    "5.8": "Pending Transaction",
+    "5.4": "Search Transaction",
+    "5.5": "Fund Loading",
+    "5.6": "Pending Transaction",
+    // "5.4": "Account Summary",
+    // "5.6": "Download Report",
   };
 
   return (
