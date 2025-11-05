@@ -1,6 +1,6 @@
 import { FundRequestProps } from "@/Common/interface";
 import { RootState } from "@/Redux/Store";
-import { decryptData } from "@/Utils/helper";
+import { decryptData, singleDateValidationSchema } from "@/Utils/helper";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Formik, FormikHelpers } from "formik";
@@ -8,7 +8,6 @@ import * as Yup from "yup";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
-import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import FileInputComponent from "@/components/Atoms/FileInputComponent";
 import TextComponent from "@/components/Atoms/TextComponent";
@@ -18,10 +17,14 @@ import {
 } from "@/Utils/notifications";
 import { Prefund_Request } from "@/Services/api";
 import Loader from "@/components/Atoms/Loader";
+import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePicker";
+import { IconCalendar } from "@tabler/icons-react";
+import moment from "moment";
 
 const WalletToBankFund = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isfile, setFile] = useState<File | null>(null);
+  const [formKey, setFormKey] = useState(0)
 
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
@@ -35,14 +38,28 @@ const WalletToBankFund = () => {
 
   const validationSchema = Yup.object().shape({
     depositType: Yup.string().required("Required"),
-    transactionId: Yup.string().required("Required"),
-    bankName: Yup.string().required("Required"),
-    bankAccountNumber: Yup.string().required("Required"),
-    amount: Yup.string().required("Required"),
+    transactionId: Yup.string().required("Required")
+      .min(5, "Must be at least 5 characters")
+      .max(50, "Must be at most 50 characters")
+    ,
+    bankName: Yup.string().required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(50, "Must be at most 50 characters"),
+    bankAccountNumber: Yup.string()
+      .transform((value) => (value ? value.replace(/\s+/g, "") : "")) // remove all spaces
+      .required("Required")
+      .matches(/^[0-9]+$/, "Must be only digits")
+      .min(9, "Must be at least 9 digits")
+      .max(18, "Must be at most 18 digits"),
+    amount: Yup.string()
+      .required("Required")
+      .matches(/^(?!0+(?:\.0{1,3})?$)(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount greater than 0"),
+
     confirmAmount: Yup.string()
       .required("Required")
-      .oneOf([Yup.ref("amount")], "Amounts must match"),
-    depositDate: Yup.date().required("Required"),
+      .oneOf([Yup.ref("amount")], "Amounts must match")
+      .matches(/^(?!0+(?:\.0{1,3})?$)(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount greater than 0"),
+    depositDate: singleDateValidationSchema,
     narration: Yup.string().required("Required"),
     depositSlip: Yup.mixed()
       .nullable()
@@ -50,7 +67,10 @@ const WalletToBankFund = () => {
       .test("fileType", "Required", (value) => {
         return value instanceof File;
       }),
-    bankAccountHolderName: Yup.string().required("Required"),
+    bankAccountHolderName: Yup.string().required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(50, "Must be at most 50 characters")
+    ,
     paymentMode: Yup.string().required("Required"),
   });
 
@@ -61,7 +81,7 @@ const WalletToBankFund = () => {
     bankAccountNumber: "",
     amount: "",
     confirmAmount: "",
-    depositDate: "",
+    depositDate: null,
     narration: "",
     depositSlip: null,
     bankAccountHolderName: "",
@@ -92,7 +112,7 @@ const WalletToBankFund = () => {
         narration: values.narration,
         paymentMode: values.paymentMode,
         ipAddress: ipAddress,
-        depositDate: values?.depositDate,
+        depositDate: values.depositDate ? moment(values.depositDate).format("YYYY-MM-DD") : null,
       });
       formData.append("data", jsonData);
       const response = await Prefund_Request(formData);
@@ -104,6 +124,7 @@ const WalletToBankFund = () => {
             depositSlip: null,
           },
         });
+        setFormKey((prev) => prev + 1)
         setFile(null);
       } else {
         showErrorNotification(response?.data?.message);
@@ -120,19 +141,20 @@ const WalletToBankFund = () => {
       {isLoading && <Loader />}
       <div className=" flex w-full flex-col flex-wrap items-center justify-start gap-1">
         <div className="relative w-[80%]">
-          <div className="absolute inset-0 bg-red-dark rounded-[20px] blur-[8px] h-full"></div>
+          <div className="absolute inset-0 bg-gray-200 rounded-[20px] blur-[1px] h-full"></div>
 
           <div className="relative py-1 flex items-center justify-center">
             <TextComponent
               fontSize={30}
               fontWeight={500}
-              color="background.paper"
+              color="red.DEFAULT"
             >
               Fund Request
             </TextComponent>
           </div>
         </div>
         <Formik<FundRequestProps>
+          key={formKey}
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleFundRequest}
@@ -179,6 +201,8 @@ const WalletToBankFund = () => {
                     }
                     withAsterisk
                     className="w-max"
+                    minLength={6}
+                    maxLength={50}
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
@@ -191,12 +215,19 @@ const WalletToBankFund = () => {
                       touched.bankName && errors.bankName ? errors.bankName : ""
                     }
                     withAsterisk
+                    minLength={2}
+                    maxLength={50}
+                    allowSpecialChar={false}
+                    allowNumber={false}
                     className="w-max"
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Bank Account Number"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
                     placeholder={"Enter"}
                     value={values.bankAccountNumber}
                     onChange={handleChange("bankAccountNumber")}
@@ -205,20 +236,24 @@ const WalletToBankFund = () => {
                         ? errors.bankAccountNumber
                         : ""
                     }
-                    type="number"
+                    // type="number"
                     withAsterisk
+                    minLength={9}
+                    maxLength={18}
                     className="w-max"
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Bank Account Holder Name"}
+                    minLength={2}
+                    maxLength={50}
                     placeholder={"Enter"}
                     value={values.bankAccountHolderName}
                     onChange={handleChange("bankAccountHolderName")}
                     error={
                       touched.bankAccountHolderName &&
-                      errors.bankAccountHolderName
+                        errors.bankAccountHolderName
                         ? errors.bankAccountHolderName
                         : ""
                     }
@@ -247,18 +282,28 @@ const WalletToBankFund = () => {
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.amount}
                     onChange={handleChange("amount")}
                     error={touched.amount && errors.amount ? errors.amount : ""}
                     withAsterisk
-                    type="number"
+                    // type="number"
                     className="w-max"
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Confirm Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.confirmAmount}
                     onChange={handleChange("confirmAmount")}
@@ -267,13 +312,13 @@ const WalletToBankFund = () => {
                         ? errors.confirmAmount
                         : ""
                     }
-                    type="number"
+                    // type="number"
                     withAsterisk
                     className="w-max"
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                  <CustomDateComponent
+                  {/* <CustomDateComponent
                     label={"Deposit Date"}
                     placeholder={"00/00/0000"}
                     value={
@@ -299,6 +344,16 @@ const WalletToBankFund = () => {
                     withAsterisk
                     dateFormat="YYYY-MM-DD"
                     className="w-48"
+                  /> */}
+                  <FormikDatePicker
+                    name="depositDate"
+                    placeholder="Select a Date"
+                    size="lg"
+                    required
+                    maxDate={new Date}
+                    valueFormat="YYYY-MM-DD"
+                    leftIcon={<IconCalendar size={24} />}
+                    styles={{ input: { height: "55px", fontSize: "18px" } }}
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">

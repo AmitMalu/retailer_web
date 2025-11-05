@@ -49,6 +49,7 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
       if (onChange) {
         onChange(null);
       }
+      event.target.value = ""; // reset input
       return;
     }
 
@@ -75,6 +76,7 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
       if (onChange) {
         onChange(null);
       }
+      event.target.value = ""; // reset input
       return;
     }
 
@@ -82,6 +84,8 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
     if (onChange) {
       onChange(file);
     }
+
+    event.target.value = ""; // reset input
   };
 
   const handleRemoveFile = (e: React.MouseEvent) => {

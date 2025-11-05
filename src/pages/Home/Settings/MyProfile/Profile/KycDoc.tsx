@@ -1,5 +1,4 @@
 import { OpenEyeSvgIcon } from "@/assets/svg";
-import { KycDocList } from "@/Common/interface";
 import TableComponent from "@/components/Molecules/TableComponent";
 import { RootState } from "@/Redux/Store";
 import { decryptData } from "@/Utils/helper";
@@ -35,7 +34,20 @@ const KycDoc = () => {
     }));
   };
 
+  const resolveFileUrl = (url: string): string | null => {
+    if (!url) return null;
+
+    // If already a valid HTTPS URL
+    if (/^https:\/\/.+/i.test(url)) {
+      return url;
+    }
+
+    // Invalid or non-HTTPS URL
+    return null;
+  };
+
   const documents = transformDocuments(UserProfileData?.kycDocs);
+
   const tableColumns = [
     {
       key: "document",
@@ -67,43 +79,44 @@ const KycDoc = () => {
     //   sortable: false,
     // },
     {
-      key: "action",
-      label: "Action",
-      render: (row: KycDocList) => (
-        <div className="flex w-max items-center justify-between gap-2  justify-self-center">
-          <UnstyledButton
-            onClick={(e) => {
-              e.preventDefault();
-              const fileUrl = row.url.startsWith("C:\\")
-                ? `file:///${row.url.replace(/\\/g, "/")}`
-                : row.url;
-              window.open(fileUrl, "_blank");
-            }}
-          >
-            <OpenEyeSvgIcon color={theme.palette.gray.DEFAULT} />
-          </UnstyledButton>
-        </div>
-      ),
-      searchKey: "action",
+      key: "url",
+      label: "View Document",
+      render: (row: string) => {
+        const fileUrl = resolveFileUrl(row);
+
+        const isValidHttpsUrl =
+          typeof fileUrl === "string" && /^https:\/\/.+/i.test(fileUrl);
+
+        return (
+          <div className="flex w-max items-center justify-between gap-2 justify-self-center">
+            {isValidHttpsUrl ? (
+              <UnstyledButton
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.open(fileUrl, "_blank");
+                }}
+              >
+                <OpenEyeSvgIcon color={theme.palette.red.DEFAULT} />
+              </UnstyledButton>
+            ) : (
+              <span className="text-gray-400 text-xs">Invalid or Unreachable URL</span>
+            )}
+          </div>
+        );
+      },
       sortable: false,
-    },
+    }
   ];
 
   return (
     <div>
-      <div className="shadow-black-900/100 bg-transparent shadow-lg">
-        <TableComponent
-          data={
-            documents
-            // Array.isArray(UserProfileData?.kycDocs)
-            //   ? UserProfileData.kycDocs
-            //   : UserProfileData?.kycDocs
-            //     ? [UserProfileData.kycDocs]
-            //     : []
-          }
-          columns={tableColumns}
-        />
-      </div>
+      <TableComponent
+        data={
+          documents && Array.isArray(documents) ? documents : []
+        }
+        columns={tableColumns}
+        enablePagination={false}
+      />
     </div>
   );
 };

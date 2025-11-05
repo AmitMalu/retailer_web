@@ -13,7 +13,7 @@ import {
   ReportsSvgIcon,
   SettingsSvgIcon,
   SupportSvgIcon,
-  WebSettingsSvgIcon,
+  // WebSettingsSvgIcon,
 } from "@/assets/svg";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -86,7 +86,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           name: "Fund Transfer",
           path: "/funding/fundTransfer",
           //   icon: <InventoryIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT", "RA"],
+          roles: ["DT", "SD", "WL", "PT", "RA"],
         },
         {
           name: "Fund Reversal",
@@ -110,7 +110,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
       subItems: [
         {
           name: "Create Sub User",
-          path: "/settings/subUser",
+          path: "/settings/ViewSubUser",
           //   icon: <InventoryIcon />,
           roles: ["RT"],
         },
@@ -202,38 +202,38 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
         },
       ],
     },
-    {
-      name: "Website Settings",
-      path: "/websiteSettings",
-      icon: React.createElement(WebSettingsSvgIcon, { color: "currentColor" }),
-      roles: ["WL"], // Only System Admin can see this menu
-      subItems: [
-        {
-          name: "Website data",
-          path: "/websiteSettings/websiteData",
-          //   icon: <PeopleIcon />,
-          roles: ["WL"],
-        },
-        {
-          name: "Social Media Links",
-          path: "/websiteSettings/socialMediaLinks",
-          //   icon: <AdminPanelSettingsIcon />,
-          roles: ["WL"],
-        },
-        {
-          name: "Web And App Logo Image",
-          path: "/websiteSettings/webAndAppLogoImage",
-          //   icon: <AdminPanelSettingsIcon />,
-          roles: ["WL"],
-        },
-        {
-          name: "Website Page Content",
-          path: "/websiteSettings/websitePageContent",
-          //   icon: <AdminPanelSettingsIcon />,
-          roles: ["WL"],
-        },
-      ],
-    },
+    // {
+    //   name: "Website Settings",
+    //   path: "/websiteSettings",
+    //   icon: React.createElement(WebSettingsSvgIcon, { color: "currentColor" }),
+    //   roles: ["WL"], // Only System Admin can see this menu
+    //   subItems: [
+    //     {
+    //       name: "Website data",
+    //       path: "/websiteSettings/websiteData",
+    //       //   icon: <PeopleIcon />,
+    //       roles: ["WL"],
+    //     },
+    //     {
+    //       name: "Social Media Links",
+    //       path: "/websiteSettings/socialMediaLinks",
+    //       //   icon: <AdminPanelSettingsIcon />,
+    //       roles: ["WL"],
+    //     },
+    //     {
+    //       name: "Web And App Logo Image",
+    //       path: "/websiteSettings/webAndAppLogoImage",
+    //       //   icon: <AdminPanelSettingsIcon />,
+    //       roles: ["WL"],
+    //     },
+    //     {
+    //       name: "Website Page Content",
+    //       path: "/websiteSettings/websitePageContent",
+    //       //   icon: <AdminPanelSettingsIcon />,
+    //       roles: ["WL"],
+    //     },
+    //   ],
+    // },
     {
       name: "Reports",
       path: "/reports",
@@ -258,37 +258,36 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           //   icon: <PendingIcon />,
           roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
         },
-        {
-          name: "Account Summary",
-          path: "/reports/accountSummary",
-          //   icon: <ListIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
-        },
+        // {
+        //   name: "Account Summary",
+        //   path: "/reports/accountSummary",
+        //   //   icon: <ListIcon />,
+        //   roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
+        // },
         {
           name: "Search Transaction",
           path: "/reports/searchTransaction",
           //   icon: <ListIcon />,
           roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
         },
-        {
-          name: "Download Report",
-          path: "/reports/downloadReport",
-          //   icon: <ListIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
-        },
+        // {
+        //   name: "Download Report",
+        //   path: "/reports/downloadReport",
+        //   //   icon: <ListIcon />,
+        //   roles: ["DT", "RT", "SD", "WL", "PT", "RA"],
+        // },
         {
           name: "Fund Loading",
           path: "/reports/fundLoading",
           //   icon: <ListIcon />,
           roles: ["RT", "RA"],
         },
-        {
-          name: "Payment Loading",
-          path: "/reports/paymentLoading",
-          //   icon: <ListIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
-
+        // {
+        //   name: "Payment Loading",
+        //   path: "/reports/paymentLoading",
+        //   //   icon: <ListIcon />,
+        //   roles: ["DT", "SD", "WL", "PT"],
+        // },
         {
           name: "Pending Transaction",
           path: "/reports/pendingTransaction",
@@ -301,18 +300,18 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           //   icon: <ListIcon />,
           roles: ["DT", "SD", "WL", "PT"],
         },
-        {
-          name: "Agent Performance",
-          path: "/reports/agentPerformance",
-          //   icon: <ListIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
-        {
-          name: "Bank Withdrawal",
-          path: "/reports/bankWithdrawal",
-          //   icon: <ListIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
+        // {
+        //   name: "Agent Performance",
+        //   path: "/reports/agentPerformance",
+        //   //   icon: <ListIcon />,
+        //   roles: ["DT", "SD", "WL", "PT"],
+        // },
+        // {
+        //   name: "Bank Withdrawal",
+        //   path: "/reports/bankWithdrawal",
+        //   //   icon: <ListIcon />,
+        //   roles: ["DT", "SD", "WL", "PT"],
+        // },
         {
           name: "Down Line Balance",
           path: "/reports/downLineBalance",

@@ -7,7 +7,7 @@ import {
   Paper,
   Stack,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import type { RootState } from "../../Redux/Store";
 import ImLogo from "@/assets/svg/imLogo";
 import { NavbarProps } from "@/Common/interface";
@@ -15,17 +15,17 @@ import TextComponent from "../Atoms/TextComponent";
 import {
   ProfileSvgIcon,
   RefreshSvgIcon,
-  ThemeSettingSvgIcon,
+  // ThemeSettingSvgIcon,
 } from "@/assets/svg";
 import { decryptData, useWalletBalance } from "@/Utils/helper";
 import { NavLink } from "react-router-dom";
-import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
+// import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
 
 export default function Navbar({
   onMenuClick,
   isMobile: isMobileProp,
 }: NavbarProps) {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const { navbarPosition } = useSelector((state: RootState) => state.settings);
   const theme = useTheme();
   const isMobileView = useMediaQuery(theme.breakpoints.down("md"));
@@ -39,9 +39,9 @@ export default function Navbar({
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
-  const handleSettingsClick = () => {
-    dispatch(toggleSettingsDrawer());
-  };
+  // const handleSettingsClick = () => {
+  //   dispatch(toggleSettingsDrawer());
+  // };
   const { WalletBalanceReq, isLoading } = useWalletBalance();
   const WalletDisplay = ({
     title,
@@ -86,7 +86,7 @@ export default function Navbar({
     <>
       <AppBar
         position={navbarPosition}
-        className="flex flex-row items-center h-auto justify-between w-screen px-[3%] rounded-b-[50px] "
+        className="flex flex-row items-center h-[60px] justify-between w-screen px-[3%] rounded-b-[50px] "
         sx={{
           ...(navbarPosition === "fixed" && {
             position: "fixed",
@@ -132,7 +132,10 @@ export default function Navbar({
                   ) : (
                     <div
                       className="cursor-pointer bg-red-light rounded-md p-2"
-                      onClick={() => WalletBalanceReq(loginData?.hierarchyId)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent bubbling
+                        WalletBalanceReq(loginData?.hierarchyId);
+                      }}
                     >
                       <RefreshSvgIcon color={theme.palette.red.DEFAULT} />
                     </div>
@@ -144,12 +147,12 @@ export default function Navbar({
                   <ProfileSvgIcon color={theme.palette.red.DEFAULT} />
                 </div>
               </NavLink>
-              <div
-                onClick={handleSettingsClick}
+              {/* <div
+                // onClick={handleSettingsClick}
                 className="cursor-pointer bg-red-light rounded-md p-2"
               >
                 <ThemeSettingSvgIcon color={theme.palette.red.DEFAULT} />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

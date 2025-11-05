@@ -100,7 +100,7 @@ const DMTScreen = () => {
       label: "Date/Time",
       searchKey: "createdOn",
       sortable: false,
-      type: "date",
+      type: "date" as const,
     },
     {
       key: "accountNumber",
@@ -191,6 +191,9 @@ const DMTScreen = () => {
                     <div className="w-full  sm:w-[calc(70%-10px)]">
                       <TextInputComponent
                         label={"Mobile Number"}
+                        allowCharacter={false}
+                        allowSpace={false}
+                        allowSpecialChar={false}
                         placeholder={"Enter"}
                         value={values.mobileNumber}
                         onChange={handleChange("mobileNumber")}
@@ -273,28 +276,28 @@ const DMTScreen = () => {
             page={currentPage}
             size={itemsPerPage}
             onSelectRow={(row) => setSelectedRowData(row)}
-            // onSearch={(columnKey, value) =>
-            //   handleSearchWithValues(columnKey, value, values)
-            // }
-            // onPageChange={(page) => {
-            //   setCurrentPage(page);
-            //   const updatedValues = {
-            //     ...values,
-            //     page,
-            //     size: itemsPerPage,
-            //   };
-            //   GetPayoutDataSubmit(updatedValues);
-            // }}
-            // onPageSizeChange={(size) => {
-            //   setItemsPerPage(size);
-            //   setCurrentPage(1);
-            //   const updatedValues = {
-            //     ...values,
-            //     page: 1,
-            //     size,
-            //   };
-            //   GetPayoutDataSubmit(updatedValues);
-            // }}
+          // onSearch={(columnKey, value) =>
+          //   handleSearchWithValues(columnKey, value, values)
+          // }
+          // onPageChange={(page) => {
+          //   setCurrentPage(page);
+          //   const updatedValues = {
+          //     ...values,
+          //     page,
+          //     size: itemsPerPage,
+          //   };
+          //   GetPayoutDataSubmit(updatedValues);
+          // }}
+          // onPageSizeChange={(size) => {
+          //   setItemsPerPage(size);
+          //   setCurrentPage(1);
+          //   const updatedValues = {
+          //     ...values,
+          //     page: 1,
+          //     size,
+          //   };
+          //   GetPayoutDataSubmit(updatedValues);
+          // }}
           />
         </div>
         <RemitterReceiptModal

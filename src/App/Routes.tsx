@@ -61,6 +61,9 @@ const MyProfile = lazy(() => import("@/pages/Home/Settings/MyProfile"));
 const CreateSubUser = lazy(
   () => import("@/pages/Home/Settings/MyProfile/Subuser")
 );
+const ViewSubUser = lazy(
+  () => import("@/pages/Home/Settings/MyProfile/Subuser/ViewSubUser")
+);
 const ChangeTPIN = lazy(() => import("@/pages/Home/Settings/ChangeTPin"));
 const MyCertificate = lazy(() => import("@/pages/Home/Settings/MyCertificate"));
 const LowBalanceAlert = lazy(
@@ -171,11 +174,16 @@ const getToken = () => {
   return token ? true : false;
 };
 
+const CatchAllRedirect = () => {
+  const token = getToken();
+  return token ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />;
+};
+
 // const ProtectedRoute: React.FC<{ children?: React.ReactNode }> = ({}) => {
 //   return getToken() ? <Outlet /> : <Navigate to="/login" />;
 // };
 
-const ProtecteAuthRoute: React.FC<{ children?: React.ReactNode }> = ({}) => {
+const ProtecteAuthRoute: React.FC<{ children?: React.ReactNode }> = ({ }) => {
   return getToken() ? <Navigate to="/dashboard" /> : <Outlet />;
 };
 
@@ -190,6 +198,10 @@ const RouterOutlet = () => {
     >
       <Routes>
         <Route path="/" element={<Outlet />}>
+          {/* Redirect root (/) to login or dashboard */}
+          <Route index element={<CatchAllRedirect />} />
+          
+          {/* ----------- Public Auth Routes ----------- */}
           <Route
             path="/login"
             element={
@@ -240,6 +252,8 @@ const RouterOutlet = () => {
           >
             <Route index element={<SetPasswordScreen />} />
           </Route>
+
+          {/* ----------- Protected Routes ----------- */}
           <Route
             path="dashboard"
             element={
@@ -376,7 +390,6 @@ const RouterOutlet = () => {
               }
             />
           </Route>
-
           <Route
             path="products/aepsScreen/vendors/cashWithdrawal"
             element={
@@ -953,6 +966,23 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+          <Route
+            path="settings/ViewSubUser"
+            element={
+              <ProtectedRoute allowedRoles={["RT"]}>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <ViewSubUser />
+                </MainLayout>
+              }
+            />
+          </Route>
 
           <Route
             path="settings/changeTPIN"
@@ -1342,6 +1372,9 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
+          {/* ----------- Catch-all Route ----------- */}
+          <Route path="*" element={<CatchAllRedirect />} />
         </Route>
       </Routes>
     </Suspense>

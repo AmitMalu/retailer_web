@@ -48,29 +48,29 @@ const SelectBAnkMinistatement = () => {
   };
 
   const handleCashWithdrawalSubmit = async () =>
-    // values: FetchCardBinDetailProps,
-    // { setFieldValue }: FormikHelpers<PGFormBodyProps>
-    {
-      try {
-        setIsLoading(true);
-        //   const data: any = {
-        //     cardBinNo: values.cardBinNo,
-        //   };
+  // values: FetchCardBinDetailProps,
+  // { setFieldValue }: FormikHelpers<PGFormBodyProps>
+  {
+    try {
+      setIsLoading(true);
+      //   const data: any = {
+      //     cardBinNo: values.cardBinNo,
+      //   };
 
-        //   const response = await Fetch_Card_Bin_Detail(data);
-        //   if (response?.status === 200 || response?.data?.statusCode === "200") {
-        //     showSuccessNotification(response?.data?.message);
-        //     setFieldValue("paymentMethod", response?.data?.data?.cardType);
-        //     setIsBinDetails(true);
-        //   } else {
-        //     showErrorNotification(response?.data?.message || "Unable to fetch");
-        //   }
-      } catch (error: any) {
-        await handleCustomError(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      //   const response = await Fetch_Card_Bin_Detail(data);
+      //   if (response?.status === 200 || response?.data?.statusCode === "200") {
+      //     showSuccessNotification(response?.data?.message);
+      //     setFieldValue("paymentMethod", response?.data?.data?.cardType);
+      //     setIsBinDetails(true);
+      //   } else {
+      //     showErrorNotification(response?.data?.message || "Unable to fetch");
+      //   }
+    } catch (error: any) {
+      await handleCustomError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -104,6 +104,9 @@ const SelectBAnkMinistatement = () => {
                       <div className="w-full  sm:w-[calc(70%-10px)]">
                         <TextInputComponent
                           label={"Mobile Number"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.mobileNumber}
                           onChange={handleChange("mobileNumber")}
@@ -121,6 +124,9 @@ const SelectBAnkMinistatement = () => {
                       <div className="w-full  sm:w-[calc(70%-10px)]">
                         <TextInputComponent
                           label={"Adhaar Number"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.aadhaarNumber}
                           onChange={handleChange("aadhaarNumber")}
@@ -137,6 +143,9 @@ const SelectBAnkMinistatement = () => {
                       <div className="w-full  sm:w-[calc(70%-10px)]">
                         <TextInputComponent
                           label={"Amount"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.amount}
                           onChange={handleChange("amount")}
@@ -194,7 +203,7 @@ const SelectBAnkMinistatement = () => {
                                   color={theme.palette.red.DEFAULT}
                                   variant="outline"
                                   checked={false}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                   classNames={{
                                     icon: "text-center",
                                     inner:
@@ -207,7 +216,7 @@ const SelectBAnkMinistatement = () => {
                                   color={theme.palette.red.DEFAULT}
                                   variant="outline"
                                   checked={false}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                 />
                                 <Radio
                                   value="Precision"
@@ -215,7 +224,7 @@ const SelectBAnkMinistatement = () => {
                                   color={theme.palette.red.DEFAULT}
                                   variant="outline"
                                   checked={false}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                 />
                                 <Radio
                                   value="Startek"
@@ -223,7 +232,7 @@ const SelectBAnkMinistatement = () => {
                                   color={theme.palette.red.DEFAULT}
                                   variant="outline"
                                   checked={false}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                 />
                                 <Radio
                                   value="Tatvik"
@@ -231,7 +240,7 @@ const SelectBAnkMinistatement = () => {
                                   color={theme.palette.red.DEFAULT}
                                   variant="outline"
                                   checked={false}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                 />
                                 <Radio
                                   value="SecuGen"
@@ -239,7 +248,7 @@ const SelectBAnkMinistatement = () => {
                                   color={theme.palette.red.DEFAULT}
                                   variant="outline"
                                   checked={false}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                 />
                                 <Radio
                                   value="Cogent"
@@ -247,14 +256,14 @@ const SelectBAnkMinistatement = () => {
                                   color={theme.palette.red.DEFAULT}
                                   variant="outline"
                                   checked={false}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                 />
                               </div>
                             </Radio.Group>
                             <div className="mt-3">
                               <Checkbox
                                 checked={false}
-                                onChange={() => {}}
+                                onChange={() => { }}
                                 label="C.S.P"
                                 color={theme.palette.red.DEFAULT}
                               />
@@ -270,7 +279,7 @@ const SelectBAnkMinistatement = () => {
                       <div className="mt-3 self-start">
                         <Checkbox
                           checked={false}
-                          onChange={() => {}}
+                          onChange={() => { }}
                           label="Alert!"
                           color={theme.palette.red.DEFAULT}
                         />

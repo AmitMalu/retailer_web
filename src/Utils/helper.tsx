@@ -6,12 +6,113 @@ import { showErrorNotification } from "./notifications";
 import { handleCustomError } from "./handleCustomError";
 import { Sub_Product_Dropdown, Wallet_Balance } from "@/Services/api";
 import { useState } from "react";
+import * as Yup from 'yup'
+import * as Papa from "papaparse";
+import moment from "moment";
 
 const KEY = CryptoJS.enc.Hex.parse(
   "a7f3d9c6e8421fb62e7e5c3410b974e2d5c6a8f90fd13b4aa12f658f9a34bc29"
 );
 
 const IV = CryptoJS.enc.Hex.parse("d8e2a59f4b1372c3e9a17d684cf1b238");
+
+export function encryptCredentials(username: string, password: string) {
+  const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
+  if (!SECRET_KEY) {
+    throw new Error(
+      "SECRET_KEY is undefined! Check your environment variables."
+    );
+  }
+  // Generate random salt
+  const salt = CryptoJS.lib.WordArray.random(16);
+  // Derive key from secret + salt
+  const key = CryptoJS.PBKDF2(SECRET_KEY, salt, {
+    keySize: 128 / 32,
+    iterations: 65536,
+    hasher: CryptoJS.algo.SHA256,
+  });
+  // Generate random IV
+  const iv = CryptoJS.lib.WordArray.random(16);
+
+  // Encrypt username & password using KEY and iv
+  const encryptedUsername = CryptoJS.AES.encrypt(username, key, {
+    iv,
+  }).toString();
+  const encryptedPassword = CryptoJS.AES.encrypt(password, key, {
+    iv,
+  }).toString();
+
+  // Send ciphertext + IV + salt to backend
+  return {
+    salt: CryptoJS.enc.Base64.stringify(salt),
+    iv: CryptoJS.enc.Base64.stringify(iv),
+    encryptedUsername,
+    encryptedPassword,
+  };
+}
+
+export const formatDateTime = (dateString: string) => {
+  if (!dateString) return "";
+
+  const parsed = moment(dateString); // Automatically parses ISO strings
+
+  if (!parsed.isValid()) return dateString;
+
+  return parsed.format("DD-MM-YYYY HH:mm:ss");
+};
+
+
+// Common text field validation
+export const textField = (
+  field = "This field",
+  max = 100,
+  required = false,
+  allowSpecialChars = false
+) => {
+  let schema = Yup.string()
+    .transform((value) => (value ? value.trim() : value)) // Trim before validation
+    .max(max, `${field} cannot exceed ${max} characters`)
+    .nullable()
+    .notRequired(); // allow null and undefined by default
+
+  if (!allowSpecialChars) {
+    schema = schema.test(
+      "no-special-chars",
+      `${field} should not contain special characters`,
+      (value) => {
+        if (!value) return true; // skip if value is null or empty
+        return /^[A-Za-z0-9\s._\-()]*$/.test(value);
+      }
+    );
+  }
+
+  if (required) {
+    schema = schema.required(`${field} is required`);
+  }
+
+  return schema;
+};
+
+export const transactionStatusSelectData = [
+  { label: "PENDING", value: "PENDING" },
+  { label: "APPROVED", value: "APPROVED" },
+  { label: "REJECTED", value: "REJECTED" },
+];
+
+export const walletTypeSelectData = [
+  { value: "PREPAID", label: "PREPAID" },
+  { value: "POSTPAID", label: "POSTPAID" },
+];
+
+export const booleanSelectData = [
+  { label: "Yes", value: "true" },
+  { label: "No", value: "false" },
+];
+
+export const booleanSelectData2 = [
+  { label: "true", value: "true" },
+  { label: "false", value: "false" },
+];
 
 export const encryptData = (data: object | string): string => {
   const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), KEY, {
@@ -95,6 +196,29 @@ export const useIpAddress = () => {
   return { fetchIpAddress };
 };
 
+
+export function exportToCsv<T extends Record<string, any>>(
+  data: T[],
+  filename: string
+) {
+  if (!data || data.length === 0) {
+    console.warn("No data available to export.");
+    return;
+  }
+
+  const csv = Papa.unparse(data);
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", `${filename}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 export const formatDate = (date: string | Date | null): string | null => {
   if (!date) return null;
   const d = typeof date === "string" ? new Date(date) : date;
@@ -106,6 +230,38 @@ export const formatYMDdate = (date: string | Date | null): string | null => {
   const d = typeof date === "string" ? new Date(date) : date;
   return `${String(d.getFullYear())}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
+
+export const singleDateValidationSchema = Yup.date()
+  .nullable()
+  .required("Date is required");
+
+export const dateRangeValidationSchema = Yup.array()
+  .of(Yup.date().nullable())
+  .test("date-range-validation", function (value) {
+    const [start, end] = value || [];
+    const { path, createError } = this;
+
+    if (!start && !end) {
+      return createError({ path, message: "Date range is required" });
+    }
+
+    if (start && !end) {
+      return createError({ path, message: "End date is required" });
+    }
+
+    if (!start && end) {
+      return createError({ path, message: "Start date is required" });
+    }
+
+    if (start && end && new Date(start) > new Date(end)) {
+      return createError({
+        path,
+        message: "Start date must be before or equal to end date",
+      });
+    }
+
+    return true;
+  });
 
 export const useWalletBalance = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -150,6 +306,18 @@ export const isSameOrAfter = (input: Date | null, compareTo: Date | null) => {
           input.getDate() >= compareTo.getDate())))
   );
 };
+
+export const ellipsisCellStyle = {
+  maxWidth: 160,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+};
+
+export const YesNoSelectData = [
+  { label: "true", value: "true" },
+  { label: "false", value: "false" },
+];
 
 export const useSubProductDropdown = () => {
   const dispatch = useDispatch<AppDispatch>();

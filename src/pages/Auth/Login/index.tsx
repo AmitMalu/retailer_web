@@ -18,7 +18,7 @@ import {
   OpenEyeSvgIcon,
   UserNameSvgIcon,
 } from "@/assets/svg";
-import { MobileNoRegex } from "@/Utils/helper";
+import { encryptCredentials, MobileNoRegex } from "@/Utils/helper";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { LoginRequest } from "@/Common/interface";
 import LoginImage from "@/assets/svg/Auth/login";
@@ -52,14 +52,21 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: LoginRequest) => {
     try {
       setIsLoading(true);
+
+      const { encryptedUsername, encryptedPassword, salt, iv } = encryptCredentials(values.userName, values.password);
+
       let bodyRequest = {
-        userName: values.userName,
-        password: values.password,
+        // userName: values.userName,
+        // password: values.password,
+        userName: encryptedUsername,
+        password: encryptedPassword,
+        salt,
+        iv,
         url: "https://uat.decipay.in/",
         // url: getCurrentUrl(),
       };
       const response = await login(bodyRequest);
-      if (
+      if (response && response?.data &&
         response?.data?.statusCode === 200 ||
         response?.data?.statusCode === "200"
       ) {
@@ -71,8 +78,14 @@ const Login: React.FC = () => {
         showErrorNotification(response?.data?.message || "Unable to login");
       }
     } catch (error: any) {
-      showErrorNotification(error.response?.data?.message || error.message);
-      setIsLoading(false);
+      console.error(error, "login error");
+      // Safely extract message
+      const errorMessage =
+        error?.response?.data?.message ||  // API returned a message
+        error?.message ||                  // Network or generic error
+        "Something went wrong. Please try again.";
+
+      showErrorNotification(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -113,6 +126,9 @@ const Login: React.FC = () => {
                   <div className="mt-10 flex w-full flex-col gap-4 items-center justify-center">
                     <TextInputComponent
                       label="Mobile Number"
+                      allowCharacter={false}
+                      allowSpace={false}
+                      allowSpecialChar={false}
                       value={values.userName}
                       onChange={handleChange("userName")}
                       error={
@@ -185,7 +201,7 @@ const Login: React.FC = () => {
                       isAuth={true}
                     />
                   </div>
-                  <div className="flex items-center justify-center gap-2 mt-2 ">
+                  {/* <div className="flex items-center justify-center gap-2 mt-2 ">
                     <TextComponent
                       fontSize={14}
                       fontWeight={400}
@@ -202,7 +218,7 @@ const Login: React.FC = () => {
                     >
                       Sign up
                     </TextComponent>
-                  </div>
+                  </div> */}
                 </>
               )}
             </Formik>

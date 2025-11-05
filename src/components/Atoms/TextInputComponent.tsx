@@ -30,6 +30,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
   placeholder,
   value,
   onChange,
+  autoComplete,
   error,
   disabled = false,
   type = "text",
@@ -42,24 +43,74 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
   rightSection,
   isAuth = false,
   variant = "outlined",
+  allowNumber = true,
+  allowCharacter = true,
+  allowSpecialChar = true,
+  allowedChars,
+  allowSpace = true,
+  capitalize = false,
+  allowDecimal,
+  decimalPlaces = 3,
   ...rest
 }) => {
   const theme = useTheme();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = event.target.value;
+    let newValue = event.target.value;
+
+    // prevent leading space
+    if (newValue.startsWith(" ")) {
+      newValue = newValue.trimStart();
+    }
+
+    if (type === "number" || allowDecimal) {
+      if (allowDecimal) {
+        // allow digits and a single dot
+        const regex = new RegExp(`^\\d*(\\.\\d{0,${decimalPlaces || 3}})?$`);
+        if (!regex.test(newValue)) return; // ignore invalid input
+      } else {
+        // only digits
+        newValue = newValue.replace(/[^0-9]/g, "");
+      }
+    } else {
+      // Apply allowed/disallowed rules
+      if (!allowNumber) newValue = newValue.replace(/[0-9]/g, "");
+      if (!allowCharacter) newValue = newValue.replace(/[a-zA-Z]/g, "");
+      if (!allowSpecialChar) {
+        if (allowedChars) {
+          // Only allow specified characters along with Charecter and Numbers
+          const regex = new RegExp(`[^a-zA-Z0-9\\s${allowedChars.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")}]`, "g");
+          newValue = newValue.replace(regex, "");
+        } else {
+          // block all except alphanumeric + space
+          newValue = newValue.replace(/[^a-zA-Z0-9\s]/g, "");
+        }
+      }
+      if (!allowSpace) newValue = newValue.replace(/\s+/g, "");
+      if (capitalize) newValue = newValue.toUpperCase();
+    }
+
+    // if (maxLength && newValue.length > maxLength) {
+    //   if (onChange) onChange(event);
+    //   return;
+    // }
+
+    // if (minLength && newValue.length < minLength) {
+    //   if (onChange) onChange(event);
+    //   return;
+    // }
 
     if (maxLength && newValue.length > maxLength) {
-      if (onChange) onChange(event);
-      return;
+      newValue = newValue.slice(0, maxLength);
     }
 
-    if (minLength && newValue.length < minLength) {
-      if (onChange) onChange(event);
-      return;
+    if (onChange) {
+      const customEvent = {
+        ...event,
+        target: { ...event.target, value: newValue }
+      };
+      onChange(customEvent as React.ChangeEvent<HTMLInputElement>);
     }
-
-    if (onChange) onChange(event);
   };
 
   const getMuiVariant = (): MuiVariant => {
@@ -86,6 +137,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
         placeholder={placeholder}
         value={value}
         onChange={handleChange}
+        autoComplete={autoComplete}
         error={!!error}
         disabled={disabled}
         type={type}

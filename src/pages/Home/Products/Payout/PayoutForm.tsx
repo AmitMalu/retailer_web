@@ -63,9 +63,11 @@ const PayoutFormModal = ({
       .min(11, "Invalid IFSC Code")
       .max(11, "Invalid IFSC Code"),
     accountNumber: Yup.string()
+      .transform((value) => (value ? value.replace(/\s+/g, "") : "")) // remove all spaces
       .required("Required")
-      .max(16, "Invalid Account Number")
-      .min(16, "Invalid Account Number"),
+      .matches(/^[0-9]+$/, "Must be only digits")
+      .min(9, "Must be at least 9 digits")
+      .max(20, "Must be at most 20 digits"),
     bankHolderName: Yup.string().required("Required"),
   });
 
@@ -168,6 +170,7 @@ const PayoutFormModal = ({
                       label={"IFSC Code"}
                       placeholder={"Enter"}
                       value={values.ifscCode}
+                      capitalize
                       onChange={(e) => {
                         const value = e.target.value;
                         handleChange("ifscCode")(e);
@@ -202,13 +205,19 @@ const PayoutFormModal = ({
                           : ""
                       }
                       withAsterisk
+                      maxLength={50}
+                      allowSpecialChar={false}
+                      allowNumber={false}
                       className="w-max"
-                      disabled={true}
+                      // disabled={true}
                     />
                   </div>
                   <div className="w-full sm:w-[calc(50%-12px)] ">
                     <TextInputComponent
                       label={"Account Number"}
+                      allowCharacter={false}
+                      allowSpace={false}
+                      allowSpecialChar={false}
                       placeholder={"Enter"}
                       value={values.accountNumber}
                       onChange={handleChange("accountNumber")}
@@ -217,8 +226,8 @@ const PayoutFormModal = ({
                           ? errors.accountNumber
                           : ""
                       }
-                      maxLength={16}
-                      minLength={16}
+                      maxLength={20}
+                      minLength={9}
                       withAsterisk
                       className="w-max"
                     />

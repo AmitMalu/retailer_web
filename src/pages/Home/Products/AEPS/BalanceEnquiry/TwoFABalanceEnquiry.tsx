@@ -33,29 +33,29 @@ const TwoFABalanceEnquiry = () => {
   };
 
   const handleCashWithdrawalSubmit = async () =>
-    // values: FetchCardBinDetailProps,
-    // { setFieldValue }: FormikHelpers<PGFormBodyProps>
-    {
-      try {
-        setIsLoading(true);
-        //   const data: any = {
-        //     cardBinNo: values.cardBinNo,
-        //   };
+  // values: FetchCardBinDetailProps,
+  // { setFieldValue }: FormikHelpers<PGFormBodyProps>
+  {
+    try {
+      setIsLoading(true);
+      //   const data: any = {
+      //     cardBinNo: values.cardBinNo,
+      //   };
 
-        //   const response = await Fetch_Card_Bin_Detail(data);
-        //   if (response?.status === 200 || response?.data?.statusCode === "200") {
-        //     showSuccessNotification(response?.data?.message);
-        //     setFieldValue("paymentMethod", response?.data?.data?.cardType);
-        //     setIsBinDetails(true);
-        //   } else {
-        //     showErrorNotification(response?.data?.message || "Unable to fetch");
-        //   }
-      } catch (error: any) {
-        await handleCustomError(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      //   const response = await Fetch_Card_Bin_Detail(data);
+      //   if (response?.status === 200 || response?.data?.statusCode === "200") {
+      //     showSuccessNotification(response?.data?.message);
+      //     setFieldValue("paymentMethod", response?.data?.data?.cardType);
+      //     setIsBinDetails(true);
+      //   } else {
+      //     showErrorNotification(response?.data?.message || "Unable to fetch");
+      //   }
+    } catch (error: any) {
+      await handleCustomError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -88,6 +88,9 @@ const TwoFABalanceEnquiry = () => {
                     <div className="w-full  sm:w-[calc(70%-10px)]">
                       <TextInputComponent
                         label={"Adhaar Number"}
+                        allowCharacter={false}
+                        allowSpace={false}
+                        allowSpecialChar={false}
                         placeholder={"Enter"}
                         value={values.aadhaarNumber}
                         onChange={handleChange("aadhaarNumber")}
@@ -121,7 +124,7 @@ const TwoFABalanceEnquiry = () => {
                                   color={theme.palette.red.DEFAULT}
                                   variant="outline"
                                   checked={false}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                   classNames={{
                                     icon: "text-center",
                                     inner:
@@ -134,7 +137,7 @@ const TwoFABalanceEnquiry = () => {
                                   color={theme.palette.red.DEFAULT}
                                   variant="outline"
                                   checked={false}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                 />
                                 <Radio
                                   value="Precision"
@@ -142,7 +145,7 @@ const TwoFABalanceEnquiry = () => {
                                   color={theme.palette.red.DEFAULT}
                                   variant="outline"
                                   checked={false}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                 />
                                 <Radio
                                   value="Startek"
@@ -150,7 +153,7 @@ const TwoFABalanceEnquiry = () => {
                                   color={theme.palette.red.DEFAULT}
                                   variant="outline"
                                   checked={false}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                 />
                                 <Radio
                                   value="Tatvik"
@@ -158,7 +161,7 @@ const TwoFABalanceEnquiry = () => {
                                   color={theme.palette.red.DEFAULT}
                                   variant="outline"
                                   checked={false}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                 />
                                 <Radio
                                   value="SecuGen"
@@ -166,7 +169,7 @@ const TwoFABalanceEnquiry = () => {
                                   color={theme.palette.red.DEFAULT}
                                   variant="outline"
                                   checked={false}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                 />
                                 <Radio
                                   value="Cogent"
@@ -174,14 +177,14 @@ const TwoFABalanceEnquiry = () => {
                                   color={theme.palette.red.DEFAULT}
                                   variant="outline"
                                   checked={false}
-                                  onChange={() => {}}
+                                  onChange={() => { }}
                                 />
                               </div>
                             </Radio.Group>
                             <div className="mt-3">
                               <Checkbox
                                 checked={false}
-                                onChange={() => {}}
+                                onChange={() => { }}
                                 label="C.S.P"
                                 color={theme.palette.red.DEFAULT}
                               />

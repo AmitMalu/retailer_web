@@ -1,10 +1,12 @@
 import TableComponent from "@/components/Molecules/TableComponent";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "@mui/system";
 import TextComponent from "@/components/Atoms/TextComponent";
 import {
   PayoutBankDetails,
+  PayoutBankDetailsParams,
   PayoutSendBeneficiaryProps,
+  subProductObjType,
 } from "@/Common/interface";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
@@ -25,32 +27,39 @@ import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import PayoutFormModal from "./PayoutForm";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
-import { Payout_GetAll_Payout_BankDetails, Payout_Send } from "@/Services/api";
+import { Edit_Beneficiary_Bank_Details, Payout_GetAll_Payout_BankDetails, Payout_Send, Payout_Success_Callback } from "@/Services/api";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
 import PayoutBankDeleteModal from "@/components/Organism/PayoutBankDeleteModal";
+import { useBankVerification } from "@/Utils/Verification";
+import { Refresh } from "@mui/icons-material";
+
+interface LocationState {
+  payoutType?: subProductObjType;
+}
 
 const InfoTable = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const location = useLocation();
-  const { payoutType } = location.state || {};
+  const { payoutType } = location.state as LocationState;
 
   const [showDrawerForm, setShowDrawerForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSeacrh, setIsSeacrh] = useState(false);
-  const [searchValues, setSearchValues] = useState<Record<string, string>>({});
   const [selectedRowData, setSelectedRowData] = useState<
     PayoutBankDetails | []
   >([]);
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isBankList, setIsBankList] = useState<PayoutBankDetails | []>([]);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
-  const isFetchingRef = useRef<boolean>(false);
+  const { verify: verifyBank } = useBankVerification();
 
+  const [searchValues, setSearchValues] = useState<Record<string, string>>({});
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(10);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [isSeacrh, setIsSeacrh] = useState(false);
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
@@ -59,44 +68,105 @@ const InfoTable = () => {
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  const GetPayoutDataSubmit = async () => {
+  const GetPayoutDataSubmit = async (pageNum = 1, pageSize = 10, filters: Record<string, any> = {}) => {
+    const reqParams: PayoutBankDetailsParams = {
+      page: pageNum - 1, // API is 0-indexed
+      size: pageSize,
+      ...filters, // dynamic filters
+    };
+
     try {
       setIsLoading(true);
-      // setCurrentPage(values.page);
-      // setItemsPerPage(values.size);
-
-      const response = await Payout_GetAll_Payout_BankDetails();
+      const response = await Payout_GetAll_Payout_BankDetails(reqParams);
       if (response?.status === 200) {
         setIsBankList(response?.data?.data?.content);
+        setTotalRecords(response?.data?.data?.totalElements || 0);
       } else {
         showErrorNotification(response?.data?.message);
+        setIsBankList([]);
+        setTotalRecords(0);
       }
     } catch (error) {
       await handleCustomError(error);
+      setIsBankList([]);
+      setTotalRecords(0);
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (!isFetchingRef.current) {
-      isFetchingRef.current = true;
-      GetPayoutDataSubmit();
+  const handleVerifyBank = async (row: PayoutBankDetails) => {
+    try {
+      setIsLoading(true);
+
+      // Step 1: Call 3rd party verification
+      const response = await verifyBank({
+        id_number: row.accountNumber,
+        ifsc: row.ifscCode,
+        ifsc_details: true,
+      });
+
+      if (response?.data?.data) {
+        const verifiedData = response?.data?.data;
+
+        // Step 2: Update state (UI)
+        setIsBankList((prev: PayoutBankDetails[]) =>
+          prev.map((item) =>
+            item.id === row.id
+              ? {
+                ...item,
+                isVerified: true,
+                ...(verifiedData?.ifsc_details?.bank_name && {
+                  bankName: verifiedData?.ifsc_details.bank_name,
+                }),
+                ...(verifiedData?.full_name && {
+                  bankHolderName: verifiedData?.full_name,
+                }),
+              }
+              : item
+          )
+        );
+
+        // Step 3: Build payload for DB
+        const payload = {
+          id: row?.id,
+          hierarchyId: row.hierarchyId,
+          bankName: verifiedData?.ifsc_details?.bank_name || row.bankName,
+          bankHolderName: verifiedData?.full_name || row.bankHolderName,
+          bankAccountNumber: row.accountNumber,
+          ifscCode: row.ifscCode,
+          isVerified: true,
+          createdBy: loginData?.mobileNumber,
+        };
+
+        // Step 4: Call DB API to persist changes
+        const dbResponse = await Edit_Beneficiary_Bank_Details(payload);
+        if (dbResponse?.status === 200 || dbResponse?.data?.status === "200") {
+          showSuccessNotification("Bank verified & saved successfully");
+        } else {
+          showErrorNotification(dbResponse?.data?.message || "Failed to save bank verification");
+        }
+      }
+    } catch (error: any) {
+      console.error("Bank verification failed:", error?.message);
+      showErrorNotification(error?.message || "Error in bank verification");
+    } finally {
+      setIsLoading(false);
     }
-  }, []);
+  };
 
   const tableColumns = [
     {
       key: "bankHolderName",
       label: "Holder Name",
       searchKey: "bankHolderName",
-      sortable: true,
+      // sortable: true,
     },
     {
       key: "bankName",
       label: "Bank Name",
       searchKey: "bankName",
-      sortable: true,
+      // sortable: true,
     },
     {
       key: "accountNumber",
@@ -128,11 +198,12 @@ const InfoTable = () => {
           retailerId: loginData?.hierarchyId || "",
           accountNumber: values?.accountNumber || "",
           ifscCode: values?.ifscCode || "",
-          amount: 0,
+          amount: "0",
           beneficiaryName: values?.bankHolderName || "",
-          paymentMode: "",
-          subProductId: payoutType,
-          callbackurl: "https://uat.decipay.in/enterprises/api/payout/callback",
+          paymentMode: "IMPS",
+          subProductId: payoutType?.subProductId || "",
+          schemeCode: payoutType?.schemeCode || ""
+          // callbackurl: "https://uat.decipay.in/enterprises/api/payout/callback",
         };
         const handleSubmit = async (values: PayoutSendBeneficiaryProps) => {
           try {
@@ -145,13 +216,28 @@ const InfoTable = () => {
               beneficiaryName: values.beneficiaryName,
               paymentMode: values.paymentMode,
               subProductId: values.subProductId,
-              callbackurl: values.callbackurl,
+              schemeCode: values.schemeCode,
+
+              // callbackurl: values.callbackurl,
             };
 
             const response = await Payout_Send(payload);
-            if (response?.status === 200) {
-              showSuccessNotification("Transfer initiated successfully");
-              return true;
+            if (response?.data?.statusCode == 200) {
+              showSuccessNotification(response?.data?.message);
+              const req = {
+                subProductId: values.subProductId
+              }
+              const res2 = await Payout_Success_Callback(req)
+              if (res2?.data?.statusCode == 200) {
+                showSuccessNotification(res2?.data?.message);
+                return true;
+              } else {
+                showErrorNotification(
+                  response?.data?.message || "Transfer Initiation failed"
+                );
+                return false;
+              }
+
             } else {
               showErrorNotification(
                 response?.data?.message || "Transfer failed"
@@ -175,15 +261,16 @@ const InfoTable = () => {
           >
             {({
               values,
-              handleChange,
+              // handleChange,
               handleSubmit,
               errors,
               touched,
               setFieldValue,
             }) => (
               <div className="flex items-center gap-2 justify-center">
-                <div className="w-24">
+                <div className="w-40 h-20 flex justify-center items-center">
                   <DropdownComponent
+                    label="Transaction Type"
                     data={[
                       { value: "IMPS", label: "IMPS" },
                       { value: "NEFT", label: "NEFT" },
@@ -198,16 +285,29 @@ const InfoTable = () => {
                     className="w-max"
                   />
                 </div>
-                <div className="w-32">
+                <div className="w-32 h-20 flex justify-center items-center">
                   <TextInputComponent
-                    placeholder={"Enter"}
-                    value={values.amount}
-                    onChange={handleChange("amount")}
+                    placeholder={"Enter Amount"}
+                    value={values.amount ? values.amount : 0}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const val = e.target.value;
+
+                      // 🧠 If current value is 0 and user types a number → replace it
+                      if (values.amount === 0 && /^\d$/.test(val)) {
+                        setFieldValue("amount", Number(val));
+                      }
+                      // ✅ Otherwise, handle normally
+                      else if (/^\d*$/.test(val)) {
+                        setFieldValue("amount", Number(val || 0));
+                      }
+                    }}
                     error={touched.amount && errors.amount ? errors.amount : ""}
                     className="w-max"
+                    maxLength={8}
                   />
                 </div>
                 <ButtonComponent
+                  height="40px"
                   title="Transfer"
                   variant="filled"
                   onClick={() => {
@@ -221,23 +321,40 @@ const InfoTable = () => {
           </Formik>
         );
       },
+      disableSearch: true
     },
     {
       key: "isVerified",
       label: "Verified",
       searchKey: "isVerified",
       sortable: false,
-      render: (row: PayoutBankDetails) => (
-        <div>
-          <TextComponent
-            fontSize={14}
-            fontWeight={500}
-            color={theme.palette.red.DEFAULT}
-          >
-            {row?.isVerified ? "Verified" : "Not Verified"}
-          </TextComponent>
+      render: (_value: any, _index: number, row: PayoutBankDetails) => (
+        <div className="flex items-center gap-2">
+          {row?.isVerified ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                color: "#28a745",
+                fontSize: "18px",
+                fontWeight: 500,
+              }}
+            >
+              ✅ Verified
+            </div>
+          ) : (
+            <ButtonComponent
+              height={40}
+              title="Verify"
+              variant="outline"
+              radius={5}
+              width={100}
+              onClick={() => handleVerifyBank(row)}
+            />
+          )}
         </div>
       ),
+      disableSearch: true
     },
     {
       key: "action",
@@ -256,52 +373,47 @@ const InfoTable = () => {
       ),
       searchKey: "action",
       sortable: false,
+      disableSearch: true
     },
   ];
 
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
   const handleSearchWithValues = (columnKey: string, value: string) => {
-    try {
-      const newSearchValues = {
-        ...searchValues,
-        [columnKey]: value,
-      };
-      setSearchValues(newSearchValues);
+    const newSearchValues = { ...searchValues };
 
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        setIsLoading(true);
-        Payout_GetAll_Payout_BankDetails()
-          .then((response) => {
-            if (response?.status === 200) {
-              setIsBankList(response?.data?.data?.content);
-            } else {
-              showErrorNotification(response?.data?.message);
-              setIsBankList([]);
-            }
-          })
-          .catch((error) => {
-            handleCustomError(error);
-            setIsBankList([]);
-          })
-          .finally(() => {
-            setIsLoading(false);
-          });
-      }, 900);
-    } catch (error) {
-      handleCustomError(error);
+    if (value) {
+      newSearchValues[columnKey] = value;
+    } else {
+      delete newSearchValues[columnKey];
     }
+
+    setSearchValues(newSearchValues);
+    setPage(1); // Reset to first page when search changes
   };
+
+  const handleRefresh = () => {
+    setIsSeacrh(false)
+    setSearchValues({});
+    setPage(1)
+    setSize(10)
+  }
+
+  useEffect(() => {
+    GetPayoutDataSubmit(page, size, searchValues);
+  }, [page, size, searchValues])
+
+  useEffect(() => {
+    // if no payoutType, redirect back
+    if (!payoutType) {
+      navigate("/products/payoutScreen", { replace: true });
+    }
+  }, [payoutType]);
 
   return (
     <>
       {isLoading && <Loader />}
       <div className="w-full 320px:mt-12 md:mt-0">
         <div className="mb-6 flex items-center gap-6 justify-start">
+          {/* Back Button */}
           <UnstyledButton
             onClick={() => {
               navigate(`/products/payoutScreen`);
@@ -309,6 +421,8 @@ const InfoTable = () => {
           >
             <BackSvgIcon color={theme.palette.red.DEFAULT} />
           </UnstyledButton>
+
+          {/* Heading*/}
           <TextComponent
             fontSize={28}
             fontWeight={600}
@@ -318,71 +432,71 @@ const InfoTable = () => {
           </TextComponent>
         </div>
 
-        <div className="flex items-center justify-end gap-6">
-          <div className="border-1 flex w-max items-center justify-center justify-self-end rounded-md border-red-light bg-red-light px-2 py-1">
+        <div className="flex items-center justify-end gap-3">
+          {/* Refresh */}
+          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px]">
+            <UnstyledButton
+              onClick={handleRefresh}
+              className="flex items-center justify-center gap-2"
+            >
+              <Refresh color="error" />
+            </UnstyledButton>
+          </div>
+
+          {/* Filter */}
+          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px]">
             <UnstyledButton
               onClick={() => setIsSeacrh(!isSeacrh)}
-              className="flex flex-row items-center justify-center gap-3 text-center disabled:opacity-30"
+              className="flex items-center justify-center gap-2"
             >
               <FilterSvgIcon color={theme.palette.red.DEFAULT} />
               <TextComponent
-                fontSize={18}
+                fontSize={16}
                 fontWeight={400}
                 color={theme.palette.red.DEFAULT}
                 align="center"
               >
-                Search
+                Filter
               </TextComponent>
             </UnstyledButton>
           </div>
-          {isBankList && isBankList.length < 50 && (
-            <div className="flex items-center justify-end">
-              <ButtonComponent
-                title="ADD BANK"
-                variant="filled"
-                onClick={() => setShowDrawerForm(true)}
-                radius={4}
-                width={150}
-                leftIcon={
-                  <PlusSvgIcon color={theme.palette.background.paper} />
-                }
-              />
-            </div>
-          )}
+
+          {/* Add Bank Button */}
+          <ButtonComponent
+            title="ADD BANK"
+            variant="filled"
+            onClick={() => setShowDrawerForm(true)}
+            radius={4}
+            width={150}
+            leftIcon={<PlusSvgIcon color={theme.palette.background.paper} />}
+          />
         </div>
+
+        {/* ////////////////////////////// Table ///////////////////////////////// */}
         <div className="mt-6">
           <TableComponent
+            keyField="id"
             data={Array.isArray(isBankList) ? isBankList : [isBankList]}
             columns={tableColumns}
             showSearch={isSeacrh}
-            keyField="id"
-            // page={currentPage}
-            // size={itemsPerPage}
             onSelectRow={(row) => setSelectedRowData(row)}
             onSearch={(columnKey, value) =>
               handleSearchWithValues(columnKey, value)
             }
-            // onPageChange={(page) => {
-            //   setCurrentPage(page);
-            //   const updatedValues = {
-            //     ...values,
-            //     page,
-            //     size: itemsPerPage,
-            //   };
-            //   GetPayoutDataSubmit(updatedValues);
-            // }}
-            // onPageSizeChange={(size) => {
-            //   setItemsPerPage(size);
-            //   setCurrentPage(1);
-            //   const updatedValues = {
-            //     ...values,
-            //     page: 1,
-            //     size,
-            //   };
-            //   GetPayoutDataSubmit(updatedValues);
-            // }}
+            page={page}
+            size={size}
+            onPageChange={setPage}
+            onPageSizeChange={(newSize) => {
+              setSize(newSize);
+              setPage(1); // reset to first page when size changes
+            }}
+            serverSide={true}
+            totalRecords={totalRecords}
           />
         </div>
+
+
+        {/* ////////////////////////////// Modals ///////////////////////////////// */}
         <PayoutFormModal
           opened={showDrawerForm}
           onClose={() => {
@@ -391,6 +505,7 @@ const InfoTable = () => {
           }}
           rowData={selectedRowData}
         />
+
         <PayoutBankDeleteModal
           opened={isDeleteModal}
           onClose={() => {
@@ -400,7 +515,7 @@ const InfoTable = () => {
           }}
           rowData={selectedRowData}
         />
-      </div>
+      </div >
     </>
   );
 };

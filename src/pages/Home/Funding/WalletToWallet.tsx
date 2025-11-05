@@ -28,7 +28,24 @@ const WalletToWallet = () => {
     : null;
 
   const validationSchema = Yup.object().shape({
-    transferAmount: Yup.string().required("Required"),
+    // transferAmount: Yup.string()
+    //   .required("Required")
+    //   .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount"),
+    // confirmAmount: Yup.string()
+    //   .required("Required")
+    //   .oneOf([Yup.ref("transferAmount")], "Amounts must match")
+    //   .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount"),
+    transferAmount: Yup.string()
+      .required("Required")
+      .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount")
+      .test(
+        "non-zero",
+        "Amount must be greater than 0",
+        (value) => {
+          if (!value) return false; // required check
+          return parseFloat(value) > 0;
+        }
+      ),
     confirmAmount: Yup.string()
       .required("Required")
       .oneOf([Yup.ref("transferAmount")], "Amounts must match"),
@@ -78,13 +95,13 @@ const WalletToWallet = () => {
       {isLoading && <Loader />}
       <div className=" flex w-full flex-col flex-wrap items-center justify-start gap-1">
         <div className="relative w-[80%]">
-          <div className="absolute inset-0 bg-red-dark rounded-[20px] blur-[8px] h-full"></div>
+          <div className="absolute inset-0 bg-gray-200 rounded-[20px] blur-[1px] h-full"></div>
 
           <div className="relative py-1 flex items-center justify-center">
             <TextComponent
               fontSize={30}
               fontWeight={500}
-              color="background.paper"
+              color="red.DEFAULT"
             >
               Wallet To Wallet
             </TextComponent>
@@ -152,6 +169,11 @@ const WalletToWallet = () => {
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Transfer Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.transferAmount}
                     onChange={handleChange("transferAmount")}
@@ -160,7 +182,7 @@ const WalletToWallet = () => {
                         ? errors.transferAmount
                         : ""
                     }
-                    type="number"
+                    // type="number"
                     withAsterisk
                     className="w-max"
                   />
@@ -168,6 +190,11 @@ const WalletToWallet = () => {
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Confirm Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.confirmAmount}
                     onChange={handleChange("confirmAmount")}
@@ -176,7 +203,7 @@ const WalletToWallet = () => {
                         ? errors.confirmAmount
                         : ""
                     }
-                    type="number"
+                    // type="number"
                     withAsterisk
                     className="w-max"
                   />

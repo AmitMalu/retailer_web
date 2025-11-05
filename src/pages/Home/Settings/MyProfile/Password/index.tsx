@@ -165,6 +165,7 @@ const ChangePassowrd: React.FC = () => {
                     </div>
                     <TextInputComponent
                       label="Old Password"
+                      autoComplete="new-password"
                       value={values.oldPassword}
                       onChange={handleChange("oldPassword")}
                       error={
@@ -193,6 +194,7 @@ const ChangePassowrd: React.FC = () => {
                       }
                     />
                     <TextInputComponent
+                      autoComplete="new-password"
                       label="New Password"
                       value={values.newPassword}
                       onChange={handleChange("newPassword")}
@@ -222,6 +224,7 @@ const ChangePassowrd: React.FC = () => {
                       }
                     />
                     <TextInputComponent
+                      autoComplete="new-password"
                       label={"Re-enter New Password"}
                       value={values.confirmPassword}
                       onChange={handleChange("confirmPassword")}
@@ -259,11 +262,11 @@ const ChangePassowrd: React.FC = () => {
                       loading={isLoading}
                       radius={28}
                       fullWidth={true}
-                      // disabled={
-                      //   isLoading ||
-                      //   !values.newPassword ||
-                      //   !values.confirmPassword
-                      // }
+                    // disabled={
+                    //   isLoading ||
+                    //   !values.newPassword ||
+                    //   !values.confirmPassword
+                    // }
                     />
                   </div>
                 </>

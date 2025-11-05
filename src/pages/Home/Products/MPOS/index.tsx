@@ -232,6 +232,7 @@ const MposScreen = () => {
                   </div> */}
                   <div className="w-full ">
                     <TextInputComponent
+                      allowSpecialChar={false}
                       label={"Card Bin No"}
                       placeholder={"Enter"}
                       value={values.cardBinNo}
@@ -288,12 +289,15 @@ const MposScreen = () => {
                       <div className="w-full ">
                         <TextInputComponent
                           label={"Card Holder Mobile"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.cardHolderMobileNumber}
                           onChange={handleChange("cardHolderMobileNumber")}
                           error={
                             touched.cardHolderMobileNumber &&
-                            errors.cardHolderMobileNumber
+                              errors.cardHolderMobileNumber
                               ? errors.cardHolderMobileNumber
                               : ""
                           }
@@ -353,6 +357,9 @@ const MposScreen = () => {
                       <div className="w-full ">
                         <TextInputComponent
                           label={"Amount"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.amount}
                           onChange={handleChange("amount")}
@@ -366,6 +373,9 @@ const MposScreen = () => {
                       <div className="w-full ">
                         <TextInputComponent
                           label={"Confirm Amount"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.confirmAmount}
                           onChange={handleChange("confirmAmount")}

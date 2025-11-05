@@ -37,12 +37,12 @@ const AddBeneficiaryModal = ({
     bankName: Yup.string().required("Required"),
     ifscCode: Yup.string().required("Required"),
     bankAccountNumber: Yup.string()
-      .max(12, "Enter valid Number")
-      .min(12, "Enter valid Number")
-      .required("Required"),
+      .transform((value) => (value ? value.replace(/\s+/g, "") : "")) // remove all spaces
+      .required("Required")
+      .matches(/^[0-9]+$/, "Must be only digits")
+      .min(9, "Must be at least 9 digits")
+      .max(20, "Must be at most 20 digits"),
     confirmBankAccountNumber: Yup.string()
-      .max(12, "Enter valid Number")
-      .min(12, "Enter valid Number")
       .oneOf([Yup.ref("confirmBankAccountNumber")], "Amounts must match")
       .required("Required"),
   });
@@ -177,6 +177,9 @@ const AddBeneficiaryModal = ({
                   <div className="w-full sm:w-[calc(50%-12px)] ">
                     <TextInputComponent
                       label={"Account Number"}
+                      allowCharacter={false}
+                      allowSpace={false}
+                      allowSpecialChar={false}
                       placeholder={"Enter"}
                       value={values.bankAccountNumber}
                       onChange={handleChange("bankAccountNumber")}
@@ -185,8 +188,8 @@ const AddBeneficiaryModal = ({
                           ? errors.bankAccountNumber
                           : ""
                       }
-                      maxLength={12}
-                      minLength={12}
+                      maxLength={20}
+                      minLength={9}
                       withAsterisk
                       className="w-max"
                     />
@@ -194,17 +197,20 @@ const AddBeneficiaryModal = ({
                   <div className="w-full sm:w-[calc(50%-12px)] ">
                     <TextInputComponent
                       label={"Confirm Account Number"}
+                      allowCharacter={false}
+                      allowSpace={false}
+                      allowSpecialChar={false}
                       placeholder={"Enter"}
                       value={values.confirmBankAccountNumber}
                       onChange={handleChange("confirmBankAccountNumber")}
                       error={
                         touched.confirmBankAccountNumber &&
-                        errors.confirmBankAccountNumber
+                          errors.confirmBankAccountNumber
                           ? errors.confirmBankAccountNumber
                           : ""
                       }
-                      maxLength={12}
-                      minLength={12}
+                      maxLength={20}
+                      minLength={9}
                       withAsterisk
                       className="w-max"
                     />
@@ -234,7 +240,7 @@ const AddBeneficiaryModal = ({
                     <ButtonComponent
                       title="VERIFY"
                       variant="outline"
-                      onClick={() => {}}
+                      onClick={() => { }}
                       disabled={isLoading}
                       radius={10}
                       width={100}

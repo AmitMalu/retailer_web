@@ -21,9 +21,13 @@ export const API_ROUTES = {
   PREFUND_REQUEST: `${BASE_URL}/api/prefund/request`,
   WALLET_TO_WALLET: `${BASE_URL}/api/wallet-to-wallet/transfer`,
   FUND_REVERSAL: `${BASE_URL}/api/fund-reversal`,
+  FUND_REVERSAL_RESEND_OTP: `${BASE_URL}/api/fund-reversal/resend-otp`,
   CHILD_MEMBER_LIST: `${BASE_URL}/api/dropdown-manager/child-accounts`,
+  SINGLE_HIERARCHY_CHILD_LIST: `${BASE_URL}/api/dropdown-manager/child`,
   FUND_TRANSFER: `${BASE_URL}/api/fund-transfer`,
   WALLET_BALANCE: `${BASE_URL}/api/dashboard/wallet-balance`,
+  WALLET_TO_BANK: `${BASE_URL}/api/move-to-bank/send-payout-request`,
+  FETCH_HIERARCHY_BANKS: `${BASE_URL}/api/bank-details/verified`,
 
   ///////////////// CREATE USER //////////////////////////
   CREATE_WHITE_LABEL: `${BASE_URL}/api/white-labels`,
@@ -36,12 +40,16 @@ export const API_ROUTES = {
   COMMISSION_AND_CHARGES: `${BASE_URL}/api/commission-charge/view`,
   WALLET_REPORT: `${BASE_URL}/api/my-transaction/view`,
   NETWORK_TRANSACTION_REPORT: `${BASE_URL}/api/network-transaction/view`,
+  SEARCH_TRANSACTION_REPORT: `${BASE_URL}/api/search-transaction/view`,
+  DEBIT_HISTORY_REPORT: `${BASE_URL}/api/debit-credit/report`,
+  DOWNLINE_BALANCE_REPORT: `${BASE_URL}/api/downline-balance/report`,
+  PENDING_TRANSACTION_REPORT: `${BASE_URL}/api/funding/settlement`,
 
   /////////////// TICKETING SYSTEM //////////////////////////
   TRANSACTION_DETAILS: `${BASE_URL}/api/ticket/transaction-details`,
   TICKET_RAISE: `${BASE_URL}/api/ticket/raise-ticket`,
+  FETCH_RAISED_TICKET: `${BASE_URL}/api/ticket`,
   ISSUE_TYPE_DROPDOWN: `${BASE_URL}/api/ticket/issue-type-dropdown`,
-  SUB_PRODUCT_DROPDOWN: `${BASE_URL}/api/sub-products/dropdown`,
 
   ///////////////////// PG /////////////////////////////////
   FETCH_CARD_TYPE: `${BASE_URL}/api/transaction/fetch-card-bin-details`,
@@ -49,18 +57,23 @@ export const API_ROUTES = {
   CREATE_ORDER: `${BASE_URL}/api/pg/create-order`,
 
   ///////////////// CREATE SUB USER //////////////////////////
-  CREATE_SUB_USER: `${BASE_URL}/api/retailer/create-agent`,
+  CREATE_SUB_USER: `${BASE_URL}/api/retailer/create-user`,
+  FETCH_SUB_USER: `${BASE_URL}/api/retailer/users`,
 
   /////////////// PAYOUT ////////////////////////////////////////////
   SAVE_BENEFICIARY: `${BASE_URL}/api/payout/save-beneficiary`,
   SEND_PAYOUT: `${BASE_URL}/api/payout/send-payout-request`,
+  PAYOUT_SUCCESS_CALLBACK: `${BASE_URL}/api/payout/update-callback-url`,
   GET_BANK_DETAILS: `${BASE_URL}/api/network-banks/details-by-ifsc`,
   GET_PAYOUT_ALL_DETAILS: `${BASE_URL}/api/payout/all`,
   DELETE_PAYOUT_BENEFICIARY: `${BASE_URL}/api/payout/delete-beneficiaries`,
+  EDIT_BENEFICIARY_BANK_DETAILS: `${BASE_URL}/api/payout/update-beneficiaries`,
 
   /////////////////// BBPS ///////////////////////////////////////
   GET_PROVIDER_LIST: `${BASE_URL}/api/bbps/provider-list`,
   FETCH_BILL_DETAILS: `${BASE_URL}/api/bbps/fetch-bill-details`,
+  TRANSACTION: `${BASE_URL}/api/bbps/transaction`,
+  FETCH_TRANSACTION_RECEIPT: `${BASE_URL}/api/bbps/receipt`,
 
   /////////////////// VERIFICATION //////////////////////////////////
   ADHAAR_VERIFICATION: `${BASE_URL}/verification/aadhaar-validate`,
@@ -68,4 +81,17 @@ export const API_ROUTES = {
   EMAIL_VERIFICATION: `${BASE_URL}/verification/email-validate`,
   ADHAAR_PAN_LINK: `${BASE_URL}/verification/aadhaar-pan-link`,
   VOTER_ID_VERIFICATION: `${BASE_URL}/verification/voterId-validate`,
+  BANK_VERIFICATION: `${BASE_URL}/verification/bank-validate`,
+
+  /////////////////////////// bANKS ////////////////////////////////////
+  ADD_BANK: `${BASE_URL}/api/bank-details`,
+  EDIT_BANK: `${BASE_URL}/api/bank-details`,
+  DELETE_BANK: `${BASE_URL}/api/bank-details`,
+
+  /////////////////////////// COMMON ////////////////////////////////////
+  HIERARCHY_TYPE_LIST: `${BASE_URL}/api/hierarchy/name-code`,
+  HIERARCHY_LIST: `${BASE_URL}/api/hierarchy/hierarchy-details`,
+  PRODUCT_LIST: `${BASE_URL}/api/products/dropdown/active`,
+  SUB_PRODUCT_DROPDOWN: `${BASE_URL}/api/sub-products/dropdown`,
+
 };
