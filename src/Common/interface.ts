@@ -873,8 +873,6 @@ export type FindRemitterProps = {
   mobileNumber: string;
   name?: string;
   dob?: string;
-  page: number;
-  size: number;
 };
 
 export type RemitterData = Record<string, any>;

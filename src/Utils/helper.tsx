@@ -143,7 +143,7 @@ export const decryptData = (ciphertext: string): any => {
 export const PasswordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*()_+!])[A-Za-z\d@#$%^&*()_+!]{8,}$/;
 
-export const MobileNoRegex = /^[0-9]{10}$/;
+export const MobileNoRegex = /^[6-9]\d{9}$/;
 
 export const EmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
