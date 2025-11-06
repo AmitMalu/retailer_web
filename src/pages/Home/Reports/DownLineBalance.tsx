@@ -56,6 +56,7 @@ const DownLineBalance = () => {
     { key: "prepaidBalance", label: "Prepaid Balance", filterType: "number" },
     { key: "postpaidBalance", label: "Postpaid Balance", filterType: "number" },
     { key: "createdOn", label: "Created On", filterType: "date" },
+    // { key: "narration", label: "Narration", filterType: "text" },
   ];
 
   const transformPayload = (values: any) => {

@@ -42,15 +42,15 @@ const PendingTransaction = () => {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const headers: GenericTableHeader<PendingTransactionTableType>[] = [
-    { key: "txId", label: "Transaction ID", filterType: "text" },
+    { key: "txId", label: "Transaction ID", filterType: "text", copyable: true },
     { key: "subProductName", label: "Sub Product Name", filterType: "text" },
     { key: "userId", label: "User ID", filterType: "text" },
-    // { key: "mobileNo", label: "Mobile No", filterType: "text" },
+    { key: "mobileNo", label: "Mobile No", filterType: "text" },
     // { key: "schemeName", label: "Scheme Name", filterType: "text" },
     { key: "amount", label: "Amount", filterType: "number" },
     { key: "txStatus", label: "Transaction Status", filterType: "text" },
-    // { key: "txType", label: "Transaction Type", filterType: "text" },
-    // { key: "remarks", label: "Remarks", filterType: "text" },
+    { key: "txType", label: "Transaction Type", filterType: "text" },
+    { key: "remarks", label: "Remarks", filterType: "text" },
     // { key: "medium", label: "Medium", filterType: "text" },
     // { key: "vendor", label: "Vendor", filterType: "text" },
     { key: "dateOfTransaction", label: "Transaction Date", filterType: "date" },

@@ -57,7 +57,7 @@ const CommissionAndCharges = () => {
   const dataRef = useRef<CommissionAndChargeTableType[] | null>(null);
 
   const headers: GenericTableHeader<CommissionAndChargeTableType>[] = [
-    { key: "txId", label: "Transaction ID", filterType: "text" },
+    { key: "txId", label: "Transaction ID", filterType: "text", copyable: true },
     { key: "subProductName", label: "Sub Product Name", filterType: "text" },
     { key: "walletType", label: "Wallet Type", filterType: "boolean", filterOptions: walletTypeSelectData }, // Could add options if needed
     { key: "txType", label: "Transaction Type", filterType: "text" },
@@ -67,6 +67,7 @@ const CommissionAndCharges = () => {
     { key: "balAfter", label: "Balance After", filterType: "number" },
     { key: "transactionDate", label: "Transaction Date", filterType: "date" },
     { key: "transactionTime", label: "Transaction Time", filterType: "text" },
+    { key: "narration", label: "Narration", filterType: "text" },
   ];
 
   const transformPayload = (values: any) => {

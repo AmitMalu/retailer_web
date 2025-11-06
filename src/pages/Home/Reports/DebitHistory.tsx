@@ -49,7 +49,7 @@ const DebitHistory = () => {
   const [viewSubmitted, setViewSubmitted] = useState(false);
 
   const headers: GenericTableHeader<DebitHistoryTableType>[] = [
-    { key: "transactionId", label: "Transaction ID", filterType: "text" },
+    { key: "transactionId", label: "Transaction ID", filterType: "text", copyable: true },
     { key: "transactionType", label: "Transaction Type", filterType: "text" },
     { key: "service", label: "Service", searchable: false },
     { key: "balBeforeTran", label: "Balance Before", filterType: "number" },
@@ -58,6 +58,7 @@ const DebitHistory = () => {
     { key: "finalBalance", label: "Final Balance", filterType: "number" },
     { key: "dateOfTransaction", label: "Transaction Date", filterType: "date" },
     { key: "timeOfTransaction", label: "Transaction Time", filterType: "text" },
+    { key: "narration", label: "Narration", filterType: "text" },
   ];
 
   const transformPayload = (values: any) => {

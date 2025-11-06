@@ -59,7 +59,7 @@ const NetworkTransaction = () => {
   });
 
   const headers: GenericTableHeader<NetworkTransactionTableType>[] = [
-    { key: "tranxId", label: "Transaction ID", filterType: "text" },
+    { key: "tranxId", label: "Transaction ID", filterType: "text", copyable: true },
     { key: "subProductName", label: "Sub Product Name", filterType: "text" },
     // { key: "operator", label: "Operator", filterType: "text" },
     // { key: "outletName", label: "Outlet Name", filterType: "text" },

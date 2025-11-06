@@ -575,6 +575,8 @@ export type UserProfileFormProps = {
   branchName: string;
   createdBy: string;
   createdByIPAddress: string;
+  longitude: number | null;
+  latitude: number | null;
   aadhaarCardFrontImage: File | null;
   aadhaarCardBackImage: File | null;
   panCardImage: File | null;
@@ -1102,6 +1104,7 @@ export interface CommissionAndChargeTableType {
   balAfter: string | number;
   transactionDate: string;
   transactionTime: string;
+  narration: string;
 }
 
 export interface DebitHistoryTableType {
@@ -1114,6 +1117,7 @@ export interface DebitHistoryTableType {
   finalBalance: string | number;
   dateOfTransaction: string;
   timeOfTransaction: string;
+  narration: string;
 }
 
 export interface DownlineBalanceTableType {
@@ -1123,4 +1127,5 @@ export interface DownlineBalanceTableType {
   prepaidBalance: string | number;
   postpaidBalance: string | number;
   createdOn: string;
+  narration: string;
 }

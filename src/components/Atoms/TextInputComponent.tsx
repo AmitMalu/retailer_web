@@ -90,16 +90,6 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
       if (capitalize) newValue = newValue.toUpperCase();
     }
 
-    // if (maxLength && newValue.length > maxLength) {
-    //   if (onChange) onChange(event);
-    //   return;
-    // }
-
-    // if (minLength && newValue.length < minLength) {
-    //   if (onChange) onChange(event);
-    //   return;
-    // }
-
     if (maxLength && newValue.length > maxLength) {
       newValue = newValue.slice(0, maxLength);
     }
