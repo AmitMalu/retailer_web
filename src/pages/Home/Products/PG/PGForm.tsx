@@ -145,23 +145,46 @@ const PGFormModal = ({
         //   "https://uat.decipay.in/enterprises/api/pg/payment/callback",
         productId: values.productId,
         subProductId: values.subProductId,
-        initiatedBy : loginData?.hierarchyId
+        initiatedBy: loginData?.hierarchyId
       };
 
       const response = await Create_Order(payload);
-      if (response?.status === 200 || response?.data?.statusCode === 200) {
-        showSuccessNotification(response?.data?.message);
-        // Parse the data because your API sends it as a string
-        const orderData = JSON.parse(response.data.data);
-
-        if (orderData.paymentLink) {
-          // Open payment link in new tab
-          window.open(orderData.paymentLink, "_blank");
+      // Outer success check (HTTP or API-level)
+      if (response?.data?.statusCode === 200 || response?.status === 200) {
+        // Parse the inner JSON (which might be stringified)
+        let orderData;
+        try {
+          orderData =
+            typeof response.data.data === "string"
+              ? JSON.parse(response.data.data)
+              : response.data.data;
+        } catch {
+          orderData = {};
         }
-        setIsBinDetails(false);
-        onClose();
+
+        // Inner (business logic) success check
+        if (orderData.status === "SUCCESS") {
+          showSuccessNotification(orderData.message || "Order created successfully");
+
+          if (orderData.paymentLink) {
+            // ✅ Open payment link in a new tab
+            window.open(orderData.paymentLink, "_blank");
+          }
+
+          // Close modal and reset UI
+          setIsBinDetails(false);
+          onClose();
+        } else {
+          // Inner FAIL case
+          showErrorNotification(
+            orderData.message ||
+            response.data.message ||
+            "Order creation failed. Please try again."
+          );
+        }
       } else {
-        showErrorNotification(response?.data?.message || "Unable to create");
+        // Outer FAIL case
+        showErrorNotification(response?.data?.message || "Error While Creating Order");
       }
     } catch (error) {
       await handleCustomError(error);

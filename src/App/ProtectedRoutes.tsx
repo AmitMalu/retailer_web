@@ -31,7 +31,7 @@ const ProtectedRoute = ({
     return <>{children}</>;
   }
 
-  if (userRole === "RA") {
+  if (userRole === "RU") {
     if (!loginData?.role_id || !loginData?.sub_role_id) {
       return <Navigate to="/dashboard" replace state={{ from: location }} />;
     }

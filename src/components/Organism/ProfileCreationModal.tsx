@@ -1280,7 +1280,7 @@ const ProfileRegistrationForm = ({
                               allowSpace={false}
                               fullWidth
                               withAsterisk
-                              maxLength={10}
+                              maxLength={11}
                             />
                           </div>
                           <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -1292,7 +1292,7 @@ const ProfileRegistrationForm = ({
                               allowSpace={false}
                               fullWidth
                               withAsterisk
-                              maxLength={10}
+                              maxLength={11}
                             />
                           </div>
                         </div>

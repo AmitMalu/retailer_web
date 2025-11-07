@@ -126,7 +126,7 @@ export type ApiState = {
   responses: { [key: string]: any };
 };
 
-export type UserRole = "RT" | "DT" | "SD" | "WL" | "PT" | "RA";
+export type UserRole = "RT" | "DT" | "SD" | "WL" | "PT" | "RU";
 
 export type ProtectedRouteProps = {
   children: JSX.Element;

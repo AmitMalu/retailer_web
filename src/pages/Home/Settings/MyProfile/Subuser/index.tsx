@@ -78,8 +78,56 @@ const SubuserCreation = () => {
         .min(6, "Enter valid Number")
         .required("Required"),
     }),
-    role_id: Yup.string().required("Required"),
-    subRoleId: Yup.string().required("Required"),
+    role_id: Yup.string().required("Menu is Required"),
+    subRoleId: Yup.string().test(
+      "subRoleId-required-per-menu",
+      "Sub menu selection missing for at least one selected menu.",
+      function (value) {
+        const { role_id } = this.parent;
+        const subChipMap = {
+          "2": ["2.1", "2.2", "2.3"],
+          "3": ["3.1", "3.2", "3.3"],
+          "4": ["4.1", "4.2", "4.3"],
+          "5": ["5.1", "5.2", "5.3", "5.4", "5.5", "5.6"],
+        };
+
+        // Extract selected main menus from role_id binary string like "11100"
+        const selectedMainMenus = role_id
+          ?.split("")
+          .map((v: any, i: any) => (v === "1" ? (i + 1).toString() : null))
+          .filter(Boolean);
+
+        if (!selectedMainMenus || selectedMainMenus.length === 0) return true;
+
+        const selectedSubMenus = (value || "")
+          .split(",")
+          .filter((v) => v && v !== "0");
+
+        // Check each selected menu that has submenus
+        for (const menu of selectedMainMenus) {
+          if (subChipMap[menu as keyof typeof subChipMap]) {
+            // Has submenus → must select at least one of them
+            const hasAny = subChipMap[menu as keyof typeof subChipMap].some((s: any) =>
+              selectedSubMenus.includes(s)
+            );
+            if (!hasAny) {
+              // ❌ At least one menu with submenus has no submenu selected
+              return this.createError({
+                message: `Please select at least one sub-menu for ${menu === "2"
+                  ? "Funding"
+                  : menu === "3"
+                    ? "Settings"
+                    : menu === "4"
+                      ? "Support"
+                      : "Reports"
+                  }.`,
+              });
+            }
+          }
+        }
+        return true;
+      }
+    ),
   });
 
   const initialValues: SubuserCreationProps = {
