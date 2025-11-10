@@ -62,8 +62,10 @@ export const API_ROUTES = {
 
   /////////////// PAYOUT ////////////////////////////////////////////
   SAVE_BENEFICIARY: `${BASE_URL}/api/payout/save-beneficiary`,
-  SEND_PAYOUT: `${BASE_URL}/api/payout/send-payout-request`,
-  PAYOUT_SUCCESS_CALLBACK: `${BASE_URL}/api/payout/update-callback-url`,
+  // SEND_PAYOUT: `${BASE_URL}/api/payout/send-payout-request`,
+  // PAYOUT_SUCCESS_CALLBACK: `${BASE_URL}/api/payout/update-callback-url`,
+  SEND_PAYOUT: `${BASE_URL}/api/send-payout`,
+  PAYOUT_SUCCESS_CALLBACK: `${BASE_URL}/api/update-callback-url`,
   GET_BANK_DETAILS: `${BASE_URL}/api/network-banks/details-by-ifsc`,
   GET_PAYOUT_ALL_DETAILS: `${BASE_URL}/api/payout/all`,
   DELETE_PAYOUT_BENEFICIARY: `${BASE_URL}/api/payout/delete-beneficiaries`,
