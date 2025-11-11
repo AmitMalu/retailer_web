@@ -4,7 +4,7 @@ import TextComponent from "@/components/Atoms/TextComponent";
 import { useTheme } from "@mui/system";
 import { UnstyledButton } from "@mantine/core";
 import { BackSvgIcon, OpenEyeSvgIcon } from "@/assets/svg";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import TableComponent from "@/components/Molecules/TableComponent";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
@@ -16,12 +16,24 @@ import NewButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent
 import RemitterReceiptModal from "@/components/Organism/DMT/RemitterReceipt";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePicker";
-import { showErrorNotification } from "@/Utils/notifications";
+import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
+import { Find_Remitter, Register_Remitter, Remitter_Kyc } from "@/Services/api";
+import RemitterModal from "@/components/Organism/DMT/RemitterModal";
 
 const SearchRemitterScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { subProduct } = location.state || {};
+  const { subProductId } = useParams();
+
+  const [isModelOpen, setIsModelOpen] = useState(false);
+  const [modelMode, setModelMode] = useState<"ekyc" | "register" | null>(null);
+
+  // Local KYC values
+  const [ekycId, setEkycId] = useState("");
+  const [stateResp, setStateResp] = useState("");
 
   const [isNewRemitter, setIsNewRemitter] = useState(false);
   const [isRemitterReceipt, setIsRemitterReceipt] = useState(false);
@@ -31,45 +43,148 @@ const SearchRemitterScreen = () => {
       .max(10, "Enter valid Number")
       .matches(MobileNoRegex, "Please enter valid number")
       .required("Mobile Number is Required"),
-    ...(isNewRemitter && {
-      name: Yup.string().required("Required"),
-      dob: Yup.date()
-        .max(new Date(), "Date of birth cannot be in the future")
-        .required("Date of Birth is required"),
+    ...(modelMode === "ekyc" && {
+      name: Yup.string().required("Name is Required"),
+      aadhaarNumber: Yup.string()
+        .max(12, "Enter valid Aadhaar Number")
+        .required("Aadhaar Number is Required"),
     }),
+    ...(modelMode === "register" && {
+      otp: Yup.string().max(6, "Enter valid OTP").required("OTP is Required"),
+    })
   });
 
   const initialValues: FindRemitterProps = {
     mobileNumber: "",
     name: "",
-    dob: "",
+    aadhaarNumber: "",
+    otp: "",
   };
 
+  const handleModelClose = (source?: "icon" | "button") => {
+    // If closed by top X icon — always close completely
+    if (source === "icon") {
+      setIsModelOpen(false);
+      setModelMode(null);
+      setIsNewRemitter(false);
+      return;
+    }
+    if (isNewRemitter && modelMode === "register") {
+      // ✅ If user is new and currently on Register — go back to EKYC screen
+      setModelMode("ekyc");
+    } else {
+      // ✅ Otherwise close everything
+      setIsModelOpen(false);
+      setModelMode(null);
+      setIsNewRemitter(false);
+    }
+  }
+
+  // ---------- FIND REMITTER ----------
   const handleFindRemitterSubmit = async (values: FindRemitterProps) => {
     try {
       setIsLoading(true);
-      // const response = await findRemitterAPI({ mobileNumber: values.mobileNumber });
-      // If found, set remitter details
-      // else, set isNewRemitter = true
+      const payload = {
+        mobile: values.mobileNumber,
+        subProductId,
+      };
+
+      const response = await Find_Remitter(payload);
+      if (response?.data?.statusCode == "200") {
+        const code = response?.data?.data?.response_code;
+        showSuccessNotification(response?.data?.message);
+        if (code === 1) {
+          // Remitter already registered → Navigate
+          navigate(`/products/dmt/RemitterInfo/${subProductId}`, {
+            state: {
+              mobileNumber: values.mobileNumber,
+              limit: response?.data?.data?.data?.limit,
+              subProduct: subProduct,
+            },
+          });
+        } else if (code === 2) {
+          // Not registered → Need eKYC
+          setIsNewRemitter(true);
+          setModelMode("ekyc");
+          setIsModelOpen(true);
+        } else if (code === 3) {
+          // KYC done but registration pending
+          const data = response?.data?.data?.data || {};
+          setEkycId(data.ekyc_id);
+          setStateResp(data.stateresp);
+          setModelMode("register");
+          setIsModelOpen(true);
+        } else {
+          showErrorNotification("Unexpected response. Please try again.");
+        }
+      } else {
+        showErrorNotification(response?.data?.message || "Something Went Wrong")
+      }
     } catch (error) {
-      // Handle API errors
+      handleCustomError(error || "Error in Search Remitter.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  // ---------- REMITTER eKYC ----------
+  const handleRemitterKyc = async (values: FindRemitterProps) => {
+    try {
+      setIsLoading(true);
+      const payload = {
+        mobile: values.mobileNumber,
+        aadhaar_number: values.aadhaarNumber,
+        data: "encrypted value of pid data",
+        is_iris: 2,
+        subProductId: subProductId
+      };
+      const response = await Remitter_Kyc(payload);
+      if (response?.data?.statusCode == "200") {
+        const data = response?.data?.data?.data || {};
+        setEkycId(data.ekyc_id);
+        setStateResp(data.stateresp);
+        setModelMode("register"); // Switch to OTP mode
+        showSuccessNotification(response?.data?.message || "KYC completed. OTP sent to mobile.");
+      } else {
+        showErrorNotification(response?.data?.message || "KYC failed.");
+      }
+      // Handle response, like navigation to KYC or success message
+    } catch (error: any) {
+      handleCustomError(error || "Error in KYC.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ---------- REGISTER REMITTER ----------
   const handleRegisterRemitterSubmit = async (values: FindRemitterProps) => {
     try {
       setIsLoading(true);
       const payload = {
-        mobileNumber: values.mobileNumber,
-        name: values.name,
-        dob: values.dob,
-      };
-      // const response = await registerRemitterAPI(payload);
-      // Handle response, like navigation to KYC or success message
-    } catch (error) {
-      // Handle API errors
+        mobile: values.mobileNumber,
+        otp: values.otp,
+        stateresp: stateResp,
+        ekyc_id: ekycId,
+        subProductId,
+      }
+
+      const response = await Register_Remitter(payload);
+      if (response?.data?.statusCode == "200") {
+        const data = response?.data?.data || {};
+        showSuccessNotification(data?.message || "Remitter Registered Successfully!");
+        setIsModelOpen(false);
+        navigate(`/products/dmt/RemitterInfo/${subProductId}`, {
+          state: {
+            mobileNumber: values.mobileNumber,
+            limit: data?.data?.limit,
+            subProduct: subProduct,
+          },
+        });
+      } else {
+        showErrorNotification(response?.data?.message || "Registration failed.");
+      }
+    } catch (error: any) {
+      handleCustomError(error || "Error in Registration.");
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +197,7 @@ const SearchRemitterScreen = () => {
       <div className="w-full 320px:mt-12 md:mt-0">
         <UnstyledButton
           onClick={() => {
-            navigate(`/products`);
+            navigate(`/products/dmt`);
           }}
         >
           <BackSvgIcon color={theme.palette.red.DEFAULT} />
@@ -112,19 +227,10 @@ const SearchRemitterScreen = () => {
           <Formik<FindRemitterProps>
             initialValues={initialValues}
             validationSchema={validationSchema}
-            onSubmit={(values) => {
-              if (!isNewRemitter) {
-                handleFindRemitterSubmit(values);
-              } else {
-                handleRegisterRemitterSubmit(values);
-              }
-            }}
+            onSubmit={handleFindRemitterSubmit}
             enableReinitialize
-            validateOnBlur={true}
-            validateOnChange={true}
           >
             {(formik) => {
-
               return (
                 <Form className="w-full flex justify-center items-center">
                   <div className="w-full lg:w-1/2 p-2 items-center justify-center flex flex-col gap-4  rounded-xl border-2 border-red-light ">
@@ -135,6 +241,7 @@ const SearchRemitterScreen = () => {
                     >
                       Find Remitter
                     </TextComponent>
+
                     <div className="w-full  sm:w-[calc(70%-10px)]">
                       <FormikTextInputComponent
                         name="mobileNumber"
@@ -148,29 +255,6 @@ const SearchRemitterScreen = () => {
                         withAsterisk
                       />
                     </div>
-                    {isNewRemitter && (
-                      <>
-                        <div className="w-full  sm:w-[calc(70%-10px)]">
-                          <FormikTextInputComponent
-                            name="name"
-                            placeholder="Enter Remitter Name"
-                            allowSpecialChar={false}
-                            allowNumber={false}
-                            maxLength={30}
-                            withAsterisk
-                          />
-                        </div>
-
-                        <div className="w-full  sm:w-[calc(70%-10px)]">
-                          <FormikDatePicker
-                            name="dob"
-                            placeholder="Enter DOB"
-                            maxDate={new Date()}
-                            required
-                          />
-                        </div>
-                      </>
-                    )}
 
                     <div className="mt-2 flex w-full items-center justify-end ">
                       <NewButtonComponent
@@ -190,6 +274,16 @@ const SearchRemitterScreen = () => {
                       </NewButtonComponent>
                     </div>
                   </div>
+
+                  <RemitterModal
+                    isOpen={isModelOpen}
+                    onClose={handleModelClose}
+                    modelMode={modelMode} // "ekyc" or "register"
+                    isNewRemitter={isNewRemitter}
+                    handleRemitterKyc={handleRemitterKyc}
+                    handleRegisterRemitterSubmit={handleRegisterRemitterSubmit}
+                    formik={formik}
+                  />
                 </Form>
               );
             }}

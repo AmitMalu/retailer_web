@@ -11,13 +11,12 @@ import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import theme from "@/theme/ThemeConfig";
+import { MobileNoRegex } from "@/Utils/helper";
 
 const AddBeneficiaryModal = ({
   opened,
   onClose,
-  // rowData,
-  // openedAs,
-}: PartnerRegistrationModalProps) => {
+}: any) => {
   // const apiResponses = useSelector(
   //   (state: RootState) => state.apiResponse.responses
   // );
@@ -33,18 +32,22 @@ const AddBeneficiaryModal = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const validationSchema = Yup.object().shape({
-    fullName: Yup.string().required("Required"),
+    mobile: Yup.string()
+      .max(10, "Enter valid Number")
+      .matches(MobileNoRegex, "Please enter valid number")
+      .required("Required"),
+    benename: Yup.string().required("Name Is Required"),
+    bankid: Yup.string().required("bankid Is Required"),
     bankName: Yup.string().required("Required"),
-    ifscCode: Yup.string().required("Required"),
-    bankAccountNumber: Yup.string()
+    accno: Yup.string()
       .transform((value) => (value ? value.replace(/\s+/g, "") : "")) // remove all spaces
       .required("Required")
       .matches(/^[0-9]+$/, "Must be only digits")
       .min(9, "Must be at least 9 digits")
       .max(20, "Must be at most 20 digits"),
-    confirmBankAccountNumber: Yup.string()
-      .oneOf([Yup.ref("confirmBankAccountNumber")], "Amounts must match")
-      .required("Required"),
+    ifsccode: Yup.string()
+      .required("Required")
+      .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Enter valid IFSC code"),
   });
 
   const initialValues: AddBeneficiaryFormProps = {

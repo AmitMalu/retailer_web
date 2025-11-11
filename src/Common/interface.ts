@@ -872,8 +872,19 @@ export type TwoFAFormBodyProps = {
 export type FindRemitterProps = {
   mobileNumber: string;
   name?: string;
-  dob?: string;
+  // dob?: string;
+  aadhaarNumber?: string;
+  otp?: string;
 };
+
+export interface RemitterModalProps {
+  isOpen: boolean;
+  onClose: (source: "icon" | "button") => void;
+  modelMode: "ekyc" | "register" | null;
+  isNewRemitter: boolean;
+  handleRemitterKyc: (values: any) => void;
+  handleRegisterRemitterSubmit: (values: any) => void;
+}
 
 export type RemitterData = Record<string, any>;
 

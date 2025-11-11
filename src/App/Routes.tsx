@@ -544,7 +544,7 @@ const RouterOutlet = () => {
             />
           </Route>
           <Route
-            path="products/dmt/RemitterInfo"
+            path="products/dmt/RemitterInfo/:subProductId"
             element={
               <ProtectedRoute allowedRoles={["RT", "RA"]}>
                 <Outlet />

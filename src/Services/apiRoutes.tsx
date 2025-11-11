@@ -75,6 +75,15 @@ export const API_ROUTES = {
   TRANSACTION: `${BASE_URL}/api/bbps/transaction`,
   FETCH_TRANSACTION_RECEIPT: `${BASE_URL}/api/bbps/receipt`,
 
+  //////////////////////////// DMT /////////////////////////////////
+  FIND_REMITTER: `${BASE_URL}/api/remitter/check`,
+  REGISTER_REMITTER: `${BASE_URL}/api/remitter/register`,
+  REMITTER_KYC: `${BASE_URL}/api/remitter/ekyc`,
+  REGISTER_BENEFICIARY: `${BASE_URL}/api/beneficiary/register`,
+  FETCH_BENEFICIARY: `${BASE_URL}/api/beneficiary/fetchBeneficiary`,
+  FETCH_BENEFICIARY_BY_ID: `${BASE_URL}/api/beneficiary/fetchBeneficiaryByBeneId`,
+  DELETE_BENEFICIARY: `${BASE_URL}/api/beneficiary/delete`,
+
   /////////////////// VERIFICATION //////////////////////////////////
   ADHAAR_VERIFICATION: `${BASE_URL}/verification/aadhaar-validate`,
   PAN_VERIFICATION: `${BASE_URL}/verification/pan-validate`,
