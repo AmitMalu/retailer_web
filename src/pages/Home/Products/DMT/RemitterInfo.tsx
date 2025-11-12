@@ -1,26 +1,4 @@
-// import { useTheme } from "@mui/system";
-// import { useNavigate, useParams } from "react-router-dom";
-// import { useState } from "react";
-// import { RemitterInfoData } from "@/Common/interface";
-// import DropdownComponent from "@/components/Atoms/DropdownComponent";
-// import TextInputComponent from "@/components/Atoms/TextInputComponent";
-// import ButtonComponent from "@/components/Atoms/ButtonComponent";
-// import Loader from "@/components/Atoms/Loader";
-// import { UnstyledButton } from "@mantine/core";
-// import {
-//   BackSvgIcon,
-//   EditSvgIcon,
-//   FilterSvgIcon,
-//   PlusSvgIcon,
-//   TrashSvgIcon,
-// } from "@/assets/svg";
-// import TextComponent from "@/components/Atoms/TextComponent";
-// import TableComponent from "@/components/Molecules/TableComponent";
-// import RemitterInfoEditModal from "@/components/Organism/DMT/RemitterINfoModal";
-// import AddBeneficiaryModal from "@/components/Organism/DMT/AddBeneficiaryModal";
-// import RemitterEkycModal from "@/components/Organism/DMT/RemitterEkycModal";
-
-import { BackSvgIcon, EditSvgIcon, FilterSvgIcon, PlusSvgIcon, TrashSvgIcon } from "@/assets/svg";
+import { BackSvgIcon, FilterSvgIcon, PlusSvgIcon, TrashSvgIcon } from "@/assets/svg";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import Loader from "@/components/Atoms/Loader";
@@ -31,7 +9,8 @@ import AddBeneficiaryModal from "@/components/Organism/DMT/AddBeneficiaryModal";
 import RemitterInfoHeader from "@/components/Organism/DMT/RemitterInfoHeader";
 import { Fetch_Beneficiaries } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
+import { showErrorNotification } from "@/Utils/notifications";
+import { useBankVerification } from "@/Utils/Verification";
 import { UnstyledButton } from "@mantine/core";
 import { Refresh } from "@mui/icons-material";
 import { useTheme } from "@mui/system";
@@ -39,279 +18,6 @@ import { Formik } from "formik";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Yup from 'yup'
-
-// const RemitterInfo = () => {
-//   const navigate = useNavigate();
-//   const theme = useTheme();
-//   const { subProductId } = useParams();
-//   const [showDrawerForm, setShowDrawerForm] = useState(false);
-//   const [showAddBeneficiaryForm, setShowAddBeneficiaryForm] =
-//     useState(false);
-//   const [showEkycDrawerForm, setShowEkycDrawerForm] = useState(true);
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [isSeacrh, setIsSeacrh] = useState(false);
-//   // const [searchValues, setSearchValues] = useState<Record<string, string>>({});
-//   const [selectedRowData, setSelectedRowData] = useState<RemitterInfoData | []>(
-//     []
-//   );
-//   //   const [isInfoList, setIsInfoList] = useState<RemitterInfoData | []>([]);
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const [itemsPerPage, setItemsPerPage] = useState(10);
-//   const [isRemitterInfoList, setIsRemitterInfoList] = useState<
-//     RemitterInfoData | []
-//   >([]);
-
-//   console.log(
-//     setIsRemitterInfoList,
-//     setItemsPerPage,
-//     setCurrentPage,
-//     setIsLoading
-//   );
-//   // const apiResponses = useSelector(
-//   //   (state: RootState) => state.apiResponse.responses
-//   // );
-
-//   // const loginData = apiResponses?.loginData
-//   //   ? decryptData(apiResponses?.loginData)
-//   //   : null;
-
-//   // const GetPayoutDataSubmit = async () => {
-//   //   try {
-//   //     setIsLoading(true);
-//   //     //   let bodyRequest = {
-//   //     //     fromDate: "",
-//   //     //     toDate: "",
-
-//   //     //     page: values.page,
-//   //     //     size: values.size,
-//   //     //   };
-//   //     //   const response = await Wallet_Report({}, bodyRequest);
-
-//   //     //   if (response?.status === 200) {
-//   //     //     setIsInfoList(response?.data?.data?.content);
-//   //     //     showSuccessNotification(response?.data?.message);
-//   //     //   } else {
-//   //     //     showErrorNotification(response?.data?.message);
-//   //     //   }
-//   //   } catch (error) {
-//   //     await handleCustomError(error);
-//   //   } finally {
-//   //     setIsLoading(false);
-//   //   }
-//   // };
-//   // const tableColumns = [
-//   //   {
-//   //     key: "beneficiaryName",
-//   //     label: "Beneficiary Name",
-//   //     searchKey: "beneficiaryName",
-//   //     sortable: false,
-//   //   },
-//   //   {
-//   //     key: "bankName",
-//   //     label: "Bank",
-//   //     searchKey: "bankName",
-//   //     sortable: false,
-//   //   },
-//   //   {
-//   //     key: "accountNumber",
-//   //     label: "Account No",
-//   //     searchKey: "accountNumber",
-//   //     sortable: true,
-//   //   },
-//   //   {
-//   //     key: "ifscCode",
-//   //     label: "IFSC Code",
-//   //     searchKey: "ifscCode",
-//   //     sortable: false,
-//   //   },
-//   //   {
-//   //     key: "amount",
-//   //     label: "Transfer",
-//   //     searchKey: "amount",
-//   //     sortable: true,
-//   //     render: () => (
-//   //       <div className="flex items-center gap-2 justify-center">
-//   //         <div className="w-[20%]  ">
-//   //           <DropdownComponent
-//   //             data={[
-//   //               { value: "PREPAID", label: "PREPAID" },
-//   //               { value: "POSTPAID", label: "POSTPAID" },
-//   //             ]}
-//   //             value={""}
-//   //             onChange={() => { }}
-//   //             className="w-max"
-//   //           />
-//   //         </div>
-//   //         <div className="w-[20%]  ">
-//   //           <DropdownComponent
-//   //             data={[
-//   //               { value: "IMPS", label: "IMPS" },
-//   //               { value: "NEFT", label: "NEFT" },
-//   //             ]}
-//   //             value={""}
-//   //             onChange={() => { }}
-//   //             className="w-max"
-//   //           />
-//   //         </div>
-//   //         <div className="w-[30%]  ">
-//   //           <TextInputComponent
-//   //             allowCharacter={false}
-//   //             allowSpace={false}
-//   //             allowSpecialChar={false}
-//   //             value={""}
-//   //             onChange={() => { }}
-//   //             // type="number"
-//   //             className="w-max"
-//   //           />
-//   //         </div>
-//   //         <div className="flex w-max ">
-//   //           <ButtonComponent
-//   //             title={"TRANSFER"}
-//   //             variant="filled"
-//   //             onClick={() => { }}
-//   //             disabled={isLoading}
-//   //             radius={10}
-//   //           />
-//   //         </div>
-//   //       </div>
-//   //     ),
-//   //   },
-//   //   {
-//   //     key: "verified",
-//   //     label: "Verified",
-//   //     searchKey: "verified",
-//   //     sortable: false,
-//   //   },
-//   //   {
-//   //     key: "action",
-//   //     label: "Action",
-//   //     render: (row: any) => (
-//   //       <div className="flex w-max items-center justify-between gap-2 justify-self-center">
-//   //         <UnstyledButton
-//   //           onClick={() => {
-//   //             setSelectedRowData(row);
-//   //           }}
-//   //         >
-//   //           <TrashSvgIcon color={theme.palette.error.main} />
-//   //         </UnstyledButton>
-//   //       </div>
-//   //     ),
-//   //   },
-//   // ];
-
-//   // const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-//   // const handleSearchWithValues = (
-//   //   columnKey: string,
-//   //   value: string
-//   //   // values: WalletParams
-//   // ) => {
-//   //   try {
-//   //     const column = tableColumns.find((col) => col.key === columnKey);
-//   //     if (!column) return;
-
-//   //     const searchKey = column.searchKey || column.key;
-//   //     const newSearchValues = { ...searchValues };
-
-//   //     if (value) {
-//   //       newSearchValues[searchKey] = value;
-//   //     } else {
-//   //       delete newSearchValues[searchKey];
-//   //     }
-
-//   //     setSearchValues(newSearchValues);
-
-//   //     //   if (values.fromDate && values.toDate) {
-//   //     //     const bodyRequest = {
-//   //     //       fromDate: "",
-//   //     //       toDate: "",
-//   //     //       hierarchyId: values.hierarchyId || loginData?.hierarchyId,
-//   //     //       walletType: values.walletType,
-//   //     //       subProductName: values.subProductName,
-//   //     //       status: values.status,
-//   //     //       page: values.page,
-//   //     //       size: values.size,
-//   //     //     };
-
-//   //     //     if (timeoutRef.current) {
-//   //     //       clearTimeout(timeoutRef.current);
-//   //     //     }
-
-//   //     //     timeoutRef.current = setTimeout(() => {
-//   //     //       setIsLoading(true);
-//   //     //         Wallet_Report(newSearchValues, bodyRequest)
-//   //     //           .then((response) => {
-//   //     //             if (response?.status === 200) {
-//   //     //               setIsInfoList(response?.data?.data?.content);
-//   //     //             } else {
-//   //     //               showErrorNotification(response?.data?.message);
-//   //     //               setIsInfoList([]);
-//   //     //             }
-//   //     //           })
-//   //     //           .catch((error) => {
-//   //     //             handleCustomError(error);
-//   //     //             setIsInfoList([]);
-//   //     //           })
-//   //     //           .finally(() => {
-//   //     //             setIsLoading(false);
-//   //     //           });
-//   //     //     }, 900);
-//   //     //   }
-//   //   } catch (error) {
-//   //     handleCustomError(error);
-//   //   }
-//   // };
-
-//   return (
-//     <>
-//       {isLoading && <Loader />}
-
-//         <div className="border-2 border-red-light rounded-lg mb-6 ">
-//           <div className="flex p-2 items-center justify-between w-full border-b-2 border-b-red-light">
-//          
-
-//           </div>
-//           <div className="flex p-2 items-center justify-evenly w-full gap-4">
-//             <TextComponent
-//               fontSize={20}
-//               fontWeight={500}
-//               color={theme.palette.background.default}
-//             >
-//               Name: ABC
-//             </TextComponent>
-//             <TextComponent
-//               fontSize={20}
-//               fontWeight={500}
-//               color={theme.palette.background.default}
-//             >
-//               Mobile NO: 1234567890
-//             </TextComponent>
-//             <TextComponent
-//               fontSize={20}
-//               fontWeight={500}
-//               color={theme.palette.background.default}
-//             >
-//               Current Available Limit: 1000
-//             </TextComponent>
-//           </div>
-//         </div>
-
-//         {showDrawerForm && (
-//           <RemitterInfoEditModal
-//             opened={showDrawerForm}
-//             onClose={() => setShowDrawerForm(false)}
-//             rowData={selectedRowData}
-//           />
-//         )}
-//       </div>
-//     </>
-//   );
-// };
-
-// export default RemitterInfo;
-
-
-
 
 const RemitterInfo = () => {
 
@@ -328,28 +34,35 @@ const RemitterInfo = () => {
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
   const [beneficiaries, setBeneficiaries] = useState([]);
   const [showAddBeneficiaryForm, setShowAddBeneficiaryForm] = useState(false);
+  const { verify: verifyBank } = useBankVerification();
+
 
   const tableColumns = [
     {
-      key: "beneficiaryName",
+      key: "bene_id",
+      label: "ID",
+      searchKey: "bene_id",
+    },
+    {
+      key: "name",
       label: "Beneficiary Name",
-      searchKey: "beneficiaryName",
+      searchKey: "name",
     },
     {
-      key: "bankName",
+      key: "bankname",
       label: "Bank Name",
-      searchKey: "bankName",
+      searchKey: "bankname",
     },
     {
-      key: "accountNumber",
+      key: "accno",
       label: "Account No",
-      searchKey: "accountNumber",
+      searchKey: "accno",
       sortable: false,
     },
     {
-      key: "ifscCode",
+      key: "ifsc",
       label: "IFSC Code",
-      searchKey: "ifscCode",
+      searchKey: "ifsc",
       sortable: false,
     },
     {
@@ -410,7 +123,7 @@ const RemitterInfo = () => {
               touched,
               setFieldValue,
             }) => (
-              <div className="flex items-center gap-2 justify-center">
+              <div className="flex items-center gap-2 h-14 justify-center">
                 <div className="w-40 h-20 flex justify-center items-center">
                   <DropdownComponent
                     label="Transaction Type"
@@ -425,7 +138,7 @@ const RemitterInfo = () => {
                         ? errors.paymentMode
                         : ""
                     }
-                    className="w-max"
+                    className="w-max h-10"
                   />
                 </div>
                 <div className="w-32 h-20 flex justify-center items-center">
@@ -446,6 +159,7 @@ const RemitterInfo = () => {
                     }}
                     error={touched.amount && errors.amount ? errors.amount : ""}
                     className="w-max"
+                    size="small"
                     maxLength={8}
                   />
                 </div>
@@ -467,13 +181,13 @@ const RemitterInfo = () => {
       disableSearch: true
     },
     {
-      key: "isVerified",
+      key: "verified",
       label: "Verified",
-      searchKey: "isVerified",
+      searchKey: "verified",
       sortable: false,
       render: (_value: any, _index: number, row: any) => (
         <div className="flex items-center gap-2">
-          {row?.isVerified ? (
+          {row?.verified === "1" ? (
             <div
               style={{
                 display: "flex",
@@ -481,6 +195,7 @@ const RemitterInfo = () => {
                 color: "#28a745",
                 fontSize: "18px",
                 fontWeight: 500,
+                width: "100px",
               }}
             >
               ✅ Verified
@@ -492,7 +207,7 @@ const RemitterInfo = () => {
               variant="outline"
               radius={5}
               width={100}
-            // onClick={() => handleVerifyBank(row)}
+              onClick={() => handleVerifyBank(row)}
             />
           )}
         </div>
@@ -520,10 +235,72 @@ const RemitterInfo = () => {
     },
   ];
 
+  const handleVerifyBank = async (row: any) => {
+    try {
+      setIsLoading(true);
+
+      // Step 1: Call 3rd party verification
+      const response = await verifyBank({
+        id_number: row.accno,
+        ifsc: row.ifsc,
+        ifsc_details: true,
+      });
+
+      if (response?.data?.data) {
+        const verifiedData = response?.data?.data;
+
+        // Step 2: Update state (UI)
+        setBeneficiaries((prev: any) =>
+          prev.map((item: any) =>
+            item.bene_id === row.bene_id
+              ? {
+                ...item,
+                verified: "1",
+                ...(verifiedData?.ifsc_details?.bank_name && {
+                  bankname: verifiedData?.ifsc_details.bank_name,
+                }),
+                ...(verifiedData?.full_name && {
+                  name: verifiedData?.full_name,
+                }),
+              }
+              : item
+          )
+        );
+
+        // Step 3: Build payload for DB
+        const payload = {
+          id: row?.id,
+          hierarchyId: row.hierarchyId,
+          bankName: verifiedData?.ifsc_details?.bank_name || row.bankName,
+          bankHolderName: verifiedData?.full_name || row.bankHolderName,
+          bankAccountNumber: row.accountNumber,
+          ifscCode: row.ifscCode,
+          verified: "1",
+          // createdBy: loginData?.mobileNumber,
+        };
+
+        // Step 4: Call DB API to persist changes
+        // const dbResponse = await Edit_Beneficiary_Bank_Details(payload);
+        // if (dbResponse?.status === 200 || dbResponse?.data?.status === "200") {
+        //   showSuccessNotification("Bank verified & saved successfully");
+        // } else {
+        //   showErrorNotification(dbResponse?.data?.message || "Failed to save bank verification");
+        // }
+      }
+    } catch (error: any) {
+      console.error("Bank verification failed:", error?.message);
+      handleCustomError(error || "Error in bank verification");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const getBeneficiariesList = async (pageNum = 1, pageSize = 10, filters: Record<string, any> = {}) => {
     const reqParams = {
       page: pageNum - 1, // API is 0-indexed
       size: pageSize,
+      mobile: mobileNumber || "",
+      subProductId: subProductId || "",
       ...filters, // dynamic filters
     };
 
@@ -531,7 +308,7 @@ const RemitterInfo = () => {
       setIsLoading(true);
       const response = await Fetch_Beneficiaries(reqParams);
       if (response?.status === 200) {
-        setBeneficiaries(response?.data?.data?.content);
+        setBeneficiaries(response?.data?.data?.data);
         setTotalRecords(response?.data?.data?.totalElements || 0);
       } else {
         showErrorNotification(response?.data?.message);
@@ -598,7 +375,7 @@ const RemitterInfo = () => {
             mobile: mobileNumber || "N/A",
             availableLimit: limit || 0,
           }}
-          onEdit={() => setShowAddBeneficiaryForm(true)}
+        // onEdit={() => setShowAddBeneficiaryForm(true)}
         />
 
         <div className="flex items-center justify-end gap-3">
@@ -634,7 +411,7 @@ const RemitterInfo = () => {
           <ButtonComponent
             title="ADD BENEFICIARY"
             variant="filled"
-            // onClick={() => setShowDrawerForm(true)}
+            onClick={() => setShowAddBeneficiaryForm(true)}
             radius={2}
             width={220}
             height={40}
@@ -669,6 +446,8 @@ const RemitterInfo = () => {
       <AddBeneficiaryModal
         opened={showAddBeneficiaryForm}
         onClose={() => setShowAddBeneficiaryForm(false)}
+        subProductId={subProductId || ""}
+        refresh={handleRefresh}
       />
     </>
   )

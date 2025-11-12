@@ -221,9 +221,20 @@ export function exportToCsv<T extends Record<string, any>>(
 
 export const formatDate = (date: string | Date | null): string | null => {
   if (!date) return null;
+
   const d = typeof date === "string" ? new Date(date) : date;
-  return `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}`;
+
+  // handle invalid date case (avoid 'NaN-NaN-NaN')
+  if (isNaN(d.getTime())) return null;
+
+  // return formatted as DD-MM-YYYY
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+
+  return `${day}-${month}-${year}`;
 };
+
 
 export const formatYMDdate = (date: string | Date | null): string | null => {
   if (!date) return null;

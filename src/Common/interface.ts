@@ -206,6 +206,7 @@ export type CustomTextInputProps = Omit<
   allowSpace?: boolean;
   allowedChars?: string;
   capitalize?: boolean;
+  size?: "medium" | "small";
 };
 
 export type CustomTextProps = {
@@ -897,11 +898,30 @@ export type EditRemitterProps = {
 };
 
 export type AddBeneficiaryFormProps = {
-  fullName: string;
-  bankName: string;
-  bankAccountNumber: string;
-  confirmBankAccountNumber: string;
+  mobileNumber: string;
+  beneficiaryName: string;
+  bankId: string;
+  accountNumber: string;
   ifscCode: string;
+  verified: string | undefined;
+  gstState: string;
+  dob: Date | null;
+  address: string;
+  pincode: string;
+};
+
+export type AddBeneficiaryPayload = {
+  mobile: string;
+  benename: string;
+  bankid: string;
+  accno: string;
+  ifsccode: string;
+  verified: string; // "0" or "1"
+  gst_state: string;
+  dob: string | null;
+  address: string;
+  pincode: string;
+  subProductId: string;
 };
 
 export type RegisterRemitterFormProps = {
