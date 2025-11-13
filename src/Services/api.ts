@@ -462,6 +462,13 @@ export const Remitter_Kyc = async (data: any) => {
   );
 };
 
+export const Remitter_details = async (mobile: string) => {
+  return await api.get(
+    `${API_ROUTES.FETCH_REMITTER_DETAILS}/${mobile}`,
+    await createHeaders()
+  );
+};
+
 export const Register_Beneficiary = async (data: any) => {
   return await api.post(
     `${API_ROUTES.REGISTER_BENEFICIARY}`,
@@ -489,6 +496,22 @@ export const Fetch_Beneficiaries = async (data: Record<string, any>) => {
 
   // Make the API call — page & size in query, rest in body
   return await api.post(url, bodyData, await createHeaders());
+};
+
+export const edit_beneficiary = async (data: any) => {
+  return await api.put(
+    `${API_ROUTES.EDIT_BENEFICIARY}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const delete_beneficiary = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.DELETE_BENEFICIARY}`,
+    data,
+    await createHeaders()
+  );
 };
 
 export const Adhaar_Verification = async (aadhaarNumber: number) =>

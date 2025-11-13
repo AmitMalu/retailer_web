@@ -20,16 +20,17 @@ const AddBeneficiaryModal = ({
   opened,
   onClose,
   subProductId,
-  refresh
+  refresh,
+  mobile
 }: any) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
   const validationSchema: Yup.ObjectSchema<AddBeneficiaryFormProps> = Yup.object({
-    mobileNumber: Yup.string()
-      .max(10, "Enter valid number")
-      .matches(/^[6-9]\d{9}$/, "Please enter valid number")
-      .required("Mobile number is required"),
+    // mobileNumber: Yup.string()
+    //   .max(10, "Enter valid number")
+    //   .matches(/^[6-9]\d{9}$/, "Please enter valid number")
+    //   .required("Mobile number is required"),
     beneficiaryName: Yup.string().required("Beneficiary name is required"),
     bankId: Yup.string().required("Bank ID is required"),
     accountNumber: Yup.string()
@@ -53,7 +54,7 @@ const AddBeneficiaryModal = ({
   });
 
   const initialValues: AddBeneficiaryFormProps = {
-    mobileNumber: "",
+    // mobileNumber: "",
     beneficiaryName: "",
     bankId: "",
     accountNumber: "",
@@ -69,7 +70,7 @@ const AddBeneficiaryModal = ({
     values: AddBeneficiaryFormProps,
     subProductId: string
   ): AddBeneficiaryPayload => ({
-    mobile: values.mobileNumber,
+    mobile: mobile ?? "",
     benename: values.beneficiaryName,
     bankid: values.bankId,
     accno: values.accountNumber,
@@ -125,7 +126,7 @@ const AddBeneficiaryModal = ({
           fontWeight: 600,
         },
         body: {
-          padding: "20px",
+          padding: "10px",
         },
         content: {
           borderWidth: "2px",
@@ -155,10 +156,10 @@ const AddBeneficiaryModal = ({
               values,
             } = formik;
             return (
-              <Form className="w-full overflow-auto scrollbar-hide pt-2 pb-3 px-2 bg-white rounded-2xl">
+              <Form className="w-full overflow-auto scrollbar-hide pt-1 pb-1 px-2 bg-white rounded-2xl">
                 <Grid gutter="sm">
                   {/* Mobile Number */}
-                  <Grid.Col span={{ base: 12, md: 6 }}>
+                  {/* <Grid.Col span={{ base: 12, md: 6 }}>
                     <FormikTextInputComponent
                       label="Mobile Number"
                       name="mobileNumber"
@@ -170,7 +171,7 @@ const AddBeneficiaryModal = ({
                       allowSpace={false}
                       maxLength={10}
                     />
-                  </Grid.Col>
+                  </Grid.Col> */}
 
                   <Grid.Col span={{ base: 12, md: 6 }}>
                     <FormikTextInputComponent
@@ -270,7 +271,7 @@ const AddBeneficiaryModal = ({
                     />
                   </Grid.Col>
 
-                  <Grid.Col span={{ base: 12, md: 12 }}>
+                  <Grid.Col span={{ base: 12, md: 6 }}>
                     <FormikTextInputComponent
                       name="address"
                       label="Address"
@@ -290,6 +291,7 @@ const AddBeneficiaryModal = ({
                     textColor="white"
                     onClick={() => onClose()}
                     fontSize="14"
+                    disabled={isLoading}
                   >
                     CLOSE
                   </NewButtonComponent>
@@ -300,6 +302,7 @@ const AddBeneficiaryModal = ({
                     textColor="white"
                     fontSize="14"
                     type="submit"
+                    disabled={isLoading}
                   >
                     SUBMIT
                   </NewButtonComponent>

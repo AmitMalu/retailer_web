@@ -898,7 +898,7 @@ export type EditRemitterProps = {
 };
 
 export type AddBeneficiaryFormProps = {
-  mobileNumber: string;
+  // mobileNumber: string;
   beneficiaryName: string;
   bankId: string;
   accountNumber: string;

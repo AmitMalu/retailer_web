@@ -6,10 +6,11 @@ import TextComponent from "@/components/Atoms/TextComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import TableComponent from "@/components/Molecules/TableComponent";
 import AddBeneficiaryModal from "@/components/Organism/DMT/AddBeneficiaryModal";
+import DeleteBeneficiaryModal from "@/components/Organism/DMT/DeleteBeneficiaryModal";
 import RemitterInfoHeader from "@/components/Organism/DMT/RemitterInfoHeader";
-import { Fetch_Beneficiaries } from "@/Services/api";
+import { delete_beneficiary, edit_beneficiary, Fetch_Beneficiaries, Remitter_details } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { showErrorNotification } from "@/Utils/notifications";
+import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { useBankVerification } from "@/Utils/Verification";
 import { UnstyledButton } from "@mantine/core";
 import { Refresh } from "@mui/icons-material";
@@ -17,6 +18,7 @@ import { useTheme } from "@mui/system";
 import { Formik } from "formik";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import * as Yup from 'yup'
 
 const RemitterInfo = () => {
@@ -25,7 +27,7 @@ const RemitterInfo = () => {
   const theme = useTheme();
   const { subProductId } = useParams();
   const location = useLocation();
-  const { limit, mobileNumber, subProduct } = location.state || {};
+  const { mobileNumber, subProduct } = location.state || {};
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
@@ -34,7 +36,11 @@ const RemitterInfo = () => {
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
   const [beneficiaries, setBeneficiaries] = useState([]);
   const [showAddBeneficiaryForm, setShowAddBeneficiaryForm] = useState(false);
+  const [isDeleteModal, setIsDeleteModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<Record<string, any> | null>(null);
+  const [remitterDetails, setRemitterDetails] = useState<any>({});
   const { verify: verifyBank } = useBankVerification();
+
 
 
   const tableColumns = [
@@ -76,7 +82,8 @@ const RemitterInfo = () => {
           amount: Yup.number()
             .required("Required")
             .positive("Amount must be positive")
-            .min(1, "Minimum amount is 1"),
+            .min(1, "Minimum amount is 1")
+            .max(5000, "Maximum amount is 5000"),
         });
 
         const initialValues = {
@@ -217,12 +224,12 @@ const RemitterInfo = () => {
     {
       key: "action",
       label: "Delete",
-      render: (row: any) => (
+      render: (_value: any, _index: number, row: any) => (
         <div>
           <UnstyledButton
             onClick={() => {
-              // setIsDeleteModal(true);
-              // setSelectedRowData(row);
+              setSelectedRow(row);
+              setIsDeleteModal(true);
             }}
           >
             <TrashSvgIcon color={theme.palette.gray.DEFAULT} />
@@ -248,7 +255,11 @@ const RemitterInfo = () => {
 
       if (response?.data?.data) {
         const verifiedData = response?.data?.data;
-
+        toast.success(verifiedData?.full_name, {
+          position: "top-center",
+          autoClose: 6000,
+          hideProgressBar: true,
+        })
         // Step 2: Update state (UI)
         setBeneficiaries((prev: any) =>
           prev.map((item: any) =>
@@ -269,23 +280,20 @@ const RemitterInfo = () => {
 
         // Step 3: Build payload for DB
         const payload = {
-          id: row?.id,
-          hierarchyId: row.hierarchyId,
-          bankName: verifiedData?.ifsc_details?.bank_name || row.bankName,
-          bankHolderName: verifiedData?.full_name || row.bankHolderName,
-          bankAccountNumber: row.accountNumber,
-          ifscCode: row.ifscCode,
+          beneId: row?.bene_id,
+          bankname: verifiedData?.ifsc_details?.bank_name || row.bankname,
+          name: verifiedData?.full_name || row.name,
           verified: "1",
           // createdBy: loginData?.mobileNumber,
         };
 
         // Step 4: Call DB API to persist changes
-        // const dbResponse = await Edit_Beneficiary_Bank_Details(payload);
-        // if (dbResponse?.status === 200 || dbResponse?.data?.status === "200") {
-        //   showSuccessNotification("Bank verified & saved successfully");
-        // } else {
-        //   showErrorNotification(dbResponse?.data?.message || "Failed to save bank verification");
-        // }
+        const dbResponse = await edit_beneficiary(payload);
+        if (dbResponse?.data?.statusCode == 200) {
+          showSuccessNotification("Bank verified & saved successfully");
+        } else {
+          showErrorNotification(dbResponse?.data?.message || "Failed to save bank verification");
+        }
       }
     } catch (error: any) {
       console.error("Bank verification failed:", error?.message);
@@ -308,7 +316,7 @@ const RemitterInfo = () => {
       setIsLoading(true);
       const response = await Fetch_Beneficiaries(reqParams);
       if (response?.status === 200) {
-        setBeneficiaries(response?.data?.data?.data);
+        setBeneficiaries(response?.data?.data?.content);
         setTotalRecords(response?.data?.data?.totalElements || 0);
       } else {
         showErrorNotification(response?.data?.message);
@@ -319,6 +327,41 @@ const RemitterInfo = () => {
       await handleCustomError(error);
       setBeneficiaries([]);
       setTotalRecords(0);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Close modal function
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModal(false);
+    setSelectedRow(null);
+  };
+
+  // Delete beneficiary function
+  const handleDeleteBeneficiary = async () => {
+    if (!selectedRow) return;
+
+    try {
+      setIsLoading(true);
+
+      const payload = {
+        mobile: mobileNumber || "",
+        bene_id: selectedRow?.bene_id,
+        subProductId: subProductId || "",
+      };
+
+      const response = await delete_beneficiary(payload);
+      if (response?.data?.statusCode == "200") {
+        showSuccessNotification(response?.data?.message || "Beneficiary deleted successfully");
+        handleCloseDeleteModal();
+        await getBeneficiariesList(page, size, searchValues); // refresh with same filters
+      }
+
+      // Close modal after success
+      handleCloseDeleteModal();
+    } catch (error) {
+      handleCustomError(error);
     } finally {
       setIsLoading(false);
     }
@@ -337,16 +380,38 @@ const RemitterInfo = () => {
     setPage(1); // Reset to first page when search changes
   };
 
-  const handleRefresh = () => {
+  const handleReset = () => {
     setIsSeacrh(false)
     setSearchValues({});
     setPage(1)
     setSize(10)
   }
 
+  const fetchRemitterDetails = async (mobileNumber: string) => {
+    try {
+      if (!mobileNumber) return;
+      const response = await Remitter_details(mobileNumber);
+      if (response?.data?.statusCode == "200") {
+        setRemitterDetails(response?.data?.data || {});
+      }
+    } catch (err) {
+      handleCustomError(err);
+    }
+  }
+
+  const handleRefresh = async () => {
+    await getBeneficiariesList(page, size, searchValues);
+  }
+
   useEffect(() => {
     getBeneficiariesList(page, size, searchValues);
   }, [page, size, searchValues])
+
+
+  useEffect(() => {
+    if (!mobileNumber) return;
+    fetchRemitterDetails(mobileNumber);
+  }, [])
 
   return (
     <>
@@ -371,9 +436,9 @@ const RemitterInfo = () => {
 
         <RemitterInfoHeader
           remitter={{
-            name: "ABC",
+            name: remitterDetails?.name || "N/A",
             mobile: mobileNumber || "N/A",
-            availableLimit: limit || 0,
+            availableLimit: remitterDetails?.limitAmount || 0,
           }}
         // onEdit={() => setShowAddBeneficiaryForm(true)}
         />
@@ -382,7 +447,7 @@ const RemitterInfo = () => {
           {/* Refresh */}
           <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px]">
             <UnstyledButton
-              onClick={handleRefresh}
+              onClick={handleReset}
               className="flex items-center justify-center gap-2"
             >
               <Refresh color="error" />
@@ -448,6 +513,15 @@ const RemitterInfo = () => {
         onClose={() => setShowAddBeneficiaryForm(false)}
         subProductId={subProductId || ""}
         refresh={handleRefresh}
+        mobile={mobileNumber || ""}
+      />
+
+      <DeleteBeneficiaryModal
+        opened={isDeleteModal}
+        onClose={handleCloseDeleteModal}
+        isLoading={isLoading}
+        onDeleteSubmit={handleDeleteBeneficiary}
+        selectedRow={selectedRow}
       />
     </>
   )

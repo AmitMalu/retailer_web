@@ -1682,13 +1682,13 @@ export const AddUserSvgIcon = ({ color }: { color: string }) => (
   </svg>
 );
 
-export const DeleteSvgIcon = ({ color }: { color: string }) => (
+export const DeleteSvgIcon = ({ color, width = "80", height = "80" }: { color: string, width?: string, height?: string }) => (
   <svg
     id="Layer_1"
     viewBox="0 0 512 512"
     xmlSpace="preserve"
-    width="80px"
-    height="80px"
+    width={`${width}px`}
+    height={`${height}px`}
   >
     <g id="SVGRepo_bgCarrier" strokeWidth={0} />
     <g

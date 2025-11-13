@@ -79,8 +79,10 @@ export const API_ROUTES = {
   FIND_REMITTER: `${BASE_URL}/api/remitter/check`,
   REGISTER_REMITTER: `${BASE_URL}/api/remitter/register`,
   REMITTER_KYC: `${BASE_URL}/api/remitter/ekyc`,
+  FETCH_REMITTER_DETAILS: `${BASE_URL}/api/remitter/fetch-details`,
   REGISTER_BENEFICIARY: `${BASE_URL}/api/beneficiary/register`,
   FETCH_BENEFICIARY: `${BASE_URL}/api/beneficiary/fetchBeneficiary`,
+  EDIT_BENEFICIARY: `${BASE_URL}/api/beneficiary/update`,
   FETCH_BENEFICIARY_BY_ID: `${BASE_URL}/api/beneficiary/fetchBeneficiaryByBeneId`,
   DELETE_BENEFICIARY: `${BASE_URL}/api/beneficiary/delete`,
 

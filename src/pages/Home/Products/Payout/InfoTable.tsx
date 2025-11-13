@@ -61,7 +61,7 @@ const InfoTable = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [isSeacrh, setIsSeacrh] = useState(false);
   const apiResponses = useSelector(
-    (state: RootState) => state.apiResponse.responses
+    (state: RootState) => state?.apiResponse?.responses
   );
 
   const loginData = apiResponses?.loginData

@@ -98,7 +98,6 @@ const SearchRemitterScreen = () => {
           navigate(`/products/dmt/RemitterInfo/${subProductId}`, {
             state: {
               mobileNumber: values.mobileNumber,
-              limit: response?.data?.data?.data?.limit,
               subProduct: subProduct,
             },
           });
@@ -176,7 +175,6 @@ const SearchRemitterScreen = () => {
         navigate(`/products/dmt/RemitterInfo/${subProductId}`, {
           state: {
             mobileNumber: values.mobileNumber,
-            limit: data?.data?.limit,
             subProduct: subProduct,
           },
         });
