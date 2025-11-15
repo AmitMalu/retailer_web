@@ -454,6 +454,14 @@ export const Register_Remitter = async (data: any) => {
   );
 };
 
+export const Update_Remitter = async (data: any) => {
+  return await api.put(
+    `${API_ROUTES.UPDATE_REMITTER}`,
+    data,
+    await createHeaders()
+  );
+};
+
 export const Remitter_Kyc = async (data: any) => {
   return await api.post(
     `${API_ROUTES.REMITTER_KYC}`,
@@ -509,6 +517,22 @@ export const edit_beneficiary = async (data: any) => {
 export const delete_beneficiary = async (data: any) => {
   return await api.post(
     `${API_ROUTES.DELETE_BENEFICIARY}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const Dmt_Tranx_Send_Otp = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.DMT_TRANX_SEND_OTP}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const Dmt_Transaction = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.DMT_TRANSACTION}`,
     data,
     await createHeaders()
   );

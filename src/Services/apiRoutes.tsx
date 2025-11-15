@@ -78,6 +78,7 @@ export const API_ROUTES = {
   //////////////////////////// DMT /////////////////////////////////
   FIND_REMITTER: `${BASE_URL}/api/remitter/check`,
   REGISTER_REMITTER: `${BASE_URL}/api/remitter/register`,
+  UPDATE_REMITTER: `${BASE_URL}/api/remitter/update`,
   REMITTER_KYC: `${BASE_URL}/api/remitter/ekyc`,
   FETCH_REMITTER_DETAILS: `${BASE_URL}/api/remitter/fetch-details`,
   REGISTER_BENEFICIARY: `${BASE_URL}/api/beneficiary/register`,
@@ -85,6 +86,8 @@ export const API_ROUTES = {
   EDIT_BENEFICIARY: `${BASE_URL}/api/beneficiary/update`,
   FETCH_BENEFICIARY_BY_ID: `${BASE_URL}/api/beneficiary/fetchBeneficiaryByBeneId`,
   DELETE_BENEFICIARY: `${BASE_URL}/api/beneficiary/delete`,
+  DMT_TRANX_SEND_OTP: `${BASE_URL}/api/dmt/send-otp`,
+  DMT_TRANSACTION: `${BASE_URL}/api/dmt/transaction`,
 
   /////////////////// VERIFICATION //////////////////////////////////
   ADHAAR_VERIFICATION: `${BASE_URL}/verification/aadhaar-validate`,

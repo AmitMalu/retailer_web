@@ -7,9 +7,13 @@ import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import TableComponent from "@/components/Molecules/TableComponent";
 import AddBeneficiaryModal from "@/components/Organism/DMT/AddBeneficiaryModal";
 import DeleteBeneficiaryModal from "@/components/Organism/DMT/DeleteBeneficiaryModal";
+import DmtTranOtpModal from "@/components/Organism/DMT/DmtTranOtpModal";
+import EditRemitterModal from "@/components/Organism/DMT/EditRemitterModal";
 import RemitterInfoHeader from "@/components/Organism/DMT/RemitterInfoHeader";
-import { delete_beneficiary, edit_beneficiary, Fetch_Beneficiaries, Remitter_details } from "@/Services/api";
+import { RootState } from "@/Redux/Store";
+import { delete_beneficiary, Dmt_Tranx_Send_Otp, edit_beneficiary, Fetch_Beneficiaries, Remitter_details, Update_Remitter } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
+import { decryptData } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { useBankVerification } from "@/Utils/Verification";
 import { UnstyledButton } from "@mantine/core";
@@ -17,6 +21,7 @@ import { Refresh } from "@mui/icons-material";
 import { useTheme } from "@mui/system";
 import { Formik } from "formik";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from 'yup'
@@ -36,12 +41,21 @@ const RemitterInfo = () => {
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
   const [beneficiaries, setBeneficiaries] = useState([]);
   const [showAddBeneficiaryForm, setShowAddBeneficiaryForm] = useState(false);
+  const [showEditRemitterForm, setShowEditRemitterForm] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState<Record<string, any> | null>(null);
   const [remitterDetails, setRemitterDetails] = useState<any>({});
   const { verify: verifyBank } = useBankVerification();
+  const [tranxData, setTranxData] = useState({});
 
+  const apiResponses = useSelector(
+    (state: RootState) => state.apiResponse.responses
+  );
 
+  const loginData = apiResponses?.loginData
+    ? decryptData(apiResponses.loginData)
+    : null;
 
   const tableColumns = [
     {
@@ -87,6 +101,7 @@ const RemitterInfo = () => {
         });
 
         const initialValues = {
+          beneId: values.bene_id,
           accountNumber: values?.accountNumber || "",
           ifscCode: values?.ifscCode || "",
           amount: "0",
@@ -97,17 +112,35 @@ const RemitterInfo = () => {
           try {
             setIsLoading(true);
             const payload = {
-              retailerId: values.retailerId,
-              accountNumber: values.accountNumber,
-              ifscCode: values.ifscCode,
-              amount: Number(values.amount),
-              beneficiaryName: values.beneficiaryName,
-              paymentMode: values.paymentMode,
-              subProductId: values.subProductId,
-              schemeCode: values.schemeCode,
+              retailerId: loginData,
+              subProductId: subProductId,
+              mobile: mobileNumber,
+              beneId: values.beneId,
+              txnType: values.paymentMode,
+              amount: String(values.amount),
+              // pincode: "400705",
+              // address: "Sanpada",
+              // dob: "11-08-2002",
+              // gst_state: "maharashtra",
+              // lat: "28.786543",
+              // long: "78.345678",
+              // referenceId: "BABDUDUL123456789555"
             };
 
+            const response = await Dmt_Tranx_Send_Otp(payload)
+            const data = response?.data
+            if (data?.statusCode == 200) {
+              setTranxData({
+                ...payload,
+                // data?.data?.stateresp,
+                // data?.data?.referenceId,
 
+              })
+              showSuccessNotification(data.message || "OTP Send Successfully")
+              setShowOtpModal(true)
+            } else {
+              showErrorNotification(data?.message || "Failed to Send OTP")
+            }
           } catch (error) {
             await handleCustomError(error);
             return false;
@@ -284,6 +317,7 @@ const RemitterInfo = () => {
           bankname: verifiedData?.ifsc_details?.bank_name || row.bankname,
           name: verifiedData?.full_name || row.name,
           verified: "1",
+          subProductId: subProductId
           // createdBy: loginData?.mobileNumber,
         };
 
@@ -367,6 +401,27 @@ const RemitterInfo = () => {
     }
   };
 
+  const handleRemitterUpdate = async (values: any) => {
+    try {
+      setIsLoading(true);
+      const payload = {
+        mobile: values.mobileNumber,
+        name: values.beneficiaryName,
+      };
+      const response = await Update_Remitter(payload); // your API call
+      if (response?.data?.statusCode == 200) {
+        showSuccessNotification(response?.data?.message || 'Remitter updated successfully!');
+        await fetchRemitterDetails(values.mobileNumber); // Refresh state
+      } else {
+        showErrorNotification(response?.data?.message || 'Failed to update remitter');
+      }
+    } catch (error) {
+      handleCustomError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   const handleSearchWithValues = (columnKey: string, value: string) => {
     const newSearchValues = { ...searchValues };
 
@@ -396,6 +451,32 @@ const RemitterInfo = () => {
       }
     } catch (err) {
       handleCustomError(err);
+    }
+  }
+
+  const handleOtpSubmit = async (values: any) => {
+    try {
+      setIsLoading(true);
+
+      const payload = {
+        mobile: mobileNumber || "",
+        bene_id: selectedRow?.bene_id,
+        subProductId: subProductId || "",
+      };
+
+      const response = await delete_beneficiary(payload);
+      if (response?.data?.statusCode == "200") {
+        showSuccessNotification(response?.data?.message || "Beneficiary deleted successfully");
+        handleCloseDeleteModal();
+        await getBeneficiariesList(page, size, searchValues); // refresh with same filters
+      }
+
+      // Close modal after success
+      handleCloseDeleteModal();
+    } catch (error) {
+      handleCustomError(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -440,7 +521,7 @@ const RemitterInfo = () => {
             mobile: mobileNumber || "N/A",
             availableLimit: remitterDetails?.limitAmount || 0,
           }}
-        // onEdit={() => setShowAddBeneficiaryForm(true)}
+          onEdit={() => setShowEditRemitterForm(true)}
         />
 
         <div className="flex items-center justify-end gap-3">
@@ -516,12 +597,28 @@ const RemitterInfo = () => {
         mobile={mobileNumber || ""}
       />
 
+      <EditRemitterModal
+        opened={showEditRemitterForm}
+        onClose={() => setShowEditRemitterForm(false)}
+        remitterData={{
+          mobile: mobileNumber || 'N/A',
+          name: remitterDetails?.name || '',
+        }}
+        onSubmit={handleRemitterUpdate}
+      />
+
       <DeleteBeneficiaryModal
         opened={isDeleteModal}
         onClose={handleCloseDeleteModal}
         isLoading={isLoading}
         onDeleteSubmit={handleDeleteBeneficiary}
         selectedRow={selectedRow}
+      />
+
+      <DmtTranOtpModal
+        opened={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        onSubmit={handleOtpSubmit}
       />
     </>
   )

@@ -133,6 +133,7 @@ const SearchRemitterScreen = () => {
       const payload = {
         mobile: values.mobileNumber,
         aadhaar_number: values.aadhaarNumber,
+        name: values.name,
         data: "encrypted value of pid data",
         is_iris: 2,
         subProductId: subProductId

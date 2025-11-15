@@ -32,7 +32,7 @@ const RemitterInfoHeader = ({ remitter, onEdit }: any) => {
                     <ButtonComponent
                         title="Edit Remitter"
                         variant="filled"
-                        // onClick={() => setShowDrawerForm(true)}
+                        onClick={onEdit}
                         radius={2}
                         fontSize={14}
                         width={150}

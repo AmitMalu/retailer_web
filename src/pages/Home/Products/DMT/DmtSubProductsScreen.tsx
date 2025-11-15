@@ -28,12 +28,12 @@ export default function DmtSubProductsScreen() {
     });
   };
 
-  const payoutProduct = loginData?.products?.find(
+  const dmtProduct = loginData?.products?.find(
     (product: any) => product.productName.toLowerCase() === "dmt"
   );
 
   const cardsData =
-    payoutProduct?.subProducts?.map((subProduct: any) => {
+    dmtProduct?.subProducts?.map((subProduct: any) => {
       return {
         id: subProduct.subProductId,
         title: subProduct.subProductName,
