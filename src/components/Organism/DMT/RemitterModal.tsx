@@ -1,7 +1,7 @@
 import { FindRemitterProps, RemitterModalProps } from "@/Common/interface"
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent"
 import { Grid, Modal } from "@mantine/core"
-import { Form, Formik, FormikProps } from "formik"
+import { Form, FormikProps } from "formik"
 import NewButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent"
 import { useTheme } from "@mui/system"
 import TextComponent from "@/components/Atoms/NewComponents/TextComponent"

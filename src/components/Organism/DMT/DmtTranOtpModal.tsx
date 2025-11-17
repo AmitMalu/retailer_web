@@ -73,10 +73,10 @@ const DmtTranOtpModal = ({
             >
                 {() => (
                     <Form className=" mt-3 flex h-full flex-col justify-between">
-                        <div className="w-full overflow-auto scrollbar-hide pt-1 pb-1 px-2 bg-white rounded-2xl">
+                        <div className="w-full overflow-auto scrollbar-hide px-2 bg-white rounded-2xl">
                             <Grid gutter="sm">
                                 {/* Mobile Number */}
-                                <Grid.Col span={{ base: 12, md: 12 }}>
+                                <Grid.Col className='flex justify-center' span={{ base: 12, md: 12 }}>
                                     <FormikTextInputComponent
                                         name="otp"
                                         oneTimeCode
@@ -88,7 +88,7 @@ const DmtTranOtpModal = ({
                             </Grid>
 
                             {/* Action Buttons */}
-                            <div className="flex justify-end gap-2 mt-4">
+                            <div className="flex justify-end gap-2 mt-10">
                                 <NewButtonComponent
                                     fw="500"
                                     bgColor="#B0B0B0"

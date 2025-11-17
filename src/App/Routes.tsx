@@ -529,7 +529,7 @@ const RouterOutlet = () => {
           <Route
             path="products/dmt/:subProductId"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }

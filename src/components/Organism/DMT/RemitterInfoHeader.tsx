@@ -1,4 +1,4 @@
-import { Card, Group, Stack, Divider, Button } from "@mantine/core";
+import { Card, Group, Stack, Divider } from "@mantine/core";
 import TextComponent from "@/components/Atoms/NewComponents/TextComponent";
 import { useTheme } from "@mui/system";
 import { EditSvgIcon } from "@/assets/svg";
