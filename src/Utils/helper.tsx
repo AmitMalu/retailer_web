@@ -143,7 +143,7 @@ export const decryptData = (ciphertext: string): any => {
 export const PasswordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*()_+!])[A-Za-z\d@#$%^&*()_+!]{8,}$/;
 
-export const MobileNoRegex = /^[0-9]{10}$/;
+export const MobileNoRegex = /^[6-9]\d{9}$/;
 
 export const EmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -221,9 +221,20 @@ export function exportToCsv<T extends Record<string, any>>(
 
 export const formatDate = (date: string | Date | null): string | null => {
   if (!date) return null;
+
   const d = typeof date === "string" ? new Date(date) : date;
-  return `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}`;
+
+  // handle invalid date case (avoid 'NaN-NaN-NaN')
+  if (isNaN(d.getTime())) return null;
+
+  // return formatted as DD-MM-YYYY
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+
+  return `${day}-${month}-${year}`;
 };
+
 
 export const formatYMDdate = (date: string | Date | null): string | null => {
   if (!date) return null;

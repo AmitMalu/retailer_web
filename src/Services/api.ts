@@ -438,6 +438,106 @@ export const Fetch_Transaction_Receipt = async (transactionId: string) => {
   );
 };
 
+export const Find_Remitter = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.FIND_REMITTER}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const Register_Remitter = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.REGISTER_REMITTER}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const Update_Remitter = async (data: any) => {
+  return await api.put(
+    `${API_ROUTES.UPDATE_REMITTER}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const Remitter_Kyc = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.REMITTER_KYC}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const Remitter_details = async (mobile: string) => {
+  return await api.get(
+    `${API_ROUTES.FETCH_REMITTER_DETAILS}/${mobile}`,
+    await createHeaders()
+  );
+};
+
+export const Register_Beneficiary = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.REGISTER_BENEFICIARY}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const Fetch_Beneficiaries = async (data: Record<string, any>) => {
+  // Extract page and size for query params
+  const { page, size, ...bodyData } = data;
+
+  // Construct query params only for page & size
+  const queryParams = new URLSearchParams(
+    Object.fromEntries(
+      Object.entries({ page, size }).map(([key, value]) => [
+        key,
+        String(value ?? ""),
+      ])
+    )
+  ).toString();
+
+  // Build final URL
+  const url = `${API_ROUTES.FETCH_BENEFICIARY}${queryParams ? `?${queryParams}` : ""}`;
+
+  // Make the API call — page & size in query, rest in body
+  return await api.post(url, bodyData, await createHeaders());
+};
+
+export const edit_beneficiary = async (data: any) => {
+  return await api.put(
+    `${API_ROUTES.EDIT_BENEFICIARY}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const delete_beneficiary = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.DELETE_BENEFICIARY}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const Dmt_Tranx_Send_Otp = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.DMT_TRANX_SEND_OTP}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const Dmt_Transaction = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.DMT_TRANSACTION}`,
+    data,
+    await createHeaders()
+  );
+};
+
 export const Adhaar_Verification = async (aadhaarNumber: number) =>
   await api.post(
     `${API_ROUTES.ADHAAR_VERIFICATION}?aadhaarNumber=${aadhaarNumber}`,

@@ -28,6 +28,7 @@ const getValidTextFieldProps = (props: any): Partial<TextFieldProps> => {
 const TextInputComponent: React.FC<CustomTextInputProps> = ({
   label,
   placeholder,
+  size = "medium" as const,
   value,
   onChange,
   autoComplete,
@@ -120,7 +121,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
   return (
     <div className="w-full">
       <TextField
-        size="medium"
+        size={size}
         variant={getMuiVariant()}
         fullWidth
         label={label}

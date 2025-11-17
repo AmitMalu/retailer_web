@@ -1,254 +1,513 @@
-import { useTheme } from "@mui/system";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { RemitterInfoData } from "@/Common/interface";
-import DropdownComponent from "@/components/Atoms/DropdownComponent";
-import TextInputComponent from "@/components/Atoms/TextInputComponent";
+import { BackSvgIcon, FilterSvgIcon, PlusSvgIcon, TrashSvgIcon } from "@/assets/svg";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
+import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import Loader from "@/components/Atoms/Loader";
-import { UnstyledButton } from "@mantine/core";
-import {
-  BackSvgIcon,
-  EditSvgIcon,
-  FilterSvgIcon,
-  PlusSvgIcon,
-  TrashSvgIcon,
-} from "@/assets/svg";
 import TextComponent from "@/components/Atoms/TextComponent";
+import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import TableComponent from "@/components/Molecules/TableComponent";
-import RemitterInfoEditModal from "@/components/Organism/DMT/RemitterINfoModal";
 import AddBeneficiaryModal from "@/components/Organism/DMT/AddBeneficiaryModal";
-import RemitterEkycModal from "@/components/Organism/DMT/RemitterEkycModal";
+import DeleteBeneficiaryModal from "@/components/Organism/DMT/DeleteBeneficiaryModal";
+import DmtTranOtpModal from "@/components/Organism/DMT/DmtTranOtpModal";
+import EditRemitterModal from "@/components/Organism/DMT/EditRemitterModal";
+import RemitterInfoHeader from "@/components/Organism/DMT/RemitterInfoHeader";
+import { RootState } from "@/Redux/Store";
+import { delete_beneficiary, Dmt_Transaction, Dmt_Tranx_Send_Otp, edit_beneficiary, Fetch_Beneficiaries, Remitter_details, Update_Remitter } from "@/Services/api";
+import { handleCustomError } from "@/Utils/handleCustomError";
+import { decryptData } from "@/Utils/helper";
+import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
+import { useBankVerification } from "@/Utils/Verification";
+import { UnstyledButton } from "@mantine/core";
+import { Refresh } from "@mui/icons-material";
+import { useTheme } from "@mui/system";
+import { Formik } from "formik";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import * as Yup from 'yup'
 
 const RemitterInfo = () => {
+
   const navigate = useNavigate();
   const theme = useTheme();
-  const [showDrawerForm, setShowDrawerForm] = useState(false);
-  const [showBeneficiaryDrawerForm, setShowBeneficiaryDrawerForm] =
-    useState(false);
-  const [showEkycDrawerForm, setShowEkycDrawerForm] = useState(true);
+  const { subProductId } = useParams();
+  const location = useLocation();
+  const { mobileNumber } = location.state || {};
   const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(10);
+  const [totalRecords, setTotalRecords] = useState(0);
   const [isSeacrh, setIsSeacrh] = useState(false);
-  // const [searchValues, setSearchValues] = useState<Record<string, string>>({});
-  const [selectedRowData, setSelectedRowData] = useState<RemitterInfoData | []>(
-    []
+  const [searchValues, setSearchValues] = useState<Record<string, string>>({});
+  const [beneficiaries, setBeneficiaries] = useState([]);
+  const [showAddBeneficiaryForm, setShowAddBeneficiaryForm] = useState(false);
+  const [showEditRemitterForm, setShowEditRemitterForm] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [isDeleteModal, setIsDeleteModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<Record<string, any> | null>(null);
+  const [remitterDetails, setRemitterDetails] = useState<any>({});
+  const { verify: verifyBank } = useBankVerification();
+  const [tranxData, setTranxData] = useState({});
+
+  const apiResponses = useSelector(
+    (state: RootState) => state.apiResponse.responses
   );
-  //   const [isInfoList, setIsInfoList] = useState<RemitterInfoData | []>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [isRemitterInfoList, setIsRemitterInfoList] = useState<
-    RemitterInfoData | []
-  >([]);
 
-  console.log(
-    setIsRemitterInfoList,
-    setItemsPerPage,
-    setCurrentPage,
-    setIsLoading
-  );
-  // const apiResponses = useSelector(
-  //   (state: RootState) => state.apiResponse.responses
-  // );
+  const loginData = apiResponses?.loginData
+    ? decryptData(apiResponses.loginData)
+    : null;
 
-  // const loginData = apiResponses?.loginData
-  //   ? decryptData(apiResponses?.loginData)
-  //   : null;
+  const schemeCode = loginData?.products
+    ?.flatMap((product: any) => product.subProducts) // Flatten all subProducts into a single array
+    ?.find((subProduct: any) => subProduct.subProductId === subProductId) // Find matching subProductId
+    ?.schemeCode; // Get the schemeCode
 
-  // const GetPayoutDataSubmit = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     //   let bodyRequest = {
-  //     //     fromDate: "",
-  //     //     toDate: "",
-
-  //     //     page: values.page,
-  //     //     size: values.size,
-  //     //   };
-  //     //   const response = await Wallet_Report({}, bodyRequest);
-
-  //     //   if (response?.status === 200) {
-  //     //     setIsInfoList(response?.data?.data?.content);
-  //     //     showSuccessNotification(response?.data?.message);
-  //     //   } else {
-  //     //     showErrorNotification(response?.data?.message);
-  //     //   }
-  //   } catch (error) {
-  //     await handleCustomError(error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
   const tableColumns = [
     {
-      key: "beneficiaryName",
+      key: "bene_id",
+      label: "ID",
+      searchKey: "bene_id",
+    },
+    {
+      key: "name",
       label: "Beneficiary Name",
-      searchKey: "beneficiaryName",
-      sortable: false,
+      searchKey: "name",
     },
     {
-      key: "bankName",
-      label: "Bank",
-      searchKey: "bankName",
-      sortable: false,
+      key: "bankname",
+      label: "Bank Name",
+      searchKey: "bankname",
     },
     {
-      key: "accountNumber",
+      key: "accno",
       label: "Account No",
-      searchKey: "accountNumber",
-      sortable: true,
-    },
-    {
-      key: "ifscCode",
-      label: "IFSC Code",
-      searchKey: "ifscCode",
+      searchKey: "accno",
       sortable: false,
     },
     {
-      key: "amount",
+      key: "ifsc",
+      label: "IFSC Code",
+      searchKey: "ifsc",
+      sortable: false,
+    },
+    {
+      key: "transfer",
       label: "Transfer",
-      searchKey: "amount",
-      sortable: true,
-      render: () => (
-        <div className="flex items-center gap-2 justify-center">
-          <div className="w-[20%]  ">
-            <DropdownComponent
-              data={[
-                { value: "PREPAID", label: "PREPAID" },
-                { value: "POSTPAID", label: "POSTPAID" },
-              ]}
-              value={""}
-              onChange={() => { }}
-              className="w-max"
-            />
-          </div>
-          <div className="w-[20%]  ">
-            <DropdownComponent
-              data={[
-                { value: "IMPS", label: "IMPS" },
-                { value: "NEFT", label: "NEFT" },
-              ]}
-              value={""}
-              onChange={() => { }}
-              className="w-max"
-            />
-          </div>
-          <div className="w-[30%]  ">
-            <TextInputComponent
-              allowCharacter={false}
-              allowSpace={false}
-              allowSpecialChar={false}
-              value={""}
-              onChange={() => { }}
-              // type="number"
-              className="w-max"
-            />
-          </div>
-          <div className="flex w-max ">
-            <ButtonComponent
-              title={"TRANSFER"}
-              variant="filled"
-              onClick={() => { }}
-              disabled={isLoading}
-              radius={10}
-            />
-          </div>
-        </div>
-      ),
+      searchKey: "transfer",
+      sortable: false,
+      render: (_row: any, _rowIndex: number, values: any) => {
+        const validationSchema = Yup.object().shape({
+          paymentMode: Yup.string().required("Payment Mode is Required"),
+          amount: Yup.number()
+            .required("Required")
+            .positive("Amount must be positive")
+            .min(1, "Minimum amount is 1")
+            .max(5000, "Maximum amount is 5000"),
+        });
+
+        const initialValues = {
+          beneId: values.bene_id,
+          accountNumber: values?.accountNumber || "",
+          ifscCode: values?.ifscCode || "",
+          amount: "0",
+          beneficiaryName: values?.bankHolderName || "",
+          paymentMode: "IMPS",
+        };
+        const handleSubmit = async (values: any, { resetForm }: any) => {
+          try {
+            setIsLoading(true);
+            const payload = {
+              retailerId: loginData.hierarchyId,
+              subProductId: subProductId,
+              mobile: mobileNumber,
+              beneId: values.beneId,
+              txnType: values.paymentMode,
+              amount: String(values.amount),
+            };
+
+            const response = await Dmt_Tranx_Send_Otp(payload)
+            const data = response?.data
+            if (data?.statusCode == 200) {
+              setTranxData({
+                ...payload,
+                stateresp: data?.data?.stateresp,
+                referenceId: data?.data?.referenceId,
+              })
+              showSuccessNotification(data.message || "OTP Send Successfully")
+              resetForm()
+              setShowOtpModal(true)
+            } else {
+              showErrorNotification(data?.message || "Failed to Send OTP")
+            }
+          } catch (error) {
+            await handleCustomError(error);
+            return false;
+          } finally {
+            setIsLoading(false);
+          }
+        };
+
+        return (
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+            enableReinitialize={true}
+          >
+            {({
+              values,
+              handleSubmit,
+              errors,
+              touched,
+              setFieldValue,
+            }) => (
+              <div className="flex items-center gap-2 h-14 justify-center">
+                <div className="w-40 h-20 flex justify-center items-center">
+                  <DropdownComponent
+                    label="Transaction Type"
+                    data={[
+                      { value: "IMPS", label: "IMPS" },
+                      { value: "NEFT", label: "NEFT" },
+                    ]}
+                    value={values.paymentMode}
+                    onChange={(value) => setFieldValue("paymentMode", value)}
+                    error={
+                      touched.paymentMode && errors.paymentMode
+                        ? errors.paymentMode
+                        : ""
+                    }
+                    className="w-max h-10"
+                  />
+                </div>
+                <div className="w-32 h-20 flex justify-center items-center">
+                  <TextInputComponent
+                    placeholder={"Enter Amount"}
+                    value={values.amount ? values.amount : 0}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const val = e.target.value;
+
+                      // 🧠 If current value is 0 and user types a number → replace it
+                      if (Number(values.amount) === 0 && /^\d$/.test(val)) {
+                        setFieldValue("amount", Number(val));
+                      }
+                      // ✅ Otherwise, handle normally
+                      else if (/^\d*$/.test(val)) {
+                        setFieldValue("amount", Number(val || 0));
+                      }
+                    }}
+                    error={touched.amount && errors.amount ? errors.amount : ""}
+                    className="w-max"
+                    size="small"
+                    maxLength={8}
+                  />
+                </div>
+                <ButtonComponent
+                  height="40px"
+                  title="Transfer"
+                  variant="filled"
+                  onClick={() => {
+                    handleSubmit();
+                  }}
+                  radius={5}
+                  width={120}
+                />
+              </div>
+            )}
+          </Formik>
+        );
+      },
+      disableSearch: true
     },
     {
       key: "verified",
       label: "Verified",
       searchKey: "verified",
       sortable: false,
+      render: (_value: any, _index: number, row: any) => (
+        <div className="flex items-center gap-2">
+          {row?.verified === "1" ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                color: "#28a745",
+                fontSize: "18px",
+                fontWeight: 500,
+                width: "100px",
+              }}
+            >
+              ✅ Verified
+            </div>
+          ) : (
+            <ButtonComponent
+              height={40}
+              title="Verify"
+              variant="outline"
+              radius={5}
+              width={100}
+              onClick={() => handleVerifyBank(row)}
+            />
+          )}
+        </div>
+      ),
+      disableSearch: true
     },
     {
       key: "action",
-      label: "Action",
-      render: (row: any) => (
-        <div className="flex w-max items-center justify-between gap-2 justify-self-center">
+      label: "Delete",
+      render: (_value: any, _index: number, row: any) => (
+        <div>
           <UnstyledButton
             onClick={() => {
-              setSelectedRowData(row);
+              setSelectedRow(row);
+              setIsDeleteModal(true);
             }}
           >
-            <TrashSvgIcon color={theme.palette.error.main} />
+            <TrashSvgIcon color={theme.palette.gray.DEFAULT} />
           </UnstyledButton>
         </div>
       ),
+      searchKey: "action",
+      sortable: false,
+      disableSearch: true
     },
   ];
 
-  // const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const handleVerifyBank = async (row: any) => {
+    try {
+      setIsLoading(true);
 
-  // const handleSearchWithValues = (
-  //   columnKey: string,
-  //   value: string
-  //   // values: WalletParams
-  // ) => {
-  //   try {
-  //     const column = tableColumns.find((col) => col.key === columnKey);
-  //     if (!column) return;
+      // Step 1: Call 3rd party verification
+      const response = await verifyBank({
+        id_number: row.accno,
+        ifsc: row.ifsc,
+        ifsc_details: true,
+      });
 
-  //     const searchKey = column.searchKey || column.key;
-  //     const newSearchValues = { ...searchValues };
+      if (response?.data?.data) {
+        const verifiedData = response?.data?.data;
+        toast.success(verifiedData?.full_name, {
+          position: "top-center",
+          autoClose: 6000,
+          hideProgressBar: true,
+        })
+        // Step 2: Update state (UI)
+        setBeneficiaries((prev: any) =>
+          prev.map((item: any) =>
+            item.bene_id === row.bene_id
+              ? {
+                ...item,
+                verified: "1",
+                ...(verifiedData?.ifsc_details?.bank_name && {
+                  bankname: verifiedData?.ifsc_details.bank_name,
+                }),
+                ...(verifiedData?.full_name && {
+                  name: verifiedData?.full_name,
+                }),
+              }
+              : item
+          )
+        );
 
-  //     if (value) {
-  //       newSearchValues[searchKey] = value;
-  //     } else {
-  //       delete newSearchValues[searchKey];
-  //     }
+        // Step 3: Build payload for DB
+        const payload = {
+          beneId: row?.bene_id,
+          bankname: verifiedData?.ifsc_details?.bank_name || row.bankname,
+          name: verifiedData?.full_name || row.name,
+          verified: "1",
+          subProductId: subProductId
+          // createdBy: loginData?.mobileNumber,
+        };
 
-  //     setSearchValues(newSearchValues);
+        // Step 4: Call DB API to persist changes
+        const dbResponse = await edit_beneficiary(payload);
+        if (dbResponse?.data?.statusCode == 200) {
+          showSuccessNotification("Bank verified & saved successfully");
+        } else {
+          showErrorNotification(dbResponse?.data?.message || "Failed to save bank verification");
+        }
+      }
+    } catch (error: any) {
+      console.error("Bank verification failed:", error?.message);
+      handleCustomError(error || "Error in bank verification");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  //     //   if (values.fromDate && values.toDate) {
-  //     //     const bodyRequest = {
-  //     //       fromDate: "",
-  //     //       toDate: "",
-  //     //       hierarchyId: values.hierarchyId || loginData?.hierarchyId,
-  //     //       walletType: values.walletType,
-  //     //       subProductName: values.subProductName,
-  //     //       status: values.status,
-  //     //       page: values.page,
-  //     //       size: values.size,
-  //     //     };
+  const getBeneficiariesList = async (pageNum = 1, pageSize = 10, filters: Record<string, any> = {}) => {
+    const reqParams = {
+      page: pageNum - 1, // API is 0-indexed
+      size: pageSize,
+      mobile: mobileNumber || "",
+      subProductId: subProductId || "",
+      ...filters, // dynamic filters
+    };
 
-  //     //     if (timeoutRef.current) {
-  //     //       clearTimeout(timeoutRef.current);
-  //     //     }
+    try {
+      setIsLoading(true);
+      const response = await Fetch_Beneficiaries(reqParams);
+      if (response?.status === 200) {
+        setBeneficiaries(response?.data?.data?.content);
+        setTotalRecords(response?.data?.data?.totalElements || 0);
+      } else {
+        showErrorNotification(response?.data?.message);
+        setBeneficiaries([]);
+        setTotalRecords(0);
+      }
+    } catch (error) {
+      await handleCustomError(error);
+      setBeneficiaries([]);
+      setTotalRecords(0);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  //     //     timeoutRef.current = setTimeout(() => {
-  //     //       setIsLoading(true);
-  //     //         Wallet_Report(newSearchValues, bodyRequest)
-  //     //           .then((response) => {
-  //     //             if (response?.status === 200) {
-  //     //               setIsInfoList(response?.data?.data?.content);
-  //     //             } else {
-  //     //               showErrorNotification(response?.data?.message);
-  //     //               setIsInfoList([]);
-  //     //             }
-  //     //           })
-  //     //           .catch((error) => {
-  //     //             handleCustomError(error);
-  //     //             setIsInfoList([]);
-  //     //           })
-  //     //           .finally(() => {
-  //     //             setIsLoading(false);
-  //     //           });
-  //     //     }, 900);
-  //     //   }
-  //   } catch (error) {
-  //     handleCustomError(error);
-  //   }
-  // };
+  // Close modal function
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModal(false);
+    setSelectedRow(null);
+    setTranxData({});
+  };
+
+  // Delete beneficiary function
+  const handleDeleteBeneficiary = async () => {
+    if (!selectedRow) return;
+
+    try {
+      setIsLoading(true);
+
+      const payload = {
+        mobile: mobileNumber || "",
+        bene_id: selectedRow?.bene_id,
+        subProductId: subProductId || "",
+      };
+
+      const response = await delete_beneficiary(payload);
+      if (response?.data?.statusCode == "200") {
+        showSuccessNotification(response?.data?.message || "Beneficiary deleted successfully");
+        handleCloseDeleteModal();
+        await getBeneficiariesList(page, size, searchValues); // refresh with same filters
+      }
+
+      // Close modal after success
+      handleCloseDeleteModal();
+    } catch (error) {
+      handleCustomError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRemitterUpdate = async (values: any) => {
+    try {
+      setIsLoading(true);
+      const payload = {
+        mobile: values.mobileNumber,
+        name: values.beneficiaryName,
+      };
+      const response = await Update_Remitter(payload); // your API call
+      if (response?.data?.statusCode == 200) {
+        showSuccessNotification(response?.data?.message || 'Remitter updated successfully!');
+        await fetchRemitterDetails(values.mobileNumber); // Refresh state
+      } else {
+        showErrorNotification(response?.data?.message || 'Failed to update remitter');
+      }
+    } catch (error) {
+      handleCustomError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleSearchWithValues = (columnKey: string, value: string) => {
+    const newSearchValues = { ...searchValues };
+
+    if (value) {
+      newSearchValues[columnKey] = value;
+    } else {
+      delete newSearchValues[columnKey];
+    }
+
+    setSearchValues(newSearchValues);
+    setPage(1); // Reset to first page when search changes
+  };
+
+  const handleReset = () => {
+    setIsSeacrh(false)
+    setSearchValues({});
+    setPage(1)
+    setSize(10)
+  }
+
+  const fetchRemitterDetails = async (mobileNumber: string) => {
+    try {
+      if (!mobileNumber) return;
+      const response = await Remitter_details(mobileNumber);
+      if (response?.data?.statusCode == "200") {
+        setRemitterDetails(response?.data?.data || {});
+      }
+    } catch (err) {
+      handleCustomError(err);
+    }
+  }
+
+  const handleOtpSubmit = async (values: any) => {
+    try {
+      setIsLoading(true);
+
+      const payload = {
+        otp: values.otp,
+        schemeCode,
+        ...tranxData
+      };
+
+      const response = await Dmt_Transaction(payload);
+      const data = response?.data
+      if (data?.statusCode == "200") {
+        showSuccessNotification(response?.data?.message || "Transaction Success");
+        handleCloseDeleteModal();
+        fetchRemitterDetails(mobileNumber);
+        await getBeneficiariesList(page, size, searchValues); // refresh with same filters
+      } else if (data?.statusCode == "202") {
+        toast.warning(response?.data?.message || "Transaction is in Pending");
+        handleCloseDeleteModal();
+        fetchRemitterDetails(mobileNumber);
+        await getBeneficiariesList(page, size, searchValues);
+      }
+      else {
+        showErrorNotification(response?.data?.message || "Transaction failed")
+      }
+    } catch (error) {
+      handleCustomError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleRefresh = async () => {
+    await getBeneficiariesList(page, size, searchValues);
+  }
+
+  useEffect(() => {
+    getBeneficiariesList(page, size, searchValues);
+  }, [page, size, searchValues])
+
+
+  useEffect(() => {
+    if (!mobileNumber) return;
+    fetchRemitterDetails(mobileNumber);
+  }, [])
 
   return (
     <>
       {isLoading && <Loader />}
       <div className="w-full 320px:mt-12 md:mt-0">
-        <div className="mb-6 flex items-center gap-6 justify-start">
+        <div className="mb-3 flex items-center gap-6 justify-start">
           <UnstyledButton
             onClick={() => {
-              navigate(`/products/dmt`);
+              navigate(`/products/dmt/${subProductId}`);
             }}
           >
             <BackSvgIcon color={theme.palette.red.DEFAULT} />
@@ -262,140 +521,113 @@ const RemitterInfo = () => {
           </TextComponent>
         </div>
 
-        <div className="border-2 border-red-light rounded-lg mb-6 ">
-          <div className="flex p-2 items-center justify-between w-full border-b-2 border-b-red-light">
-            <TextComponent
-              fontSize={24}
-              fontWeight={500}
-              color={theme.palette.background.default}
-            >
-              Remitter Info
-            </TextComponent>
-            <div className="flex items-center justify-end">
-              <ButtonComponent
-                title="EDIT"
-                variant="filled"
-                onClick={() => setShowDrawerForm(true)}
-                radius={4}
-                width={100}
-                rightIcon={
-                  <EditSvgIcon color={theme.palette.background.paper} />
-                }
-              />
-            </div>
-          </div>
-          <div className="flex p-2 items-center justify-evenly w-full gap-4">
-            <TextComponent
-              fontSize={20}
-              fontWeight={500}
-              color={theme.palette.background.default}
-            >
-              Name: ABC
-            </TextComponent>
-            <TextComponent
-              fontSize={20}
-              fontWeight={500}
-              color={theme.palette.background.default}
-            >
-              Mobile NO: 1234567890
-            </TextComponent>
-            <TextComponent
-              fontSize={20}
-              fontWeight={500}
-              color={theme.palette.background.default}
-            >
-              Current Available Limit: 1000
-            </TextComponent>
-          </div>
-        </div>
+        <RemitterInfoHeader
+          remitter={{
+            name: remitterDetails?.name || "N/A",
+            mobile: mobileNumber || "N/A",
+            availableLimit: remitterDetails?.limitAmount || 0,
+          }}
+          onEdit={() => setShowEditRemitterForm(true)}
+        />
 
-        <div className="flex items-center justify-end gap-6">
-          <div className="border-1 flex w-max items-center justify-center justify-self-end rounded-md border-red-light bg-red-light px-2 py-1">
+        <div className="flex items-center justify-end gap-3">
+          {/* Refresh */}
+          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px]">
+            <UnstyledButton
+              onClick={handleReset}
+              className="flex items-center justify-center gap-2"
+            >
+              <Refresh color="error" />
+            </UnstyledButton>
+          </div>
+
+          {/* Filter */}
+          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px]">
             <UnstyledButton
               onClick={() => setIsSeacrh(!isSeacrh)}
-              className="flex flex-row items-center justify-center gap-3 text-center disabled:opacity-30"
+              className="flex items-center justify-center gap-2"
             >
               <FilterSvgIcon color={theme.palette.red.DEFAULT} />
               <TextComponent
-                fontSize={18}
+                fontSize={16}
                 fontWeight={400}
                 color={theme.palette.red.DEFAULT}
                 align="center"
               >
-                Search
+                Filter
               </TextComponent>
             </UnstyledButton>
           </div>
-          <div className="flex items-center justify-end">
-            <ButtonComponent
-              title="ADD BENEFICIARY"
-              variant="filled"
-              onClick={() => setShowBeneficiaryDrawerForm(true)}
-              radius={4}
-              width="auto"
-              leftIcon={<PlusSvgIcon color={theme.palette.background.paper} />}
-            />
-          </div>
+
+          {/* Add Bank Button */}
+          <ButtonComponent
+            title="ADD BENEFICIARY"
+            variant="filled"
+            onClick={() => setShowAddBeneficiaryForm(true)}
+            radius={2}
+            width={220}
+            height={40}
+            leftIcon={<PlusSvgIcon color={theme.palette.background.paper} />}
+          />
         </div>
+
+        {/* ////////////////////////////// Table ///////////////////////////////// */}
         <div className="mt-6">
           <TableComponent
-            data={
-              Array.isArray(isRemitterInfoList)
-                ? isRemitterInfoList
-                : [isRemitterInfoList]
-            }
+            keyField="id"
+            data={beneficiaries}
             columns={tableColumns}
             showSearch={isSeacrh}
-            page={currentPage}
-            size={itemsPerPage}
-            onSelectRow={(row) => setSelectedRowData(row)}
-          // onSearch={(columnKey, value) =>
-          //   handleSearchWithValues(columnKey, value, values)
-          // }
-          // onPageChange={(page) => {
-          //   setCurrentPage(page);
-          //   const updatedValues = {
-          //     ...values,
-          //     page,
-          //     size: itemsPerPage,
-          //   };
-          //   GetPayoutDataSubmit(updatedValues);
-          // }}
-          // onPageSizeChange={(size) => {
-          //   setItemsPerPage(size);
-          //   setCurrentPage(1);
-          //   const updatedValues = {
-          //     ...values,
-          //     page: 1,
-          //     size,
-          //   };
-          //   GetPayoutDataSubmit(updatedValues);
-          // }}
+            onSearch={(columnKey, value) => {
+              handleSearchWithValues(columnKey, value)
+            }}
+            showNoDataFound={true}
+            page={page}
+            size={size}
+            onPageChange={setPage}
+            onPageSizeChange={(newSize) => {
+              setSize(newSize);
+              setPage(1); // reset to first page when size changes
+            }}
+            serverSide={true}
+            totalRecords={totalRecords}
           />
         </div>
-        {showDrawerForm && (
-          <RemitterInfoEditModal
-            opened={showDrawerForm}
-            onClose={() => setShowDrawerForm(false)}
-            rowData={selectedRowData}
-          />
-        )}
-        {showBeneficiaryDrawerForm && (
-          <AddBeneficiaryModal
-            opened={showBeneficiaryDrawerForm}
-            onClose={() => setShowBeneficiaryDrawerForm(false)}
-            rowData={selectedRowData}
-          />
-        )}
-        {showEkycDrawerForm && (
-          <RemitterEkycModal
-            opened={showEkycDrawerForm}
-            onClose={() => setShowEkycDrawerForm(false)}
-          />
-        )}
       </div>
-    </>
-  );
-};
 
-export default RemitterInfo;
+      <AddBeneficiaryModal
+        opened={showAddBeneficiaryForm}
+        onClose={() => setShowAddBeneficiaryForm(false)}
+        subProductId={subProductId || ""}
+        refresh={handleRefresh}
+        mobile={mobileNumber || ""}
+      />
+
+      <EditRemitterModal
+        opened={showEditRemitterForm}
+        onClose={() => setShowEditRemitterForm(false)}
+        remitterData={{
+          mobile: mobileNumber || 'N/A',
+          name: remitterDetails?.name || '',
+        }}
+        onSubmit={handleRemitterUpdate}
+      />
+
+      <DeleteBeneficiaryModal
+        opened={isDeleteModal}
+        onClose={handleCloseDeleteModal}
+        isLoading={isLoading}
+        onDeleteSubmit={handleDeleteBeneficiary}
+        selectedRow={selectedRow}
+      />
+
+      <DmtTranOtpModal
+        opened={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        onSubmit={handleOtpSubmit}
+      />
+    </>
+  )
+}
+
+export default RemitterInfo

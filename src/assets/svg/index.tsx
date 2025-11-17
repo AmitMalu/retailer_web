@@ -1547,8 +1547,8 @@ export const TrashSvgIcon = ({ color }: { color: string }) => (
   </svg>
 );
 
-export const EditSvgIcon = ({ color }: { color: string }) => (
-  <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none">
+export const EditSvgIcon = ({ color, width = "24", height = "24" }: { color: string, width: string, height: string }) => (
+  <svg width={`${width}px`} height={`${height}px`} viewBox="0 0 24 24" fill="none">
     <path
       d="M21.2799 6.40005L11.7399 15.94C10.7899 16.89 7.96987 17.33 7.33987 16.7C6.70987 16.07 7.13987 13.25 8.08987 12.3L17.6399 2.75002C17.8754 2.49308 18.1605 2.28654 18.4781 2.14284C18.7956 1.99914 19.139 1.92124 19.4875 1.9139C19.8359 1.90657 20.1823 1.96991 20.5056 2.10012C20.8289 2.23033 21.1225 2.42473 21.3686 2.67153C21.6147 2.91833 21.8083 3.21243 21.9376 3.53609C22.0669 3.85976 22.1294 4.20626 22.1211 4.55471C22.1128 4.90316 22.0339 5.24635 21.8894 5.5635C21.7448 5.88065 21.5375 6.16524 21.2799 6.40005V6.40005Z"
       stroke={color}
@@ -1682,13 +1682,13 @@ export const AddUserSvgIcon = ({ color }: { color: string }) => (
   </svg>
 );
 
-export const DeleteSvgIcon = ({ color }: { color: string }) => (
+export const DeleteSvgIcon = ({ color, width = "80", height = "80" }: { color: string, width?: string, height?: string }) => (
   <svg
     id="Layer_1"
     viewBox="0 0 512 512"
     xmlSpace="preserve"
-    width="80px"
-    height="80px"
+    width={`${width}px`}
+    height={`${height}px`}
   >
     <g id="SVGRepo_bgCarrier" strokeWidth={0} />
     <g

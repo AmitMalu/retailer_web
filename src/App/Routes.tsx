@@ -7,7 +7,6 @@ import SetPasswordScreen from "@/pages/Auth/SetPassword";
 import SignUp from "@/pages/Auth/SignUp.tsx";
 import Loader from "@/components/Atoms/Loader";
 import ProtectedRoute from "./ProtectedRoutes";
-
 const Dashboard = lazy(() => import("@/pages/Home/Dashboard"));
 const CreateUser = lazy(() => import("@/pages/Home/ManageUser/CreateUser"));
 const DebitAndCreditUser = lazy(
@@ -135,7 +134,8 @@ const TwoFactorMiniStatement = lazy(
   () => import("@/pages/Home/Products/AEPS/MiniStatement/TwoFAMinistatement")
 );
 
-const DMTScreen = lazy(() => import("@/pages/Home/Products/DMT"));
+const DmtSubProductsScreen = lazy(() => import("@/pages/Home/Products/DMT/DmtSubProductsScreen"));
+const SearchRemitterScreen = lazy(() => import("@/pages/Home/Products/DMT/SearchRemitterScreen"))
 
 const RemitterInfo = lazy(
   () => import("@/pages/Home/Products/DMT/RemitterInfo")
@@ -200,7 +200,7 @@ const RouterOutlet = () => {
         <Route path="/" element={<Outlet />}>
           {/* Redirect root (/) to login or dashboard */}
           <Route index element={<CatchAllRedirect />} />
-          
+
           {/* ----------- Public Auth Routes ----------- */}
           <Route
             path="/login"
@@ -521,13 +521,30 @@ const RouterOutlet = () => {
               index
               element={
                 <MainLayout>
-                  <DMTScreen />
+                  <DmtSubProductsScreen />
                 </MainLayout>
               }
             />
           </Route>
           <Route
-            path="products/dmt/RemitterInfo"
+            path="products/dmt/:subProductId"
+            element={
+              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <SearchRemitterScreen />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/dmt/RemitterInfo/:subProductId"
             element={
               <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />

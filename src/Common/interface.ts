@@ -206,6 +206,7 @@ export type CustomTextInputProps = Omit<
   allowSpace?: boolean;
   allowedChars?: string;
   capitalize?: boolean;
+  size?: "medium" | "small";
 };
 
 export type CustomTextProps = {
@@ -874,10 +875,19 @@ export type TwoFAFormBodyProps = {
 export type FindRemitterProps = {
   mobileNumber: string;
   name?: string;
-  dob?: string;
-  page: number;
-  size: number;
+  // dob?: string;
+  aadhaarNumber?: string;
+  otp?: string;
 };
+
+export interface RemitterModalProps {
+  isOpen: boolean;
+  onClose: (source: "icon" | "button") => void;
+  modelMode: "ekyc" | "register" | null;
+  isNewRemitter: boolean;
+  handleRemitterKyc: (values: any) => void;
+  handleRegisterRemitterSubmit: (values: any) => void;
+}
 
 export type RemitterData = Record<string, any>;
 
@@ -890,11 +900,30 @@ export type EditRemitterProps = {
 };
 
 export type AddBeneficiaryFormProps = {
-  fullName: string;
-  bankName: string;
-  bankAccountNumber: string;
-  confirmBankAccountNumber: string;
+  // mobileNumber: string;
+  beneficiaryName: string;
+  bankId: string;
+  accountNumber: string;
   ifscCode: string;
+  verified: string | undefined;
+  gstState: string;
+  dob: Date | null;
+  address: string;
+  pincode: string;
+};
+
+export type AddBeneficiaryPayload = {
+  mobile: string;
+  benename: string;
+  bankid: string;
+  accno: string;
+  ifsccode: string;
+  verified: string; // "0" or "1"
+  gst_state: string;
+  dob: string | null;
+  address: string;
+  pincode: string;
+  subProductId: string;
 };
 
 export type RegisterRemitterFormProps = {

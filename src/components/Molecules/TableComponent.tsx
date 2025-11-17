@@ -442,7 +442,7 @@ const TableComponent: React.FC<TableProps> = ({
             )}
           </Table.Thead>
 
-          {sortedData.length > 0 ? (
+          {sortedData?.length > 0 ? (
             <Table.Tbody>
               {rows}
             </Table.Tbody>
@@ -514,7 +514,7 @@ const TableComponent: React.FC<TableProps> = ({
               <TextComponent fontSize={12} fontWeight={400}>
                 {serverSide
                   ? `Showing ${startIndex + 1}-${startIndex + paginatedData.length} of ${totalRecords || 0} Records`
-                  : `Showing ${startIndex + 1}-${startIndex + paginatedData.length} of ${data.length} Records`}
+                  : `Showing ${startIndex + 1}-${startIndex + paginatedData.length} of ${data?.length} Records`}
               </TextComponent>
             </div>
             <Pagination
