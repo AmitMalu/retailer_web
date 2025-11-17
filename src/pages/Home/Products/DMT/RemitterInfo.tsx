@@ -11,7 +11,7 @@ import DmtTranOtpModal from "@/components/Organism/DMT/DmtTranOtpModal";
 import EditRemitterModal from "@/components/Organism/DMT/EditRemitterModal";
 import RemitterInfoHeader from "@/components/Organism/DMT/RemitterInfoHeader";
 import { RootState } from "@/Redux/Store";
-import { delete_beneficiary, Dmt_Tranx_Send_Otp, edit_beneficiary, Fetch_Beneficiaries, Remitter_details, Update_Remitter } from "@/Services/api";
+import { delete_beneficiary, Dmt_Transaction, Dmt_Tranx_Send_Otp, edit_beneficiary, Fetch_Beneficiaries, Remitter_details, Update_Remitter } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
@@ -32,7 +32,7 @@ const RemitterInfo = () => {
   const theme = useTheme();
   const { subProductId } = useParams();
   const location = useLocation();
-  const { mobileNumber, subProduct } = location.state || {};
+  const { mobileNumber } = location.state || {};
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
@@ -56,6 +56,11 @@ const RemitterInfo = () => {
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses.loginData)
     : null;
+
+  const schemeCode = loginData?.products
+    ?.flatMap((product: any) => product.subProducts) // Flatten all subProducts into a single array
+    ?.find((subProduct: any) => subProduct.subProductId === subProductId) // Find matching subProductId
+    ?.schemeCode; // Get the schemeCode
 
   const tableColumns = [
     {
@@ -108,23 +113,16 @@ const RemitterInfo = () => {
           beneficiaryName: values?.bankHolderName || "",
           paymentMode: "IMPS",
         };
-        const handleSubmit = async (values: any) => {
+        const handleSubmit = async (values: any, { resetForm }: any) => {
           try {
             setIsLoading(true);
             const payload = {
-              retailerId: loginData,
+              retailerId: loginData.hierarchyId,
               subProductId: subProductId,
               mobile: mobileNumber,
               beneId: values.beneId,
               txnType: values.paymentMode,
               amount: String(values.amount),
-              // pincode: "400705",
-              // address: "Sanpada",
-              // dob: "11-08-2002",
-              // gst_state: "maharashtra",
-              // lat: "28.786543",
-              // long: "78.345678",
-              // referenceId: "BABDUDUL123456789555"
             };
 
             const response = await Dmt_Tranx_Send_Otp(payload)
@@ -132,11 +130,11 @@ const RemitterInfo = () => {
             if (data?.statusCode == 200) {
               setTranxData({
                 ...payload,
-                // data?.data?.stateresp,
-                // data?.data?.referenceId,
-
+                stateresp: data?.data?.stateresp,
+                referenceId: data?.data?.referenceId,
               })
               showSuccessNotification(data.message || "OTP Send Successfully")
+              resetForm()
               setShowOtpModal(true)
             } else {
               showErrorNotification(data?.message || "Failed to Send OTP")
@@ -370,6 +368,7 @@ const RemitterInfo = () => {
   const handleCloseDeleteModal = () => {
     setIsDeleteModal(false);
     setSelectedRow(null);
+    setTranxData({});
   };
 
   // Delete beneficiary function
@@ -459,20 +458,27 @@ const RemitterInfo = () => {
       setIsLoading(true);
 
       const payload = {
-        mobile: mobileNumber || "",
-        bene_id: selectedRow?.bene_id,
-        subProductId: subProductId || "",
+        otp: values.otp,
+        schemeCode,
+        ...tranxData
       };
 
-      const response = await delete_beneficiary(payload);
-      if (response?.data?.statusCode == "200") {
-        showSuccessNotification(response?.data?.message || "Beneficiary deleted successfully");
+      const response = await Dmt_Transaction(payload);
+      const data = response?.data
+      if (data?.statusCode == "200") {
+        showSuccessNotification(response?.data?.message || "Transaction Success");
         handleCloseDeleteModal();
+        fetchRemitterDetails(mobileNumber);
         await getBeneficiariesList(page, size, searchValues); // refresh with same filters
+      } else if (data?.statusCode == "202") {
+        toast.warning(response?.data?.message || "Transaction is in Pending");
+        handleCloseDeleteModal();
+        fetchRemitterDetails(mobileNumber);
+        await getBeneficiariesList(page, size, searchValues);
       }
-
-      // Close modal after success
-      handleCloseDeleteModal();
+      else {
+        showErrorNotification(response?.data?.message || "Transaction failed")
+      }
     } catch (error) {
       handleCustomError(error);
     } finally {

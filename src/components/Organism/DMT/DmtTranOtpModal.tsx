@@ -20,7 +20,7 @@ const DmtTranOtpModal = ({
     const validationSchema = Yup.object().shape({
         otp: Yup.string()
             .required('Please enter the OTP')
-            .length(6, "OTP must be 6 digits"),
+            .length(4, "OTP must be 6 digits"),
     });
 
     return (
@@ -28,7 +28,7 @@ const DmtTranOtpModal = ({
             opened={opened}
             onClose={onClose}
             title="OTP"
-            size="xl"
+            size="md"
             centered
             closeOnEscape={false}
             closeOnClickOutside={false}
@@ -80,7 +80,7 @@ const DmtTranOtpModal = ({
                                     <FormikTextInputComponent
                                         name="otp"
                                         oneTimeCode
-                                        length={6}
+                                        length={4}
                                         type="text"
                                         fullWidth
                                     />
