@@ -125,7 +125,7 @@ const PGFormModal = ({
 
       const response = await Validate_Transaction(payload);
       if (response?.status === 200 || response?.data?.statusCode === 200) {
-        showSuccessNotification(response?.data?.message);
+        // showSuccessNotification(response?.data?.message);
         handleCreateOrder(values);
       } else {
         showErrorNotification(response?.data?.message || "Unable to Validate");
@@ -164,7 +164,7 @@ const PGFormModal = ({
 
         // Inner (business logic) success check
         if (orderData.status === "SUCCESS") {
-          showSuccessNotification(orderData.message || "Order created successfully");
+          // showSuccessNotification(orderData.message || "Order created successfully");
 
           if (orderData.paymentLink) {
             // ✅ Open payment link in a new tab

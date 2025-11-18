@@ -147,6 +147,12 @@ const ViewUser = () => {
       ]
     },
     {
+      key: "remarks",
+      label: "Remark",
+      searchKey: "remarks",
+      sortable: false,
+    },
+    {
       key: "isBlocked",
       label: "Is Blocked",
       render: (_value: any, _index: number, row: ViewUserList) => (

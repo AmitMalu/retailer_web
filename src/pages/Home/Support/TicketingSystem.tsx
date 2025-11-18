@@ -251,7 +251,7 @@ const Ticketing = () => {
     },
     {
       key: "status",
-      label: "Status",
+      label: "Ticket Status",
       searchKey: "status",
       sortable: false,
     },
@@ -322,8 +322,14 @@ const Ticketing = () => {
     },
     {
       key: "tranStatus",
-      label: "Tran Status",
+      label: "Transaction Status",
       searchKey: "tranStatus",
+      sortable: false,
+    },
+    {
+      key: "remark",
+      label: "Remark",
+      searchKey: "remark",
       sortable: false,
     },
     {
