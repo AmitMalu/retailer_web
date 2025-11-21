@@ -1,18 +1,10 @@
 import { BackSvgIcon, BillPaymentSvgIcon } from "@/assets/svg";
 import TextComponent from "@/components/Atoms/TextComponent";
 import BbpsCard from "@/components/Molecules/BBPSCard";
-import { Get_Provider_List } from "@/Services/api";
-import { handleCustomError } from "@/Utils/handleCustomError";
-import { decryptData } from "@/Utils/helper";
-import { showErrorNotification } from "@/Utils/notifications";
 import { Skeleton, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import Loader from "@/components/Atoms/Loader";
-import { saveApiResponse } from "@/Redux/Actions/apiActions";
-import { RootState } from "@/Redux/Store";
 
 const BillPayOneScreen = () => {
   const theme = useTheme();
@@ -20,62 +12,32 @@ const BillPayOneScreen = () => {
   const location = useLocation();
   const { subProductId } = location.state || {};
   const [isLoading, setIsLoading] = useState(false);
-  const apiResponses = useSelector(
-    (state: RootState) => state.apiResponse.responses
-  );
-  const bbpsServicesData = apiResponses?.bbpsServices
-    ? decryptData(apiResponses?.bbpsServices)
-    : null;
-  const dispatch = useDispatch();
-  const isMounted = useRef(true);
+  const [cardsData, setCardsData] = useState<any[]>([]);
 
-  // Fetch Provider List
-  const fetchData = useCallback(async () => {
-    if (!subProductId) return;
-
-    if (isMounted.current) {
-      try {
-        setIsLoading(true);
-        const response = await Get_Provider_List({ subProductId });
-        if (response?.status === 200) {
-          dispatch(saveApiResponse("bbpsServices", response?.data?.data));
-        } else {
-          showErrorNotification(response?.data?.message);
-        }
-      } catch (error) {
-        await handleCustomError(error);
-      } finally {
-        if (isMounted.current) {
-          setIsLoading(false);
-        }
-      }
-    }
-  }, [dispatch, subProductId]);
+  const loadServiceProviders = () =>
+    import("./Config").then((module) => module.AtoZServiceProviders);
 
   useEffect(() => {
-    isMounted.current = true;
+    setIsLoading(true);
 
-    if (!bbpsServicesData || bbpsServicesData.length === 0) {
-      fetchData();
-    }
+    loadServiceProviders().then((providers) => {
+      const uniqueCards = Array.from(
+        new Map(
+          providers.map((services: any) => [
+            services.service_name,
+            {
+              id: services.provider_id,
+              title: services.service_name,
+              providerName: services.provider_name,
+            },
+          ])
+        ).values()
+      );
 
-    return () => {
-      isMounted.current = false;
-    };
-  }, [bbpsServicesData]);
-
-  const cardsData = Array.from(
-    new Map(
-      (bbpsServicesData || []).map((services: any) => [
-        services.service_name,
-        {
-          id: services.provider_id,
-          title: services.service_name,
-          providerName: services.provider_name,
-        },
-      ])
-    ).values()
-  );
+      setCardsData(uniqueCards);
+      setIsLoading(false);
+    });
+  }, []);
 
   const handleIconClick = ({ serviceName }: { serviceName: string }) => {
     navigate(`/products/billPay/service/billDetails`, {
@@ -109,7 +71,6 @@ const BillPayOneScreen = () => {
 
   return (
     <>
-      {isLoading && <Loader />}
       <UnstyledButton
         onClick={() => {
           navigate(`/products/billPay`);
