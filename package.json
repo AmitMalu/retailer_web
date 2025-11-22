@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "prebuild": "node scripts/generateBuildInfo.cjs",
     "dev": "vite",
     "build": "tsc -b && powershell -Command \"if (Test-Path dist) { Remove-Item -Recurse -Force dist }\" && vite build && npm run copy-webxml",
     "copy-webxml": "powershell -Command \"New-Item -ItemType Directory -Force -Path dist\\WEB-INF; Copy-Item -Path deploy-resources\\WEB-INF\\* -Destination dist\\WEB-INF -Recurse -Force\"",

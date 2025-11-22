@@ -1,6 +1,5 @@
 import { Avatar, Card } from '@mantine/core'
 import { useTheme } from '@mui/system';
-import TextComponent from '../Atoms/NewComponents/TextComponent';
 
 const DashboardProfileCard = ({ profile }: any) => {
     const hasImage = profile?.image && profile.image.trim() !== "";

@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import TextComponent from "@/components/Atoms/TextComponent";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
 import {
@@ -9,6 +8,7 @@ import {
   useSubProductDropdown,
 } from "@/Utils/helper";
 import RetailerDashboard from "@/components/Organism/Dashboard/RetailerDashboard";
+import CommonDashboard from "@/components/Organism/Dashboard/CommonDashboard";
 
 export default function Dashboard() {
   const { fetchIpAddress } = useIpAddress();
@@ -36,7 +36,11 @@ export default function Dashboard() {
       scrollbarWidth: "none",
     }}
       className="flex h-[calc(100vh-90px)] mx-auto p-4 items-center justify-center">
-      <RetailerDashboard />
+      {loginData?.role === "RT" || loginData?.role === "RU" ? (
+        <RetailerDashboard />
+      ) : (
+        <CommonDashboard />
+      )}
     </div>
   );
 }

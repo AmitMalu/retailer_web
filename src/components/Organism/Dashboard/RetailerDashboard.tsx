@@ -1,13 +1,11 @@
-import { Card, Grid } from "@mantine/core";
+import { Grid } from "@mantine/core";
 import DashboardCard from "../../Molecules/DashboardCard";
 import { useTheme } from "@mui/system";
 import DashboardProfileCard from "@/components/Molecules/DashboardProfileCard";
 import DashboardLineGraph from "@/components/Molecules/DashboardLineGraph";
 import TextComponent from "@/components/Atoms/NewComponents/TextComponent";
-import GenericMasterTable from "@/components/Molecules/GenericMasterTable";
-import { table } from "console";
-import { GenericTableHeader } from "@/Common/interface";
 import DashboardPieChart from "@/components/Molecules/DashboardPieChart";
+import DashboardMiniTable from "@/components/Molecules/DashboardMiniTable";
 
 const RetailerDashboard = () => {
     const theme = useTheme()
@@ -36,19 +34,19 @@ const RetailerDashboard = () => {
             borderColor: theme.palette.warning.dark,
         },
     ];
-    const headers: GenericTableHeader<any>[] = [
-        { key: "dateTime", label: "Date Time", filterType: "none" },
-        { key: "wallet", label: "Wallet", filterType: "none" },
-        { key: "product", label: "Product", filterType: "none" },
-        { key: "status", label: "Status", filterType: "none" },
-        { key: "amount", label: "Amount", filterType: "none" }
+    const headers = [
+        { key: "dateTime", label: "Date Time" },
+        { key: "amount", label: "Amount" },
+        { key: "product", label: "Product" },
+        { key: "wallet", label: "Wallet" },
+        { key: "status", label: "Status" },
     ]
     const tableData = [
-        { "dateTime": "12-09-25", "wallet": "POSTPAID", "product": "PG", "status": "SUCCESS", "amount": "1900" },
-        { "dateTime": "12-09-25", "wallet": "POSTPAID", "product": "PG", "status": "SUCCESS", "amount": "1900" },
-        { "dateTime": "12-09-25", "wallet": "POSTPAID", "product": "PG", "status": "SUCCESS", "amount": "1900" },
-        { "dateTime": "12-09-25", "wallet": "POSTPAID", "product": "PG", "status": "SUCCESS", "amount": "1900" },
-        { "dateTime": "12-09-25", "wallet": "POSTPAID", "product": "PG", "status": "SUCCESS", "amount": "1900" },
+        { "dateTime": "12-09-25 12:19 AM", "wallet": "POSTPAID", "product": "PG", "status": "SUCCESS", "amount": "1900" },
+        { "dateTime": "12-09-25 02:29 PM", "wallet": "POSTPAID", "product": "PG", "status": "SUCCESS", "amount": "1900" },
+        { "dateTime": "12-09-25 11:09 AM", "wallet": "POSTPAID", "product": "PG", "status": "SUCCESS", "amount": "1900" },
+        { "dateTime": "12-09-25 08:36 PM", "wallet": "POSTPAID", "product": "PG", "status": "SUCCESS", "amount": "1900" },
+        { "dateTime": "12-09-25 10:00 AM", "wallet": "POSTPAID", "product": "PG", "status": "SUCCESS", "amount": "1900" },
     ]
 
     const servicePieData = [
@@ -98,13 +96,12 @@ const RetailerDashboard = () => {
 
             <Grid gutter="lg" align="stretch" mt={4}>
                 <Grid.Col span={{ base: 12, md: 6 }}>
-                    <Card shadow="xl" padding="sm" radius="md">
-                        <div className="font-semibold text-base mb-2">Last 5 Transactions</div>
-                        <GenericMasterTable<any>
-                            headers={headers}
-                            data={tableData}
-                        />
-                    </Card>
+                    <DashboardMiniTable
+                        title="Last 5 Transactions"
+                        headers={headers}
+                        data={tableData}
+                        theme={theme}
+                    />
                 </Grid.Col>
 
                 <Grid.Col span={{ base: 12, md: 6 }}>

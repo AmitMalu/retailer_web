@@ -3,6 +3,7 @@ import { AuthLayoutProps } from "@/Common/interface";
 import { useNavigate } from "react-router-dom";
 import ImShortLogo from "@/assets/svg/ImShortLogo";
 import TextComponent from "../Atoms/TextComponent";
+import { BUILD_INFO } from '@/buildInfo';
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({
   children,
@@ -18,7 +19,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
           <div
             onClick={() => navigate("/login")}
             className="mb-6 -mt-12 flex h-auto w-full items-start justify-start"
-            title="v1.0.1 (18/11 5:00 PM)"
+            title={`${BUILD_INFO.version} (${BUILD_INFO.builtAt})`}
           >
             <ImShortLogo />
           </div>
