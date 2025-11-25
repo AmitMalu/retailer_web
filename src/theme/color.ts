@@ -58,6 +58,7 @@ export const colorTokens = {
   },
   gray: {
     DEFAULT: "#CACACA",
+    main: "#777777",
     light: "#F1F1F1",
     dark: "#DEDEDE",
   },

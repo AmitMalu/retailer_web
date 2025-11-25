@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import TextComponent from "@/components/Atoms/TextComponent";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
 import {
@@ -8,6 +7,8 @@ import {
   useWalletBalance,
   useSubProductDropdown,
 } from "@/Utils/helper";
+import RetailerDashboard from "@/components/Organism/Dashboard/RetailerDashboard";
+import CommonDashboard from "@/components/Organism/Dashboard/CommonDashboard";
 
 export default function Dashboard() {
   const { fetchIpAddress } = useIpAddress();
@@ -31,10 +32,15 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="flex h-[calc(100vh-200px)] items-center justify-center">
-      <TextComponent fontSize={30} fontWeight={500} color="error.main">
-        Coming Soon!
-      </TextComponent>
+    <div style={{
+      scrollbarWidth: "none",
+    }}
+      className="flex h-[calc(100vh-90px)] mx-auto p-4 items-center justify-center">
+      {loginData?.role === "RT" || loginData?.role === "RU" ? (
+        <RetailerDashboard />
+      ) : (
+        <CommonDashboard />
+      )}
     </div>
   );
 }
