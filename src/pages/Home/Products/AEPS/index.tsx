@@ -45,7 +45,7 @@ const AepsScreen = () => {
     <>
       <UnstyledButton
         onClick={() => {
-          navigate(`/products`);
+          navigate(`/products/aeps`);
         }}
       >
         <BackSvgIcon color={theme.palette.red.DEFAULT} />

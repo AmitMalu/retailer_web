@@ -538,6 +538,43 @@ export const Dmt_Transaction = async (data: any) => {
   );
 };
 
+////////////////////////////---- AEPS-----//////////////////////////////////
+export const Check_Aeps_Onboard_Status = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.AEPS_CHECK_STATUS}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const AepsMerchantOnboardAPI = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.AEPS_MERCHANT_ONBOARD}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const Aeps_Send_Otp = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.AEPS_SEND_OTP}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const Aeps_Verify_Otp = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.AEPS_VALIDATE_EKYC}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const Aeps_Bank_List = async () => {
+  return await api.get(`${API_ROUTES.AEPS_BANK_LIST}`, await createHeaders());
+};
+
 export const Adhaar_Verification = async (aadhaarNumber: number) =>
   await api.post(
     `${API_ROUTES.ADHAAR_VERIFICATION}?aadhaarNumber=${aadhaarNumber}`,

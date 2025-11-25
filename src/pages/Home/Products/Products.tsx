@@ -66,7 +66,7 @@ export default function Products() {
       image: <AepsCardSvgIcon color={theme.palette.background.paper} />,
       title: "AEPS",
       onClick: () => {
-        navigate(`/products/aepsScreen`);
+        navigate(`/products/aeps`);
       },
     },
   ];

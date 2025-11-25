@@ -7,6 +7,9 @@ import SetPasswordScreen from "@/pages/Auth/SetPassword";
 import SignUp from "@/pages/Auth/SignUp.tsx";
 import Loader from "@/components/Atoms/Loader";
 import ProtectedRoute from "./ProtectedRoutes";
+import AepsSubProductsScreen from "@/pages/Home/Products/AEPS/AepsSubproductsScreen";
+import AepsStatusScreen from "@/pages/Home/Products/AEPS/AepsStatusScreen";
+import AepsEkycScreen from "@/pages/Home/Products/AEPS/AepsEkycScreen";
 const Dashboard = lazy(() => import("@/pages/Home/Dashboard"));
 const CreateUser = lazy(() => import("@/pages/Home/ManageUser/CreateUser"));
 const DebitAndCreditUser = lazy(
@@ -340,7 +343,24 @@ const RouterOutlet = () => {
             />
           </Route>
           <Route
-            path="products/aepsScreen"
+            path="products/aeps"
+            element={
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <AepsSubProductsScreen />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aeps/:subProductId"
             element={
               <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
@@ -352,6 +372,40 @@ const RouterOutlet = () => {
               element={
                 <MainLayout>
                   <AepsScreen />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aeps/status"
+            element={
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <AepsStatusScreen />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aeps/ekyc"
+            element={
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <AepsEkycScreen />
                 </MainLayout>
               }
             />

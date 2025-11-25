@@ -91,6 +91,13 @@ export const API_ROUTES = {
   DMT_TRANX_SEND_OTP: `${BASE_URL}/api/dmt/send-otp`,
   DMT_TRANSACTION: `${BASE_URL}/api/dmt/transaction`,
 
+  ///////////////////////////// AEPS ////////////////////////////////
+  AEPS_CHECK_STATUS: `${BASE_URL}/api/merchant/check-status`,
+  AEPS_MERCHANT_ONBOARD: `${BASE_URL}/api/merchant/onboarding`,
+  AEPS_SEND_OTP: `${BASE_URL}/aeps/ekyc/send-otp`,
+  AEPS_VALIDATE_EKYC: `${BASE_URL}/aeps/ekyc/validate-otp-biometric`,
+  AEPS_BANK_LIST: `${BASE_URL}/api/aeps/bank-list`,
+
   /////////////////// VERIFICATION //////////////////////////////////
   ADHAAR_VERIFICATION: `${BASE_URL}/verification/aadhaar-validate`,
   PAN_VERIFICATION: `${BASE_URL}/verification/pan-validate`,
