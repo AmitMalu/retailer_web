@@ -781,54 +781,6 @@ const ProfileRegistrationForm = ({
                           capitalize
                           allowSpace={false}
                           allowSpecialChar={false}
-                          // rightSection={
-                          //   <>
-                          //     {values.panNumber &&
-                          //       values.panNumber.length === 10 &&
-                          //       values.panVerified ? (
-                          //       <TextComponent
-                          //         fontSize={14}
-                          //         fontWeight={700}
-                          //         color={theme.palette.greenColor.DEFAULT}
-                          //       >
-                          //         Verified
-                          //       </TextComponent>
-                          //     ) : (
-                          //       <>
-                          //         {values.panNumber &&
-                          //           values.panNumber.length === 10 && (
-                          //             <UnstyledButton
-                          //               onClick={async (e) => {
-                          //                 e.preventDefault();
-                          //                 const success = await verifyPan(
-                          //                   values.panNumber
-                          //                 );
-                          //                 setVerificationState({
-                          //                   ...verificationState,
-                          //                   panAttempted: true,
-                          //                 });
-                          //                 if (success) {
-                          //                   formik.setFieldValue(
-                          //                     "panVerified",
-                          //                     true,
-                          //                     false
-                          //                   );
-                          //                 }
-                          //               }}
-                          //             >
-                          //               <TextComponent
-                          //                 fontSize={14}
-                          //                 fontWeight={500}
-                          //                 color={theme.palette.red.dark}
-                          //               >
-                          //                 Verify
-                          //               </TextComponent>
-                          //             </UnstyledButton>
-                          //           )}
-                          //       </>
-                          //     )}
-                          //   </>
-                          // }
                           rightSection={
                             showPanVerifiedMess ? (
                               <div

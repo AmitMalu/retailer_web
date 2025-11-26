@@ -95,6 +95,7 @@ export const API_ROUTES = {
   AEPS_CHECK_STATUS: `${BASE_URL}/api/merchant/check-status`,
   AEPS_MERCHANT_ONBOARD: `${BASE_URL}/api/merchant/onboarding`,
   AEPS_SEND_OTP: `${BASE_URL}/aeps/ekyc/send-otp`,
+  AEPS_RESEND_OTP: `${BASE_URL}/aeps/ekyc/resend-otp`,
   AEPS_VALIDATE_EKYC: `${BASE_URL}/aeps/ekyc/validate-otp-biometric`,
   AEPS_BANK_LIST: `${BASE_URL}/api/aeps/bank-list`,
 
@@ -118,3 +119,4 @@ export const API_ROUTES = {
   SUB_PRODUCT_DROPDOWN: `${BASE_URL}/api/sub-products/dropdown`,
 
 };
+

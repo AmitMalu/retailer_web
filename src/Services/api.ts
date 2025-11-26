@@ -563,6 +563,14 @@ export const Aeps_Send_Otp = async (data: any) => {
   );
 };
 
+export const Aeps_Resend_Otp = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.AEPS_RESEND_OTP}`,
+    data,
+    await createHeaders()
+  );
+};
+
 export const Aeps_Verify_Otp = async (data: any) => {
   return await api.post(
     `${API_ROUTES.AEPS_VALIDATE_EKYC}`,

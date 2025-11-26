@@ -8,6 +8,7 @@ import { decryptData } from "@/Utils/helper";
 import { showErrorNotification } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import AepsOnboardModal from "@/components/Organism/AEPS/AepsOnboardModal";
+import { profile } from "console";
 
 export default function AepsStatusScreen() {
     const { state } = useLocation();
@@ -103,7 +104,7 @@ export default function AepsStatusScreen() {
                 return;
             }
 
-            if (res.data.statusCode !== 200) {
+            if (res.data.statusCode !== 10005) {
                 showErrorNotification(res.data.message || "Unable to onboard merchant");
                 navigate("/products/aeps");
                 return;
@@ -111,7 +112,7 @@ export default function AepsStatusScreen() {
 
             // SUCCESS — go to EKYC screen
             navigate("/products/aeps/ekyc", {
-                state: { subProduct, profile: res.data.data.profile },
+                state: { subProduct, profile: apiData },
             });
 
         } catch (error) {
