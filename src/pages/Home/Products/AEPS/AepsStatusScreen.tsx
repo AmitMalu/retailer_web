@@ -8,7 +8,6 @@ import { decryptData } from "@/Utils/helper";
 import { showErrorNotification } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import AepsOnboardModal from "@/components/Organism/AEPS/AepsOnboardModal";
-import { profile } from "console";
 
 export default function AepsStatusScreen() {
     const { state } = useLocation();
