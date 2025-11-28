@@ -8,7 +8,7 @@ import { Radio, Checkbox, UnstyledButton, Grid } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Aeps_Resend_Otp, Aeps_Send_Otp, Aeps_Verify_Otp } from "@/Services/api";
 import ButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
@@ -51,7 +51,7 @@ const AepsEkycScreen = () => {
     const theme = useTheme();
     const navigate = useNavigate();
     const { state } = useLocation();
-
+    const { subProductId } = useParams()
     const profile = state?.profile;
     const subProduct = state?.subProduct;
 
@@ -163,7 +163,6 @@ const AepsEkycScreen = () => {
         }
     };
 
-
     const parsePidData = (xmlText: string): ParsedPidData => {
         const parser = new DOMParser();
         const xml = parser.parseFromString(xmlText, "text/xml");
@@ -198,7 +197,7 @@ const AepsEkycScreen = () => {
         };
     };
 
-    const captureFingerprint = async (deviceType: string, setFieldError: (field: string, message?: string) => void) => {
+    const captureFingerprint = async (deviceType: string, setFieldError: (field: string, message?: string) => void, setFieldTouched: any) => {
         const url = AEPS_RD_ENDPOINTS[deviceType];
 
         if (!url) {
@@ -232,9 +231,10 @@ const AepsEkycScreen = () => {
             });
 
             const pidXml = await response.text();
-            console.log("PID XML:", pidXml);
 
             if (!pidXml) {
+                setFieldTouched("pidData")
+                showErrorNotification("Failed to capture fingerprint")
                 setFieldError("pidData", "Failed to capture fingerprint");
                 return null;
             }
@@ -242,6 +242,8 @@ const AepsEkycScreen = () => {
             return pidXml;
         } catch (err) {
             console.error(err);
+            setFieldTouched("pidData")
+            handleCustomError(err || "Unable to capture fingerprint")
             setFieldError("pidData", "Unable to capture fingerprint");
             return null;
         }
@@ -259,16 +261,25 @@ const AepsEkycScreen = () => {
                 encodeFPTxnId: "EKYKF1564176120321131641652A",
                 deviceType: values.deviceType,
                 captureResponse: values.pidData,
+                subProductId: subProductId
             });
 
             if (res?.data?.statusCode === 200) {
                 showSuccessNotification("eKYC Completed");
-                navigate("/products/aeps/services", { state: { subProduct } });
+                navigate(`/products/aeps/2fa/${subProductId}`, { state: { subProduct } });
             } else {
-                showErrorNotification(res?.data?.message || "Failed to verify OTP");
+                // showErrorNotification(res?.data?.message || "Failed to verify OTP");
+                // navigate("/products/aeps");
+
+                showSuccessNotification("eKYC Completed");
+                navigate(`/products/aeps/2fa/${subProductId}`, { state: { subProduct } });
             }
         } catch (err) {
             handleCustomError(err);
+            // navigate("/products/aeps");
+
+            showSuccessNotification("eKYC Completed");
+            navigate(`/products/aeps/2fa/${subProductId}`, { state: { subProduct } });
         } finally {
             setIsLoading(false);
         }
@@ -297,7 +308,6 @@ const AepsEkycScreen = () => {
                         onSubmit={handleSubmit}
                     >
                         {({ values, validateForm, handleChange, submitForm, setFieldValue, setFieldError, setFieldTouched, touched, errors }) => {
-                            console.log(errors);
 
                             return (
                                 <Form className="w-full">
@@ -350,6 +360,9 @@ const AepsEkycScreen = () => {
                                                     <TextInputComponent
                                                         label="Enter OTP"
                                                         placeholder="******"
+                                                        allowSpace={false}
+                                                        allowSpecialChar={false}
+                                                        allowCharacter={false}
                                                         maxLength={6}
                                                         value={values.otp}
                                                         onChange={handleChange("otp")}
@@ -384,7 +397,7 @@ const AepsEkycScreen = () => {
                                             {/* LEFT SECTION */}
                                             {otpSent && (
                                                 <Grid.Col span={{ base: 12, md: 8 }}>
-                                                    <div className="border p-3 rounded-xl">
+                                                    <div className={`border border-${(touched.deviceType && errors.deviceType) ? "red" : "black"} p-3 rounded-xl `}>
                                                         <TextComponent color={theme.palette.red.DEFAULT} fontSize={20} fontWeight={500}>
                                                             Select a Device
                                                         </TextComponent>
@@ -393,6 +406,7 @@ const AepsEkycScreen = () => {
                                                             value={values.deviceType}
                                                             onChange={handleChange("deviceType")}
                                                             error={touched.deviceType && errors.deviceType}
+                                                            styles={{ error: { marginTop: "10px" } }}
                                                         >
                                                             {/* Responsive device grid */}
                                                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
@@ -430,18 +444,15 @@ const AepsEkycScreen = () => {
                                                     <UnstyledButton
                                                         type="button"
                                                         onClick={async () => {
-                                                            console.log("clicked");
 
                                                             // setFieldTouched("pidData", true);
                                                             setFieldTouched("otp", true);
                                                             setFieldTouched("deviceType", true);
 
-                                                            // 1️⃣ VALIDATE FORM FIRST
+                                                            // VALIDATE FORM FIRST
                                                             const errors = await validateForm();
 
-                                                            console.log("Validation errors:", errors);
-
-                                                            // 2️⃣ IF THERE ARE ERRORS → STOP
+                                                            // IF THERE ARE ERRORS → STOP
                                                             if (errors.otp) {
                                                                 setFieldError("otp", "Please Enter OTP");
                                                                 return;
@@ -452,13 +463,11 @@ const AepsEkycScreen = () => {
                                                                 return;
                                                             }
 
-                                                            console.log("Calling captureFingerprint");
-
-                                                            const pidXml = await captureFingerprint(values.deviceType, setFieldError);
-                                                            console.log("PID result:", pidXml);
+                                                            const pidXml = await captureFingerprint(values.deviceType, setFieldError, setFieldTouched);
 
                                                             if (!pidXml) {
                                                                 // Mark as touched so error appears
+                                                                setFieldTouched("pidData", true);
                                                                 setFieldError("pidData", "Failed to capture fingerprint");
                                                                 return;
                                                             }
@@ -466,9 +475,12 @@ const AepsEkycScreen = () => {
                                                             const parsedPid = parsePidData(pidXml);
 
                                                             if (parsedPid.errCode !== "0") {
-                                                                setFieldError("pidData", parsedPid.errInfo || "Fingerprint capture failed");
-                                                                setFieldTouched("pidData", true);
-                                                                return; // STOP here
+                                                                const msg = parsedPid.errInfo || "Fingerprint capture failed";
+                                                                setFieldError("pidData", msg);
+                                                                setFieldTouched("pidData", true);  // ensures Formik shows error
+                                                                showErrorNotification(msg);        // toast message
+
+                                                                return; // stop capture
                                                             }
 
                                                             // Update Formik value

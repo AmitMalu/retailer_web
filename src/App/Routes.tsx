@@ -10,6 +10,8 @@ import ProtectedRoute from "./ProtectedRoutes";
 import AepsSubProductsScreen from "@/pages/Home/Products/AEPS/AepsSubproductsScreen";
 import AepsStatusScreen from "@/pages/Home/Products/AEPS/AepsStatusScreen";
 import AepsEkycScreen from "@/pages/Home/Products/AEPS/AepsEkycScreen";
+import AepsTransaction from "@/pages/Home/Products/AEPS/AepsTransaction";
+import AepsTwoFactor from "@/pages/Home/Products/AEPS/AepsTwoFactor";
 const Dashboard = lazy(() => import("@/pages/Home/Dashboard"));
 const CreateUser = lazy(() => import("@/pages/Home/ManageUser/CreateUser"));
 const DebitAndCreditUser = lazy(
@@ -342,6 +344,8 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
+          {/* AEPS */}
           <Route
             path="products/aeps"
             element={
@@ -350,6 +354,7 @@ const RouterOutlet = () => {
               </ProtectedRoute>
             }
           >
+            {/* Sub Product  */}
             <Route
               index
               element={
@@ -358,43 +363,61 @@ const RouterOutlet = () => {
                 </MainLayout>
               }
             />
-          </Route>
-          <Route
-            path="products/aeps/:subProductId"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
+
+            {/* AEPS Services */}
             <Route
-              index
+              path="service/:subProductId"
               element={
                 <MainLayout>
                   <AepsScreen />
                 </MainLayout>
               }
             />
-          </Route>
-          <Route
-            path="products/aeps/status"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
+
+            {/* Status Check Screen */}
             <Route
-              index
+              path="status"
               element={
                 <MainLayout>
                   <AepsStatusScreen />
                 </MainLayout>
               }
             />
+
+            {/* Ekyc Screen */}
+            <Route
+              path="ekyc/:subProductId"
+              element={
+                <MainLayout>
+                  <AepsEkycScreen />
+                </MainLayout>
+              }
+            />
+
+            {/* AEPS 2FA */}
+            <Route
+              path="2fa/:subProductId"
+              element={
+                <MainLayout>
+                  <AepsTwoFactor />
+                </MainLayout>
+              }
+            />
+
+            {/* AEPS Transaction Screen */}
+            <Route
+              path="transaction/:subProductId"
+              element={
+                <MainLayout>
+                  <AepsTransaction />
+                </MainLayout>
+              }
+            />
           </Route>
+
+          {/* Balance Inquiry */}
           <Route
-            path="products/aeps/ekyc"
+            path="products/aepsScreen/balanceEnquiry/TwoFactorBalanceEnquiry"
             element={
               <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
@@ -405,13 +428,48 @@ const RouterOutlet = () => {
               index
               element={
                 <MainLayout>
-                  <AepsEkycScreen />
+                  <TwoFactorBalanceEnquiry />
                 </MainLayout>
               }
             />
           </Route>
           <Route
-            path="products/aepsScreen/cashWithdrawal/aepsForm"
+            path="products/aepsScreen/balanceEnquiry/selectBank"
+            element={
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <SelectBankBalanceEnquiry />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/aepsScreen/vendors/balanceEnquiry"
+            element={
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <BalanceEnquiry />
+                </MainLayout>
+              }
+            />
+          </Route>
+          {/* CashWithDrawl */}
+          <Route
+            path="products/aepsScreen/cashWithdrawal/TwoFactorCashWithdrawal"
             element={
               <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
@@ -428,7 +486,7 @@ const RouterOutlet = () => {
             />
           </Route>
           <Route
-            path="products/aepsScreen/cashWithdrawal/TwoFactorCashWithdrawal"
+            path="products/aepsScreen/cashWithdrawal/aepsForm"
             element={
               <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
@@ -461,74 +519,7 @@ const RouterOutlet = () => {
               }
             />
           </Route>
-          <Route
-            path="products/aepsScreen/vendors/balanceEnquiry"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <BalanceEnquiry />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/balanceEnquiry/TwoFactorBalanceEnquiry"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <TwoFactorBalanceEnquiry />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/balanceEnquiry/TwoFactorBalanceEnquiry"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <SelectBankBalanceEnquiry />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/vendors/miniStatement"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <MiniStatement />
-                </MainLayout>
-              }
-            />
-          </Route>
+          {/* Mini Statement */}
           <Route
             path="products/aepsScreen/miniStatement/twoFAMinistatement"
             element={
@@ -563,6 +554,25 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+          <Route
+            path="products/aepsScreen/vendors/miniStatement"
+            element={
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <MiniStatement />
+                </MainLayout>
+              }
+            />
+          </Route>
+
+          {/* DMT */}
           <Route
             path="products/dmt"
             element={

@@ -33,7 +33,7 @@ export default function AepsStatusScreen() {
             try {
                 const res = await Check_Aeps_Onboard_Status({
                     retailerId,
-                    subProductId: subProduct.subProductId,
+                    subProductId: subProduct?.subProductId,
                 });
 
                 // If API response is invalid
@@ -60,13 +60,13 @@ export default function AepsStatusScreen() {
 
                 // CASE 1 — Onboarded + eKYC Done
                 if (onboardStatus == 2) {
-                    navigate("/products/aeps/services", { state: { subProduct } });
+                    navigate(`/products/aeps/service/${subProduct?.subProductId}`, { state: { subProduct } });
                     return;
                 }
 
                 // CASE 2 — Onboarded + eKYC Pending
                 if (onboardStatus == 1 && profile) {
-                    navigate("/products/aeps/ekyc", {
+                    navigate(`/products/aeps/ekyc/${subProduct?.subProductId}`, {
                         state: { subProduct, profile },
                     });
                     return;
@@ -110,7 +110,7 @@ export default function AepsStatusScreen() {
             }
 
             // SUCCESS — go to EKYC screen
-            navigate("/products/aeps/ekyc", {
+            navigate(`/products/aeps/ekyc/${subProduct?.subProductId}`, {
                 state: { subProduct, profile: apiData },
             });
 

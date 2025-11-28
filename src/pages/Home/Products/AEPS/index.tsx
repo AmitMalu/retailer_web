@@ -20,7 +20,7 @@ const AepsScreen = () => {
       image: <CashWithdrawalSvgIcon color={theme.palette.red.DEFAULT} />,
       title: "Cash Withdrawal",
       onClick: () => {
-        navigate(`/products/aepsScreen/vendors/cashWithdrawal`);
+        navigate(`/products/aeps/vendors/cashWithdrawal`);
       },
     },
     {
@@ -28,7 +28,7 @@ const AepsScreen = () => {
       image: <BalanceEnquirySvgIcon color={theme.palette.red.DEFAULT} />,
       title: "Balance Enquiry",
       onClick: () => {
-        navigate(`/products/aepsScreen/vendors/balanceEnquiry`);
+        navigate(`/products/aeps/vendors/balanceEnquiry`);
       },
     },
     {
@@ -36,7 +36,7 @@ const AepsScreen = () => {
       image: <MiniStatementSvgIcon color={theme.palette.red.DEFAULT} />,
       title: "Mini Statement",
       onClick: () => {
-        navigate(`/products/aepsScreen/vendors/miniStatement`);
+        navigate(`/products/aeps/vendors/miniStatement`);
       },
     },
   ];
