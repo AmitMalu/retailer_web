@@ -1,5 +1,5 @@
 import TextComponent from "@/components/Atoms/TextComponent";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTheme } from "@mui/system";
 import { UnstyledButton } from "@mantine/core";
 import {
@@ -13,6 +13,9 @@ import AepsCard from "@/components/Molecules/AepsCard";
 const AepsScreen = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { subProductId } = useParams()
+  const { state } = useLocation();
+  const profile = state?.profile;
 
   const row1 = [
     {
@@ -20,7 +23,9 @@ const AepsScreen = () => {
       image: <CashWithdrawalSvgIcon color={theme.palette.red.DEFAULT} />,
       title: "Cash Withdrawal",
       onClick: () => {
-        navigate(`/products/aeps/vendors/cashWithdrawal`);
+        navigate(`/products/aeps/transaction/${subProductId}?service=cashWithdrawal`, {
+          state: { profile },
+        });
       },
     },
     {
@@ -28,7 +33,9 @@ const AepsScreen = () => {
       image: <BalanceEnquirySvgIcon color={theme.palette.red.DEFAULT} />,
       title: "Balance Enquiry",
       onClick: () => {
-        navigate(`/products/aeps/vendors/balanceEnquiry`);
+        navigate(`/products/aeps/transaction/${subProductId}?service=balanceInquiry`, {
+          state: { profile },
+        });
       },
     },
     {
@@ -36,10 +43,13 @@ const AepsScreen = () => {
       image: <MiniStatementSvgIcon color={theme.palette.red.DEFAULT} />,
       title: "Mini Statement",
       onClick: () => {
-        navigate(`/products/aeps/vendors/miniStatement`);
+        navigate(`/products/aeps/transaction/${subProductId}?service=miniStatement`, {
+          state: { profile },
+        });
       },
     },
   ];
+
 
   return (
     <>

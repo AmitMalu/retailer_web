@@ -12,6 +12,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Aeps_Resend_Otp, Aeps_Send_Otp, Aeps_Verify_Otp } from "@/Services/api";
 import ButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
+import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
 
 const AEPS_RD_ENDPOINTS: any = {
     Mantra: "http://127.0.0.1:11100/rd/capture",
@@ -22,30 +23,6 @@ const AEPS_RD_ENDPOINTS: any = {
     Precision: "http://127.0.0.1:11103/capture",
     Cogent: "http://127.0.0.1:8004/rd/capture",
 };
-
-interface ParsedPidData {
-    sessionKey: string;
-    hmac: string;
-    piddata: string;
-    pidDatatype: string;
-    ci: string;
-    dc: string;
-    rdsID?: string;
-    rdsVer?: string;
-    dpID?: string;
-    mi?: string;
-    mc?: string;
-    errCode: string;
-    errInfo: string;
-    fCount?: string;
-    fType?: string;
-    iCount?: string;
-    iType?: string;
-    pCount?: string;
-    pType?: string;
-    nmPoints?: string;
-    qScore?: string;
-}
 
 const AepsEkycScreen = () => {
     const theme = useTheme();
@@ -163,92 +140,6 @@ const AepsEkycScreen = () => {
         }
     };
 
-    const parsePidData = (xmlText: string): ParsedPidData => {
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(xmlText, "text/xml");
-
-        const resp = xml.querySelector("Resp");
-        const skey = xml.querySelector("Skey");
-        const data = xml.querySelector("Data");
-        const deviceInfo = xml.querySelector("DeviceInfo");
-
-        return {
-            sessionKey: skey?.textContent || "",
-            hmac: xml.querySelector("Hmac")?.textContent || "",
-            piddata: data?.textContent || "",
-            pidDatatype: data?.getAttribute("type") || "",
-            ci: skey?.getAttribute("ci") || "",
-            dc: deviceInfo?.getAttribute("dc") || "",
-            rdsID: deviceInfo?.getAttribute("rdsId") || "",
-            rdsVer: deviceInfo?.getAttribute("rdsVer") || "",
-            dpID: deviceInfo?.getAttribute("dpId") || "",
-            mi: deviceInfo?.getAttribute("mi") || "",
-            mc: deviceInfo?.getAttribute("mc") || "",
-            errCode: resp?.getAttribute("errCode") || "",
-            errInfo: resp?.getAttribute("errInfo") || "",
-            fCount: resp?.getAttribute("fCount") || "",
-            fType: resp?.getAttribute("fType") || "",
-            iCount: resp?.getAttribute("iCount") || "",
-            iType: resp?.getAttribute("iType") || "",
-            pCount: resp?.getAttribute("pCount") || "",
-            pType: resp?.getAttribute("pType") || "",
-            nmPoints: resp?.getAttribute("nmPoints") || "",
-            qScore: resp?.getAttribute("qScore") || "",
-        };
-    };
-
-    const captureFingerprint = async (deviceType: string, setFieldError: (field: string, message?: string) => void, setFieldTouched: any) => {
-        const url = AEPS_RD_ENDPOINTS[deviceType];
-
-        if (!url) {
-            setFieldError("pidData", "Device not supported");
-            return null;
-        }
-
-        // Create XML body required for Mantra, Morpho, Startek etc.
-        const pidOptions = `<?xml version="1.0"?>
-<PidOptions ver="1.0">
-  <Opts 
-    fCount="1"
-    fType="0"
-    iCount="0"
-    iType="0"
-    format="0"
-    pidVer="2.0"
-    timeout="20000"
-    otp=""
-    env="P"
-  />
-</PidOptions>`;
-
-        try {
-            const response = await fetch(url, {
-                method: "CAPTURE",
-                headers: {
-                    "Content-Type": "text/xml",
-                },
-                body: pidOptions,
-            });
-
-            const pidXml = await response.text();
-
-            if (!pidXml) {
-                setFieldTouched("pidData")
-                showErrorNotification("Failed to capture fingerprint")
-                setFieldError("pidData", "Failed to capture fingerprint");
-                return null;
-            }
-            setFieldError("pidData", "");
-            return pidXml;
-        } catch (err) {
-            console.error(err);
-            setFieldTouched("pidData")
-            handleCustomError(err || "Unable to capture fingerprint")
-            setFieldError("pidData", "Unable to capture fingerprint");
-            return null;
-        }
-    };
-
     const handleSubmit = async (values: any) => {
         try {
             setIsLoading(true);
@@ -266,20 +157,26 @@ const AepsEkycScreen = () => {
 
             if (res?.data?.statusCode === 200) {
                 showSuccessNotification("eKYC Completed");
-                navigate(`/products/aeps/2fa/${subProductId}`, { state: { subProduct } });
+                navigate(`/products/aeps/service/${subProductId}`, {
+                    state: { subProduct, profile },
+                });
             } else {
                 // showErrorNotification(res?.data?.message || "Failed to verify OTP");
                 // navigate("/products/aeps");
 
                 showSuccessNotification("eKYC Completed");
-                navigate(`/products/aeps/2fa/${subProductId}`, { state: { subProduct } });
+                navigate(`/products/aeps/service/${subProductId}`, {
+                    state: { subProduct, profile },
+                });
             }
         } catch (err) {
             handleCustomError(err);
             // navigate("/products/aeps");
 
             showSuccessNotification("eKYC Completed");
-            navigate(`/products/aeps/2fa/${subProductId}`, { state: { subProduct } });
+            navigate(`/products/aeps/service/${subProductId}`, {
+                state: { subProduct, profile },
+            });
         } finally {
             setIsLoading(false);
         }
@@ -394,112 +291,23 @@ const AepsEkycScreen = () => {
                                                 </Grid.Col>
                                             )}
 
-                                            {/* LEFT SECTION */}
-                                            {otpSent && (
-                                                <Grid.Col span={{ base: 12, md: 8 }}>
-                                                    <div className={`border border-${(touched.deviceType && errors.deviceType) ? "red" : "black"} p-3 rounded-xl `}>
-                                                        <TextComponent color={theme.palette.red.DEFAULT} fontSize={20} fontWeight={500}>
-                                                            Select a Device
-                                                        </TextComponent>
+                                            {otpSent && <BiometricCapture
+                                                values={values}
+                                                errors={errors}
+                                                touched={touched}
+                                                setFieldValue={setFieldValue}
+                                                setFieldError={setFieldError}
+                                                setFieldTouched={setFieldTouched}
+                                                validateForm={validateForm}
+                                                requiredFieldsBeforeScan={["deviceType", "otp"]}   // HERE WE DECIDE
+                                                onSuccessScan={async (parsedPid: any, rawXml: string) => {
+                                                    await setFieldValue("pidData", rawXml, true);
 
-                                                        <Radio.Group
-                                                            value={values.deviceType}
-                                                            onChange={handleChange("deviceType")}
-                                                            error={touched.deviceType && errors.deviceType}
-                                                            styles={{ error: { marginTop: "10px" } }}
-                                                        >
-                                                            {/* Responsive device grid */}
-                                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
-                                                                {[
-                                                                    "Mantra",
-                                                                    "Morpho",
-                                                                    "Precision",
-                                                                    "Startek",
-                                                                    "Tatvik",
-                                                                    "SecuGen",
-                                                                    "Cogent",
-                                                                ].map((d) => (
-                                                                    <Radio color="red" size="md" key={d} value={d} label={d} />
-                                                                ))}
-                                                            </div>
-                                                        </Radio.Group>
-
-                                                        <Checkbox
-                                                            label="C.S.P"
-                                                            size="md"
-                                                            className="mt-6"
-                                                            checked={values.csp}
-                                                            onChange={handleChange("csp")}
-                                                        />
-                                                    </div>
-                                                </Grid.Col>
-                                            )}
-
-                                            {/* RIGHT SECTION (FINGERPRINT BUTTON) */}
-                                            {otpSent && (
-                                                <Grid.Col
-                                                    span={{ base: 12, md: 4 }}
-                                                    className="flex justify-center items-center"
-                                                >
-                                                    <UnstyledButton
-                                                        type="button"
-                                                        onClick={async () => {
-
-                                                            // setFieldTouched("pidData", true);
-                                                            setFieldTouched("otp", true);
-                                                            setFieldTouched("deviceType", true);
-
-                                                            // VALIDATE FORM FIRST
-                                                            const errors = await validateForm();
-
-                                                            // IF THERE ARE ERRORS → STOP
-                                                            if (errors.otp) {
-                                                                setFieldError("otp", "Please Enter OTP");
-                                                                return;
-                                                            }
-
-                                                            if (!values.deviceType) {
-                                                                setFieldError("deviceType", "Please select a device!");
-                                                                return;
-                                                            }
-
-                                                            const pidXml = await captureFingerprint(values.deviceType, setFieldError, setFieldTouched);
-
-                                                            if (!pidXml) {
-                                                                // Mark as touched so error appears
-                                                                setFieldTouched("pidData", true);
-                                                                setFieldError("pidData", "Failed to capture fingerprint");
-                                                                return;
-                                                            }
-
-                                                            const parsedPid = parsePidData(pidXml);
-
-                                                            if (parsedPid.errCode !== "0") {
-                                                                const msg = parsedPid.errInfo || "Fingerprint capture failed";
-                                                                setFieldError("pidData", msg);
-                                                                setFieldTouched("pidData", true);  // ensures Formik shows error
-                                                                showErrorNotification(msg);        // toast message
-
-                                                                return; // stop capture
-                                                            }
-
-                                                            // Update Formik value
-                                                            await setFieldValue("pidData", pidXml, true);
-
-                                                            // Submit with already parsed PID data
-                                                            handleSubmit({ ...values, pidData: parsedPid });
-                                                        }}
-                                                        className={`flex items-center justify-center w-[110px] h-full rounded-xl`}
-                                                        style={{ cursor: "pointer" }}
-                                                    >
-                                                        <FingerprintSvgIcon color={theme.palette.red.DEFAULT} />
-                                                    </UnstyledButton>
-                                                    {/* Formik Error for pidData */}
-                                                    {touched.pidData && errors.pidData && (
-                                                        <div className="text-red-600 text-sm mt-2">{errors.pidData}</div>
-                                                    )}
-                                                </Grid.Col>
-                                            )}
+                                                    setTimeout(() => {
+                                                        handleSubmit({ ...values, pidData: parsedPid });
+                                                    }, 0);
+                                                }}
+                                            />}
                                         </Grid>
                                     </div>
                                 </Form>

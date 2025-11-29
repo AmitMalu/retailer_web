@@ -60,7 +60,7 @@ export default function AepsStatusScreen() {
 
                 // CASE 1 — Onboarded + eKYC Done
                 if (onboardStatus == 2) {
-                    navigate(`/products/aeps/service/${subProduct?.subProductId}`, { state: { subProduct } });
+                    navigate(`/products/aeps/service/${subProduct?.subProductId}`, { state: { subProduct, profile } });
                     return;
                 }
 

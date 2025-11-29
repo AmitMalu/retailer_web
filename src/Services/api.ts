@@ -583,6 +583,14 @@ export const Aeps_Bank_List = async () => {
   return await api.get(`${API_ROUTES.AEPS_BANK_LIST}`, await createHeaders());
 };
 
+export const Aeps_TwoFactor_Verify = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.AEPS_TWO_FA}`,
+    data,
+    await createHeaders()
+  );
+};
+
 export const Adhaar_Verification = async (aadhaarNumber: number) =>
   await api.post(
     `${API_ROUTES.ADHAAR_VERIFICATION}?aadhaarNumber=${aadhaarNumber}`,

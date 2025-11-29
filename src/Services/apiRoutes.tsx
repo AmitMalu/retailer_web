@@ -97,6 +97,7 @@ export const API_ROUTES = {
   AEPS_SEND_OTP: `${BASE_URL}/aeps/ekyc/send-otp`,
   AEPS_RESEND_OTP: `${BASE_URL}/aeps/ekyc/resend-otp`,
   AEPS_VALIDATE_EKYC: `${BASE_URL}/aeps/ekyc/validate-otp-biometric`,
+  AEPS_TWO_FA: `${BASE_URL}/aeps/2fa/validate-aadhar`,
   AEPS_BANK_LIST: `${BASE_URL}/api/aeps/bank-list`,
 
   /////////////////// VERIFICATION //////////////////////////////////
