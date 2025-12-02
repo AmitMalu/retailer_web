@@ -43,7 +43,7 @@ export const handleCustomError = (error: AxiosError | any): void => {
     if (error.isAxiosError) {
       const axiosError = error as AxiosError<any>;
       const response = axiosError?.response;
-      const responseData = axiosError?.response?.data;
+      const responseData = response?.data;
 
       // ✅ Timeout or Network Error (no response)
       if (axiosError.code === "ECONNABORTED") {
@@ -53,13 +53,13 @@ export const handleCustomError = (error: AxiosError | any): void => {
 
       if (!response) {
         showErrorNotification(
-          "Unable to connect to the server. Please check your internet connection."
+          "Unable to connect to the server. Please try again later."
         );
         return;
       }
 
       // ✅ Handle 401 Unauthorized
-      if (axiosError.response?.status === 401) {
+      if (response?.status === 401) {
         document.cookie = `authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict`;
         localStorage.clear();
         Object.keys(localStorage).forEach((key: string) => {
@@ -99,7 +99,7 @@ export const handleCustomError = (error: AxiosError | any): void => {
     }
 
     // Handle non-Axios standard errors
-    if (error instanceof Error && error?.message) {
+    if (error instanceof Error) {
       showErrorNotification(error?.message);
       return;
     }
@@ -107,6 +107,7 @@ export const handleCustomError = (error: AxiosError | any): void => {
     // Final fallback
     showErrorNotification("An unexpected error occurred.");
   } catch (e) {
+    console.log("10");
     console.error("Error inside handleCustomError:", e);
     showErrorNotification("Something went wrong while handling error.");
   }

@@ -26,10 +26,28 @@ const AEPS_RD_ENDPOINTS: any = {
 };
 
 // Create XML body required for Mantra, Morpho, Startek etc.
+// const pidOptions = `<?xml version="1.0"?>
+// <PidOptions ver="1.0">
+//   <Opts fCount="1" fType="2" iCount="0" iType="0" format="0" pidVer="2.0" timeout="20000" otp="" env="P" />
+// </PidOptions>`;
+
 const pidOptions = `<?xml version="1.0"?>
-<PidOptions ver="1.0">
-  <Opts fCount="1" fType="0" iCount="0" iType="0" format="0" pidVer="2.0" timeout="20000" otp="" env="P" />
+<PidOptions ver="1.0" env="P">
+  <Opts 
+    fCount="1"
+    fType="2"
+    iCount="0"
+    iType="0"
+    pCount="0"
+    pType="0"
+    format="0"
+    pidVer="2.0"
+    timeout="20000"
+    wadh="E0jzJ/P8UopUHAieZn8CKqS4WPMi5ZSYXgfnlfkWjrc="
+    posh="UNKNOWN"
+  />
 </PidOptions>`;
+
 
 const BiometricCapture = ({
     values,

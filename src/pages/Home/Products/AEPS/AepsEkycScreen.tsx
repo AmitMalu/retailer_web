@@ -92,46 +92,47 @@ const AepsEkycScreen = () => {
                 retailerId: profile?.retailerId,
             });
 
-            if (res?.data?.statusCode === 200) {
+            if (res?.data?.statusCode === 200 && res.data?.data?.statusCode == "10000") {
                 showSuccessNotification("OTP sent successfully");
-
-                setPrimaryKeyId(res.data?.primaryKeyId);
-                setEncodeFPTxnId(res.data?.encodeFPTxnId);
+                setPrimaryKeyId(res.data?.data?.data?.primaryKeyId);
+                setEncodeFPTxnId(res.data?.data?.data?.encodeFPTxnId);
                 setResendCountdown(30); // start 30s countdown
                 setOtpSent(true);
                 setFieldValue("otpSent", true);
             } else {
-                showErrorNotification(res?.data?.message || "Unable to send OTP");
+                showErrorNotification(res.data?.data?.message || "Unable to send OTP");
             }
         } catch (err) {
             handleCustomError(err);
-            setPrimaryKeyId("40");
-            setEncodeFPTxnId("EKYKF1564176120321131641652A");
-            setResendCountdown(30); // start 30s countdown
-            setOtpSent(true);
-            setFieldValue("otpSent", true);
+            // setPrimaryKeyId("40");
+            // setEncodeFPTxnId("EKYKF1564176120321131641652A");
+            // setResendCountdown(30); // start 30s countdown
+            // setOtpSent(true);
+            // setFieldValue("otpSent", true);
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleResendOtp = async (setFieldValue: any) => {
+    const handleResendOtp = async (setFieldValue: any, setFieldTouched: any) => {
         try {
             setIsLoading(true);
 
             const res = await Aeps_Resend_Otp({
                 retailerId: profile?.retailerId,
-                primaryKeyId: "40",
-                encodeFPTxnId: "EKYKF1564176120321131641652A",
+                primaryKeyId,
+                encodeFPTxnId,
             });
 
-            if (res?.data?.statusCode === 200) {
+            if (res?.data?.statusCode === 200 && res.data?.data?.statusCode == "10000") {
                 showSuccessNotification("OTP sent successfully");
-                setPrimaryKeyId(res.data?.primaryKeyId);
-                setEncodeFPTxnId(res.data?.encodeFPTxnId);
+                setFieldValue("otp", "",);
+                setFieldTouched("otp", true);
+                setPrimaryKeyId(res.data?.data?.data?.primaryKeyId);
+                setEncodeFPTxnId(res.data?.data?.data?.encodeFPTxnId);
                 setResendCountdown(30); // start 30s countdown
             } else {
-                showErrorNotification(res?.data?.message || "Unable to send OTP");
+                showErrorNotification(res.data?.data?.message || "Unable to send OTP");
             }
         } catch (err) {
             handleCustomError(err);
@@ -148,35 +149,33 @@ const AepsEkycScreen = () => {
                 retailerId: profile?.retailerId,
                 aadhaar: profile?.aadhaarNumber,
                 otp: values.otp,
-                primaryKeyId: "40",
-                encodeFPTxnId: "EKYKF1564176120321131641652A",
+                primaryKeyId,
+                encodeFPTxnId,
                 deviceType: values.deviceType,
                 captureResponse: values.pidData,
                 subProductId: subProductId
             });
 
-            if (res?.data?.statusCode === 200) {
+            if (res?.data?.statusCode === 200 && res.data?.data?.statusCode == "10000") {
                 showSuccessNotification("eKYC Completed");
                 navigate(`/products/aeps/service/${subProductId}`, {
                     state: { subProduct, profile },
                 });
             } else {
-                // showErrorNotification(res?.data?.message || "Failed to verify OTP");
+                showErrorNotification(res.data?.data?.message || "Failed to verify OTP");
                 // navigate("/products/aeps");
-
-                showSuccessNotification("eKYC Completed");
-                navigate(`/products/aeps/service/${subProductId}`, {
-                    state: { subProduct, profile },
-                });
+                // showSuccessNotification("eKYC Completed");
+                // navigate(`/products/aeps/service/${subProductId}`, {
+                //     state: { subProduct, profile },
+                // });
             }
         } catch (err) {
             handleCustomError(err);
             // navigate("/products/aeps");
-
-            showSuccessNotification("eKYC Completed");
-            navigate(`/products/aeps/service/${subProductId}`, {
-                state: { subProduct, profile },
-            });
+            // showSuccessNotification("eKYC Completed");
+            // navigate(`/products/aeps/service/${subProductId}`, {
+            //     state: { subProduct, profile },
+            // });
         } finally {
             setIsLoading(false);
         }
@@ -281,7 +280,7 @@ const AepsEkycScreen = () => {
                                                                     textColor="white"
                                                                     fontSize="12"
                                                                     size="xs"
-                                                                    onClick={() => handleResendOtp(setFieldValue)}
+                                                                    onClick={() => handleResendOtp(setFieldValue, setFieldTouched)}
                                                                 >
                                                                     Resend OTP
                                                                 </ButtonComponent>

@@ -8,7 +8,6 @@ import { useTheme } from "@mui/system";
 import "./BillReciept.css";
 
 const BillReceipt = ({ data }: { data: any }) => {
-console.log(data);
 
     const theme = useTheme();
     const apiResponses = useSelector(

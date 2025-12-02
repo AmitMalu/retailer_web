@@ -52,17 +52,25 @@ export const isAuthenticated = () => {
 };
 
 const createHeaders = async () => {
-  const token = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("authToken="));
+  let token = "";
+
+  try {
+    const authCookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("authToken="));
+
+    if (authCookie) {
+      token = decodeURIComponent(authCookie.split("=")[1]);
+    }
+  } catch (err) {
+    console.error("ERROR reading authToken cookie:", err);
+  }
+
   return {
     headers: {
-      Authorization: `Bearer ${
-        token ? decodeURIComponent(token.split("=")[1]) : ""
-      }`,
+      Authorization: token ? `Bearer ${token}` : "",
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
-      // Accept: 'application/json, text/plain, */*',
     },
   };
 };
@@ -540,11 +548,17 @@ export const Dmt_Transaction = async (data: any) => {
 
 ////////////////////////////---- AEPS-----//////////////////////////////////
 export const Check_Aeps_Onboard_Status = async (data: any) => {
-  return await api.post(
-    `${API_ROUTES.AEPS_CHECK_STATUS}`,
-    data,
-    await createHeaders()
-  );
+  try {
+    const response = await api.post(
+      API_ROUTES.AEPS_CHECK_STATUS,
+      data,
+      await createHeaders()
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const AepsMerchantOnboardAPI = async (data: any) => {

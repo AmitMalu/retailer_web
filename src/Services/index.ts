@@ -42,7 +42,7 @@ api.interceptors.response.use(
     //   message: error.message,
     // });
 
-    if (error.response.data.statusCode === 401) {
+    if (error?.response?.data?.statusCode === 401) {
       // handleCustomError(error);
     } else {
       // showErrorNotification(

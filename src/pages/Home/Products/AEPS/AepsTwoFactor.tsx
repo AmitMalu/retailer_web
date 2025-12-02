@@ -1,7 +1,6 @@
 import { BackSvgIcon } from "@/assets/svg";
 import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
-import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
 import { RootState } from "@/Redux/Store";
