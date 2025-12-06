@@ -3,13 +3,16 @@ import TextComponent from "@/components/Atoms/TextComponent";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
-import { Aeps_Bank_List } from "@/Services/api";
+import { RootState } from "@/Redux/Store";
+import { Aeps_Bank_List, Aeps_Cash_Withdrawal } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { showErrorNotification } from "@/Utils/notifications";
+import { decryptData } from "@/Utils/helper";
+import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { Card, Grid, Loader, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Yup from 'yup'
 
@@ -29,7 +32,22 @@ const AepsTransaction = () => {
     const service = queryParams.get("service");  // "cashWithdrawal", "balanceInquiry", etc.
     const title = service ? SERVICE_TITLES[service] : "AEPS Transaction";
     const [bankList, setBankList] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [loadingBanks, setLoadingBanks] = useState(false);
+
+    const apiResponses = useSelector(
+        (state: RootState) => state.apiResponse.responses
+    );
+
+    const loginData = apiResponses?.loginData
+        ? decryptData(apiResponses.loginData)
+        : null;
+
+    const schemeCode = loginData?.products
+        ?.flatMap((product: any) => product.subProducts) // Flatten all subProducts into a single array
+        ?.find((subProduct: any) => subProduct.subProductId === subProductId) // Find matching subProductId
+        ?.schemeCode; // Get the schemeCode
+
 
 
     // ---------------- VALIDATION SCHEMA -----------------
@@ -61,11 +79,36 @@ const AepsTransaction = () => {
         pidData: "",
     };
 
-    const handleSubmit = (values: any) => {
+    const handleSubmit = async (values: any) => {
         console.log("Final Submit Values:", values);
-        navigate(`/products/aeps/2fa/${subProductId}?iinno=${values.bank}`, {
-            state: { profile }
-        })
+        try {
+            setIsLoading(true);
+            const res = await Aeps_Cash_Withdrawal({
+                subProductId: subProductId,
+                retailerId: loginData?.hierarchyId,
+                schemeCode,
+                nationalBankIdentificationNumber: values.bank,
+                transactionAmount: service === "cashWithdrawal" ? values.amount : 0,
+                captureResponse: values.pidData,
+            });
+
+            if (res?.data?.statusCode === 200 && res.data?.data?.statusCode == "10000") {
+                showSuccessNotification(res?.data?.message || "Transaction Successful");
+                // navigate(`/products/aeps/service/${subProductId}`, {
+                //     state: { subProductId, profile },
+                // });
+            } else {
+                showErrorNotification(res.data?.data?.message || "Failed to process transaction");
+            }
+        } catch (err) {
+            handleCustomError(err);
+        } finally {
+            setIsLoading(false);
+        }
+
+        // navigate(`/products/aeps/2fa/${subProductId}?iinno=${values.bank}`, {
+        //     state: { profile }
+        // })
     }
 
     // Fetch banks
@@ -110,6 +153,7 @@ const AepsTransaction = () => {
 
     return (
         <>
+            {isLoading && <Loader />}
             {/* Back button */}
             <UnstyledButton
                 onClick={() => {

@@ -77,10 +77,6 @@ export default function AepsStatusScreen() {
             } catch (e) {
                 handleCustomError(e)
                 navigate(`/products/aeps`);
-                // setShowNotOnboardModal(true);
-                // navigate("/products/aeps/ekyc", {
-                //     state: { subProduct, profile: { name: "Amaan", aadhaar: "123", retailerId: "12344", phone: "99303" } },
-                // });
             } finally {
                 setLoading(false);
             }
@@ -103,7 +99,7 @@ export default function AepsStatusScreen() {
                 return;
             }
 
-            if (res.data.statusCode !== 10005) {
+            if (res.data.statusCode !== 200) {
                 showErrorNotification(res.data.message || "Unable to onboard merchant");
                 navigate("/products/aeps");
                 return;

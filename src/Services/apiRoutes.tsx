@@ -107,6 +107,7 @@ export const API_ROUTES = {
   ADHAAR_PAN_LINK: `${BASE_URL}/verification/aadhaar-pan-link`,
   VOTER_ID_VERIFICATION: `${BASE_URL}/verification/voterId-validate`,
   BANK_VERIFICATION: `${BASE_URL}/verification/bank-validate`,
+  CASH_WITHDRAWAL: `${BASE_URL}/api/aeps/cash-withdrawal`,
 
   /////////////////////////// bANKS ////////////////////////////////////
   ADD_BANK: `${BASE_URL}/api/bank-details`,

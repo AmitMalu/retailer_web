@@ -605,6 +605,14 @@ export const Aeps_TwoFactor_Verify = async (data: any) => {
   );
 };
 
+export const Aeps_Cash_Withdrawal = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.CASH_WITHDRAWAL}`,
+    data,
+    await createHeaders()
+  );
+};
+
 export const Adhaar_Verification = async (aadhaarNumber: number) =>
   await api.post(
     `${API_ROUTES.ADHAAR_VERIFICATION}?aadhaarNumber=${aadhaarNumber}`,

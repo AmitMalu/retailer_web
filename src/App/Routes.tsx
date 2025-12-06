@@ -159,10 +159,10 @@ const BillPaymentScreen = lazy(
   () => import("@/pages/Home/Products/BillPayment")
 );
 const BillPayOneScreen = lazy(
-  () => import("@/pages/Home/Products/BillPayment/BillPay1")
+  () => import("@/pages/Home/Products/BillPayment/BbpsAtoZ")
 );
 const FetchBillDetails = lazy(
-  () => import("@/pages/Home/Products/BillPayment/BillPay1/FetchBillDetails")
+  () => import("@/pages/Home/Products/BillPayment/BbpsAtoZ/FetchBillDetails")
 );
 
 const getToken = () => {

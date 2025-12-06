@@ -112,8 +112,8 @@ const BiometricCapture = ({
         return {
             sessionKey: skey?.textContent || "",
             hmac: xml.querySelector("Hmac")?.textContent || "",
-            piddata: data?.textContent || "",
-            pidDatatype: data?.getAttribute("type") || "",
+            Piddata: data?.textContent || "",
+            PidDatatype: data?.getAttribute("type") || "",
             ci: skey?.getAttribute("ci") || "",
             dc: deviceInfo?.getAttribute("dc") || "",
             rdsID: deviceInfo?.getAttribute("rdsId") || "",
