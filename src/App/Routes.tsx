@@ -155,11 +155,11 @@ const RemitterEkyc = lazy(
 );
 
 const MposScreen = lazy(() => import("@/pages/Home/Products/MPOS"));
-const BillPaymentScreen = lazy(
-  () => import("@/pages/Home/Products/BillPayment")
+const SubProductScreen = lazy(
+  () => import("@/pages/Home/Products/BillPayment/SubProductScreen")
 );
-const BillPayOneScreen = lazy(
-  () => import("@/pages/Home/Products/BillPayment/BillPay1")
+const ServicesScreen = lazy(
+  () => import("@/pages/Home/Products/BillPayment/ServicesScreen")
 );
 const FetchBillDetails = lazy(
   () => import("@/pages/Home/Products/BillPayment/BillPay1/FetchBillDetails")
@@ -687,7 +687,7 @@ const RouterOutlet = () => {
               index
               element={
                 <MainLayout>
-                  <BillPaymentScreen />
+                  <SubProductScreen />
                 </MainLayout>
               }
             />
@@ -704,7 +704,7 @@ const RouterOutlet = () => {
               index
               element={
                 <MainLayout>
-                  <BillPayOneScreen />
+                  <ServicesScreen />
                 </MainLayout>
               }
             />

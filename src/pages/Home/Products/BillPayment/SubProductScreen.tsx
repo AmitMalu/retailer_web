@@ -8,7 +8,7 @@ import { useTheme } from "@mui/system";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const BillPaymentScreen = () => {
+const SubProductScreen = () => {
   const theme = useTheme();
   const navigate = useNavigate();
 
@@ -81,4 +81,4 @@ const BillPaymentScreen = () => {
   );
 };
 
-export default BillPaymentScreen;
+export default SubProductScreen;

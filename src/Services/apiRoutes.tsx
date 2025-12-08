@@ -77,6 +77,10 @@ export const API_ROUTES = {
   TRANSACTION: `${BASE_URL}/api/bbps/transaction`,
   FETCH_TRANSACTION_RECEIPT: `${BASE_URL}/api/bbps/receipt`,
 
+  GET_SERVICES_LIST: `${BASE_URL}/billpay/config/services`,
+  GET_PROVIDERS: `${BASE_URL}/billpay/config/providers`,
+  GET_PROVIDER_CONFIG: `${BASE_URL}/billpay/config/raw-config`,
+
   //////////////////////////// DMT /////////////////////////////////
   FIND_REMITTER: `${BASE_URL}/api/remitter/check`,
   REGISTER_REMITTER: `${BASE_URL}/api/remitter/register`,
