@@ -12,6 +12,7 @@ import AepsStatusScreen from "@/pages/Home/Products/AEPS/AepsStatusScreen";
 import AepsEkycScreen from "@/pages/Home/Products/AEPS/AepsEkycScreen";
 import AepsTransaction from "@/pages/Home/Products/AEPS/AepsTransaction";
 import AepsTwoFactor from "@/pages/Home/Products/AEPS/AepsTwoFactor";
+import WrapperFormPage from "@/pages/Home/Products/BillPayment/WrapperFormPage";
 const Dashboard = lazy(() => import("@/pages/Home/Dashboard"));
 const CreateUser = lazy(() => import("@/pages/Home/ManageUser/CreateUser"));
 const DebitAndCreditUser = lazy(
@@ -710,6 +711,23 @@ const RouterOutlet = () => {
             />
           </Route>
           <Route
+            path="products/billPay/form"
+            element={
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <WrapperFormPage />
+                </MainLayout>
+              }
+            />
+          </Route>
+          {/* <Route
             path="products/billPay/service/billDetails"
             element={
               <ProtectedRoute allowedRoles={["RT", "RU"]}>
@@ -725,7 +743,7 @@ const RouterOutlet = () => {
                 </MainLayout>
               }
             />
-          </Route>
+          </Route> */}
           <Route
             path="/manageUser/createUser"
             element={

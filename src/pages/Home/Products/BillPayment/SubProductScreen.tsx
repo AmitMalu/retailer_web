@@ -20,9 +20,12 @@ const SubProductScreen = () => {
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  const handleIconClick = (type: string) => {
+  const handleIconClick = (subProduct: any) => {
     navigate(`/products/billPay/service`, {
-      state: { subProductId: type },
+      state: {
+        subProductId: subProduct.subProductId,
+        vendor: subProduct?.vendor      // <-- PASS IT FORWARD
+      },
     });
   };
 
@@ -37,6 +40,7 @@ const SubProductScreen = () => {
         title: subProduct.subProductName,
         schemeCode: subProduct.schemeCode,
         subProductId: subProduct.subProductId,
+        vendor: subProduct?.vendorName || ""
       };
     }) || [];
 
@@ -70,7 +74,7 @@ const SubProductScreen = () => {
                     <BillPaymentSvgIcon color={theme.palette.red.DEFAULT} />
                   }
                   title={card.title}
-                  onClick={() => handleIconClick(card.subProductId)}
+                  onClick={() => handleIconClick(card)}
                 />
               ))}
             </div>

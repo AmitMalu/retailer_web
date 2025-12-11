@@ -27,16 +27,20 @@ import { IconCalendar } from "@tabler/icons-react";
 import { Formik, FormikValues } from "formik";
 import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import BillReciept from "./BillReciept";
 import moment from "moment";
 
-const FetchBillDetails: React.FC = () => {
+interface Props {
+  serviceName: string;
+  subProductId: string;
+  vendor: string;
+}
+
+const FetchBillDetails: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const location = useLocation();
-  const { serviceName, subProductId } = location.state || {};
 
   const [isLoading, setIsLoading] = useState(false);
   const [billModalOpened, setBillModalOpened] = useState(false);
@@ -556,6 +560,12 @@ const FetchBillDetails: React.FC = () => {
             onClick={() => {
               navigate(`/products/billPay/service`, {
                 state: { subProductId: subProductId },
+              });
+              navigate(`/products/billPay/service`, {
+                state: {
+                  subProductId,
+                  vendor      // <-- PASS IT FORWARD
+                },
               });
             }}
           >

@@ -13,7 +13,8 @@ const ServicesScreen = () => {
     const theme = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
-    const { subProductId } = location.state || {};
+    const { subProductId, vendor } = location.state || {};
+
     const [isLoading, setIsLoading] = useState(false);
     const [cardsData, setCardsData] = useState<any[]>([]);
 
@@ -28,10 +29,9 @@ const ServicesScreen = () => {
 
                 const response = await Get_Services_List({ subProductId });
 
-                console.log(response);
                 if (response?.data?.statusCode === 200) {
                     const servicesArray = response?.data?.data || [];
-                    
+
 
                     // Extract unique serviceName
                     const unique = Array.from(
@@ -61,10 +61,11 @@ const ServicesScreen = () => {
     }, [subProductId]);
 
     const handleIconClick = ({ serviceName }: { serviceName: string }) => {
-        navigate(`/products/billPay/service/billDetails`, {
+        navigate(`/products/billPay/form`, {
             state: {
                 serviceName: serviceName,
                 subProductId: subProductId,
+                vendor
             },
         });
     };
