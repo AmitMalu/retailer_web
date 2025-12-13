@@ -3,12 +3,9 @@ import {
   ExtraParam,
   ExtraParamContent,
   FetchBillDetailsProps,
-  // ProviderDetails,
   TransactionProps,
 } from "@/Common/interface";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
-// import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
-// import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import MyLoader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
@@ -17,7 +14,7 @@ import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePic
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import { RootState } from "@/Redux/Store";
-import { Fetch_Bill_Details, Fetch_Transaction_Receipt, Transaction } from "@/Services/api";
+import { Fetch_Bill_Details, Fetch_Transaction_Receipt, Get_Provider_Config, Get_Providers, Transaction } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData, EmailRegex, MobileNoRegex } from "@/Utils/helper";
 import {
@@ -30,15 +27,21 @@ import { IconCalendar } from "@tabler/icons-react";
 import { Formik, FormikValues } from "formik";
 import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import BillReciept from "./BillReciept";
-import { AtoZServiceProviders } from "./Config";
 import moment from "moment";
 
-const FetchBillDetails: React.FC = () => {
+interface Props {
+  serviceName: string;
+  subProductId: string;
+  vendor: string;
+}
+
+const FetchBillDetails: React.FC<Props> = ({ serviceName, subProductId }) => {
   const navigate = useNavigate();
   const theme = useTheme();
+
   const [isLoading, setIsLoading] = useState(false);
   const [billModalOpened, setBillModalOpened] = useState(false);
   const [billDetails, setBillDetails] = useState<any>(null);
@@ -49,8 +52,7 @@ const FetchBillDetails: React.FC = () => {
   const [receiptData, setReceiptData] = useState<any>(null);
   const [receiptLoading, setReceiptLoading] = useState(false);
 
-  const location = useLocation();
-  const { serviceName, subProductId } = location.state || {};
+  const [providerList, setProviderList] = useState([]);
 
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse?.responses
@@ -59,12 +61,6 @@ const FetchBillDetails: React.FC = () => {
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
-
-  // const bbpsServicesData = apiResponses?.bbpsServices
-  //   ? decryptData(apiResponses?.bbpsServices)
-  //   : null;
-
-  const bbpsServicesData = AtoZServiceProviders
 
   const [selectedProviderDetails, setSelectedProviderDetails] = useState<{
     [key: string]: any;
@@ -115,12 +111,6 @@ const FetchBillDetails: React.FC = () => {
 
     return values;
   }, [selectedProviderDetails]);
-
-
-  // const validateForm = (): FormikErrors<FormikValues> => {
-  //   const errors: FormikErrors<FormikValues> = {};
-  //   return errors;
-  // };
 
   const validationSchema = useMemo(() => {
     const schema: Record<string, any> = {
@@ -227,6 +217,56 @@ const FetchBillDetails: React.FC = () => {
 
     return Yup.object().shape(schema);
   }, [selectedProviderDetails]);
+
+  const billDetailsInitialValues = useMemo(() => ({
+    customerName: billDetails?.CustomerName || "",
+    billNumber: billDetails?.billNumber || "",
+    billDate: billDetails?.billDate || "",
+    dueDate: billDetails?.Duedate || "",
+    productName: billDetails?.["Product Name"] || "",
+    amount: Number(billDetails?.Billamount) || "", // only editable
+  }), [billDetails]);
+
+  const billDetailsValidationSchema = useMemo(() => {
+    if (!billDetails) return Yup.object().shape({});
+
+    return Yup.object().shape({
+      amount: Yup.number()
+        .required("Amount is required")
+        .min(
+          Number(billDetails.minBillPaidAmount),
+          `Amount should be at least ${billDetails.minBillPaidAmount}`
+        )
+        .max(
+          Number(billDetails.maxAllowPaidAmount),
+          `Amount should not exceed ${billDetails.maxAllowPaidAmount}`
+        ),
+    });
+  }, [billDetails]);
+
+  const handleSelectProvider = async (providerId: string) => {
+    if (!providerId) {
+      setSelectedProviderDetails(null);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setSelectedProviderDetails(null);
+
+      const res = await Get_Provider_Config({ subProductId, providerId });
+
+      if (res?.data?.statusCode === 200) {
+        setSelectedProviderDetails(JSON.parse(res.data.data));
+      } else {
+        showErrorNotification(res?.data?.message || "Unable to fetch provider configuration");
+      }
+    } catch (error) {
+      handleCustomError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleFetchDetailsSubmit = async (values: FormikValues) => {
     try {
@@ -399,14 +439,6 @@ const FetchBillDetails: React.FC = () => {
         bill_due_date: billDetails?.Duedate
       };
 
-      // Optional fields – add them only if they exist
-      // if (billDetails?.Duedate) payload.bill_due_date = billDetails.Duedate;
-
-      // if (billDetails?.formValues?.field_one) payload.field_one = billDetails?.formValues?.field_one;
-      // if (billDetails?.formValues?.field_two) payload.field_two = billDetails?.formValues?.field_two;
-      // if (billDetails?.formValues?.field_three) payload.field_three = billDetails?.formValues?.field_three;
-      // if (billDetails?.formValues?.field_four) payload.field_four = billDetails?.formValues?.field_four;
-
       if (selectedProviderDetails?.extra_param) {
         selectedProviderDetails.extra_param.forEach((param: ExtraParam, idx: number) => {
           const fields = [
@@ -456,21 +488,10 @@ const FetchBillDetails: React.FC = () => {
         payload as TransactionProps
       );
       if (response?.data?.statusCode === 200 || response?.data?.statusCode === "200") {
-        // setShowSuccessModal(true);
         showSuccessNotification(response?.data?.message);
-        // setBillDetails(null); // Keep bill details will required in fetch reciept API
         setAmountEditable(false);
         setBillModalOpened(false);
-
-        // Optional: reset provider-related data
-        // setSelectedProviderDetails(null); // Keep provider details also might be required
         resetForm();
-        // setTimeout(() => {
-        //   setShowSuccessModal(false);
-        //   navigate(`/products/billPay`);
-        // }, 2000);
-
-        // Fetch receipt data here
         setReceiptLoading(true);
         try {
           const receiptResponse = await Fetch_Transaction_Receipt(
@@ -510,37 +531,24 @@ const FetchBillDetails: React.FC = () => {
     }
   }
 
-  const billDetailsInitialValues = useMemo(() => ({
-    customerName: billDetails?.CustomerName || "",
-    billNumber: billDetails?.billNumber || "",
-    billDate: billDetails?.billDate || "",
-    dueDate: billDetails?.Duedate || "",
-    productName: billDetails?.["Product Name"] || "",
-    amount: Number(billDetails?.Billamount) || "", // only editable
-  }), [billDetails]);
-
-  const billDetailsValidationSchema = useMemo(() => {
-    if (!billDetails) return Yup.object().shape({});
-
-    return Yup.object().shape({
-      amount: Yup.number()
-        .required("Amount is required")
-        .min(
-          Number(billDetails.minBillPaidAmount),
-          `Amount should be at least ${billDetails.minBillPaidAmount}`
-        )
-        .max(
-          Number(billDetails.maxAllowPaidAmount),
-          `Amount should not exceed ${billDetails.maxAllowPaidAmount}`
-        ),
-    });
-  }, [billDetails]);
-
   useEffect(() => {
-    if (subProductId === undefined) {
-      navigate(`/products/billPay`);
+    if (!serviceName || subProductId === undefined) return;
+
+    async function loadProviders() {
+      try {
+        const res = await Get_Providers({ subProductId, serviceName });
+        if (res?.data?.statusCode === 200) {
+          setProviderList(res?.data?.data || []);
+        } else {
+          showErrorNotification(res?.data?.message || "Unable to load providers");
+        }
+      } catch (err) {
+        handleCustomError(err);
+      }
     }
-  }, [subProductId, navigate]);
+
+    loadProviders();
+  }, [serviceName]);
 
   return (
     <>
@@ -551,7 +559,9 @@ const FetchBillDetails: React.FC = () => {
           <UnstyledButton
             onClick={() => {
               navigate(`/products/billPay/service`, {
-                state: { subProductId: subProductId },
+                state: {
+                  subProductId,
+                },
               });
             }}
           >
@@ -595,21 +605,14 @@ const FetchBillDetails: React.FC = () => {
                         placeholder="Select Provider"
                         label="Select Provider"
                         size="md"
-                        data={bbpsServicesData
-                          ?.filter((service: any) => service.service_name === serviceName)
-                          .map((service: any) => ({
-                            value: String(service.provider_id),
-                            label: service.provider_name,
-                          })) || []}
+                        data={providerList?.map((service: any) => ({
+                          value: String(service.providerId),
+                          label: service.providerName,
+                        })) || []}
                         withAsterisk
                         searchable
                         allowDeselect
-                        onChange={(value: any) => {
-                          const selectedProvider = bbpsServicesData?.find(
-                            (s: any) => String(s.provider_id) === value
-                          ) || null;
-                          setSelectedProviderDetails(selectedProvider);
-                        }}
+                        onChange={(value: any) => handleSelectProvider(value)}
                       />
                     </div>
 
@@ -642,18 +645,6 @@ const FetchBillDetails: React.FC = () => {
                           size="md"
                           withAsterisk
                           fullWidth
-                        // label={`${serviceName?.toLowerCase() === "credit card" ? "Last 4 Digit Of Credit Card"
-                        //   : serviceName?.toLowerCase() === "fast tag" ? "Vehicle Number" :
-                        //     "Consumer Number"}`}
-                        // placeholder={`${serviceName?.toLowerCase() === "credit card" ? "Enter Last 4 Digit Of Credit Card" : "Consumer Number"}`}
-                        // value={values.consumerNumber || ""}
-                        // onChange={handleChange("consumerNumber")}
-                        // error={
-                        //   touched.consumerNumber && errors.consumerNumber
-                        //     ? String(errors.consumerNumber)
-                        //     : ""
-                        // }
-                        // capitalize={serviceName?.toLowerCase() === "fast tag"}
                         />
                       </div>
                     )}

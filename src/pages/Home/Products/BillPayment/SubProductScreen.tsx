@@ -8,7 +8,7 @@ import { useTheme } from "@mui/system";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const BillPaymentScreen = () => {
+const SubProductScreen = () => {
   const theme = useTheme();
   const navigate = useNavigate();
 
@@ -20,9 +20,12 @@ const BillPaymentScreen = () => {
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  const handleIconClick = (type: string) => {
+  const handleIconClick = (subProduct: any) => {
     navigate(`/products/billPay/service`, {
-      state: { subProductId: type },
+      state: {
+        subProductId: subProduct.subProductId,
+        // vendor: subProduct?.vendor      // <-- PASS IT FORWARD
+      },
     });
   };
 
@@ -37,6 +40,7 @@ const BillPaymentScreen = () => {
         title: subProduct.subProductName,
         schemeCode: subProduct.schemeCode,
         subProductId: subProduct.subProductId,
+        vendor: subProduct?.vendorName || ""
       };
     }) || [];
 
@@ -70,7 +74,7 @@ const BillPaymentScreen = () => {
                     <BillPaymentSvgIcon color={theme.palette.red.DEFAULT} />
                   }
                   title={card.title}
-                  onClick={() => handleIconClick(card.subProductId)}
+                  onClick={() => handleIconClick(card)}
                 />
               ))}
             </div>
@@ -81,4 +85,4 @@ const BillPaymentScreen = () => {
   );
 };
 
-export default BillPaymentScreen;
+export default SubProductScreen;

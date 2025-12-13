@@ -12,6 +12,7 @@ import AepsStatusScreen from "@/pages/Home/Products/AEPS/AepsStatusScreen";
 import AepsEkycScreen from "@/pages/Home/Products/AEPS/AepsEkycScreen";
 import AepsTransaction from "@/pages/Home/Products/AEPS/AepsTransaction";
 import AepsTwoFactor from "@/pages/Home/Products/AEPS/AepsTwoFactor";
+import WrapperFormPage from "@/pages/Home/Products/BillPayment/WrapperFormPage";
 const Dashboard = lazy(() => import("@/pages/Home/Dashboard"));
 const CreateUser = lazy(() => import("@/pages/Home/ManageUser/CreateUser"));
 const DebitAndCreditUser = lazy(
@@ -155,11 +156,11 @@ const RemitterEkyc = lazy(
 );
 
 const MposScreen = lazy(() => import("@/pages/Home/Products/MPOS"));
-const BillPaymentScreen = lazy(
-  () => import("@/pages/Home/Products/BillPayment")
+const SubProductScreen = lazy(
+  () => import("@/pages/Home/Products/BillPayment/SubProductScreen")
 );
-const BillPayOneScreen = lazy(
-  () => import("@/pages/Home/Products/BillPayment/BbpsAtoZ")
+const ServicesScreen = lazy(
+  () => import("@/pages/Home/Products/BillPayment/ServicesScreen")
 );
 const FetchBillDetails = lazy(
   () => import("@/pages/Home/Products/BillPayment/BbpsAtoZ/FetchBillDetails")
@@ -687,7 +688,7 @@ const RouterOutlet = () => {
               index
               element={
                 <MainLayout>
-                  <BillPaymentScreen />
+                  <SubProductScreen />
                 </MainLayout>
               }
             />
@@ -704,12 +705,29 @@ const RouterOutlet = () => {
               index
               element={
                 <MainLayout>
-                  <BillPayOneScreen />
+                  <ServicesScreen />
                 </MainLayout>
               }
             />
           </Route>
           <Route
+            path="products/billPay/form"
+            element={
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <WrapperFormPage />
+                </MainLayout>
+              }
+            />
+          </Route>
+          {/* <Route
             path="products/billPay/service/billDetails"
             element={
               <ProtectedRoute allowedRoles={["RT", "RU"]}>
@@ -725,7 +743,7 @@ const RouterOutlet = () => {
                 </MainLayout>
               }
             />
-          </Route>
+          </Route> */}
           <Route
             path="/manageUser/createUser"
             element={
