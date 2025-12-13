@@ -13,7 +13,8 @@ const ServicesScreen = () => {
     const theme = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
-    const { subProductId, vendor } = location.state || {};
+    const { subProductId } = location.state || {};
+    const [vendor, setVendor] = useState<string>("");
 
     const [isLoading, setIsLoading] = useState(false);
     const [cardsData, setCardsData] = useState<any[]>([]);
@@ -31,7 +32,7 @@ const ServicesScreen = () => {
 
                 if (response?.data?.statusCode === 200) {
                     const servicesArray = response?.data?.data || [];
-
+                    setVendor(response?.data?.vendorName || "")
 
                     // Extract unique serviceName
                     const unique = Array.from(

@@ -1,41 +1,54 @@
-import { useLocation } from "react-router-dom";
-import FetchBillDetails from "./BillPay1/FetchBillDetails";
+import { useLocation, useNavigate } from "react-router-dom";
+import AtoZForm from "./AtoZ/Form";
+import AvenueForm from "./BillAvenue/Form";
+import { showErrorNotification } from "@/Utils/notifications";
+import { useEffect } from "react";
 
 const WrapperFormPage = () => {
     const location = useLocation();
+    const navigate = useNavigate()
+
     const { vendor, serviceName, subProductId } = location.state || {};
 
+    useEffect(() => {
+        if (!vendor || !serviceName || !subProductId) {
+            showErrorNotification("Data is missing, Please try again");
+            navigate("/products/billPay", { replace: true });
+        }
+    }, [vendor, serviceName, subProductId, navigate]);
+
     if (!vendor || !serviceName || !subProductId) {
-        return <div>Invalid request</div>;
+        return null;
     }
+
+    const vendorName = vendor.toLowerCase();
+
+    const isAtoZ =
+        vendorName.includes("atoz") ||
+        vendorName.includes("a2z") ||
+        vendorName.includes("suvidha");
+
+    const isBillAvenue =
+        vendorName.includes("avenue") ||
+        vendorName.includes("bill");
 
     return (
         <>
-            {vendor &&
-                (
-                    vendor?.toLowerCase().includes("atoz") ||
-                    vendor?.toLowerCase().includes("a2z") ||
-                    vendor?.toLowerCase().includes("suvidha")
-                ) && (
-                    <FetchBillDetails
-                        serviceName={serviceName}
-                        subProductId={subProductId}
-                        vendor={vendor}
-                    />
-                )}
+            {isAtoZ && (
+                <AtoZForm
+                    serviceName={serviceName}
+                    subProductId={subProductId}
+                    vendor={vendor}
+                />
+            )}
 
-            {vendor &&
-                (
-                    vendor?.toLowerCase().includes("avenue") ||
-                    vendor?.toLowerCase().includes("bill")
-                )
-                && (
-                    <FetchBillDetails
-                        serviceName={serviceName}
-                        subProductId={subProductId}
-                        vendor={vendor}
-                    />
-                )}
+            {isBillAvenue && (
+                <AvenueForm
+                    serviceName={serviceName}
+                    subProductId={subProductId}
+                    vendor={vendor}
+                />
+            )}
         </>
     )
 }

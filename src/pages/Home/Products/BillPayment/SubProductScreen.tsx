@@ -24,7 +24,7 @@ const SubProductScreen = () => {
     navigate(`/products/billPay/service`, {
       state: {
         subProductId: subProduct.subProductId,
-        vendor: subProduct?.vendor      // <-- PASS IT FORWARD
+        // vendor: subProduct?.vendor      // <-- PASS IT FORWARD
       },
     });
   };

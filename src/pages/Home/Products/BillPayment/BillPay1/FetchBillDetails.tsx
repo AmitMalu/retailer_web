@@ -38,7 +38,7 @@ interface Props {
   vendor: string;
 }
 
-const FetchBillDetails: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
+const FetchBillDetails: React.FC<Props> = ({ serviceName, subProductId }) => {
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -559,12 +559,8 @@ const FetchBillDetails: React.FC<Props> = ({ serviceName, subProductId, vendor }
           <UnstyledButton
             onClick={() => {
               navigate(`/products/billPay/service`, {
-                state: { subProductId: subProductId },
-              });
-              navigate(`/products/billPay/service`, {
                 state: {
                   subProductId,
-                  vendor      // <-- PASS IT FORWARD
                 },
               });
             }}
