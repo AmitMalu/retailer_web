@@ -20,15 +20,6 @@ const SubProductScreen = () => {
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  const handleIconClick = (subProduct: any) => {
-    navigate(`/products/billPay/service`, {
-      state: {
-        subProductId: subProduct.subProductId,
-        // vendor: subProduct?.vendor      // <-- PASS IT FORWARD
-      },
-    });
-  };
-
   const bbpsProduct = loginData?.products?.find(
     (product: any) => product.productName.toLowerCase() === "bbps"
   );
@@ -45,6 +36,15 @@ const SubProductScreen = () => {
     }) || [];
 
   const groupedCards = createTriangularLayout(cardsData);
+
+  const handleIconClick = (subProduct: any) => {
+    navigate(`/products/billPay/service`, {
+      state: {
+        subProductId: subProduct.subProductId,
+        // vendor: subProduct?.vendor      // <-- PASS IT FORWARD
+      },
+    });
+  };
 
   return (
     <>

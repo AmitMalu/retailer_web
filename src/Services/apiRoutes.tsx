@@ -124,5 +124,9 @@ export const API_ROUTES = {
   PRODUCT_LIST: `${BASE_URL}/api/products/dropdown/active`,
   SUB_PRODUCT_DROPDOWN: `${BASE_URL}/api/sub-products/dropdown`,
 
+  /////////////////////////// BILL AVENUE ////////////////////////////////////
+  BILLAVENUE_BILLER_INFO: `${BASE_URL}/api/billavenue/biller-info`,
+  BILLAVENUE_BILL_FETCH: `${BASE_URL}/api/billavenue/bill-fetch`,
+
 };
 

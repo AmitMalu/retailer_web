@@ -162,9 +162,6 @@ const SubProductScreen = lazy(
 const ServicesScreen = lazy(
   () => import("@/pages/Home/Products/BillPayment/ServicesScreen")
 );
-const FetchBillDetails = lazy(
-  () => import("@/pages/Home/Products/BillPayment/BbpsAtoZ/FetchBillDetails")
-);
 
 const getToken = () => {
   const token = document.cookie

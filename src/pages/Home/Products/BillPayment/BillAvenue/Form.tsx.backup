@@ -1,0 +1,535 @@
+import { RootState } from "@/Redux/Store";
+import { decryptData } from "@/Utils/helper";
+import { useTheme } from "@mui/system";
+import React, { useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import MyLoader from "@/components/Atoms/Loader";
+import { Drawer, Loader, Modal, UnstyledButton } from "@mantine/core";
+import TextComponent from "@/components/Atoms/TextComponent";
+import { BackSvgIcon } from "@/assets/svg";
+import { Formik, FormikValues } from "formik";
+import { BillAvenue_Fetch_Bill, BillAvenue_Get_Biller_Info, BillAvenue_Bill_Payment, Fetch_Transaction_Receipt, Get_Providers } from "@/Services/api";
+import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
+import { handleCustomError } from "@/Utils/handleCustomError";
+import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
+import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
+import ButtonComponent from "@/components/Atoms/ButtonComponent";
+import { buildBillDetailsInitialValues, buildInitialValues } from "./Utils/initialValues";
+import { buildBillDetailsValidationSchema, buildValidationSchema } from "./Utils/validationSchemaBuilder";
+import ExtraParamFields from "./Components/ExtraParamFields";
+import ExtraStaticFields from "./Components/ExtraStaticFields";
+import moment from "moment";
+import TransactionSuccessModel from "@/components/Atoms/TransactionSuccessModel";
+import BillReceipt from "./Components/BillReciept";
+import { buildExtraParamPayload } from "./Utils/buildExtraParamPayload";
+import BillPaymentDetails from "./Components/BillPaymentDetails";
+import AmountInput from "./Components/AmountInput";
+
+interface Props {
+    serviceName: string;
+    subProductId: string;
+    vendor: string;
+}
+
+const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
+
+    const navigate = useNavigate();
+    const theme = useTheme();
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [providerList, setProviderList] = useState([]);
+    const [selectedProviderDetails, setSelectedProviderDetails] = useState<{
+        [key: string]: any;
+    } | null>(null);
+
+    const [billModalOpened, setBillModalOpened] = useState(false);
+    const [billDetails, setBillDetails] = useState<any>(null);
+    const [amountEditable, setAmountEditable] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+
+    const [receiptDrawerOpened, setReceiptDrawerOpened] = useState(false);
+    const [receiptData, setReceiptData] = useState<any>(null);
+    const [receiptLoading, setReceiptLoading] = useState(false);
+
+
+    const apiResponses = useSelector(
+        (state: RootState) => state.apiResponse?.responses
+    );
+
+    const loginData = apiResponses?.loginData
+        ? decryptData(apiResponses?.loginData)
+        : null;
+
+    // 🔹 Main form (Form-1)
+    const initialValues = useMemo(
+        () => buildInitialValues(selectedProviderDetails),
+        [selectedProviderDetails]
+    );
+
+    const validationSchema = useMemo(
+        () => buildValidationSchema(selectedProviderDetails),
+        [selectedProviderDetails]
+    );
+
+    // 🔹 Bill details form (Form-2)
+    const billDetailsInitialValues = useMemo(
+        () => buildBillDetailsInitialValues(billDetails),
+        [billDetails]
+    );
+
+    const billDetailsValidationSchema = useMemo(
+        () => buildBillDetailsValidationSchema(billDetails),
+        [billDetails]
+    );
+
+    const handleSelectProvider = async (providerId: string) => {
+        if (!providerId) {
+            setSelectedProviderDetails(null);
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            setSelectedProviderDetails(null);
+
+            // Fetch BillAvenue biller-info for the selected provider/biller
+            const res = await BillAvenue_Get_Biller_Info({
+                subProductId,
+                billerId: [providerId],
+            });
+
+            if (res?.data?.statusCode === 200 && res?.data?.data?.data?.biller?.length > 0) {
+                const billerInfo = res.data.data.data.biller[0];
+
+                // Map BillAvenue structure into the exact AtoZ structure
+                const firstParam =
+                    billerInfo.billerInputParams?.[0]?.paramsList?.[0] || null;
+
+                const consumer_field = {
+                    label: firstParam?.paramName || "Consumer Number",
+                    placeholder: `Enter ${firstParam?.paramName || "Consumer Number"}`,
+                    maxLength: Number(firstParam?.maxLength || 30),
+                    capitalize: false,
+                };
+
+                // Create the exact structure that AtoZ expects
+                const providerDetails = {
+                    provider_id: billerInfo.billerId,
+                    provider_name: billerInfo.billerName,
+                    service_name: billerInfo.billerCategory,
+                    consumer_field,
+                    extra_param: [], // BillAvenue doesn't have extra_param in this response
+                    extra_static_fields: [], // BillAvenue doesn't have extra_static_fields in this response
+                };
+
+                setSelectedProviderDetails(providerDetails);
+            } else {
+                showErrorNotification(res?.data?.message || "Unable to fetch provider configuration");
+            }
+        } catch (error) {
+            handleCustomError(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleFetchDetailsSubmit = async (values: FormikValues) => {
+        try {
+            setIsLoading(true);
+
+            const formValues = { ...values };
+
+            // 🔹 Step 1: Call BillAvenue biller-info to validate / load biller config
+            const billerInfoRes = await BillAvenue_Get_Biller_Info({
+                subProductId,
+                billerId: [String(formValues.provider)],
+            });
+
+            if (
+                !(
+                    billerInfoRes?.data?.statusCode === 200 &&
+                    billerInfoRes?.data?.data?.data?.biller?.length > 0
+                )
+            ) {
+                showErrorNotification(
+                    billerInfoRes?.data?.message || "Unable to fetch biller information"
+                );
+                return;
+            }
+
+            // Optionally keep selected biller details in state (flow stays the same visually)
+            const billerInfo = billerInfoRes.data.data.data.biller[0];
+            setSelectedProviderDetails((prev) => ({
+                ...(prev || {}),
+                ...billerInfo,
+            }));
+
+            // 🔹 Step 2: Build BillAvenue bill-fetch payload (fetch details)
+            const payload: any = {
+                requestId: "", // backend can override
+                agentId: loginData?.hierarchyId,
+                agentDeviceInfo: {
+                    ip: "",
+                    initChannel: "AGT",
+                    mac: "",
+                },
+                customerInfo: {
+                    customerMobile: formValues.customerMobileNumber,
+                    customerEmail: "",
+                    customerAdhaar: "",
+                    customerPan: "",
+                },
+                billerId: String(formValues.provider),
+                inputParams: {
+                    input: [],
+                },
+            };
+
+            if (formValues.consumerNumber) {
+                payload.inputParams.input.push({
+                    paramName: "CustomerId",
+                    paramValue: String(formValues.consumerNumber),
+                });
+            }
+
+            // TODO: if you need to map extra_param / extra_static_fields, reuse buildExtraParamPayload here
+
+            const response = await BillAvenue_Fetch_Bill(payload);
+
+            if (response?.data?.statusCode === 200) {
+                const billData = response?.data?.data || {};
+
+                if (!billData) {
+                    showErrorNotification("No bill details found");
+                    return;
+                }
+
+                setBillDetails({
+                    ...billData,
+                    formValues: values,
+                });
+                setBillModalOpened(true);
+                setAmountEditable(true);
+            } else {
+                showErrorNotification(
+                    response?.data?.message || "Unable to fetch bill details"
+                );
+            }
+        } catch (error) {
+            await handleCustomError(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const processTransaction = async (
+        values: FormikValues,
+        resetForm: () => void
+    ) => {
+        try {
+            setIsLoading(true);
+
+            if (!billDetails || !selectedProviderDetails) {
+                showErrorNotification("Missing bill or provider details");
+                return;
+            }
+            // 🔹 Step 1: Build BillAvenue payment payload
+            const payload: any = {
+                requestId: "", // optional, backend may override
+                agentId: loginData?.hierarchyId,
+                agentDeviceInfo: {
+                    ip: "",
+                    initChannel: "AGT",
+                    mac: "",
+                },
+                customerInfo: {
+                    customerMobile: billDetails?.formValues?.customerMobileNumber,
+                    customerEmail: "",
+                    customerAdhaar: "",
+                    customerPan: "",
+                },
+                billerId: selectedProviderDetails?.billerId,
+                inputParams: billDetails?.inputParams || {},
+                amount: Number(values.amount) || Number(billDetails?.Billamount) || 0,
+            };
+
+            const response = await BillAvenue_Bill_Payment(payload);
+
+            if (response?.data?.statusCode === 200 || response?.data?.statusCode === "200") {
+                showSuccessNotification(response?.data?.message);
+                setAmountEditable(false);
+                setBillModalOpened(false);
+                resetForm();
+
+                // 🔹 Step 5: Show basic receipt using available bill + response data
+                setReceiptData({
+                    ...(response?.data?.data || {}),
+                    customerName: billDetails?.CustomerName || "",
+                    category: selectedProviderDetails?.billerCategory || "",
+                    billerName: selectedProviderDetails?.billerName || "",
+                });
+                setReceiptDrawerOpened(true);
+            } else {
+                showErrorNotification(
+                    response?.data?.message || "Transaction failed"
+                );
+            }
+        } catch (error) {
+            await handleCustomError(error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        if (!serviceName || subProductId === undefined) return;
+
+        async function loadProviders() {
+            try {
+                const res = await Get_Providers({ subProductId, serviceName });
+                if (res?.data?.statusCode === 200) {
+                    setProviderList(res?.data?.data || []);
+                } else {
+                    showErrorNotification(res?.data?.message || "Unable to load providers");
+                }
+            } catch (err) {
+                handleCustomError(err);
+            }
+        }
+
+        loadProviders();
+    }, [serviceName]);
+
+    return (
+        <>
+            {isLoading && <MyLoader />}
+            <div className="w-full 320px:mt-12 md:mt-0">
+                {/* Back Button and Title */}
+                <div className="mb-6 flex items-center gap-6 justify-start">
+                    {/* Back Button */}
+                    <UnstyledButton
+                        onClick={() => {
+                            navigate(`/products/billPay/service`, {
+                                state: {
+                                    subProductId,
+                                },
+                            });
+                        }}
+                    >
+                        <BackSvgIcon color={theme.palette.red.DEFAULT} />
+                    </UnstyledButton>
+
+                    {/* Title */}
+                    <TextComponent
+                        fontSize={28}
+                        fontWeight={600}
+                        color={theme.palette.red.DEFAULT}
+                    >
+                        {serviceName}
+                    </TextComponent>
+                </div>
+
+                {/*Fetch Bill Details Form */}
+                <div className="mt-3 flex h-full flex-col justify-between">
+                    <Formik<FormikValues>
+                        initialValues={initialValues}
+                        validationSchema={validationSchema}
+                        onSubmit={handleFetchDetailsSubmit}
+                        validateOnMount={false}
+                        validateOnBlur={true}
+                        validateOnChange={true}
+                        enableReinitialize
+                    >
+                        {(formik) => {
+                            const {
+                                handleSubmit,
+                            } = formik;
+
+                            const consumerField = selectedProviderDetails?.consumer_field || {};
+
+                            return (
+                                <>
+                                    <div className="mt-3 flex flex-wrap items-start justify-start gap-3">
+                                        <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)]  ">
+                                            <FormikSelectComponent
+                                                name="provider"
+                                                placeholder="Select Provider"
+                                                label="Select Provider"
+                                                size="md"
+                                                data={providerList?.map((service: any) => ({
+                                                    value: String(service.providerId),
+                                                    label: service.providerName,
+                                                })) || []}
+                                                withAsterisk
+                                                searchable
+                                                allowDeselect
+                                                onChange={(value: any) => handleSelectProvider(value)}
+                                            />
+                                        </div>
+
+                                        {selectedProviderDetails && (
+                                            <>
+                                                <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
+                                                    <FormikTextInputComponent
+                                                        name="customerMobileNumber"
+                                                        label="Customer Mobile Number"
+                                                        size="md"
+                                                        allowCharacter={false}
+                                                        allowSpace={false}
+                                                        allowSpecialChar={false}
+                                                        placeholder="Enter Number"
+                                                        maxLength={10}
+                                                        minLength={10}
+                                                        withAsterisk
+                                                        fullWidth
+                                                    />
+                                                </div>
+                                                <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
+                                                    <FormikTextInputComponent
+                                                        name="consumerNumber"
+                                                        label={consumerField.label || "Consumer Number"}
+                                                        placeholder={consumerField.placeholder || "Enter Consumer Number"}
+                                                        capitalize={consumerField.capitalize || false}
+                                                        maxLength={consumerField.maxLength || 30}
+                                                        size="md"
+                                                        withAsterisk
+                                                        fullWidth
+                                                    />
+                                                </div>
+                                            </>
+                                        )}
+
+                                        {/* Dynamic provider-dependent fields */}
+                                        <ExtraParamFields params={selectedProviderDetails?.extra_param} />
+
+                                        {/* Static vendor fields */}
+                                        <ExtraStaticFields fields={selectedProviderDetails?.extra_static_fields} />
+                                    </div>
+
+                                    {/* Submit Button */}
+                                    <div className="flex w-max self-end mt-5">
+                                        <ButtonComponent
+                                            title={"FETCH DETAILS"}
+                                            variant="filled"
+                                            onClick={() => {
+                                                handleSubmit();
+                                            }}
+                                            disabled={isLoading}
+                                            radius={10}
+                                            width={150}
+                                        />
+                                    </div>
+                                </>
+                            );
+                        }}
+                    </Formik>
+                </div>
+
+                {/* Bill Payment Form */}
+                <Modal
+                    opened={billModalOpened}
+                    onClose={() => !isLoading && setBillModalOpened(false)}
+                    title="Bill Details"
+                    size="xl"
+                    centered
+                    closeOnEscape={false}
+                    closeOnClickOutside={false}
+                    styles={{
+                        title: {
+                            fontSize: "1.5rem",
+                            fontWeight: 600,
+                        },
+                        body: {
+                            overflow: isLoading ? "hidden" : "auto", // Disable scrolling while loading
+                        },
+                    }}
+                >
+                    {isLoading ?
+                        <div className="flex justify-center items-center h-full w-full flex-col gap-4">
+                            <Loader size={100} />
+                            <p className="text-lg text-gray-700">Processing your transaction...</p>
+                        </div>
+                        : (
+                            <div className="flex w-full items-center justify-center flex-col gap-5">
+                                <Formik
+                                    initialValues={billDetailsInitialValues}
+                                    validationSchema={billDetailsValidationSchema}
+                                    enableReinitialize
+                                    onSubmit={(values, { resetForm }) => processTransaction(values, resetForm)}
+                                >
+                                    {({ values, handleChange, errors, touched, handleSubmit }) => {
+                                        return (
+                                            <form onSubmit={handleSubmit} className="flex flex-col w-full p-4 overflow-y-auto gap-4">
+                                                <BillPaymentDetails
+                                                    values={values}
+                                                    billDetails={billDetails}
+                                                    serviceName={serviceName}
+                                                />
+
+                                                {/* Editable Amount Field */}
+                                                <AmountInput
+                                                    value={values.amount}
+                                                    onChange={handleChange("amount")}
+                                                    error={touched.amount ? (typeof errors.amount === 'string' ? errors.amount : "") : ""}
+                                                    min={billDetails?.minBillPaidAmount}
+                                                    max={billDetails?.maxAllowPaidAmount}
+                                                    disabled={!amountEditable || isLoading}
+                                                />
+
+
+                                                <div className="mt-6 flex h-9 w-full items-center justify-end">
+                                                    <ButtonComponent
+                                                        width={120}
+                                                        title={"SUBMIT"}
+                                                        variant="filled"
+                                                        onClick={() => null}
+                                                        disabled={isLoading}
+                                                        radius={28}
+                                                        fontSize={14}
+                                                        fullWidth
+                                                    />
+                                                </div>
+                                            </form>
+                                        )
+                                    }}
+                                </Formik>
+                            </div>
+                        )}
+                </Modal>
+
+                {/* Success Modal */}
+                <TransactionSuccessModel
+                    opened={showSuccessModal}
+                    onClose={() => setShowSuccessModal(false)}
+                />
+
+                {/* Transaction Reciept */}
+                <Drawer
+                    opened={receiptDrawerOpened}
+                    onClose={() => {
+                        setReceiptDrawerOpened(false);
+                        navigate("/products/billPay"); // redirect after closing
+                    }}
+                    closeOnEscape={false}
+                    closeOnClickOutside={false}
+                    position="right"
+                    size="xl"
+                    overlayProps={{ backgroundOpacity: 0.4, blur: 2 }}
+                    transitionProps={{ transition: "slide-right", duration: 300 }}
+                    title={<div className="font-semibold text-lg">Transaction Receipt</div>}
+                >
+                    {receiptLoading ? (
+                        <div className="flex justify-center items-center h-60">
+                            <Loader />
+                        </div>
+                    ) : (
+                        <BillReceipt data={receiptData} />
+                    )}
+                </Drawer>
+            </div>
+        </>
+    )
+}
+
+export default Form
