@@ -9,7 +9,7 @@ import { Drawer, Loader, Modal, UnstyledButton } from "@mantine/core";
 import TextComponent from "@/components/Atoms/TextComponent";
 import { BackSvgIcon } from "@/assets/svg";
 import { Formik, FormikValues } from "formik";
-import { BillAvenue_Biller_Info, BillAvenue_Bill_Fetch, Fetch_Transaction_Receipt, Get_Providers, Transaction } from "@/Services/api"; // eslint-disable-line @typescript-eslint/no-unused-vars // TODO: Uncomment when real APIs are ready
+import { BillAvenue_Biller_Info_Direct, BillAvenue_Bill_Fetch_Direct, Fetch_Transaction_Receipt, Get_Providers, Transaction } from "@/Services/api";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
@@ -26,6 +26,7 @@ import BillReceipt from "./Components/BillReciept";
 import { buildExtraParamPayload } from "./Utils/buildExtraParamPayload";
 import BillPaymentDetails from "./Components/BillPaymentDetails";
 import AmountInput from "./Components/AmountInput";
+import { useSetState } from "@mantine/hooks";
 
 interface Props {
     serviceName: string;
@@ -36,7 +37,7 @@ interface Props {
 const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-disable-line @typescript-eslint/no-unused-vars */ }) => {
     // vendor prop is reserved for future vendor-specific logic
     const navigate = useNavigate();
-    const theme = useTheme(); // eslint-disable-line @typescript-eslint/no-unused-vars // TODO: Use when real APIs are ready
+    const theme = useTheme();
 
     const [isLoading, setIsLoading] = useState(false);
     const [providerList, setProviderList] = useState([]);
@@ -53,6 +54,10 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
     const [receiptData, setReceiptData] = useState<any>(null);
     const [receiptLoading, setReceiptLoading] = useState(false);
 
+    const [requestId, setRequestId ] = useState('')
+
+
+    console.log('providerList::', providerList)
 
     const apiResponses = useSelector(
         (state: RootState) => state.apiResponse?.responses
@@ -85,6 +90,8 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
     );
 
     const handleSelectProvider = async (providerId: string) => {
+
+        console.log('providerId11111', providerId)
         if (!providerId) {
             setSelectedProviderDetails(null);
             return;
@@ -94,15 +101,16 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
             setIsLoading(true);
             setSelectedProviderDetails(null);
 
-            console.log("Calling BillAvenue_Biller_Info with:", { subProductId, billerId: [providerId] });
+            console.log("Calling BillAvenue_Biller_Info with:", { subProductId, billerId: ["DELECTRICITY01"] });
 
             // TODO: Use real API when endpoint is available - currently causing logout
-            // const result = await dispatch(BillAvenue_Biller_Info({ 
-            //     subProductId, 
-            //     billerId: [providerId] 
-            // })) as any;
+            const billerResult = await BillAvenue_Biller_Info_Direct({
+                subProductId,
+                billerId: [providerId]
+            });
 
             // Mock response for testing to prevent logout
+            /*
             const mockResult = {
                 statusCode: 200,
                 message: "Biller info fetched successfully",
@@ -140,23 +148,36 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                     }
                 }
             };
+            */
 
-            const result = mockResult;
+            const result = billerResult;
 
-            console.log("BillAvenue_Biller_Info response:", result);
+            console.log("BillAvenue_Biller_Info response:", result?.data?.data?.requestId);
 
-            if (result?.statusCode === 200) {
-                const billerData = result?.data?.data?.biller?.[0];
-                if (billerData) {
-                    setSelectedProviderDetails({
-                        provider_id: providerId,
-                        provider_name: billerData.billerName,
-                        service_name: billerData.billerCategory,
-                        billerInputParams: billerData.billerInputParams,
-                        billerData: billerData
-                    });
+            setRequestId(result?.data?.data?.requestId)
+
+            if (result?.statusCode == 200) {
+                const responseData = result?.data?.data;
+
+                console.log('responseData:::', responseData)
+
+                if (responseData?.responseCode === "000") {
+                    const billerData = responseData?.biller?.[0];
+                    if (billerData) {
+                        setSelectedProviderDetails({
+                            provider_id: providerId,
+                            provider_name: billerData.billerName,
+                            service_name: billerData.billerCategory,
+                            billerInputParams: billerData.billerInputParams,
+                            billerData: billerData
+                        });
+                    } else {
+                        showErrorNotification("No biller data found");
+                    }
                 } else {
-                    showErrorNotification("No biller data found");
+                    // Handle error response from BillAvenue API
+                    const errorMessage = (responseData?.errorInfo?.error as any[])?.[0]?.errorMessage || "Unable to fetch biller configuration";
+                    showErrorNotification(errorMessage);
                 }
             } else {
                 showErrorNotification(result?.message || "Unable to fetch biller configuration");
@@ -186,34 +207,43 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
 
             const formValues = { ...values }; // eslint-disable-line @typescript-eslint/no-unused-vars // TODO: Use in bill-fetch API
             // Generate unique request ID
-            const requestId = `BA${Date.now()}${Math.random().toString(36).substr(2, 9).toUpperCase()}`; // eslint-disable-line @typescript-eslint/no-unused-vars // TODO: Use in bill-fetch API
-            
+
             // Build input params from form values based on biller configuration
             const inputParams: any[] = [];
             const billerInputParams = selectedProviderDetails.billerData.billerInputParams;
-            
+
+            console.log('billerInputParams::', billerInputParams)
+
             if (billerInputParams?.length) {
                 billerInputParams.forEach((paramGroup: any) => {
                     if (paramGroup.paramsList?.length) {
                         paramGroup.paramsList.forEach((param: any) => {
                             const paramName = param.paramName;
                             let paramValue = "";
-                            
+
                             // Map form values to biller params
-                            if (paramName.toLowerCase().includes("customerid")) {
+                            console.log('Current paramName:', paramName);
+                            console.log('Available form values:', values);
+                            
+                            if (paramName === "CustomerId") {
                                 paramValue = values.consumerNumber;
-                            } else if (paramName.toLowerCase().includes("mobile") || paramName.toLowerCase().includes("phone")) {
+                                console.log('Mapped CustomerId to:', paramValue);
+                            } else if (paramName === "CustomerMobile" || paramName === "customerMobile") {
                                 paramValue = values.customerMobileNumber;
+                                console.log('Mapped CustomerMobile to:', paramValue);
                             } else {
                                 // Try to find matching field in form values
-                                const matchingKey = Object.keys(values).find(key => 
+                                const matchingKey = Object.keys(values).find(key =>
                                     key.toLowerCase().includes(paramName.toLowerCase())
                                 );
                                 if (matchingKey) {
-                                    paramValue = values[matchingKey];
+                                    paramValue = values[matchingKey as keyof typeof values];
+                                    console.log('Mapped', paramName, 'to', paramValue, 'via key:', matchingKey);
+                                } else {
+                                    console.log('No matching field found for:', paramName);
                                 }
                             }
-                            
+
                             if (paramValue) {
                                 inputParams.push({
                                     paramName,
@@ -270,10 +300,12 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                 });
             }
 
+            console.log('selectedProviderDetails.provider_id', selectedProviderDetails.provider_id)
+
             // 🔹 Step 4: Call BillAvenue Bill Fetch API
             const billFetchPayload = {
-                requestId,
-                agentId: loginData?.hierarchyId || "CC01CC01513515340681",
+                requestId : requestId,
+                agentId: "CC01CC01513515340681",
                 agentDeviceInfo: {
                     ip: "192.168.2.73",
                     initChannel: "AGT",
@@ -291,12 +323,41 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                 }
             };
 
+
+            // const billFetchPayload = {
+            //     "requestId": "L3KEQX8J7G8998RVNEQX5WOUKM953501722",
+            //     "agentId": "CC01CC01513515340681",
+            //     "agentDeviceInfo": {
+            //         "ip": "192.168.2.73",
+            //         "initChannel": "AGT",
+            //         "mac": "01-23-45-67-89-ab"
+            //     },
+            //     "customerInfo": {
+            //         "customerMobile": "9898990084",
+            //         "customerEmail": "",
+            //         "customerAdhaar": "",
+            //         "customerPan": ""
+            //     },
+            //     "billerId": "DUMMYFASTAG001",
+            //     "inputParams": {
+            //         "input": [
+            //             {
+            //                 "paramName": "Vehicle Number",
+            //                 "paramValue": "MH15AT6555"
+            //             }
+            //         ]
+            //     }
+            // }
+
             console.log("Calling BillAvenue_Bill_Fetch with:", billFetchPayload);
 
             // TODO: Use real API when endpoint is available - currently causing logout
-            // const result = await dispatch(BillAvenue_Bill_Fetch(billFetchPayload)) as any;
+            const billFetchResult = await BillAvenue_Bill_Fetch_Direct(billFetchPayload);
+
+
 
             // Mock response for testing to prevent logout
+            /*
             const mockBillFetchResult = {
                 data: { 
                     statusCode: 200, 
@@ -319,14 +380,15 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                     }
                 }
             };
+            */
 
-            const result = mockBillFetchResult;
+            const result = billFetchResult;
 
             console.log("BillAvenue_Bill_Fetch response:", result);
 
-            if (result?.data?.statusCode === 200) {
-                const responseData = result?.data?.data;
-                
+            if (billFetchResult?.data?.statusCode === 200) {
+                const responseData = billFetchResult?.data?.data;
+
                 if (responseData?.responseCode === "000") {
                     showSuccessNotification("Bill details fetched successfully");
                     setBillDetails({
@@ -396,7 +458,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
             });
 
             // 🔹 Step 4: Call transaction API
-            const response : any = await Transaction(
+            const response: any = await Transaction(
                 payload as TransactionProps
             );
 
@@ -452,6 +514,8 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
         async function loadProviders() {
             try {
                 const res = await Get_Providers({ subProductId, serviceName });
+
+                console.log('res::', res)
                 if (res?.data?.statusCode === 200) {
                     setProviderList(res?.data?.data || []);
                 } else {

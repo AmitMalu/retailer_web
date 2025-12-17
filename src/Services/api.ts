@@ -813,6 +813,57 @@ export const fetchList = createAsyncThunk(
 
 ////////////////////////// BILL AVENUE APIS ///////////////////////////
 
+export const BillAvenue_Biller_Info_Direct = async (payload: { subProductId: string; billerId: string[] }) => {
+  try {
+    const response = await api.post(API_ROUTES.BILLAVENUE_BILLER_INFO, payload, await createHeaders());
+    
+    if (response.data?.statusCode === 200) {
+      return response.data;
+    } else {
+      throw new Error(response.data?.message || "Failed to fetch biller info");
+    }
+  } catch (error: any) {
+    handleCustomError(error);
+    throw error;
+  }
+};
+
+export const BillAvenue_Bill_Fetch_Direct = async (payload: {
+    requestId: string;
+    agentId: string;
+    agentDeviceInfo: {
+      ip: string;
+      initChannel: string;
+      mac: string;
+    };
+    customerInfo: {
+      customerMobile: string;
+      customerEmail?: string;
+      customerAdhaar?: string;
+      customerPan?: string;
+    };
+    billerId: string;
+    inputParams: {
+      input: {
+        paramName: string;
+        paramValue: string;
+      }[];
+    };
+  }) => {
+    try {
+      const response = await api.post(API_ROUTES.BILLAVENUE_BILL_FETCH, payload, await createHeaders());
+      
+      if (response.data?.statusCode === 200) {
+        return response.data;
+      } else {
+        throw new Error(response.data?.message || "Failed to fetch bill details");
+      }
+    } catch (error: any) {
+      handleCustomError(error);
+      throw error;
+    }
+  };
+
 export const BillAvenue_Biller_Info = createAsyncThunk(
   "billavenue/biller-info",
   async (payload: { subProductId: string; billerId: string[] }) => {
