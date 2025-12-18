@@ -127,6 +127,6 @@ export const API_ROUTES = {
   /////////////////////////// BILL AVENUE ////////////////////////////////////
   BILLAVENUE_BILLER_INFO: `${BASE_URL}/api/billavenue/biller-info`,
   BILLAVENUE_BILL_FETCH: `${BASE_URL}/api/billavenue/bill-fetch`,
+  BILLAVENUE_BILL_PAYMENT: `${BASE_URL}/api/billavenue/bill-payment`,
 
 };
-

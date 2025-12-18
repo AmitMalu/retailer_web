@@ -9,6 +9,10 @@ export default defineConfig(({ mode }) => {
   return {
     base: env.VITE_APP_BASE_PATH,
     plugins: [react()],
+    server: {
+      host: '0.0.0.0', // Allow external connections
+      port: 5173,       // Your preferred port
+    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

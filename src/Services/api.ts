@@ -51,6 +51,16 @@ export const isAuthenticated = () => {
   };
 };
 
+export const BillAvenue_Bill_Payment = async (payload: any) => {
+  try {
+    const response = await api.post(API_ROUTES.BILLAVENUE_BILL_PAYMENT, payload, await createHeaders());
+    return response;
+  } catch (error: any) {
+    handleCustomError(error);
+    throw error;
+  }
+};
+
 const createHeaders = async () => {
   let token = "";
 

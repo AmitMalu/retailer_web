@@ -9,7 +9,7 @@ import { Drawer, Loader, Modal, UnstyledButton } from "@mantine/core";
 import TextComponent from "@/components/Atoms/TextComponent";
 import { BackSvgIcon } from "@/assets/svg";
 import { Formik, FormikValues } from "formik";
-import { BillAvenue_Biller_Info_Direct, BillAvenue_Bill_Fetch_Direct, Fetch_Transaction_Receipt, Get_Providers, Transaction } from "@/Services/api";
+import { BillAvenue_Biller_Info_Direct, BillAvenue_Bill_Fetch_Direct, BillAvenue_Bill_Payment, Fetch_Transaction_Receipt, Get_Providers, Transaction } from "@/Services/api";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
@@ -19,14 +19,11 @@ import { buildBillDetailsInitialValues, buildInitialValues } from "./Utils/initi
 import { buildBillDetailsValidationSchema, buildValidationSchema } from "./Utils/validationSchemaBuilder";
 import ExtraParamFields from "./Components/ExtraParamFields";
 import ExtraStaticFields from "./Components/ExtraStaticFields";
-import { FetchBillDetailsProps, TransactionProps } from "@/Common/interface";
-import moment from "moment";
-import TransactionSuccessModel from "@/components/Atoms/TransactionSuccessModel";
+import { TransactionProps } from "@/Common/interface";
 import BillReceipt from "./Components/BillReciept";
 import { buildExtraParamPayload } from "./Utils/buildExtraParamPayload";
 import BillPaymentDetails from "./Components/BillPaymentDetails";
 import AmountInput from "./Components/AmountInput";
-import { useSetState } from "@mantine/hooks";
 
 interface Props {
     serviceName: string;
@@ -46,19 +43,18 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
     } | null>(null);
 
     const [billModalOpened, setBillModalOpened] = useState(false);
-    const [billDetails, setBillDetails] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-unused-vars // TODO: Used when bill-fetch API is implemented
+    const [billDetails, setBillDetails] = useState<any>(null);
     const [amountEditable, setAmountEditable] = useState(false);
-    const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
-
+    
     const [receiptDrawerOpened, setReceiptDrawerOpened] = useState(false);
     const [receiptData, setReceiptData] = useState<any>(null);
     const [receiptLoading, setReceiptLoading] = useState(false);
 
-    const [requestId, setRequestId ] = useState('')
+    const [requestId, setRequestId] = useState('')
+    const [providerId, setProviderId] = useState('')
 
 
-    console.log('providerList::', providerList)
-
+    
     const apiResponses = useSelector(
         (state: RootState) => state.apiResponse?.responses
     );
@@ -90,106 +86,129 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
     );
 
     const handleSelectProvider = async (providerId: string) => {
-
-        console.log('providerId11111', providerId)
+        
         if (!providerId) {
             setSelectedProviderDetails(null);
             return;
         }
 
+        let provider_id = providerId.split("-")[0];
+        setProviderId(provider_id);
+
         try {
             setIsLoading(true);
             setSelectedProviderDetails(null);
 
-            console.log("Calling BillAvenue_Biller_Info with:", { subProductId, billerId: ["DELECTRICITY01"] });
-
-            // TODO: Use real API when endpoint is available - currently causing logout
             const billerResult = await BillAvenue_Biller_Info_Direct({
                 subProductId,
-                billerId: [providerId]
+                billerId: [provider_id]
             });
 
-            // Mock response for testing to prevent logout
-            /*
-            const mockResult = {
-                statusCode: 200,
-                message: "Biller info fetched successfully",
-                data: {
-                    statusCode: 200,
-                    message: "Biller info fetched from Vendor API",
-                    data: {
-                        responseCode: "000",
-                        biller: [{
-                            billerId: providerId,
-                            billerAliasName: "Electricity_Dummy",
-                            billerName: "Electricity_Dummy",
-                            billerCategory: "Electricity",
-                            billerAdhoc: "false",
-                            billerCoverage: "IND",
-                            billerFetchRequiremet: "MANDATORY",
-                            billerPaymentExactness: "Exact",
-                            billerSupportBillValidation: "OPTIONAL",
-                            billerInputParams: [
-                                {
-                                    paramsList: [
-                                        {
-                                            paramName: "CustomerId",
-                                            dataType: "ALPHANUMERIC",
-                                            isOptional: "false",
-                                            minLength: "1",
-                                            maxLength: "30",
-                                            regEx: "^[a-zA-Z0-9]{1,30}$",
-                                            visibility: "true"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }]
+            
+            if (billerResult?.statusCode == 200 || billerResult?.data?.statusCode == 200) {
+                // Handle nested response structure
+                const responseData = billerResult?.data?.data || billerResult?.data;
+
+                
+                if (responseData) {
+                    // Store request ID for bill fetch
+                    if (responseData.requestId) {
+                        setRequestId(responseData.requestId);
                     }
-                }
-            };
-            */
 
-            const result = billerResult;
+                    // Extract biller input params
+                    const billerInputParams = responseData.billerInputParams || [];
+                    const paramsList = billerInputParams[0]?.paramsList || [];
 
-            console.log("BillAvenue_Biller_Info response:", result?.data?.data?.requestId);
+                    // Map consumer field from first required param
+                    const consumerParam = paramsList.find((p: any) => p.isOptional === "false") || paramsList[0];
 
-            setRequestId(result?.data?.data?.requestId)
+                    const consumerField = consumerParam ? {
+                        label: consumerParam.paramName.replace(/([A-Z])/g, ' $1').trim(),
+                        placeholder: `Enter ${consumerParam.paramName}`,
+                        maxLength: parseInt(consumerParam.maxLength) || 30,
+                        capitalize: false
+                    } : {
+                        label: "Consumer Number",
+                        placeholder: "Enter Consumer Number",
+                        maxLength: 30,
+                        capitalize: false
+                    };
 
-            if (result?.statusCode == 200) {
-                const responseData = result?.data?.data;
+                    // Map extra params (excluding the first one which becomes consumer field)
+                    const extraParams = paramsList.slice(1).map((param: any) => ({
+                        field_one: param.paramName,
+                        field_two: param.dataType,
+                        field_three: param.isOptional === "false" ? "required" : "optional",
+                        field_four: '',
+                        validation: {
+                            required: param.isOptional === "false",
+                            minLength: parseInt(param.minLength) || 1,
+                            maxLength: parseInt(param.maxLength) || 100,
+                            regex: param.regEx,
+                            dataType: param.dataType
+                        }
+                    }));
 
-                console.log('responseData:::', responseData)
+                    // Check if amount is editable based on billerAmountOptions
+                    const amountOptions = responseData.billerAmountOptions || "";
+                    const isAmountEditable = amountOptions.includes("PARTIAL") ||
+                        amountOptions.includes("ANY") ||
+                        responseData.billerPaymentExactness === "Exact and Above";
 
-                if (responseData?.responseCode === "000") {
-                    const billerData = responseData?.biller?.[0];
-                    if (billerData) {
-                        setSelectedProviderDetails({
-                            provider_id: providerId,
-                            provider_name: billerData.billerName,
-                            service_name: billerData.billerCategory,
-                            billerInputParams: billerData.billerInputParams,
-                            billerData: billerData
-                        });
-                    } else {
-                        showErrorNotification("No biller data found");
-                    }
+                    // Map provider details
+                    const mappedProviderDetails = {
+                        provider_id: provider_id,
+                        provider_name: responseData.billerName || responseData.billerAliasName,
+                        service_name: responseData.billerCategory,
+                        billerId: responseData.billerId,
+                        billerStatus: responseData.billerStatus,
+                        billerCategory: responseData.billerCategory,
+                        billerFetchRequiremet: responseData.billerFetchRequiremet,
+                        billerAmountOptions: responseData.billerAmountOptions,
+                        billerPaymentExactness: responseData.billerPaymentExactness,
+                        supportBillValidation: responseData.billerSupportBillValidation,
+
+                        // Consumer field mapping
+                        consumer_field: consumerField,
+
+                        // Extra params (additional fields after consumer number)
+                        extra_param: extraParams,
+
+                        // Extra static fields (empty for now, can be populated if needed)
+                        extra_static_fields: [],
+
+                        // Amount editability
+                        amount_editable: isAmountEditable,
+
+                        // Store original biller data for later use
+                        billerData: responseData
+                    };
+
+                    
+                    setSelectedProviderDetails(mappedProviderDetails);
+
+                    // Set amount editable state
+                    setAmountEditable(isAmountEditable);
+
+                    showSuccessNotification("Provider details loaded successfully");
                 } else {
-                    // Handle error response from BillAvenue API
-                    const errorMessage = (responseData?.errorInfo?.error as any[])?.[0]?.errorMessage || "Unable to fetch biller configuration";
-                    showErrorNotification(errorMessage);
+                    showErrorNotification("No biller data found");
                 }
             } else {
-                showErrorNotification(result?.message || "Unable to fetch biller configuration");
+                showErrorNotification(billerResult?.message || "Unable to fetch biller configuration");
             }
         } catch (error: any) {
             console.error("BillAvenue_Biller_Info error:", error);
+
             // Check if it's an authentication error
-            if (error?.message?.includes("401") || error?.message?.includes("Unauthorized") || error?.message?.includes("token")) {
+            if (error?.message?.includes("401") ||
+                error?.message?.includes("Unauthorized") ||
+                error?.message?.includes("token")) {
                 showErrorNotification("Authentication error. Please login again.");
-                // Don't call handleCustomError for auth errors to prevent logout
                 return;
             }
+
             handleCustomError(error);
         } finally {
             setIsLoading(false);
@@ -205,106 +224,105 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                 return;
             }
 
-            const formValues = { ...values }; // eslint-disable-line @typescript-eslint/no-unused-vars // TODO: Use in bill-fetch API
-            // Generate unique request ID
-
             // Build input params from form values based on biller configuration
             const inputParams: any[] = [];
             const billerInputParams = selectedProviderDetails.billerData.billerInputParams;
-
-            console.log('billerInputParams::', billerInputParams)
 
             if (billerInputParams?.length) {
                 billerInputParams.forEach((paramGroup: any) => {
                     if (paramGroup.paramsList?.length) {
                         paramGroup.paramsList.forEach((param: any) => {
                             const paramName = param.paramName;
-                            let paramValue = "";
 
-                            // Map form values to biller params
-                            console.log('Current paramName:', paramName);
-                            console.log('Available form values:', values);
                             
-                            if (paramName === "CustomerId") {
-                                paramValue = values.consumerNumber;
-                                console.log('Mapped CustomerId to:', paramValue);
-                            } else if (paramName === "CustomerMobile" || paramName === "customerMobile") {
-                                paramValue = values.customerMobileNumber;
-                                console.log('Mapped CustomerMobile to:', paramValue);
-                            } else {
-                                // Try to find matching field in form values
+                            // Map form field names to parameter names
+                            const fieldMappings: { [key: string]: string } = {
+                                // Consumer/Customer ID variations
+                                'CustomerId': 'consumerNumber',
+                                'Customer Id': 'consumerNumber',
+                                'customerid': 'consumerNumber',
+                                'ConsumerNumber': 'consumerNumber',
+                                'Consumer Number': 'consumerNumber',
+                                'AccountNumber': 'consumerNumber',
+                                'Account Number': 'consumerNumber',
+
+                                // Mobile variations
+                                'CustomerMobile': 'customerMobileNumber',
+                                'Customer Mobile': 'customerMobileNumber',
+                                'customerMobile': 'customerMobileNumber',
+                                'MobileNumber': 'customerMobileNumber',
+                                'Mobile Number': 'customerMobileNumber',
+
+                                // Vehicle variations (for FASTag)
+                                'Vehicle Number': 'consumerNumber',
+                                'VehicleNumber': 'consumerNumber',
+                                'vehicleNumber': 'consumerNumber',
+
+                                // Other common variations
+                                'ServiceNumber': 'consumerNumber',
+                                'Service Number': 'consumerNumber',
+                                'CANumber': 'consumerNumber',
+                                'CA Number': 'consumerNumber',
+                            };
+
+                            let paramValue = '';
+
+                            // Try exact match first
+                            if (fieldMappings[paramName]) {
+                                paramValue = values[fieldMappings[paramName]];
+                            }
+                            // Try case-insensitive match
+                            else if (!paramValue) {
                                 const matchingKey = Object.keys(values).find(key =>
-                                    key.toLowerCase().includes(paramName.toLowerCase())
+                                    key.toLowerCase() === paramName.toLowerCase().replace(/\s+/g, '')
                                 );
+
                                 if (matchingKey) {
-                                    paramValue = values[matchingKey as keyof typeof values];
-                                    console.log('Mapped', paramName, 'to', paramValue, 'via key:', matchingKey);
-                                } else {
-                                    console.log('No matching field found for:', paramName);
+                                    paramValue = values[matchingKey];
+                                }
+                            }
+                            // Try to find by partial match
+                            else if (!paramValue) {
+                                const normalizedParamName = paramName.toLowerCase().replace(/[\s_-]/g, '');
+                                const matchingKey = Object.keys(values).find(key =>
+                                    key.toLowerCase().replace(/[\s_-]/g, '').includes(normalizedParamName) ||
+                                    normalizedParamName.includes(key.toLowerCase().replace(/[\s_-]/g, ''))
+                                );
+
+                                if (matchingKey) {
+                                    paramValue = values[matchingKey];
                                 }
                             }
 
-                            if (paramValue) {
+                            // Only add non-empty values
+                            if (paramValue && String(paramValue).trim() !== '') {
                                 inputParams.push({
-                                    paramName,
-                                    paramValue
+                                    paramName: paramName,
+                                    paramValue: String(paramValue).trim()
                                 });
+                                                            } else {
+                                // If it's a required field, show error
+                                if (param.isOptional === "false") {
+                                    showErrorNotification(`Missing required field: ${paramName}. Please fill all required fields.`);
+                                    setIsLoading(false);
+                                    return;
+                                }
                             }
                         });
                     }
                 });
             }
 
-            // 🔹 Step 1: Base payload
-            const payload: Partial<FetchBillDetailsProps> = {
-                provider: String(formValues.provider),
-                subProductId: subProductId,
-                customerMobileNumber: formValues.customerMobileNumber,
-            };
-
-            if (formValues.consumerNumber) {
-                payload.billerNumber = String(formValues.consumerNumber);
+            
+            // Validate that we have at least one input param
+            if (inputParams.length === 0) {
+                showErrorNotification("No input parameters found. Please fill all required fields.");
+                return;
             }
 
-            // 🔹 Step 2: Build extra_param payload (mobile + dynamic fields)
-            const extraParamPayload = buildExtraParamPayload({
-                extraParams: selectedProviderDetails?.extra_param || [],
-                formValues: values,
-                customerMobileNumber: values.customerMobileNumber,
-            });
-
-            // merge extra params into main payload
-            Object.assign(payload, extraParamPayload);
-
-            // 🔹 Step 3: Include all extra_static_fields dynamically
-            if (selectedProviderDetails?.extra_static_fields?.length) {
-                selectedProviderDetails.extra_static_fields.forEach((field: any) => {
-                    const { key, type, format } = field;
-                    const value = formValues[key];
-
-                    if (value !== undefined && value !== "") {
-                        if (type === "date") {
-                            // Try to parse date using provided format, fallback to common ones
-                            const parsedDate = moment(value, [format, "DD/MM/YYYY", "YYYY-MM-DD"], true);
-
-                            if (parsedDate.isValid()) {
-                                // ✅ send date in backend-friendly format
-                                (payload as any)[key] = parsedDate.format("DD/MM/YYYY");
-                            } else {
-                                console.warn(`Invalid date format for ${key}:`, value);
-                            }
-                        } else {
-                            (payload as any)[key] = value;
-                        }
-                    }
-                });
-            }
-
-            console.log('selectedProviderDetails.provider_id', selectedProviderDetails.provider_id)
-
-            // 🔹 Step 4: Call BillAvenue Bill Fetch API
+            // Build the bill fetch payload
             const billFetchPayload = {
-                requestId : requestId,
+                requestId: requestId,
                 agentId: "CC01CC01513515340681",
                 agentDeviceInfo: {
                     ip: "192.168.2.73",
@@ -312,8 +330,8 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                     mac: "01-23-45-67-89-ab"
                 },
                 customerInfo: {
-                    customerMobile: values.customerMobileNumber,
-                    customerEmail: "",
+                    customerMobile: values.customerMobileNumber || "",
+                    customerEmail: values.customerEmail || "",
                     customerAdhaar: "",
                     customerPan: ""
                 },
@@ -323,90 +341,85 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                 }
             };
 
-
-            // const billFetchPayload = {
-            //     "requestId": "L3KEQX8J7G8998RVNEQX5WOUKM953501722",
-            //     "agentId": "CC01CC01513515340681",
-            //     "agentDeviceInfo": {
-            //         "ip": "192.168.2.73",
-            //         "initChannel": "AGT",
-            //         "mac": "01-23-45-67-89-ab"
-            //     },
-            //     "customerInfo": {
-            //         "customerMobile": "9898990084",
-            //         "customerEmail": "",
-            //         "customerAdhaar": "",
-            //         "customerPan": ""
-            //     },
-            //     "billerId": "DUMMYFASTAG001",
-            //     "inputParams": {
-            //         "input": [
-            //             {
-            //                 "paramName": "Vehicle Number",
-            //                 "paramValue": "MH15AT6555"
-            //             }
-            //         ]
-            //     }
-            // }
-
-            console.log("Calling BillAvenue_Bill_Fetch with:", billFetchPayload);
-
-            // TODO: Use real API when endpoint is available - currently causing logout
+            
+            // Call BillAvenue Bill Fetch API
             const billFetchResult = await BillAvenue_Bill_Fetch_Direct(billFetchPayload);
 
+            // Handle both response structures: { statusCode: 200, data: {...} } OR { data: { statusCode: 200, data: {...} } }
+            const statusCode = billFetchResult?.statusCode || billFetchResult?.data?.statusCode;
+            const responseData = billFetchResult?.data || billFetchResult?.data?.data;
 
-
-            // Mock response for testing to prevent logout
-            /*
-            const mockBillFetchResult = {
-                data: { 
-                    statusCode: 200, 
-                    message: "Bill fetched successfully",
-                    data: {
-                        responseCode: "000",
-                        billInfo: {
-                            CustomerName: "Test Customer",
-                            Billamount: "1500.00",
-                            Duedate: "2024-12-31",
-                            billNumber: "BILL123456",
-                            billDate: "2024-12-01",
-                            "Product Name": "Electricity Bill",
-                            minBillPaidAmount: "100",
-                            maxAllowPaidAmount: "10000"
-                        },
-                        errorInfo: {
-                            error: []
-                        }
-                    }
-                }
-            };
-            */
-
-            const result = billFetchResult;
-
-            console.log("BillAvenue_Bill_Fetch response:", result);
-
-            if (billFetchResult?.data?.statusCode === 200) {
-                const responseData = billFetchResult?.data?.data;
+            if (statusCode === 200 || statusCode === "200") {
 
                 if (responseData?.responseCode === "000") {
                     showSuccessNotification("Bill details fetched successfully");
-                    setBillDetails({
-                        ...responseData?.billInfo,
-                        formValues: values,
-                        billerData: selectedProviderDetails.billerData
+
+                    // Extract data from the new response structure
+                    const billerResponse = responseData.billerResponse || {};
+                    const additionalInfo = responseData.additionalInfo?.info || [];
+
+                    // Convert additionalInfo array to object for easier access
+                    const additionalInfoMap: { [key: string]: string } = {};
+                    additionalInfo.forEach((info: any) => {
+                        additionalInfoMap[info.infoName] = info.infoValue;
                     });
+
+                    // Map the response to expected bill details structure
+                    const mappedBillDetails = {
+                        // Main bill information
+                        CustomerName: billerResponse.customerName || "",
+                        Billamount: billerResponse.billAmount || "0",
+                        billNumber: billerResponse.billNumber || "",
+                        billDate: billerResponse.billDate || "",
+                        Duedate: billerResponse.dueDate || billerResponse.billDueDate || "",
+
+                        // Amount constraints from additionalInfo
+                        minBillPaidAmount: parseFloat(
+                            additionalInfoMap["Minimum Amount for Top-up"] ||
+                            additionalInfoMap["Minimum Amount"] ||
+                            additionalInfoMap["Min Amount"] ||
+                            "0"
+                        ),
+                        maxAllowPaidAmount: parseFloat(
+                            additionalInfoMap["Maximum Permissible Recharge Amount"] ||
+                            additionalInfoMap["Maximum Amount"] ||
+                            additionalInfoMap["Max Amount"] ||
+                            "999999"
+                        ),
+
+                        // Additional information (all fields)
+                        additionalInfo: additionalInfoMap,
+
+                        // Store original response for reference
+                        billerResponse: billerResponse,
+                        inputParams: responseData.inputParams,
+
+                        // Store form values and biller data100000
+                        formValues: values,
+                        billerData: selectedProviderDetails.billerData,
+                        requestId: requestId
+                    };
+
+                    
+                    setBillDetails(mappedBillDetails);
                     setBillModalOpened(true);
-                    setAmountEditable(true);
+
+                    // Determine if amount is editable
+                    const hasAmountRange = mappedBillDetails.maxAllowPaidAmount > mappedBillDetails.minBillPaidAmount;
+                    const isEditable = selectedProviderDetails.amount_editable || hasAmountRange;
+                    setAmountEditable(isEditable);
+
                 } else {
-                    const errorMessage = (responseData?.errorInfo?.error as any[])?.[0]?.errorMessage || "Unable to fetch bill details";
+                    const errorMessage = (responseData?.errorInfo?.error as any[])?.[0]?.errorMessage ||
+                        "Unable to fetch bill details";
                     showErrorNotification(errorMessage);
-                }
+                                    }
             } else {
-                showErrorNotification(result?.data?.message || "Unable to fetch bill details");
-            }
-        } catch (error) {
-            await handleCustomError(error);
+                const errorMsg = billFetchResult?.message || billFetchResult?.data?.message || "Unable to fetch bill details";
+                showErrorNotification(errorMsg);
+                            }
+        } catch (error: any) {
+                        await handleCustomError(error);
         } finally {
             setIsLoading(false);
         }
@@ -423,79 +436,73 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                 showErrorNotification("Missing bill or provider details");
                 return;
             }
-            // 🔹 Step 1: Base transaction payload
-            const payload: Partial<TransactionProps> = {
+
+            const amount = Number(values.amount) || Number(billDetails?.Billamount) || 0;
+
+            const paymentPayload = {
+                requestId: billDetails?.requestId || requestId,
                 retailerId: loginData?.hierarchyId,
                 subProductId,
-                provider: Number(selectedProviderDetails.provider_id),
-
-                // from form 1
-                number: billDetails?.formValues?.consumerNumber, // biller number from form 1
-                consumerNumber: billDetails?.formValues?.customerMobileNumber, // mobile number from form 1
-
-                amount: Number(values.amount) || Number(billDetails?.Billamount) || 0,
-
-                context: billDetails?.context,
-                bill_due_date: billDetails?.Duedate
+                schemeCode: "BBPS_Bill_Avenue",
+                // txnType: serviceName,
+                txnType: "Fast Tag Bill Avenue",
+                billerAdhoc: true,
+                customerInfo: {
+                    customerMobile: billDetails?.formValues?.customerMobileNumber || "",
+                },
+                billerId: selectedProviderDetails?.provider_id,
+                inputParams: billDetails?.inputParams || { input: [] },
+                billerResponse: {
+                    billAmount: String(billDetails?.Billamount || amount),
+                    customerName: billDetails?.CustomerName || "",
+                },
+                additionalInfo: {
+                    info: Object.entries(billDetails?.additionalInfo || {}).map(
+                        ([infoName, infoValue]) => ({ infoName, infoValue })
+                    ),
+                },
+                amountInfo: {
+                    amount,
+                    currency: 356,
+                    custConvFee: 0,
+                    amountTags: [],
+                },
+                paymentMethod: {
+                    paymentMode: "Cash",
+                    quickPay: "N",
+                    splitPay: "N",
+                },
+                paymentInfo: {
+                    info: [
+                        {
+                            infoName: "Remarks",
+                            infoValue: "Received",
+                        },
+                    ],
+                },
             };
 
-            // 🔹 Step 2: Attach extra_param payload (same helper)
-            const extraParamPayload = buildExtraParamPayload({
-                extraParams: selectedProviderDetails?.extra_param || [],
-                formValues: billDetails.formValues, // IMPORTANT: form 1 values
-                customerMobileNumber:
-                    billDetails?.formValues?.customerMobileNumber,
-            });
-
-            Object.assign(payload, extraParamPayload);
-
-            // 🔹 Step 3: Cleanup empty keys
-            Object.keys(payload).forEach((key) => {
-                const value = (payload as any)[key];
-                if (value === undefined || value === null || value === "") {
-                    delete (payload as any)[key];
-                }
-            });
-
-            // 🔹 Step 4: Call transaction API
-            const response: any = await Transaction(
-                payload as TransactionProps
-            );
+            const response: any = await BillAvenue_Bill_Payment(paymentPayload);
 
             if (response?.data?.statusCode === 200 || response?.data?.statusCode === "200") {
-                showSuccessNotification(response?.data?.message);
+                const respData = response?.data?.data || {};
+                showSuccessNotification(response?.data?.message || "Transaction Successful");
                 setAmountEditable(false);
                 setBillModalOpened(false);
                 resetForm();
 
-                // 🔹 Step 5: Fetch receipt
-                setReceiptLoading(true);
-                try {
-                    const receiptResponse = await Fetch_Transaction_Receipt(
-                        String(`${response?.data?.data?.clientId}`)
-                    ) as any;
+                const basicReceipt = {
+                    ...respData,
+                    customerName: billDetails?.CustomerName || respData?.respCustomerName || "",
+                    category: selectedProviderDetails?.service_name || "",
+                    billerName: selectedProviderDetails?.provider_name || "",
+                    amount: respData?.respAmount || String(amount),
+                    approvalRefNumber: respData?.approvalRefNumber,
+                    txnRefId: respData?.txnRefId,
+                };
 
-                    const mergedReceiptData = {
-                        ...(receiptResponse?.data?.data || {}), // original receipt API data (ensure it's an object)
-                        // Add fallback values if missing
-                        customerName:
-                            billDetails?.CustomerName ||
-                            "",
-                        category:
-                            selectedProviderDetails?.service_name ||
-                            "",
-                        billerName:
-                            selectedProviderDetails?.provider_name ||
-                            "",
-                    };
-
-                    setReceiptData(mergedReceiptData);
-                } catch (err) {
-                    showErrorNotification("Failed to fetch receipt data");
-                } finally {
-                    setReceiptLoading(false);
-                    setReceiptDrawerOpened(true);
-                }
+                setReceiptData(basicReceipt);
+                setReceiptDrawerOpened(true);
             } else {
                 showErrorNotification(
                     response?.data?.message || "Transaction failed"
@@ -515,8 +522,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
             try {
                 const res = await Get_Providers({ subProductId, serviceName });
 
-                console.log('res::', res)
-                if (res?.data?.statusCode === 200) {
+                                if (res?.data?.statusCode === 200) {
                     setProviderList(res?.data?.data || []);
                 } else {
                     showErrorNotification(res?.data?.message || "Unable to load providers");
@@ -585,8 +591,8 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                                                 placeholder="Select Provider"
                                                 label="Select Provider"
                                                 size="md"
-                                                data={providerList?.map((service: any) => ({
-                                                    value: String(service.providerId),
+                                                data={providerList?.map((service: any, index: any) => ({
+                                                    value: `${service.providerId}-${index}`,
                                                     label: service.providerName,
                                                 })) || []}
                                                 withAsterisk
@@ -726,12 +732,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                         )}
                 </Modal>
 
-                {/* Success Modal */}
-                <TransactionSuccessModel
-                    opened={showSuccessModal}
-                    onClose={() => setShowSuccessModal(false)}
-                />
-
+                
                 {/* Transaction Reciept */}
                 <Drawer
                     opened={receiptDrawerOpened}
