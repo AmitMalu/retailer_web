@@ -642,6 +642,14 @@ export const Aeps_Cash_Withdrawal = async (data: any) => {
   );
 };
 
+export const Check_Aeps_2FA_Status = async ({ retailerId }: { retailerId: string }) => {
+  return await api.post(
+    'https://uat.decipay.in/enterprises/aeps/2fa/check-status',
+    { retailerId },
+    await createHeaders()
+  );
+};
+
 export const Adhaar_Verification = async (aadhaarNumber: number) =>
   await api.post(
     `${API_ROUTES.ADHAAR_VERIFICATION}?aadhaarNumber=${aadhaarNumber}`,

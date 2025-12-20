@@ -156,18 +156,13 @@ const AepsEkycScreen = () => {
                 subProductId: subProductId
             });
 
-            if (res?.data?.statusCode === 200 && res.data?.data?.statusCode == "10000") {
+            if (res?.data?.statusCode === 200 && res?.data?.data?.status === true) {
                 showSuccessNotification("eKYC Completed");
                 navigate(`/products/aeps/service/${subProductId}`, {
                     state: { subProduct, profile },
                 });
             } else {
                 showErrorNotification(res.data?.data?.message || "Failed to verify OTP");
-                // navigate("/products/aeps");
-                // showSuccessNotification("eKYC Completed");
-                // navigate(`/products/aeps/service/${subProductId}`, {
-                //     state: { subProduct, profile },
-                // });
             }
         } catch (err) {
             handleCustomError(err);

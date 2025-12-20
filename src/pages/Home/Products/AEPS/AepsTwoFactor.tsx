@@ -28,6 +28,9 @@ const AepsTwoFactor = () => {
     const queryParams = new URLSearchParams(location.search);
     const iinno = queryParams.get("iinno");  // "cashWithdrawal", "balanceInquiry", etc.
 
+
+    console.log('profile_in_2fa', profile)
+
     const loginData = apiResponses?.loginData
         ? decryptData(apiResponses?.loginData)
         : null;
@@ -64,11 +67,14 @@ const AepsTwoFactor = () => {
                 subProductId,
             });
 
-            if (res?.data?.statusCode === 200) {
+            if (res?.data?.statusCode === 200 && res?.data?.data?.status === true) {
                 showSuccessNotification(res?.data?.message || "2FA Verified Successfully");
-                navigate(`/products/aeps/service/${subProductId}`);
+                navigate(`/products/aeps/service/${subProductId}`, {
+                    state: { profile },
+                });
             } else {
-                showErrorNotification(res?.data?.message || "2FA Failed");
+                const errMsg = res?.data?.data?.data?.responseMessage || res?.data?.message || "2FA Failed";
+                showErrorNotification(errMsg);
             }
         } catch (err) {
             handleCustomError(err);
