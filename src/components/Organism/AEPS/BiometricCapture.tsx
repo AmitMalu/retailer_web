@@ -48,6 +48,41 @@ const pidOptions = `<?xml version="1.0"?>
   />
 </PidOptions>`;
 
+// -------------------------------
+// Parse PID XML
+// -------------------------------
+const parsePidData = (xmlText: string) => {
+    const xml = new DOMParser().parseFromString(xmlText, "text/xml");
+    const resp = xml.querySelector("Resp");
+    const data = xml.querySelector("Data");
+    const skey = xml.querySelector("Skey");
+    const deviceInfo = xml.querySelector("DeviceInfo");
+
+    return {
+        PidDatatype: data?.getAttribute("type") || "X",
+        Piddata: data?.textContent || "",
+        ci: skey?.getAttribute("ci") || "",
+        dc: deviceInfo?.getAttribute("dc") || "",
+        dpID: deviceInfo?.getAttribute("dpId") || "",
+        errCode: resp?.getAttribute("errCode") || "0",
+        errInfo: resp?.getAttribute("errInfo") || "",
+        fCount: resp?.getAttribute("fCount") || "1",
+        fType: resp?.getAttribute("fType") || "0",
+        iCount: resp?.getAttribute("iCount") || "0",
+        iType: resp?.getAttribute("iType") || "0",
+        pCount: resp?.getAttribute("pCount") || "0",
+        pType: resp?.getAttribute("pType") || "0",
+        hmac: xml.querySelector("Hmac")?.textContent || "",
+        mc: xml.querySelector("Mc")?.textContent || deviceInfo?.getAttribute("mc") || "",
+        mi: deviceInfo?.getAttribute("mi") || "",
+        nmPoints: resp?.getAttribute("nmPoints") || "",
+        qScore: resp?.getAttribute("qScore") || "",
+        rdsID: deviceInfo?.getAttribute("rdsId") || "",
+        rdsVer: deviceInfo?.getAttribute("rdsVer") || "",
+        sessionKey: skey?.textContent || "",
+    };
+};
+
 
 const BiometricCapture = ({
     values,
@@ -97,41 +132,6 @@ const BiometricCapture = ({
             handleCustomError(err || "Unable to capture fingerprint");
             return null;
         }
-    };
-
-    // -------------------------------
-    // Parse PID XML
-    // -------------------------------
-    const parsePidData = (xmlText: string) => {
-        const xml = new DOMParser().parseFromString(xmlText, "text/xml");
-        const resp = xml.querySelector("Resp");
-        const data = xml.querySelector("Data");
-        const skey = xml.querySelector("Skey");
-        const deviceInfo = xml.querySelector("DeviceInfo");
-
-        return {
-            sessionKey: skey?.textContent || "",
-            hmac: xml.querySelector("Hmac")?.textContent || "",
-            Piddata: data?.textContent || "",
-            PidDatatype: data?.getAttribute("type") || "",
-            ci: skey?.getAttribute("ci") || "",
-            dc: deviceInfo?.getAttribute("dc") || "",
-            rdsID: deviceInfo?.getAttribute("rdsId") || "",
-            rdsVer: deviceInfo?.getAttribute("rdsVer") || "",
-            dpID: deviceInfo?.getAttribute("dpId") || "",
-            mi: deviceInfo?.getAttribute("mi") || "",
-            mc: deviceInfo?.getAttribute("mc") || "",
-            errCode: resp?.getAttribute("errCode") || "",
-            errInfo: resp?.getAttribute("errInfo") || "",
-            fCount: resp?.getAttribute("fCount") || "",
-            fType: resp?.getAttribute("fType") || "",
-            iCount: resp?.getAttribute("iCount") || "",
-            iType: resp?.getAttribute("iType") || "",
-            pCount: resp?.getAttribute("pCount") || "",
-            pType: resp?.getAttribute("pType") || "",
-            nmPoints: resp?.getAttribute("nmPoints") || "",
-            qScore: resp?.getAttribute("qScore") || "",
-        };
     };
 
     // -------------------------------
@@ -225,5 +225,8 @@ const BiometricCapture = ({
         </Grid>
     )
 }
+
+// Export parsePidData for use in other components
+export { parsePidData };
 
 export default BiometricCapture

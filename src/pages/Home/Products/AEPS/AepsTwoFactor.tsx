@@ -2,7 +2,7 @@ import { BackSvgIcon } from "@/assets/svg";
 import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
-import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
+import BiometricCapture, { parsePidData } from "@/components/Organism/AEPS/BiometricCapture";
 import { RootState } from "@/Redux/Store";
 import { Aeps_TwoFactor_Verify } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
@@ -58,12 +58,27 @@ const AepsTwoFactor = () => {
         try {
             setIsLoading(true);
 
+            // Parse the PID data from XML to object
+            const parsedPidData = values.pidData ? parsePidData(values.pidData) : null;
+
             const res = await Aeps_TwoFactor_Verify({
-                iinno,
+                captureResponse: parsedPidData,
+                cardnumberORUID: {
+                    adhaarNumber: values.aadhaar,
+                    indicatorforUID: 0,
+                    nationalBankIdentificationNumber: iinno
+                },
+                latitude: 13.0641367, // Should come from geolocation
+                longitude: 80.2480973, // Should come from geolocation
+                requestRemarks: "TN3000CA0006530", // Should be dynamic
+                transactionType: "AUO",
+                merchantUserName: loginData?.username || "sai", // Should come from login data
+                merchantPin: loginData?.pin || "81DC9BDB52D04DC20036DBD8313ED055", // Should be MD5 hashed
+                superMerchantId: "2", // Should come from config
+                merchantTranId: `TXN${Date.now()}`, // Generate unique transaction ID
+                mobileNumber: loginData?.mobileNumber || "9999999999", // Should come from login data
+                serviceType: "AEPS",
                 retailerId: loginData?.hierarchyId,
-                aadhaar: values.aadhaar,
-                deviceType: values.deviceType,
-                captureResponse: values.pidData,
                 subProductId,
             });
 
