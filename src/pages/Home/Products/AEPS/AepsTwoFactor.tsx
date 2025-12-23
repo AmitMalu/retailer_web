@@ -2,7 +2,7 @@ import { BackSvgIcon } from "@/assets/svg";
 import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
-import BiometricCapture, { parsePidData } from "@/components/Organism/AEPS/BiometricCapture";
+import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
 import { RootState } from "@/Redux/Store";
 import { Aeps_TwoFactor_Verify } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
@@ -43,7 +43,7 @@ const AepsTwoFactor = () => {
             .length(12, "Aadhaar must be 12 digits"),
         deviceType: Yup.string()
             .required("Please select a device"),
-        pidData: Yup.string()
+        pidData: Yup.object()
             .required("Fingerprint required"),
     });
 
@@ -51,22 +51,102 @@ const AepsTwoFactor = () => {
     const initialValues = {
         aadhaar: "",
         deviceType: "",
-        pidData: "",
+        pidData: {},
     };
 
     const handleSubmit = async (values: FormikValues) => {
         try {
             setIsLoading(true);
 
-            // Parse the PID data from XML to object
-            const parsedPidData = values.pidData ? parsePidData(values.pidData) : null;
+            // Log the exact captureResponse payload for comparison
+            console.log('=== CAPTURE RESPONSE PAYLOAD ===');
+            console.log('Type:', typeof values.pidData);
+            console.log('Keys:', Object.keys(values.pidData || {}));
+            console.log('Full payload:', JSON.stringify(values.pidData, null, 2));
+            
+            // Check biometric quality before sending
+            const qScore = parseInt(values.pidData?.qScore || "0");
+            const nmPoints = parseInt(values.pidData?.nmPoints || "0");
+            const errCode = values.pidData?.errCode || "0";
+            const errInfo = values.pidData?.errInfo || "";
+            
+            console.log('Biometric Quality - qScore:', qScore, 'nmPoints:', nmPoints);
+            console.log('RD Service Status - errCode:', errCode, 'errInfo:', errInfo);
+            
+            // Validate RD Service success
+            if (errCode !== "0" || errInfo.toLowerCase().includes("fail")) {
+                showErrorNotification(`RD Service failed: ${errInfo}. Please scan again.`);
+                setIsLoading(false);
+                return;
+            }
+            
+            // Validate biometric quality (AEPS typically requires higher quality)
+            if (qScore < 70 || nmPoints < 40) {
+                showErrorNotification(`Low biometric quality detected. Quality: ${qScore}% (min 70%), Points: ${nmPoints} (min 40). Please try again with better finger placement.`);
+                setIsLoading(false);
+                return;
+            }
+            
+            // Validate required fields are present
+            const requiredFields = ['Piddata', 'sessionKey', 'hmac', 'dpID', 'rdsID', 'rdsVer'];
+            const missingFields = requiredFields.filter(field => !values.pidData?.[field]);
+            
+            if (missingFields.length > 0) {
+                showErrorNotification(`Missing required biometric data: ${missingFields.join(', ')}. Please scan again.`);
+                setIsLoading(false);
+                return;
+            }
+            
+            // Validate PID data format
+            const pidData = values.pidData?.Piddata;
+            if (!pidData || pidData.length < 100) {
+                showErrorNotification('Invalid PID data format. Please scan again.');
+                setIsLoading(false);
+                return;
+            }
+            
+            // Validate device RDS ID and version (common AEPS devices)
+            const rdsID = values.pidData?.rdsID;
+            const validRdsDevices = [
+                'RENESAS.MANTRA.001',
+                'MANTRA.AND.101', 
+                'MORPHO.AND.001',
+                'STARTEK.AND.001'
+            ];
+            
+            if (!validRdsDevices.includes(rdsID)) {
+                showErrorNotification(`Device RDS ID ${rdsID} may not be whitelisted. Please check device registration.`);
+                setIsLoading(false);
+                return;
+            }
+            
+            // Validate device info consistency
+            const deviceType = values.deviceType as keyof typeof validDevicePrefixes;
+            const dpID = values.pidData?.dpID;
+            const validDevicePrefixes: Record<string, string> = {
+                'Mantra': 'MANTRA',
+                'Morpho': 'MORPHO',
+                'Startek': 'STARTEK',
+                'SecuGen': 'SECUGEN',
+                'Tatvik': 'TATVIK',
+                'Precision': 'PRECISION',
+                'Cogent': 'COGENT'
+            };
+            
+            if (validDevicePrefixes[deviceType] && !dpID?.startsWith(validDevicePrefixes[deviceType])) {
+                showErrorNotification(`Device mismatch: Selected ${deviceType} but PID data shows ${dpID}. Please ensure correct device selection.`);
+                setIsLoading(false);
+                return;
+            }
+            
+            console.log('================================');
 
             const res = await Aeps_TwoFactor_Verify({
-                captureResponse: parsedPidData,
+                captureResponse: values.pidData,
                 cardnumberORUID: {
                     adhaarNumber: values.aadhaar,
                     indicatorforUID: 0,
-                    nationalBankIdentificationNumber: iinno
+                    nationalBankIdentificationNumber: iinno || "607152"
                 },
                 latitude: 13.0641367, // Should come from geolocation
                 longitude: 80.2480973, // Should come from geolocation
@@ -79,7 +159,7 @@ const AepsTwoFactor = () => {
                 mobileNumber: loginData?.mobileNumber || "9999999999", // Should come from login data
                 serviceType: "AEPS",
                 retailerId: loginData?.hierarchyId,
-                subProductId,
+                subProductId: "42", // AEPS 2FA / Aadhaar Auth
             });
 
             if (res?.data?.statusCode === 200 && res?.data?.data?.status === true) {
@@ -89,7 +169,15 @@ const AepsTwoFactor = () => {
                 });
             } else {
                 const errMsg = res?.data?.data?.data?.responseMessage || res?.data?.message || "2FA Failed";
-                showErrorNotification(errMsg);
+                
+                // Specific handling for biometric errors
+                if (errMsg?.toLowerCase().includes("invalid biometric") || 
+                    errMsg?.toLowerCase().includes("biometric") ||
+                    errMsg?.toLowerCase().includes("fingerprint")) {
+                    showErrorNotification("Biometric verification failed. Please ensure:\n• Same finger as registered with Aadhaar\n• Clean finger placement\n• Try again with different finger");
+                } else {
+                    showErrorNotification(errMsg);
+                }
             }
         } catch (err) {
             handleCustomError(err);
@@ -122,7 +210,7 @@ const AepsTwoFactor = () => {
                     onSubmit={handleSubmit}
                 >
                     {({
-                        values, handleChange, validateForm,
+                        values, validateForm,
                         setFieldValue, setFieldError, setFieldTouched,
                         errors, touched
                     }) => (
@@ -158,8 +246,8 @@ const AepsTwoFactor = () => {
                                     setFieldTouched={setFieldTouched}
                                     validateForm={validateForm}
                                     requiredFieldsBeforeScan={["aadhaar", "deviceType"]}
-                                    onSuccessScan={async (parsedPid: any, rawXml: string) => {
-                                        await setFieldValue("pidData", rawXml, true);
+                                    onSuccessScan={async (parsedPid: any) => {
+                                        await setFieldValue("pidData", parsedPid, true);
 
                                         // Submit automatically
                                         setTimeout(() => {
