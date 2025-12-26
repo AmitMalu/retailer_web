@@ -91,11 +91,16 @@ const generatePidOptions = () => {
     format="0"
     pidVer="2.0"
     timeout="20000"
+<<<<<<< Updated upstream
     wadh="${wadh}"
+=======
+>>>>>>> Stashed changes
     posh="UNKNOWN"
   />
 </PidOptions>`;
 };
+
+// wadh="E0jzJ/P8UopUHAieZn8CKqS4WPMi5ZSYXgfnlfkWjrc="
 
 // -------------------------------
 // Parse PID XML

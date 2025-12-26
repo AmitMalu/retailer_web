@@ -160,6 +160,7 @@ const AepsTwoFactor = () => {
                 serviceType: "AEPS",
                 retailerId: loginData?.hierarchyId,
                 subProductId: "42", // AEPS 2FA / Aadhaar Auth
+                isFacialTan:true
             });
 
             if (res?.data?.statusCode === 200 && res?.data?.data?.status === true) {
