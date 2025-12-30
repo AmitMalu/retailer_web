@@ -75,15 +75,13 @@ const calculateWadh = () => {
     return "E0jzJ/P8UopUHAieZn8CKqS4WPMi5ZSYXgfnlfkWjrc=";
 };
 
-// Generate PID options with dynamic WADH
+// Generate PID options with proper parameters for fingerprint
 const generatePidOptions = () => {
-    const wadh = calculateWadh();
-    
     return `<?xml version="1.0"?>
 <PidOptions ver="1.0" env="P">
   <Opts 
     fCount="1"
-    fType="0"
+    fType="2"
     iCount="0"
     iType="0"
     pCount="0"
@@ -91,10 +89,7 @@ const generatePidOptions = () => {
     format="0"
     pidVer="2.0"
     timeout="20000"
-<<<<<<< Updated upstream
-    wadh="${wadh}"
-=======
->>>>>>> Stashed changes
+    wadh=""
     posh="UNKNOWN"
   />
 </PidOptions>`;

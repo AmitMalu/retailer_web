@@ -30,9 +30,19 @@ const AepsScreen = () => {
     : null;
 
   const handleServiceClick = async (service: string) => {
+    // navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {
+    //   state: { profile },
+    // });
+
+     navigate(`/products/aeps/2fa/${subProductId}?iinno=`, {
+          state: { profile },
+        });
+
+    return
     try {
       const res = await Check_Aeps_2FA_Status({ retailerId: loginData?.hierarchyId });
-      if (res?.data?.statusCode === 200) {
+      // if (res?.data?.statusCode === 200) {
+      if (true) {
         // 2FA valid → go to transaction
         navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {
           state: { profile },
