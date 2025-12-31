@@ -75,8 +75,8 @@ const calculateWadh = () => {
     return "E0jzJ/P8UopUHAieZn8CKqS4WPMi5ZSYXgfnlfkWjrc=";
 };
 
-// Generate PID options with proper parameters for fingerprint
-const generatePidOptions = () => {
+// Generate PID options based on use case (2FA vs KYC)
+const generatePidOptions = (is2FA: boolean = true) => {
     return `<?xml version="1.0"?>
 <PidOptions ver="1.0" env="P">
   <Opts 
@@ -89,7 +89,7 @@ const generatePidOptions = () => {
     format="0"
     pidVer="2.0"
     timeout="20000"
-    wadh=""
+    wadh="${is2FA ? '' : 'E0jzJ/P8UopUHAieZn8CKqS4WPMi5ZSYXgfnlfkWjrc='}"
     posh="UNKNOWN"
   />
 </PidOptions>`;
@@ -142,7 +142,8 @@ const BiometricCapture = ({
     setFieldTouched,
     validateForm,
     requiredFieldsBeforeScan,
-    onSuccessScan
+    onSuccessScan,
+    is2FA = true
 }: any) => {
     const theme = useTheme();
 
@@ -196,7 +197,7 @@ const captureFingerprint = async (device: string) => {
     }
 
     try {
-        const pidOptions = generatePidOptions();
+        const pidOptions = generatePidOptions(is2FA);
         const res = await fetch(endpoints.capture, {
             method: "CAPTURE",
             headers: { "Content-Type": "text/xml" },

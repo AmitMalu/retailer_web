@@ -30,25 +30,37 @@ const AepsScreen = () => {
     : null;
 
   const handleServiceClick = async (service: string) => {
+
     // navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {
     //   state: { profile },
     // });
 
-     navigate(`/products/aeps/2fa/${subProductId}?iinno=`, {
-          state: { profile },
-        });
+    // return
 
-    return
     try {
       const res = await Check_Aeps_2FA_Status({ retailerId: loginData?.hierarchyId });
-      // if (res?.data?.statusCode === 200) {
-      if (true) {
-        // 2FA valid → go to transaction
-        navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {
-          state: { profile },
-        });
+
+      if (res?.data?.statusCode === 200) {
+        const onboardStatus = res?.data?.data?.onboardStatus;
+
+        if (onboardStatus === 3) {
+          // Status 3 → go to transaction
+          navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {
+            state: { profile },
+          });
+        } else if (onboardStatus === 2) {
+          // Status 2 → go to 2FA page
+          navigate(`/products/aeps/2fa/${subProductId}?iinno=`, {
+            state: { profile },
+          });
+        } else {
+          // Other statuses → default to 2FA
+          navigate(`/products/aeps/2fa/${subProductId}?iinno=`, {
+            state: { profile },
+          });
+        }
       } else {
-        // 2FA invalid → go to 2FA page
+        // API error → treat as invalid 2FA
         navigate(`/products/aeps/2fa/${subProductId}?iinno=`, {
           state: { profile },
         });

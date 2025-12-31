@@ -159,13 +159,14 @@ const AepsTwoFactor = () => {
                 mobileNumber: loginData?.mobileNumber || "9999999999", // Should come from login data
                 serviceType: "AEPS",
                 retailerId: loginData?.hierarchyId,
-                subProductId: "42", // AEPS 2FA / Aadhaar Auth
+                subProductId: subProductId, // AEPS 2FA / Aadhaar Auth
                 // isFacialTan:true
             });
 
             if (res?.data?.statusCode === 200 && res?.data?.data?.status === true) {
                 showSuccessNotification(res?.data?.message || "2FA Verified Successfully");
-                navigate(`/products/aeps/service/${subProductId}`, {
+                // Navigate to main AEPS services page after successful 2FA
+                navigate(`/products/aeps/${subProductId}`, {
                     state: { profile },
                 });
             } else {
@@ -247,6 +248,7 @@ const AepsTwoFactor = () => {
                                     setFieldTouched={setFieldTouched}
                                     validateForm={validateForm}
                                     requiredFieldsBeforeScan={["aadhaar", "deviceType"]}
+                                    is2FA={true}
                                     onSuccessScan={async (parsedPid: any) => {
                                         await setFieldValue("pidData", parsedPid, true);
 
