@@ -4,7 +4,7 @@ import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSe
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
 import { RootState } from "@/Redux/Store";
-import { Aeps_Bank_List, Aeps_Cash_Withdrawal } from "@/Services/api";
+import { Aeps_Bank_List, Aeps_Cash_Withdrawal, Aeps_Balance_Inquiry } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
@@ -83,14 +83,27 @@ const AepsTransaction = () => {
         console.log("Final Submit Values:", values);
         try {
             setIsLoading(true);
-            const res = await Aeps_Cash_Withdrawal({
-                subProductId: subProductId,
-                retailerId: loginData?.hierarchyId,
-                schemeCode,
-                nationalBankIdentificationNumber: values.bank,
-                transactionAmount: service === "cashWithdrawal" ? values.amount : 0,
-                captureResponse: values.pidData,
-            });
+            
+            let res;
+            if (service === "balanceInquiry") {
+                res = await Aeps_Balance_Inquiry({
+                    subProductId: subProductId,
+                    retailerId: loginData?.hierarchyId,
+                    schemeCode,
+                    nationalBankIdentificationNumber: values.bank,
+                    transactionAmount: "0",
+                    captureResponse: values.pidData,
+                });
+            } else {
+                res = await Aeps_Cash_Withdrawal({
+                    subProductId: subProductId,
+                    retailerId: loginData?.hierarchyId,
+                    schemeCode,
+                    nationalBankIdentificationNumber: values.bank,
+                    transactionAmount: service === "cashWithdrawal" ? values.amount : 0,
+                    captureResponse: values.pidData,
+                });
+            }
 
             if (res?.data?.statusCode === 200 && res.data?.data?.statusCode == "10000") {
                 showSuccessNotification(res?.data?.message || "Transaction Successful");
@@ -98,7 +111,7 @@ const AepsTransaction = () => {
                 //     state: { subProductId, profile },
                 // });
             } else {
-                showErrorNotification(res.data?.data?.message || "Failed to process transaction");
+                showErrorNotification(res.data?.data?.message || res.data?.message || "Failed to process transaction");
             }
         } catch (err) {
             handleCustomError(err);

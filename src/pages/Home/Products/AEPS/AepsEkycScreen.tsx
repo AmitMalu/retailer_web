@@ -90,6 +90,7 @@ const AepsEkycScreen = () => {
 
             const res = await Aeps_Send_Otp({
                 retailerId: profile?.retailerId,
+                subProductId: subProductId
             });
 
             if (res?.data?.statusCode === 200 && res.data?.data?.statusCode == "10000") {
@@ -122,6 +123,7 @@ const AepsEkycScreen = () => {
                 retailerId: profile?.retailerId,
                 primaryKeyId,
                 encodeFPTxnId,
+                subProductId: subProductId
             });
 
             if (res?.data?.statusCode === 200 && res.data?.data?.statusCode == "10000") {
@@ -301,6 +303,7 @@ const AepsEkycScreen = () => {
                                                         handleSubmit({ ...values, pidData: parsedPid });
                                                     }, 0);
                                                 }}
+                                                is2FA={false}
                                             />}
                                         </Grid>
                                     </div>

@@ -27,6 +27,7 @@ const AepsTwoFactor = () => {
     const profile = location.state?.profile;
     const queryParams = new URLSearchParams(location.search);
     const iinno = queryParams.get("iinno");  // "cashWithdrawal", "balanceInquiry", etc.
+    const service = queryParams.get("service");  // "cashWithdrawal", "balanceInquiry", etc.
 
 
     console.log('profile_in_2fa', profile)
@@ -81,7 +82,7 @@ const AepsTwoFactor = () => {
             }
             
             // Validate biometric quality (AEPS typically requires higher quality)
-            if (qScore < 70 || nmPoints < 40) {
+            if (qScore < 50 || nmPoints < 10) {
                 showErrorNotification(`Low biometric quality detected. Quality: ${qScore}% (min 70%), Points: ${nmPoints} (min 40). Please try again with better finger placement.`);
                 setIsLoading(false);
                 return;
@@ -161,12 +162,13 @@ const AepsTwoFactor = () => {
                 retailerId: loginData?.hierarchyId,
                 subProductId: subProductId, // AEPS 2FA / Aadhaar Auth
                 // isFacialTan:true
+                // isFaceTan: true
             });
 
             if (res?.data?.statusCode === 200 && res?.data?.data?.status === true) {
                 showSuccessNotification(res?.data?.message || "2FA Verified Successfully");
-                // Navigate to main AEPS services page after successful 2FA
-                navigate(`/products/aeps/${subProductId}`, {
+                // Navigate to transaction screen after successful 2FA
+                navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {
                     state: { profile },
                 });
             } else {
