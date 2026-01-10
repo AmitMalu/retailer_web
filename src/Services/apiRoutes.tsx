@@ -103,6 +103,7 @@ export const API_ROUTES = {
   AEPS_VALIDATE_EKYC: `${BASE_URL}/aeps/ekyc/validate-otp-biometric`,
   AEPS_TWO_FA: `${BASE_URL}/aeps/2fa/validate-aadhar`,
   AEPS_BANK_LIST: `${BASE_URL}/api/aeps/bank-list`,
+  AEPS_2FA_CHECK_STATUS: `${BASE_URL}/aeps/2fa/check-status`,
 
   /////////////////// VERIFICATION //////////////////////////////////
   ADHAAR_VERIFICATION: `${BASE_URL}/verification/aadhaar-validate`,
@@ -112,6 +113,7 @@ export const API_ROUTES = {
   VOTER_ID_VERIFICATION: `${BASE_URL}/verification/voterId-validate`,
   BANK_VERIFICATION: `${BASE_URL}/verification/bank-validate`,
   CASH_WITHDRAWAL: `${BASE_URL}/api/aeps/cash-withdrawal`,
+  BALANCE_INQUIRY: `${BASE_URL}/api/aeps/balance-inquiry`,
 
   /////////////////////////// bANKS ////////////////////////////////////
   ADD_BANK: `${BASE_URL}/api/bank-details`,
@@ -124,5 +126,9 @@ export const API_ROUTES = {
   PRODUCT_LIST: `${BASE_URL}/api/products/dropdown/active`,
   SUB_PRODUCT_DROPDOWN: `${BASE_URL}/api/sub-products/dropdown`,
 
-};
+  /////////////////////////// BILL AVENUE ////////////////////////////////////
+  BILLAVENUE_BILLER_INFO: `${BASE_URL}/api/billavenue/biller-info`,
+  BILLAVENUE_BILL_FETCH: `${BASE_URL}/api/billavenue/bill-fetch`,
+  BILLAVENUE_BILL_PAYMENT: `${BASE_URL}/api/billavenue/bill-payment`,
 
+};

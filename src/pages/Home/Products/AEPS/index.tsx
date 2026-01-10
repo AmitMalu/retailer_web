@@ -9,6 +9,10 @@ import {
   MiniStatementSvgIcon,
 } from "@/assets/svg";
 import AepsCard from "@/components/Molecules/AepsCard";
+import { Check_Aeps_2FA_Status } from "@/Services/api";
+import { decryptData } from "@/Utils/helper";
+import { useSelector } from "react-redux";
+import { RootState } from "@/Redux/Store";
 
 const AepsScreen = () => {
   const theme = useTheme();
@@ -17,36 +21,78 @@ const AepsScreen = () => {
   const { state } = useLocation();
   const profile = state?.profile;
 
+  const apiResponses = useSelector(
+    (state: RootState) => state.apiResponse.responses
+  );
+
+  const loginData = apiResponses?.loginData
+    ? decryptData(apiResponses?.loginData)
+    : null;
+
+  const handleServiceClick = async (service: string) => {
+
+    // navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {
+    //   state: { profile },
+    // });
+
+    // return
+
+    try {
+      const res = await Check_Aeps_2FA_Status({ retailerId: loginData?.hierarchyId });
+
+      console.log("2FA Status Response:", res);
+
+      if (res?.data?.statusCode == 200) {
+        const twoFaStatus = res?.data?.data?.twoFaStatus;
+        console.log("Onboard Status:", twoFaStatus);
+        if (twoFaStatus === 5) {
+          // Status 5 → go to transaction
+          navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {
+            state: { profile },
+          });
+        } else if (twoFaStatus === 3 || twoFaStatus === 4) {
+          // Status 3, 4 → go to 2FA page
+          navigate(`/products/aeps/2fa/${subProductId}?iinno=&service=${service}`, {
+            state: { profile },
+          });
+        } else {
+          // Other statuses → default to 2FA
+          navigate(`/products/aeps/2fa/${subProductId}?iinno=&service=${service}`, {
+            state: { profile },
+          });
+        }
+      } else {
+        // API error → treat as invalid 2FA
+        navigate(`/products/aeps/2fa/${subProductId}?iinno=&service=${service}`, {
+          state: { profile },
+        });
+      }
+    } catch (e) {
+      // on error → treat as invalid 2FA
+      navigate(`/products/aeps/2fa/${subProductId}?iinno=&service=${service}`, {
+        state: { profile },
+      });
+    }
+  };
+
   const row1 = [
     {
       id: 1,
       image: <CashWithdrawalSvgIcon color={theme.palette.red.DEFAULT} />,
       title: "Cash Withdrawal",
-      onClick: () => {
-        navigate(`/products/aeps/transaction/${subProductId}?service=cashWithdrawal`, {
-          state: { profile },
-        });
-      },
+      onClick: () => handleServiceClick('cashWithdrawal'),
     },
     {
       id: 2,
       image: <BalanceEnquirySvgIcon color={theme.palette.red.DEFAULT} />,
       title: "Balance Enquiry",
-      onClick: () => {
-        navigate(`/products/aeps/transaction/${subProductId}?service=balanceInquiry`, {
-          state: { profile },
-        });
-      },
+      onClick: () => handleServiceClick('balanceInquiry'),
     },
     {
       id: 3,
       image: <MiniStatementSvgIcon color={theme.palette.red.DEFAULT} />,
       title: "Mini Statement",
-      onClick: () => {
-        navigate(`/products/aeps/transaction/${subProductId}?service=miniStatement`, {
-          state: { profile },
-        });
-      },
+      onClick: () => handleServiceClick('miniStatement'),
     },
   ];
 

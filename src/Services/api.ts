@@ -51,6 +51,16 @@ export const isAuthenticated = () => {
   };
 };
 
+export const BillAvenue_Bill_Payment = async (payload: any) => {
+  try {
+    const response = await api.post(API_ROUTES.BILLAVENUE_BILL_PAYMENT, payload, await createHeaders());
+    return response;
+  } catch (error: any) {
+    handleCustomError(error);
+    throw error;
+  }
+};
+
 const createHeaders = async () => {
   let token = "";
 
@@ -632,6 +642,22 @@ export const Aeps_Cash_Withdrawal = async (data: any) => {
   );
 };
 
+export const Aeps_Balance_Inquiry = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.BALANCE_INQUIRY}`,
+    data,
+    await createHeaders()
+  );
+};
+
+export const Check_Aeps_2FA_Status = async ({ retailerId }: { retailerId: string }) => {
+  return await api.post(
+    `${API_ROUTES.AEPS_2FA_CHECK_STATUS}`,
+    { retailerId },
+    await createHeaders()
+  );
+};
+
 export const Adhaar_Verification = async (aadhaarNumber: number) =>
   await api.post(
     `${API_ROUTES.ADHAAR_VERIFICATION}?aadhaarNumber=${aadhaarNumber}`,
@@ -807,6 +833,116 @@ export const fetchList = createAsyncThunk(
       //   error?.response?.data?.message || error.message || "Failed to fetch";
       // return rejectWithValue(errMsg);
       handleCustomError(error);
+    }
+  }
+);
+
+////////////////////////// BILL AVENUE APIS ///////////////////////////
+
+export const BillAvenue_Biller_Info_Direct = async (payload: { subProductId: string; billerId: string[] }) => {
+  try {
+    const response = await api.post(API_ROUTES.BILLAVENUE_BILLER_INFO, payload, await createHeaders());
+    
+    if (response.data?.statusCode === 200) {
+      return response.data;
+    } else {
+      throw new Error(response.data?.message || "Failed to fetch biller info");
+    }
+  } catch (error: any) {
+    handleCustomError(error);
+    throw error;
+  }
+};
+
+export const BillAvenue_Bill_Fetch_Direct = async (payload: {
+    requestId: string;
+    agentId: string;
+    agentDeviceInfo: {
+      ip: string;
+      initChannel: string;
+      mac: string;
+    };
+    customerInfo: {
+      customerMobile: string;
+      customerEmail?: string;
+      customerAdhaar?: string;
+      customerPan?: string;
+    };
+    billerId: string;
+    inputParams: {
+      input: {
+        paramName: string;
+        paramValue: string;
+      }[];
+    };
+  }) => {
+    try {
+      const response = await api.post(API_ROUTES.BILLAVENUE_BILL_FETCH, payload, await createHeaders());
+      
+      if (response.data?.statusCode === 200) {
+        return response.data;
+      } else {
+        throw new Error(response.data?.message || "Failed to fetch bill details");
+      }
+    } catch (error: any) {
+      handleCustomError(error);
+      throw error;
+    }
+  };
+
+export const BillAvenue_Biller_Info = createAsyncThunk(
+  "billavenue/biller-info",
+  async (payload: { subProductId: string; billerId: string[] }) => {
+    try {
+      const response = await api.post(API_ROUTES.BILLAVENUE_BILLER_INFO, payload);
+      
+      if (response.data?.statusCode === 200) {
+        return response.data;
+      } else {
+        throw new Error(response.data?.message || "Failed to fetch biller info");
+      }
+    } catch (error: any) {
+      handleCustomError(error);
+      throw error;
+    }
+  }
+);
+
+export const BillAvenue_Bill_Fetch = createAsyncThunk(
+  "billavenue/bill-fetch",
+  async (payload: {
+    requestId: string;
+    agentId: string;
+    agentDeviceInfo: {
+      ip: string;
+      initChannel: string;
+      mac: string;
+    };
+    customerInfo: {
+      customerMobile: string;
+      customerEmail?: string;
+      customerAdhaar?: string;
+      customerPan?: string;
+    };
+    billerId: string;
+    inputParams: {
+      input: Array<{
+        paramName: string;
+        paramValue: string;
+      }>;
+    };
+  }) => {
+    try {
+      const response = await api.post(API_ROUTES.BILLAVENUE_BILL_FETCH, payload);
+      
+      if (response.data?.statusCode === 200) {
+        return response.data;
+      } else {
+        throw new Error(response.data?.message || "Failed to fetch bill details");
+      }
+    } catch (error: any) {
+      handleCustomError(error);
+      throw error;
     }
   }
 );
