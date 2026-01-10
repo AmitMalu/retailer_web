@@ -53,7 +53,11 @@ export const isAuthenticated = () => {
 
 export const BillAvenue_Bill_Payment = async (payload: any) => {
   try {
-    const response = await api.post(API_ROUTES.BILLAVENUE_BILL_PAYMENT, payload, await createHeaders());
+    const response = await api.post(
+      API_ROUTES.BILLAVENUE_BILL_PAYMENT,
+      payload,
+      await createHeaders()
+    );
     return response;
   } catch (error: any) {
     handleCustomError(error);
@@ -499,6 +503,22 @@ export const Update_Remitter = async (data: any) => {
   );
 };
 
+export const Remitter_Send_Otp = async (mobileNumber: string) => {
+  return await api.post(
+    `${API_ROUTES.REMITTER_SEND_OTP}`,
+    { mobile: mobileNumber },
+    await createHeaders()
+  );
+};
+
+export const Remitter_Resend_Otp = async (mobileNumber: string) => {
+  return await api.post(
+    `${API_ROUTES.REMITTER_RESEND_OTP}`,
+    { mobile: mobileNumber },
+    await createHeaders()
+  );
+};
+
 export const Remitter_Kyc = async (data: any) => {
   return await api.post(
     `${API_ROUTES.REMITTER_KYC}`,
@@ -650,7 +670,11 @@ export const Aeps_Balance_Inquiry = async (data: any) => {
   );
 };
 
-export const Check_Aeps_2FA_Status = async ({ retailerId }: { retailerId: string }) => {
+export const Check_Aeps_2FA_Status = async ({
+  retailerId,
+}: {
+  retailerId: string;
+}) => {
   return await api.post(
     `${API_ROUTES.AEPS_2FA_CHECK_STATUS}`,
     { retailerId },
@@ -839,10 +863,17 @@ export const fetchList = createAsyncThunk(
 
 ////////////////////////// BILL AVENUE APIS ///////////////////////////
 
-export const BillAvenue_Biller_Info_Direct = async (payload: { subProductId: string; billerId: string[] }) => {
+export const BillAvenue_Biller_Info_Direct = async (payload: {
+  subProductId: string;
+  billerId: string[];
+}) => {
   try {
-    const response = await api.post(API_ROUTES.BILLAVENUE_BILLER_INFO, payload, await createHeaders());
-    
+    const response = await api.post(
+      API_ROUTES.BILLAVENUE_BILLER_INFO,
+      payload,
+      await createHeaders()
+    );
+
     if (response.data?.statusCode === 200) {
       return response.data;
     } else {
@@ -855,51 +886,60 @@ export const BillAvenue_Biller_Info_Direct = async (payload: { subProductId: str
 };
 
 export const BillAvenue_Bill_Fetch_Direct = async (payload: {
-    requestId: string;
-    agentId: string;
-    agentDeviceInfo: {
-      ip: string;
-      initChannel: string;
-      mac: string;
-    };
-    customerInfo: {
-      customerMobile: string;
-      customerEmail?: string;
-      customerAdhaar?: string;
-      customerPan?: string;
-    };
-    billerId: string;
-    inputParams: {
-      input: {
-        paramName: string;
-        paramValue: string;
-      }[];
-    };
-  }) => {
-    try {
-      const response = await api.post(API_ROUTES.BILLAVENUE_BILL_FETCH, payload, await createHeaders());
-      
-      if (response.data?.statusCode === 200) {
-        return response.data;
-      } else {
-        throw new Error(response.data?.message || "Failed to fetch bill details");
-      }
-    } catch (error: any) {
-      handleCustomError(error);
-      throw error;
-    }
+  requestId: string;
+  agentId: string;
+  agentDeviceInfo: {
+    ip: string;
+    initChannel: string;
+    mac: string;
   };
+  customerInfo: {
+    customerMobile: string;
+    customerEmail?: string;
+    customerAdhaar?: string;
+    customerPan?: string;
+  };
+  billerId: string;
+  inputParams: {
+    input: {
+      paramName: string;
+      paramValue: string;
+    }[];
+  };
+}) => {
+  try {
+    const response = await api.post(
+      API_ROUTES.BILLAVENUE_BILL_FETCH,
+      payload,
+      await createHeaders()
+    );
+
+    if (response.data?.statusCode === 200) {
+      return response.data;
+    } else {
+      throw new Error(response.data?.message || "Failed to fetch bill details");
+    }
+  } catch (error: any) {
+    handleCustomError(error);
+    throw error;
+  }
+};
 
 export const BillAvenue_Biller_Info = createAsyncThunk(
   "billavenue/biller-info",
   async (payload: { subProductId: string; billerId: string[] }) => {
     try {
-      const response = await api.post(API_ROUTES.BILLAVENUE_BILLER_INFO, payload);
-      
+      const response = await api.post(
+        API_ROUTES.BILLAVENUE_BILLER_INFO,
+        payload
+      );
+
       if (response.data?.statusCode === 200) {
         return response.data;
       } else {
-        throw new Error(response.data?.message || "Failed to fetch biller info");
+        throw new Error(
+          response.data?.message || "Failed to fetch biller info"
+        );
       }
     } catch (error: any) {
       handleCustomError(error);
@@ -933,12 +973,17 @@ export const BillAvenue_Bill_Fetch = createAsyncThunk(
     };
   }) => {
     try {
-      const response = await api.post(API_ROUTES.BILLAVENUE_BILL_FETCH, payload);
-      
+      const response = await api.post(
+        API_ROUTES.BILLAVENUE_BILL_FETCH,
+        payload
+      );
+
       if (response.data?.statusCode === 200) {
         return response.data;
       } else {
-        throw new Error(response.data?.message || "Failed to fetch bill details");
+        throw new Error(
+          response.data?.message || "Failed to fetch bill details"
+        );
       }
     } catch (error: any) {
       handleCustomError(error);
