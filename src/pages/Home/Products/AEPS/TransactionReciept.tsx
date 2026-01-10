@@ -1,6 +1,6 @@
 import { RootState } from "@/Redux/Store";
 import { decryptData } from "@/Utils/helper";
-import { Card, Table, Text, Group, Divider, Button } from "@mantine/core";
+import { Card, Table, Text, Group, Divider, Button, Badge } from "@mantine/core";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import ImLogo from '@/assets/svg/ImFullLogo'
@@ -51,8 +51,16 @@ const TransactionReciept = ({ data }: { data: any }) => {
 
             {/* --- Title --- */}
             <Text fw={600} ta="center" size="md" mb="sm">
-                Transaction Receipt
+                {data.serviceType} Receipt
             </Text>
+
+            <Badge
+                color={data.status === "SUCCESS" ? "green" : "red"}
+                variant="filled"
+                mb="md"
+            >
+                {data.status}
+            </Badge>
 
             {/* --- Transaction Details --- */}
             <Table
@@ -66,46 +74,49 @@ const TransactionReciept = ({ data }: { data: any }) => {
                     <Table.Tr>
                         <Table.Td fw={500}>Date</Table.Td>
                         <Table.Td>
-                            {data?.createdDateTime
-                                ? moment(data.createdDateTime).format("DD-MM-YYYY hh:mm A")
+                            {data?.dateTime
+                                ? moment(data.dateTime).format("DD-MM-YYYY hh:mm A")
                                 : "-"}
                         </Table.Td>
 
-                        <Table.Td fw={500}>Transaction Status</Table.Td>
-                        <Table.Td>{data?.txnStatus ?? "-"}</Table.Td>
+                        {/* <Table.Td fw={500}>Transaction Status</Table.Td>
+                        <Table.Td>{data?.status ?? "-"}</Table.Td> */}
                     </Table.Tr>
 
-                    <Table.Tr>
-                        <Table.Td fw={500}>Biller Name</Table.Td>
-                        <Table.Td>{data?.billerName ?? "-"}</Table.Td>
-
-                        <Table.Td fw={500}>Transaction Amount</Table.Td>
-                        <Table.Td>{data?.txnAmount ?? "-"}</Table.Td>
-                    </Table.Tr>
-
-                    <Table.Tr>
-                        <Table.Td fw={500}>Customer Name</Table.Td>
-                        <Table.Td>{data?.customerName ?? "-"}</Table.Td>
-
-                        <Table.Td fw={500}>Consumer Number</Table.Td>
-                        <Table.Td>{data?.consumerNumber ?? "-"}</Table.Td>
-                    </Table.Tr>
-
-                    <Table.Tr>
-                        <Table.Td fw={500}>Category</Table.Td>
-                        <Table.Td>{data?.category ?? "-"}</Table.Td>
-                        <Table.Td fw={500}>Ref No</Table.Td>
-                        <Table.Td>{data?.refNo ?? "-"}</Table.Td>
-                    </Table.Tr>
-
-                    <Table.Tr>
-                        <Table.Td fw={500}>Transaction ID</Table.Td>
-                        <Table.Td colSpan={3}>{data?.txnId ?? "-"}</Table.Td>
+                    {data?.serviceType === "BALANCE INQUIRY" && <Table.Tr>
                         <Table.Td fw={500}>Avilable Balance</Table.Td>
-                        <Table.Td colSpan={3}>{data?.balance ?? "0"}</Table.Td>
+                        <Table.Td colSpan={3}>{data?.balanceAmount ?? "0"}</Table.Td>
+                    </Table.Tr>}
+
+                    {data?.serviceType !== "BALANCE INQUIRY" && <Table.Tr>
+                        <Table.Td fw={500}>Transaction Amount</Table.Td>
+                        <Table.Td>{data?.transactionAmount ?? "-"}</Table.Td>
+                    </Table.Tr>}
+
+                    <Table.Tr>
+                        <Table.Td fw={500}>RRN</Table.Td>
+                        <Table.Td>{data?.rrn ?? "-"}</Table.Td>
+
+                    </Table.Tr>
+
+                    <Table.Tr>
+                        <Table.Td fw={500}>Terminal Id</Table.Td>
+                        <Table.Td>{data?.terminalId ?? "-"}</Table.Td>
                     </Table.Tr>
                 </Table.Tbody>
             </Table>
+
+            {data.status === "FAILED" && (
+                <Card mt="sm" p="sm" radius="md" withBorder style={{ borderColor: "#fa5252" }}>
+                    <Text fw={600} c="red" size="sm">
+                        Transaction Failed Reason
+                    </Text>
+                    <Text c="red" size="sm">
+                        {data.errorMessage || data.statusMessage || "Transaction failed due to unknown reason"}
+                    </Text>
+                </Card>
+            )}
+
 
             {/* --- Footer Note --- */}
             <Divider mt="md" mb="xs" />

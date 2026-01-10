@@ -8,13 +8,14 @@ import { Aeps_Bank_List, Aeps_Cash_Withdrawal, Aeps_Balance_Inquiry } from "@/Se
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
-import { Card, Grid, Loader, UnstyledButton } from "@mantine/core";
+import { Card, Drawer, Grid, Loader, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Yup from 'yup'
+import TransactionReciept from "./TransactionReciept";
 
 const SERVICE_TITLES: any = {
     cashWithdrawal: "Cash Withdrawal",
@@ -34,6 +35,10 @@ const AepsTransaction = () => {
     const [bankList, setBankList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [loadingBanks, setLoadingBanks] = useState(false);
+
+    const [receiptDrawerOpened, setReceiptDrawerOpened] = useState(false);
+    const [receiptData, setReceiptData] = useState<any>(null);
+    const [receiptLoading, setReceiptLoading] = useState(false);
 
     const apiResponses = useSelector(
         (state: RootState) => state.apiResponse.responses
@@ -79,11 +84,37 @@ const AepsTransaction = () => {
         pidData: "",
     };
 
+    const normalizeReceiptData = (apiResponse: any, serviceType: string) => {
+        const txnData = apiResponse?.data?.data || {};
+
+        return {
+            // Common
+            status: apiResponse?.data?.status ? "SUCCESS" : "FAILED",
+            statusMessage: apiResponse?.data?.message || apiResponse?.message,
+            serviceType, // CASH WITHDRAWAL | BALANCE INQUIRY
+            dateTime: txnData.requestTransactionTime,
+            terminalId: txnData.terminalId,
+            rrn: txnData.bankRRN,
+            txnType: txnData.transactionType,
+
+            // Amounts
+            transactionAmount: txnData.transactionAmount,
+            balanceAmount: txnData.balanceAmount,
+
+            // Codes
+            responseCode: txnData.responseCode,
+            errorCode: txnData.errorCode,
+            errorMessage: txnData.errorMessage,
+        };
+    };
+
+console.log(receiptData,"data");
+
     const handleSubmit = async (values: any) => {
         console.log("Final Submit Values:", values);
         try {
             setIsLoading(true);
-            
+
             let res;
             if (service === "balanceInquiry") {
                 res = await Aeps_Balance_Inquiry({
@@ -105,11 +136,11 @@ const AepsTransaction = () => {
                 });
             }
 
-            if (res?.data?.statusCode === 200 && res.data?.data?.statusCode == "10000") {
-                showSuccessNotification(res?.data?.message || "Transaction Successful");
-                // navigate(`/products/aeps/service/${subProductId}`, {
-                //     state: { subProductId, profile },
-                // });
+            // If response exists → show receipt
+            if (res?.data) {
+                const normalized = normalizeReceiptData(res.data, "BALANCE INQUIRY");
+                setReceiptData(normalized);
+                setReceiptDrawerOpened(true);
             } else {
                 showErrorNotification(res.data?.data?.message || res.data?.message || "Failed to process transaction");
             }
@@ -308,6 +339,30 @@ const AepsTransaction = () => {
                     )}
                 </Formik>
             </div>
+
+            <Drawer
+                opened={receiptDrawerOpened}
+                onClose={() => {
+                    setReceiptDrawerOpened(false);
+                    setReceiptData(null)
+                    navigate("/products/aeps");
+                }}
+                closeOnEscape={false}
+                closeOnClickOutside={false}
+                position="right"
+                size="xl"
+                overlayProps={{ backgroundOpacity: 0.4, blur: 2 }}
+                transitionProps={{ transition: "slide-right", duration: 300 }}
+            >
+                {receiptLoading ? (
+                    <div className="flex justify-center items-center h-60">
+                        <Loader />
+                    </div>
+                ) : (
+                    <TransactionReciept data={receiptData} />
+                )}
+            </Drawer>
+
         </>
     );
 };
