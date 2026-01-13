@@ -9,7 +9,7 @@ import { Drawer, Loader, Modal, UnstyledButton } from "@mantine/core";
 import TextComponent from "@/components/Atoms/TextComponent";
 import { BackSvgIcon } from "@/assets/svg";
 import { Formik, FormikValues } from "formik";
-import { BillAvenue_Biller_Info_Direct, BillAvenue_Bill_Fetch_Direct, BillAvenue_Bill_Payment, Fetch_Transaction_Receipt, Get_Providers, Transaction } from "@/Services/api";
+import { BillAvenue_Biller_Info_Direct, BillAvenue_Bill_Fetch_Direct, BillAvenue_Bill_Payment, Get_Providers } from "@/Services/api";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
@@ -19,9 +19,7 @@ import { buildBillDetailsInitialValues, buildInitialValues } from "./Utils/initi
 import { buildBillDetailsValidationSchema, buildValidationSchema } from "./Utils/validationSchemaBuilder";
 import ExtraParamFields from "./Components/ExtraParamFields";
 import ExtraStaticFields from "./Components/ExtraStaticFields";
-import { TransactionProps } from "@/Common/interface";
 import BillReceipt from "./Components/BillReciept";
-import { buildExtraParamPayload } from "./Utils/buildExtraParamPayload";
 import BillPaymentDetails from "./Components/BillPaymentDetails";
 import AmountInput from "./Components/AmountInput";
 
@@ -35,6 +33,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
     // vendor prop is reserved for future vendor-specific logic
     const navigate = useNavigate();
     const theme = useTheme();
+    console.log(vendor);
 
     const [isLoading, setIsLoading] = useState(false);
     const [providerList, setProviderList] = useState([]);
@@ -45,16 +44,16 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
     const [billModalOpened, setBillModalOpened] = useState(false);
     const [billDetails, setBillDetails] = useState<any>(null);
     const [amountEditable, setAmountEditable] = useState(false);
-    
+
     const [receiptDrawerOpened, setReceiptDrawerOpened] = useState(false);
     const [receiptData, setReceiptData] = useState<any>(null);
-    const [receiptLoading, setReceiptLoading] = useState(false);
+    // const [receiptLoading, setReceiptLoading] = useState(false);
 
     const [requestId, setRequestId] = useState('')
-    const [providerId, setProviderId] = useState('')
+    // const [providerId, setProviderId] = useState('')
 
 
-    
+
     const apiResponses = useSelector(
         (state: RootState) => state.apiResponse?.responses
     );
@@ -86,14 +85,14 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
     );
 
     const handleSelectProvider = async (providerId: string) => {
-        
+
         if (!providerId) {
             setSelectedProviderDetails(null);
             return;
         }
 
         let provider_id = providerId.split("-")[0];
-        setProviderId(provider_id);
+        // setProviderId(provider_id);
 
         try {
             setIsLoading(true);
@@ -104,12 +103,12 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                 billerId: [provider_id]
             });
 
-            
+
             if (billerResult?.statusCode == 200 || billerResult?.data?.statusCode == 200) {
                 // Handle nested response structure
                 const responseData = billerResult?.data?.data || billerResult?.data;
 
-                
+
                 if (responseData) {
                     // Store request ID for bill fetch
                     if (responseData.requestId) {
@@ -185,7 +184,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                         billerData: responseData
                     };
 
-                    
+
                     setSelectedProviderDetails(mappedProviderDetails);
 
                     // Set amount editable state
@@ -234,7 +233,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                         paramGroup.paramsList.forEach((param: any) => {
                             const paramName = param.paramName;
 
-                            
+
                             // Map form field names to parameter names
                             const fieldMappings: { [key: string]: string } = {
                                 // Consumer/Customer ID variations
@@ -300,7 +299,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                                     paramName: paramName,
                                     paramValue: String(paramValue).trim()
                                 });
-                                                            } else {
+                            } else {
                                 // If it's a required field, show error
                                 if (param.isOptional === "false") {
                                     showErrorNotification(`Missing required field: ${paramName}. Please fill all required fields.`);
@@ -313,7 +312,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                 });
             }
 
-            
+
             // Validate that we have at least one input param
             if (inputParams.length === 0) {
                 showErrorNotification("No input parameters found. Please fill all required fields.");
@@ -341,7 +340,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                 }
             };
 
-            
+
             // Call BillAvenue Bill Fetch API
             const billFetchResult = await BillAvenue_Bill_Fetch_Direct(billFetchPayload);
 
@@ -400,7 +399,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                         requestId: requestId
                     };
 
-                    
+
                     setBillDetails(mappedBillDetails);
                     setBillModalOpened(true);
 
@@ -413,13 +412,13 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                     const errorMessage = (responseData?.errorInfo?.error as any[])?.[0]?.errorMessage ||
                         "Unable to fetch bill details";
                     showErrorNotification(errorMessage);
-                                    }
+                }
             } else {
                 const errorMsg = billFetchResult?.message || billFetchResult?.data?.message || "Unable to fetch bill details";
                 showErrorNotification(errorMsg);
-                            }
+            }
         } catch (error: any) {
-                        await handleCustomError(error);
+            await handleCustomError(error);
         } finally {
             setIsLoading(false);
         }
@@ -522,7 +521,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
             try {
                 const res = await Get_Providers({ subProductId, serviceName });
 
-                                if (res?.data?.statusCode === 200) {
+                if (res?.data?.statusCode === 200) {
                     setProviderList(res?.data?.data || []);
                 } else {
                     showErrorNotification(res?.data?.message || "Unable to load providers");
@@ -732,7 +731,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                         )}
                 </Modal>
 
-                
+
                 {/* Transaction Reciept */}
                 <Drawer
                     opened={receiptDrawerOpened}
@@ -748,13 +747,14 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                     transitionProps={{ transition: "slide-right", duration: 300 }}
                     title={<div className="font-semibold text-lg">Transaction Receipt</div>}
                 >
-                    {receiptLoading ? (
+                    {/* {receiptLoading ? (
                         <div className="flex justify-center items-center h-60">
                             <Loader />
                         </div>
                     ) : (
                         <BillReceipt data={receiptData} />
-                    )}
+                    )} */}
+                    <BillReceipt data={receiptData} />
                 </Drawer>
             </div>
         </>

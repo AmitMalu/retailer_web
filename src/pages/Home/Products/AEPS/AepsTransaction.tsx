@@ -7,7 +7,7 @@ import { RootState } from "@/Redux/Store";
 import { Aeps_Bank_List, Aeps_Cash_Withdrawal, Aeps_Balance_Inquiry } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
-import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
+import { showErrorNotification } from "@/Utils/notifications";
 import { Card, Drawer, Grid, Loader, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { Form, Formik } from "formik";
@@ -28,7 +28,7 @@ const AepsTransaction = () => {
     const location = useLocation();
     const theme = useTheme()
     const { subProductId } = useParams();
-    const profile = location.state?.profile;
+    // const profile = location.state?.profile;
     const queryParams = new URLSearchParams(location.search);
     const service = queryParams.get("service");  // "cashWithdrawal", "balanceInquiry", etc.
     const title = service ? SERVICE_TITLES[service] : "AEPS Transaction";
@@ -38,7 +38,7 @@ const AepsTransaction = () => {
 
     const [receiptDrawerOpened, setReceiptDrawerOpened] = useState(false);
     const [receiptData, setReceiptData] = useState<any>(null);
-    const [receiptLoading, setReceiptLoading] = useState(false);
+    // const [receiptLoading, setReceiptLoading] = useState(false);
 
     const apiResponses = useSelector(
         (state: RootState) => state.apiResponse.responses
@@ -108,7 +108,7 @@ const AepsTransaction = () => {
         };
     };
 
-console.log(receiptData,"data");
+    console.log(receiptData, "data");
 
     const handleSubmit = async (values: any) => {
         console.log("Final Submit Values:", values);
@@ -354,13 +354,8 @@ console.log(receiptData,"data");
                 overlayProps={{ backgroundOpacity: 0.4, blur: 2 }}
                 transitionProps={{ transition: "slide-right", duration: 300 }}
             >
-                {receiptLoading ? (
-                    <div className="flex justify-center items-center h-60">
-                        <Loader />
-                    </div>
-                ) : (
-                    <TransactionReciept data={receiptData} />
-                )}
+
+                <TransactionReciept data={receiptData} />
             </Drawer>
 
         </>

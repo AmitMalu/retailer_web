@@ -53,27 +53,27 @@ const AEPS_RD_ENDPOINTS: any = {
 // </PidOptions>`;
 
 // Calculate WADH dynamically based on EKYC options
-const calculateWadh = () => {
-    const ekycOptions = {
-        ver: "2.5",
-        ra: "F", // F for fingerprint
-        rc: "Y", // Y for consent
-        lr: "N", // N for English only
-        de: "N", // N for KUA decrypts
-        pfr: "N"  // N for no PDF
-    };
+// const calculateWadh = () => {
+//     const ekycOptions = {
+//         ver: "2.5",
+//         ra: "F", // F for fingerprint
+//         rc: "Y", // Y for consent
+//         lr: "N", // N for English only
+//         de: "N", // N for KUA decrypts
+//         pfr: "N"  // N for no PDF
+//     };
     
-    const optionsString = ekycOptions.ver + ekycOptions.ra + ekycOptions.rc + ekycOptions.lr + ekycOptions.de + ekycOptions.pfr;
+//     const optionsString = ekycOptions.ver + ekycOptions.ra + ekycOptions.rc + ekycOptions.lr + ekycOptions.de + ekycOptions.pfr;
     
-    // Simple SHA256 + Base64 implementation
-    // In production, you should use a proper crypto library
-    const encoder = new TextEncoder();
-    encoder.encode(optionsString);
+//     // Simple SHA256 + Base64 implementation
+//     // In production, you should use a proper crypto library
+//     const encoder = new TextEncoder();
+//     encoder.encode(optionsString);
     
-    // For now, return the working hardcoded value
-    // TODO: Implement proper SHA256 + Base64
-    return "E0jzJ/P8UopUHAieZn8CKqS4WPMi5ZSYXgfnlfkWjrc=";
-};
+//     // For now, return the working hardcoded value
+//     // TODO: Implement proper SHA256 + Base64
+//     return "E0jzJ/P8UopUHAieZn8CKqS4WPMi5ZSYXgfnlfkWjrc=";
+// };
 
 // Generate PID options based on use case (2FA vs KYC)
 const generatePidOptions = (is2FA: boolean = true) => {
