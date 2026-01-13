@@ -84,6 +84,8 @@ export const API_ROUTES = {
   //////////////////////////// DMT /////////////////////////////////
   FIND_REMITTER: `${BASE_URL}/api/remitter/check`,
   REGISTER_REMITTER: `${BASE_URL}/api/remitter/register`,
+  REMITTER_SEND_OTP: `${BASE_URL}/api/remitter/send-otp`,
+  REMITTER_RESEND_OTP: `${BASE_URL}/api/remitter/resend-otp`,
   UPDATE_REMITTER: `${BASE_URL}/api/remitter/update`,
   REMITTER_KYC: `${BASE_URL}/api/remitter/ekyc`,
   FETCH_REMITTER_DETAILS: `${BASE_URL}/api/remitter/fetch-details`,

@@ -406,6 +406,7 @@ const RemitterInfo = () => {
       const payload = {
         mobile: values.mobileNumber,
         name: values.beneficiaryName,
+        otp: values.otp
       };
       const response = await Update_Remitter(payload); // your API call
       if (response?.data?.statusCode == 200) {
@@ -414,8 +415,11 @@ const RemitterInfo = () => {
       } else {
         showErrorNotification(response?.data?.message || 'Failed to update remitter');
       }
+
+      return response;
     } catch (error) {
       handleCustomError(error);
+      return null;
     } finally {
       setIsLoading(false);
     }
