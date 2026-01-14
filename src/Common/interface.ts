@@ -467,11 +467,13 @@ export type ResendOtpRequestProps = {
 };
 
 export type ProductCardProps = {
-  image: React.ReactNode;
-  title: string;
-  fill: boolean;
-  onClick: () => void;
+  image?: React.ReactNode;
+  title?: string;
+  fill?: boolean;
+  onClick?: () => void;
   size?: number | { base: number; md?: number; lg?: number };
+  disabled?: boolean;
+  placeholder?: boolean;
 };
 
 export type FundRequestProps = {
@@ -742,6 +744,11 @@ export type PendingTransactionParams = {
   subProductId: string | number;
   walletType: string;
   tranStatus: string;
+  [key: string]: any;
+};
+
+export type FundLoadingParams = {
+  dateRange: DatesRangeValue;
   [key: string]: any;
 };
 
@@ -1107,6 +1114,21 @@ export interface PendingTransactionTableType {
   updatedAt: string | null;
   updatedDateOfTransaction: string | null;
   updatedTimeOfTransaction: string | null;
+}
+
+export interface FundLoadingTableType {
+  id: string | number;
+  paymentMode: string;
+  bankTranId: string;
+  depositAmount: string;
+  bankAccountNumber: string;
+  depositDate: string;
+  depositImage: string | null;
+  requestedBy: string;
+  ipAddress: string;
+  mobileNumber: string;
+  status: string;
+  remarks: string;
 }
 
 export interface WalletReportTableType {

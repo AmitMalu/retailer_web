@@ -44,6 +44,7 @@ export const API_ROUTES = {
   DEBIT_HISTORY_REPORT: `${BASE_URL}/api/debit-credit/report`,
   DOWNLINE_BALANCE_REPORT: `${BASE_URL}/api/downline-balance/report`,
   PENDING_TRANSACTION_REPORT: `${BASE_URL}/api/funding/settlement`,
+  FUND_LOADING_REPORT: `${BASE_URL}/api/prefund/all`,
 
   /////////////// TICKETING SYSTEM //////////////////////////
   TRANSACTION_DETAILS: `${BASE_URL}/api/ticket/transaction-details`,

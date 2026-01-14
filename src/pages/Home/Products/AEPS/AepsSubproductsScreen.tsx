@@ -8,7 +8,8 @@ import { BackSvgIcon } from "@/assets/svg";
 import { createTriangularLayout, decryptData } from "@/Utils/helper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
-import { subProductObjType } from "@/Common/interface";
+import React from "react";
+import { showErrorNotification } from "@/Utils/notifications";
 
 export default function AepsSubProductsScreen() {
     const theme = useTheme();
@@ -22,18 +23,31 @@ export default function AepsSubProductsScreen() {
         ? decryptData(apiResponses?.loginData)
         : null;
 
-    const handleIconClick = (subProduct: subProductObjType) => {
-        navigate(`/products/aeps/status`, {
-            state: { subProduct },
-        });
-    };
+    // const handleIconClick = (subProduct: subProductObjType) => {
+    //     navigate(`/products/aeps/status`, {
+    //         state: { subProduct },
+    //     });
+    // };
 
-    const dmtProduct = loginData?.products?.find(
+    const aepsProduct = loginData?.products?.find(
         (product: any) => product.productName.toLowerCase() === "aeps"
     );
 
+    // Sub-product status map (same as PG)
+    const subProductStatusMap = React.useMemo(() => {
+        const map: Record<string, any> = {};
+        aepsProduct?.subProducts?.forEach((sp: any) => {
+            map[sp.subProductName.toUpperCase()] = {
+                isVisible: sp.isVisible,
+                blocked: sp.blocked,
+                active: sp.active,
+            };
+        });
+        return map;
+    }, [aepsProduct]);
+
     const cardsData =
-        dmtProduct?.subProducts?.map((subProduct: any) => {
+        aepsProduct?.subProducts?.map((subProduct: any) => {
             return {
                 id: subProduct.subProductId,
                 title: subProduct.subProductName,
@@ -65,16 +79,45 @@ export default function AepsSubProductsScreen() {
                 <div className="flex flex-col items-center gap-6 mt-8">
                     {groupedCards.map((row, rowIndex) => (
                         <div key={rowIndex} className="flex justify-center gap-6 flex-wrap">
-                            {row.map((card) => (
-                                <PayoutCard
-                                    key={card.id}
-                                    image={
-                                        <PGTezMasterSvgIcon color={theme.palette.red.DEFAULT} />
+                            {row.map((card) => {
+
+                                const status = subProductStatusMap[card.title.toUpperCase()];
+
+                                // 1️⃣ If not visible, 
+                                if (!status?.isVisible) {
+                                    return (
+                                        <PayoutCard key={card.id} title={card.title} placeholder />
+                                    );
+                                }
+
+                                // 2️⃣ Handle click based on blocked or inactive
+                                const handleClick = () => {
+                                    if (status.blocked) return; // 2a. Blocked: do nothing
+                                    if (!status.active) {
+                                        // 2b. Inactive: show snackbar
+                                        showErrorNotification(
+                                            "This AEPS Service is currently inactive. Please contact support."
+                                        );
+                                        return;
                                     }
-                                    title={card.title}
-                                    onClick={() => handleIconClick(card)}
-                                />
-                            ))}
+
+                                    navigate(`/products/aeps/status`, {
+                                        state: { subProduct: card.subProduct },
+                                    });
+                                };
+
+                                return (
+                                    <PayoutCard
+                                        key={card.id}
+                                        image={
+                                            <PGTezMasterSvgIcon color={theme.palette.red.DEFAULT} />
+                                        }
+                                        title={card.title}
+                                        onClick={handleClick}
+                                        disabled={status?.blocked}
+                                    />
+                                )
+                            })}
                         </div>
                     ))}
                 </div>
