@@ -1129,6 +1129,9 @@ export interface FundLoadingTableType {
   mobileNumber: string;
   status: string;
   remarks: string;
+  createDateTime: string;
+  approveOrRejectDate: string;
+  approveOrRejectTime: string;
 }
 
 export interface WalletReportTableType {

@@ -61,7 +61,7 @@ const FundLoading = () => {
       filterType: "text",
       renderType: "link",
     },
-    { key: "requestedBy", label: "Requested By", filterType: "text" },
+    { key: "requestedBy", label: "Requested By", filterType: "none" },
     { key: "ipAddress", label: "Client IP", filterType: "text" },
     { key: "mobileNumber", label: "Partner Mobile Number", filterType: "number" },
     {
@@ -75,6 +75,17 @@ const FundLoading = () => {
       ],
     },
     { key: "remarks", label: "Remark", filterType: "text", copyable: true },
+    { key: "createDateTime", label: "Created Date Time", filterType: "date" },
+    {
+      key: "approveOrRejectDate",
+      label: "Approve Or Reject Date ",
+      filterType: "date",
+    },
+    {
+      key: "approveOrRejectTime",
+      label: "Approve Or Reject Time",
+      filterType: "text",
+    },
   ];
 
   const transformPayload = (values: any) => {
