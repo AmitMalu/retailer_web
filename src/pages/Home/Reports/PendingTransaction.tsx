@@ -11,7 +11,7 @@ import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { Form, Formik } from "formik";
+import { Form, Formik, FormikProps } from "formik";
 import { Grid, Loader } from "@mantine/core";
 import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
 import { IconCalendar } from "@tabler/icons-react";
@@ -31,6 +31,7 @@ const PendingTransaction = () => {
   const dispatch = useDispatch();
   const theme = useTheme()
 
+  const formikRef = useRef<FormikProps<PendingTransactionParams>>(null);
   const dataRef = useRef<PendingTransactionTableType[] | null>(null);
 
   const [payload, setPayload] = useState<any>(null);
@@ -93,13 +94,8 @@ const PendingTransaction = () => {
     tranStatus: "",
   };
 
-
   const validationSchema = Yup.object({
     dateRange: dateRangeValidationSchema,
-    productId: textField("Product", 100, true, true),
-    subProductId: textField("Sub Product", 100, false, true),
-    walletType: textField("Wallet Type", 150, false, true),
-    tranStatus: textField("Transaction Status", 50, false, true),
   })
 
   const [formValues, setFormValues] = useState(InitialValues);
@@ -132,12 +128,22 @@ const PendingTransaction = () => {
 
 
   const handleRefresh = () => {
+    // Reset redux pagination / master state
     dispatch(clearPagination({ key: KEY }));
-    setFilterValues({});
+
+    // Reset table view state
     setVisibleColumns(headers.map((h) => h.key as string));
-    setSubmittedFilter(null);
-    setRefreshKey((prev) => prev + 1);
     setFilterVisible(false);
+    setFilterValues({});
+    setSubmittedFilter(null);
+
+    setPayload(transformPayload(InitialValues));
+    setRefreshKey((prev) => prev + 1);
+
+    // ✅ Reset Formik ONLY
+    formikRef.current?.resetForm({
+      values: InitialValues as any,
+    });
   };
 
   const handleToggleColumn = (key: string) => {
@@ -156,19 +162,17 @@ const PendingTransaction = () => {
 
 
   const throttledSubmit = useThrottledFormSubmit((values: any) => {
-    setFormValues(values);
-    const payload = transformPayload(values);
-    setPayload(payload);
-    setRefreshKey((prev) => prev + 1);
+    setPayload(() => ({
+      ...transformPayload(values), // top filters
+      ...(submittedFilter || {}),                      // 🔴 keep inline filters
+    }));
+
     setViewSubmitted(true);
   }, 3000);
 
   useEffect(() => {
-    return () => {
-      setFormValues(InitialValues); // Reset form data on unmount
-      dispatch(clearPagination({ key: KEY }));
-    }
-  }, []);
+    dataRef.current = data;
+  }, [data]);
 
   useEffect(() => {
     if (submittedFilter) {
@@ -176,9 +180,6 @@ const PendingTransaction = () => {
     }
   }, [submittedFilter])
 
-  useEffect(() => {
-    dataRef.current = data;
-  }, [data]);
 
   return (
     <div className="w-full">
@@ -187,8 +188,9 @@ const PendingTransaction = () => {
       </NewTextComponent>
 
       <Formik
+        key={refreshKey}
+        innerRef={formikRef}
         initialValues={formValues}
-        enableReinitialize
         validationSchema={validationSchema}
         onSubmit={throttledSubmit}
       >
@@ -223,16 +225,17 @@ const PendingTransaction = () => {
 
                 <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
                   <FormikSelectComponent
-                    key={values.productId}
+                    // key={values.productId}
                     name="productId"
                     label="Product"
-                    value={values.productId}
+                    // value={values.productId}
                     placeholder="Select Product"
                     searchable={true}
                     nothingFoundMessage="No Product Found"
                     size="xs"
-                    withAsterisk
-                    required
+                    // withAsterisk
+                    // required
+                    allowDeselect={true}
                     data={productDropdownData}
                     disabled={loadingProductList}
                     rightSection={

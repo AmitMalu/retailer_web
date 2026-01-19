@@ -353,7 +353,7 @@ export type TableColumn = {
   render?: (
     value: any,
     index: number,
-    row: Record<string, any>
+    row: Record<string, any>,
   ) => React.ReactNode;
   searchKey?: string;
   sortable?: boolean;
@@ -730,20 +730,20 @@ export type NetworkTransactionParams = {
 
 export type WalletReportParams = {
   dateRange: DatesRangeValue;
-  hierarchyType: string;
-  hierarchyId: string;
-  productId: string;
-  walletType: string;
-  status: string;
+  hierarchyType?: string;
+  hierarchyId?: string;
+  productId?: string;
+  walletType?: string;
+  status?: string;
   [key: string]: any;
 };
 
 export type PendingTransactionParams = {
-  dateRange: DatesRangeValue;
-  productId: string | number;
-  subProductId: string | number;
-  walletType: string;
-  tranStatus: string;
+  dateRange?: DatesRangeValue;
+  productId?: string | number;
+  subProductId?: string | number;
+  walletType?: string;
+  tranStatus?: string;
   [key: string]: any;
 };
 
@@ -1135,16 +1135,16 @@ export interface FundLoadingTableType {
 }
 
 export interface WalletReportTableType {
-  tranxId: string;
-  subProductName: string;
-  balBefore: string;
-  amount: string;
-  balAfter: string;
-  actionOnBalanceAmount: string;
-  status: string;
-  transactionDate: number;
-  transactionTime: number;
-  narration: string;
+  tranxId?: string;
+  subProductName?: string;
+  balBefore?: string;
+  amount?: string;
+  balAfter?: string;
+  actionOnBalanceAmount?: string;
+  status?: string;
+  transactionDate?: number;
+  transactionTime?: number;
+  narration?: string;
 }
 
 export interface CommissionAndChargeTableType {

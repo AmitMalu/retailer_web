@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Form, Formik } from "formik";
+import { Form, Formik, FormikProps } from "formik";
 import * as Yup from "yup";
 import { CommissionAndChargesParams, CommissionAndChargeTableType, GenericTableHeader } from "@/Common/interface";
 import {
@@ -35,9 +35,41 @@ import { useProductSubProduct } from "@/Utils/CustomHooks/useProductSubProduct";
 
 const KEY = "commision_and_charge_report"
 
+const headers: GenericTableHeader<CommissionAndChargeTableType>[] = [
+  { key: "txId", label: "Transaction ID", filterType: "text", copyable: true },
+  { key: "subProductName", label: "Sub Product Name", filterType: "text" },
+  { key: "walletType", label: "Wallet Type", filterType: "boolean", filterOptions: walletTypeSelectData }, // Could add options if needed
+  { key: "txType", label: "Transaction Type", filterType: "text" },
+  { key: "operator", label: "Operator", filterType: "text" },
+  { key: "balBefore", label: "Balance Before", filterType: "number" },
+  { key: "amount", label: "Amount", filterType: "number" },
+  { key: "balAfter", label: "Balance After", filterType: "number" },
+  { key: "transactionDate", label: "Transaction Date", filterType: "date" },
+  { key: "transactionTime", label: "Transaction Time", filterType: "text" },
+  { key: "narration", label: "Narration", filterType: "text" },
+];
+
+const validationSchema = Yup.object({
+  dateRange: dateRangeValidationSchema,
+});
+
+const transformPayload = (values: any) => {
+  const [fromDate, toDate] = values.dateRange || [];
+  return {
+    fromDate: fromDate ? formatYMDdate(fromDate) : null,
+    toDate: toDate ? formatYMDdate(toDate) : null,
+    hierarchyType: values.hierarchyType ?? "",
+    hierarchyId: values.hierarchyId ?? "",
+    walletType: values.walletType ?? "",
+    productId: values.productId ?? "",
+    reportType: values.reportType ?? "",
+  }
+}
+
+
 const CommissionAndCharges = () => {
-  const dispatch = useDispatch();
   const theme = useTheme()
+  const dispatch = useDispatch();
 
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
@@ -48,40 +80,20 @@ const CommissionAndCharges = () => {
     : null;
 
   const [payload, setPayload] = useState<any>(null);
+
+  const formikRef = useRef<FormikProps<CommissionAndChargesParams>>(null);
+  const dataRef = useRef<CommissionAndChargeTableType[] | null>(null);
+
+  const [refreshKey, setRefreshKey] = useState<number>(0);
+
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(
+    headers.map((h) => h.key as string)
+  );
   const [filterVisible, setFilterVisible] = useState(false);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [submittedFilter, setSubmittedFilter] = useState<Record<string, any> | null>(null);
+
   const [viewSubmitted, setViewSubmitted] = useState(false);
-
-  const [refreshKey, setRefreshKey] = useState<number>(0);
-  const dataRef = useRef<CommissionAndChargeTableType[] | null>(null);
-
-  const headers: GenericTableHeader<CommissionAndChargeTableType>[] = [
-    { key: "txId", label: "Transaction ID", filterType: "text", copyable: true },
-    { key: "subProductName", label: "Sub Product Name", filterType: "text" },
-    { key: "walletType", label: "Wallet Type", filterType: "boolean", filterOptions: walletTypeSelectData }, // Could add options if needed
-    { key: "txType", label: "Transaction Type", filterType: "text" },
-    { key: "operator", label: "Operator", filterType: "text" },
-    { key: "balBefore", label: "Balance Before", filterType: "number" },
-    { key: "amount", label: "Amount", filterType: "number" },
-    { key: "balAfter", label: "Balance After", filterType: "number" },
-    { key: "transactionDate", label: "Transaction Date", filterType: "date" },
-    { key: "transactionTime", label: "Transaction Time", filterType: "text" },
-    { key: "narration", label: "Narration", filterType: "text" },
-  ];
-
-  const transformPayload = (values: any) => {
-    const [fromDate, toDate] = values.dateRange || [];
-    return {
-      fromDate: fromDate ? formatYMDdate(fromDate) : null,
-      toDate: toDate ? formatYMDdate(toDate) : null,
-      hierarchyType: values.hierarchyType ?? "",
-      hierarchyId: values.hierarchyId ?? "",
-      walletType: values.walletType ?? "PREPAID",
-      productId: values.productId,
-      reportType: values.reportType,
-    }
-  }
 
   const {
     data, loading, pagination, error, setPage, setPageSize
@@ -98,18 +110,6 @@ const CommissionAndCharges = () => {
   const hierarchyOrder = ["SA", "AD", "ET", "WL", "SD", "PT", "DT", "RT"];
   const myLevelIndex = hierarchyOrder.indexOf(myHierarchyCode);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const validationSchema = Yup.object({
-    dateRange: dateRangeValidationSchema,
-    productId: Yup.string().required("Required"),
-    walletType: Yup.string()
-      .required("Wallet Type is Required")
-      .oneOf(["POSTPAID", "PREPAID"], "Wallet Type must be either POSTPAID or PREPAID"),
-    reportType: Yup.string().required("Required"),
-  });
-
   const initialValues: CommissionAndChargesParams = {
     hierarchyType: loginData?.hierarchyId?.split("-")?.[1] || "",
     hierarchyId: "",
@@ -122,21 +122,8 @@ const CommissionAndCharges = () => {
     reportType: "",
   };
 
-  const [formValues, setFormValues] = useState(initialValues);
-
-  const [visibleColumns, setVisibleColumns] = useState<string[]>(
-    headers.map((h) => h.key as string)
-  );
-
-
-  const handleRefresh = () => {
-    dispatch(clearPagination({ key: KEY }));
-    setFilterValues({});
-    setSubmittedFilter(null);
-    setVisibleColumns(headers.map((h) => h.key as string));
-    setRefreshKey((prev) => prev + 1);
-    setFilterVisible(false);
-  };
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const handleExportClick = () => {
     const currentData = dataRef.current;
@@ -145,20 +132,6 @@ const CommissionAndCharges = () => {
       return;
     }
     exportToCsv(currentData, "commission-and-charges-report");
-  };
-
-  const handleFilterChange = (key: string, value: any) => {
-    setFilterValues((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const handleFilterSubmit = (key: string, value: any) => {
-    dispatch(
-      savePagination({
-        key: KEY,
-        pagination: { ...pagination, currentPage: 1, pageSize: pagination.pageSize },
-      })
-    );
-    setSubmittedFilter((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleToggleColumn = (key: string) => {
@@ -175,29 +148,58 @@ const CommissionAndCharges = () => {
     }
   };
 
+  const handleRefresh = () => {
+    // Reset redux pagination / master state
+    dispatch(clearPagination({ key: KEY }));
+
+    // Reset table view state
+    setVisibleColumns(headers.map((h) => h.key as string));
+    setFilterVisible(false);
+    setFilterValues({});
+    setSubmittedFilter(null);
+
+    setPayload(transformPayload(initialValues));
+    setRefreshKey((prev) => prev + 1);
+
+    // ✅ Reset Formik ONLY
+    formikRef.current?.resetForm({
+      values: initialValues,
+    });
+  };
+
+  const handleFilterChange = (key: string, value: any) => {
+    setFilterValues((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleFilterSubmit = (key: string, value: any) => {
+    dispatch(
+      savePagination({
+        key: KEY,
+        pagination: { ...pagination, currentPage: 1, pageSize: pagination.pageSize },
+      })
+    );
+    setSubmittedFilter((prev) => ({ ...prev, [key]: value }));
+  };
+
   const throttledSubmit = useThrottledFormSubmit((values: any) => {
-    setFormValues(values);
-    const payload = transformPayload(values);
-    setPayload(payload);
+    setPayload(() => ({
+      ...transformPayload(values), // top filters
+      ...(submittedFilter || {}),                      // 🔴 keep inline filters
+    }));
+
     setViewSubmitted(true);
   }, 3000);
 
+
   useEffect(() => {
-    return () => {
-      setFormValues(initialValues); // Reset form data on unmount
-      dispatch(clearPagination({ key: KEY }));
-    }
-  }, []);
+    dataRef.current = data;
+  }, [data]);
 
   useEffect(() => {
     if (submittedFilter) {
       setPayload((prev: any) => ({ ...prev, ...submittedFilter }));
     }
   }, [submittedFilter])
-
-  useEffect(() => {
-    dataRef.current = data;
-  }, [data]);
 
 
   return (
@@ -207,8 +209,9 @@ const CommissionAndCharges = () => {
       </NewTextComponent>
 
       <Formik
-        initialValues={formValues}
-        enableReinitialize
+        key={refreshKey}
+        innerRef={formikRef}
+        initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={throttledSubmit}
       >
@@ -247,16 +250,16 @@ const CommissionAndCharges = () => {
 
                 <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2.5 }}>
                   <FormikSelectComponent
-                    key={values.productId}
+                    // key={values.productId}
                     name="productId"
                     label="Product"
-                    value={values.productId}
                     placeholder="Select Product"
                     searchable={true}
                     nothingFoundMessage="No Product Found"
                     size="xs"
-                    withAsterisk
-                    required
+                    // withAsterisk
+                    // required
+                    allowDeselect={true}
                     data={productDropdownData}
                     disabled={loadingProductList}
                     rightSection={
@@ -289,8 +292,9 @@ const CommissionAndCharges = () => {
                     data={filteredHierarchyList || []}
                     disabled={loadingHierarchyList}
                     searchable={true}
-                    withAsterisk
-                    required
+                    // withAsterisk
+                    // required
+                    // allowDeselect={true}
                     rightSection={
                       <>
                         {loadingHierarchyList && (
@@ -322,6 +326,8 @@ const CommissionAndCharges = () => {
                       label: item.displayName,
                       value: String(item.id),
                     }))}
+                    // withAsterisk
+                    // required
                     allowDeselect={true}
                     searchable={true}
                     nothingFoundMessage="Nothing Found"
@@ -338,7 +344,9 @@ const CommissionAndCharges = () => {
                       { value: "POSTPAID", label: "POSTPAID" },
                       { value: "PREPAID", label: "PREPAID" },
                     ]}
-                    withAsterisk
+                    // withAsterisk
+                    // required
+                    allowDeselect={true}
                     size="xs"
                   />
                 </Grid.Col>
@@ -348,12 +356,13 @@ const CommissionAndCharges = () => {
                     name="reportType"
                     label="Report Type"
                     placeholder="Select Report Type"
-                    allowDeselect
                     data={[
                       { value: "COMMISSION", label: "COMMISSION" },
                       { value: "CHARGE", label: "CHARGE" },
                     ]}
-                    withAsterisk
+                    // withAsterisk
+                    // required
+                    allowDeselect={true}
                     size="xs"
                   />
                 </Grid.Col>
