@@ -52,15 +52,6 @@ const SubProductScreen = () => {
 
   const groupedCards = createTriangularLayout(cardsData);
 
-  const handleIconClick = (subProduct: any) => {
-    navigate(`/products/billPay/service`, {
-      state: {
-        subProductId: subProduct.subProductId,
-        // vendor: subProduct?.vendor      // <-- PASS IT FORWARD
-      },
-    });
-  };
-
   return (
     <>
       <UnstyledButton

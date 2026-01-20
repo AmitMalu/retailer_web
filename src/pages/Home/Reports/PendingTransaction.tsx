@@ -4,7 +4,7 @@ import { API_ROUTES } from "@/Services/apiRoutes";
 import { useFetchList } from "@/Utils/CustomHooks/useFetchList";
 import NewTextComponent from "@/components/Atoms/NewComponents/TextComponent";
 import { useThrottledFormSubmit } from "@/Utils/CustomHooks/useThrottleFormSubmit";
-import { dateRangeValidationSchema, exportToCsv, formatYMDdate, textField } from "@/Utils/helper";
+import { dateRangeValidationSchema, exportToCsv, formatYMDdate } from "@/Utils/helper";
 import { DatesRangeValue } from "@mantine/dates";
 import { useTheme } from "@mui/system";
 import moment from "moment";
@@ -98,7 +98,6 @@ const PendingTransaction = () => {
     dateRange: dateRangeValidationSchema,
   })
 
-  const [formValues, setFormValues] = useState(InitialValues);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
     headers.map((h) => h.key as string)
   );
@@ -190,7 +189,7 @@ const PendingTransaction = () => {
       <Formik
         key={refreshKey}
         innerRef={formikRef}
-        initialValues={formValues}
+        initialValues={InitialValues}
         validationSchema={validationSchema}
         onSubmit={throttledSubmit}
       >

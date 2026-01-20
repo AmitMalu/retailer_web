@@ -4,7 +4,7 @@ import { API_ROUTES } from "@/Services/apiRoutes";
 import { useFetchList } from "@/Utils/CustomHooks/useFetchList";
 import NewTextComponent from "@/components/Atoms/NewComponents/TextComponent";
 import { useThrottledFormSubmit } from "@/Utils/CustomHooks/useThrottleFormSubmit";
-import { dateRangeValidationSchema, decryptData, exportToCsv, formatYMDdate, textField } from "@/Utils/helper";
+import { dateRangeValidationSchema, decryptData, exportToCsv, formatYMDdate } from "@/Utils/helper";
 import { DatesRangeValue } from "@mantine/dates";
 import { useTheme } from "@mui/system";
 import moment from "moment";
@@ -114,9 +114,6 @@ const WalletReport = () => {
     status: "",
   };
 
-  const [formValues, setFormValues] = useState(InitialValues);
-
-
   const handleExportClick = () => {
     const currentData = dataRef.current;
     if (!currentData || currentData.length === 0) {
@@ -202,7 +199,7 @@ const WalletReport = () => {
       <Formik
         key={refreshKey}
         innerRef={formikRef}
-        initialValues={formValues}
+        initialValues={InitialValues}
         validationSchema={validationSchema}
         onSubmit={throttledSubmit}
       >

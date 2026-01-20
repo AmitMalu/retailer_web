@@ -8,7 +8,6 @@ import { BackSvgIcon } from "@/assets/svg";
 import { createTriangularLayout, decryptData } from "@/Utils/helper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
-import { subProductObjType } from "@/Common/interface";
 import React from "react";
 import { showErrorNotification } from "@/Utils/notifications";
 
