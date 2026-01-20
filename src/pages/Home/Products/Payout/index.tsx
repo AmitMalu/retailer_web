@@ -96,7 +96,7 @@ export default function PayoutScreen() {
                   }
 
                   navigate(`/products/payoutScreen/Info`, {
-                    state: { payoutType: card.subProduct },
+                    state: { payoutType: card },
                   });
                 };
 

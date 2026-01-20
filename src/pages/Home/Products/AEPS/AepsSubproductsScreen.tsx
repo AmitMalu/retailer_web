@@ -102,7 +102,7 @@ export default function AepsSubProductsScreen() {
                                     }
 
                                     navigate(`/products/aeps/status`, {
-                                        state: { subProduct: card.subProduct },
+                                        state: { subProduct: card },
                                     });
                                 };
 

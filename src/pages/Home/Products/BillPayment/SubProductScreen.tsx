@@ -97,7 +97,7 @@ const SubProductScreen = () => {
 
                   navigate(`/products/billPay/service`, {
                     state: {
-                      subProductId: card.subProduct.subProductId,
+                      subProductId: card.subProductId,
                     },
                   });
                 };
