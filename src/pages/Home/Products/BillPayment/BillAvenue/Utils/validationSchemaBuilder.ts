@@ -1,132 +1,73 @@
-import { EmailRegex, MobileNoRegex } from "@/Utils/helper";
-import { isDOBField } from "./fieldHelpers";
-import { ExtraParam } from "@/Common/interface";
 import * as Yup from "yup";
 
 export const buildValidationSchema = (providerDetails: any) => {
-  const schema: Record<string, any> = {
-    provider: Yup.string().required("Provider is Required"),
-    customerMobileNumber: Yup.string()
-      .required("Mobile Number is Required")
-      .matches(MobileNoRegex, "Number must be 10 digits"),
-    consumerNumber: Yup.string().required("Required"),
-    ...(providerDetails?.extra_param?.reduce(
-      (acc: Record<string, any>, param: ExtraParam, idx: number) => {
-        const fields = [
-          { field: "field_one", value: param.field_one },
-          { field: "field_two", value: param.field_two },
-          { field: "field_three", value: param.field_three },
-          { field: "field_four", value: param.field_four },
-        ];
+  const shape: Record<string, any> = {};
 
-        fields.forEach(({ field, value: label }) => {
-          if (!label) return;
+  // Provider
+  shape.provider = Yup.string().required("Provider is required");
 
-          const fieldKey = `${field}_${idx}`;
-          const lowerLabel = label.toLowerCase();
+  // Customer Mobile (mandatory for all)
+  shape.customerMobileNumber = Yup.string()
+    .required("Customer mobile number is required")
+    .matches(/^[6-9]\d{9}$/, "Enter valid 10-digit mobile number");
 
-          const isMobileField = [
-            "registered mobile number",
-            "mobile number",
-            "phone",
-            "mobile",
-          ].includes(lowerLabel);
-          if (isMobileField) {
-            return;
-          }
-
-          // validation for email
-          if (lowerLabel.includes("email")) {
-            acc[fieldKey] = Yup.string()
-              .matches(EmailRegex, "Enter valid email address")
-              .required("Email is Required");
-          }
-          // validation for dob
-          else if (isDOBField(label)) {
-            acc[fieldKey] = Yup.date()
-              .typeError("Invalid date")
-              .required(`${label} is required`);
-          }
-          // validation for other fields
-          else {
-            acc[fieldKey] = Yup.string().required(`${label} is required`);
-          }
-
-          // min/max length validations
-          if (param.min_length) {
-            acc[fieldKey] = acc[fieldKey].min(
-              param.min_length,
-              `Must be at least ${param.min_length} characters`
-            );
-          }
-          if (param.max_length) {
-            acc[fieldKey] = acc[fieldKey].max(
-              param.max_length,
-              `Must be at most ${param.max_length} characters`
-            );
-          }
-
-          // numeric validation
-          if (param._numeric) {
-            acc[fieldKey] = acc[fieldKey].matches(/^\d+$/, "Must be numeric");
-          }
-        });
-
-        return acc;
-      },
-      {} as Record<string, any>
-    ) || {}),
-  };
-
-  if (providerDetails?.extra_static_fields?.length) {
-    providerDetails.extra_static_fields.forEach((field: any) => {
-      let validator;
-
-      switch (field.type) {
-        case "date":
-          validator = Yup.date().typeError("Invalid date").nullable();
-          break;
-
-        case "number":
-          validator = Yup.number().typeError("Must be a number").nullable();
-          break;
-
-        default:
-          validator = Yup.string().nullable();
-          break;
-      }
+  // Dynamic fields
+  if (providerDetails?.fields?.length) {
+    providerDetails.fields.forEach((field: any) => {
+      let schema = Yup.string();
 
       if (field.required) {
-        validator = validator.required(`${field.label} is required`);
+        schema = schema.required(`${field.label} is required`);
       }
 
-      schema[field.key] = validator;
+      if (field.minLength) {
+        schema = schema.min(
+          field.minLength,
+          `${field.label} must be at least ${field.minLength} characters`,
+        );
+      }
+
+      if (field.maxLength) {
+        schema = schema.max(
+          field.maxLength,
+          `${field.label} must be at most ${field.maxLength} characters`,
+        );
+      }
+
+      if (field.regex) {
+        // regex can be string OR array (LIST case)
+        if (typeof field.regex === "string") {
+          try {
+            schema = schema.matches(
+              new RegExp(field.regex),
+              `Invalid ${field.label}`,
+            );
+          } catch {
+            // ignore invalid regex from backend
+          }
+        }
+      }
+
+      shape[field.name] = schema;
     });
   }
 
-  return Yup.object().shape(schema);
+  return Yup.object().shape(shape);
 };
 
-
 export const buildBillDetailsValidationSchema = (billDetails: any) => {
-    if (!billDetails) {
-        return Yup.object().shape({});
-    }
+  if (!billDetails) {
+    return Yup.object().shape({});
+  }
 
-    const minAmount = Number(billDetails.minBillPaidAmount);
-    const maxAmount = Number(billDetails.maxAllowPaidAmount);
+  const minAmount = Number(billDetails.minBillPaidAmount);
+  const maxAmount = Number(billDetails.maxAllowPaidAmount);
 
-    return Yup.object().shape({
-        amount: Yup.number()
-            .typeError("Amount must be a number")
-            .required("Amount is required")
-            .min(
-                minAmount,
-                `Amount should be at least ${minAmount}`
-            )
-            .max(
-                maxAmount,
-                `Amount should not exceed ${maxAmount}`
-            ),
-    });
+  return Yup.object().shape({
+    amount: Yup.number()
+      .typeError("Amount must be a number")
+      .required("Amount is required")
+      .min(minAmount, `Amount should be at least ${minAmount}`)
+      .max(maxAmount, `Amount should not exceed ${maxAmount}`),
+  });
 };

@@ -17,11 +17,13 @@ import FormikTextInputComponent from "@/components/Molecules/NewComponents/Formi
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import { buildBillDetailsInitialValues, buildInitialValues } from "./Utils/initialValues";
 import { buildBillDetailsValidationSchema, buildValidationSchema } from "./Utils/validationSchemaBuilder";
-import ExtraParamFields from "./Components/ExtraParamFields";
+import ExtraParamFields from "./Components/ProviderDynamicFields";
 import ExtraStaticFields from "./Components/ExtraStaticFields";
 import BillReceipt from "./Components/BillReciept";
 import BillPaymentDetails from "./Components/BillPaymentDetails";
 import AmountInput from "./Components/AmountInput";
+import ProviderDynamicFields from "./Components/ProviderDynamicFields";
+import { buildFetchBillPayload } from "./Utils/buildExtraParamPayload";
 
 interface Props {
     serviceName: string;
@@ -51,8 +53,6 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
 
     const [requestId, setRequestId] = useState('')
     // const [providerId, setProviderId] = useState('')
-
-
 
     const apiResponses = useSelector(
         (state: RootState) => state.apiResponse?.responses
@@ -84,345 +84,445 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
         [billDetails]
     );
 
-    const handleSelectProvider = async (providerId: string) => {
+    // const handleSelectProvider = async (providerId: string) => {
 
+    //     if (!providerId) {
+    //         setSelectedProviderDetails(null);
+    //         return;
+    //     }
+
+    //     let provider_id = providerId.split("-")[0];
+    //     // setProviderId(provider_id);
+
+    //     try {
+    //         setIsLoading(true);
+    //         setSelectedProviderDetails(null);
+
+    //         const billerResult = await BillAvenue_Biller_Info_Direct({
+    //             subProductId,
+    //             billerId: [provider_id]
+    //         });
+
+
+    //         if (billerResult?.statusCode == 200 || billerResult?.data?.statusCode == 200) {
+    //             // Handle nested response structure
+    //             const responseData = billerResult?.data?.data || billerResult?.data;
+
+
+    //             if (responseData) {
+    //                 // Store request ID for bill fetch
+    //                 if (responseData.requestId) {
+    //                     setRequestId(responseData.requestId);
+    //                 }
+
+    //                 // Extract biller input params
+    //                 const billerInputParams = responseData.billerInputParams || [];
+    //                 const paramsList = billerInputParams[0]?.paramsList || [];
+
+    //                 // Map consumer field from first required param
+    //                 const consumerParam = paramsList.find((p: any) => p.isOptional === "false") || paramsList[0];
+
+    //                 const consumerField = consumerParam ? {
+    //                     label: consumerParam.paramName.replace(/([A-Z])/g, ' $1').trim(),
+    //                     placeholder: `Enter ${consumerParam.paramName}`,
+    //                     maxLength: parseInt(consumerParam.maxLength) || 30,
+    //                     capitalize: false
+    //                 } : {
+    //                     label: "Consumer Number",
+    //                     placeholder: "Enter Consumer Number",
+    //                     maxLength: 30,
+    //                     capitalize: false
+    //                 };
+
+    //                 // Map extra params (excluding the first one which becomes consumer field)
+    //                 const extraParams = paramsList.slice(1).map((param: any) => ({
+    //                     field_one: param.paramName,
+    //                     field_two: param.dataType,
+    //                     field_three: param.isOptional === "false" ? "required" : "optional",
+    //                     field_four: '',
+    //                     validation: {
+    //                         required: param.isOptional === "false",
+    //                         minLength: parseInt(param.minLength) || 1,
+    //                         maxLength: parseInt(param.maxLength) || 100,
+    //                         regex: param.regEx,
+    //                         dataType: param.dataType
+    //                     }
+    //                 }));
+
+    //                 // Check if amount is editable based on billerAmountOptions
+    //                 const amountOptions = responseData.billerAmountOptions || "";
+    //                 const isAmountEditable = amountOptions.includes("PARTIAL") ||
+    //                     amountOptions.includes("ANY") ||
+    //                     responseData.billerPaymentExactness === "Exact and Above";
+
+    //                 // Map provider details
+    //                 const mappedProviderDetails = {
+    //                     provider_id: provider_id,
+    //                     provider_name: responseData.billerName || responseData.billerAliasName,
+    //                     service_name: responseData.billerCategory,
+    //                     billerId: responseData.billerId,
+    //                     billerStatus: responseData.billerStatus,
+    //                     billerCategory: responseData.billerCategory,
+    //                     billerFetchRequiremet: responseData.billerFetchRequiremet,
+    //                     billerAmountOptions: responseData.billerAmountOptions,
+    //                     billerPaymentExactness: responseData.billerPaymentExactness,
+    //                     supportBillValidation: responseData.billerSupportBillValidation,
+
+    //                     // Consumer field mapping
+    //                     consumer_field: consumerField,
+
+    //                     // Extra params (additional fields after consumer number)
+    //                     extra_param: extraParams,
+
+    //                     // Extra static fields (empty for now, can be populated if needed)
+    //                     extra_static_fields: [],
+
+    //                     // Amount editability
+    //                     amount_editable: isAmountEditable,
+
+    //                     // Store original biller data for later use
+    //                     billerData: responseData
+    //                 };
+
+
+    //                 setSelectedProviderDetails(mappedProviderDetails);
+
+    //                 // Set amount editable state
+    //                 setAmountEditable(isAmountEditable);
+
+    //                 showSuccessNotification("Provider details loaded successfully");
+    //             } else {
+    //                 showErrorNotification("No biller data found");
+    //             }
+    //         } else {
+    //             showErrorNotification(billerResult?.message || "Unable to fetch biller configuration");
+    //         }
+    //     } catch (error: any) {
+    //         console.error("BillAvenue_Biller_Info error:", error);
+
+    //         // Check if it's an authentication error
+    //         if (error?.message?.includes("401") ||
+    //             error?.message?.includes("Unauthorized") ||
+    //             error?.message?.includes("token")) {
+    //             showErrorNotification("Authentication error. Please login again.");
+    //             return;
+    //         }
+
+    //         handleCustomError(error);
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
+
+    const handleSelectProvider = async (providerId: string, formik: any) => {
         if (!providerId) {
             setSelectedProviderDetails(null);
             return;
         }
 
-        let provider_id = providerId.split("-")[0];
-        // setProviderId(provider_id);
-
         try {
             setIsLoading(true);
-            setSelectedProviderDetails(null);
 
-            const billerResult = await BillAvenue_Biller_Info_Direct({
+            const res = await BillAvenue_Biller_Info_Direct({
                 subProductId,
-                billerId: [provider_id]
+                billerId: [providerId],
             });
 
-
-            if (billerResult?.statusCode == 200 || billerResult?.data?.statusCode == 200) {
+            if (res?.data?.statusCode == 200) {
                 // Handle nested response structure
-                const responseData = billerResult?.data?.data || billerResult?.data;
+                const responseData = res?.data?.data
+                console.log(responseData, "Biller Info Response");
+                if (!responseData) throw new Error("Invalid biller response");
+                if (!responseData.requestId) throw new Error("No Request ID found");
+                setRequestId(responseData.requestId);
 
+                const paramsList =
+                    responseData?.billerInputParams?.[0]?.paramsList || [];
 
-                if (responseData) {
-                    // Store request ID for bill fetch
-                    if (responseData.requestId) {
-                        setRequestId(responseData.requestId);
-                    }
+                const fields = paramsList.map((p: any, index: number) => ({
+                    name: `field_${index}`,                // internal formik name
+                    label: p.paramName,                    // display + payload
+                    dataType: p.dataType,
+                    required: p.isOptional === "false",
+                    minLength: Number(p.minLength || 0),
+                    maxLength: Number(p.maxLength || 100),
+                    regex: p.regEx || p.values || null,
+                }));
 
-                    // Extract biller input params
-                    const billerInputParams = responseData.billerInputParams || [];
-                    const paramsList = billerInputParams[0]?.paramsList || [];
-
-                    // Map consumer field from first required param
-                    const consumerParam = paramsList.find((p: any) => p.isOptional === "false") || paramsList[0];
-
-                    const consumerField = consumerParam ? {
-                        label: consumerParam.paramName.replace(/([A-Z])/g, ' $1').trim(),
-                        placeholder: `Enter ${consumerParam.paramName}`,
-                        maxLength: parseInt(consumerParam.maxLength) || 30,
-                        capitalize: false
-                    } : {
-                        label: "Consumer Number",
-                        placeholder: "Enter Consumer Number",
-                        maxLength: 30,
-                        capitalize: false
-                    };
-
-                    // Map extra params (excluding the first one which becomes consumer field)
-                    const extraParams = paramsList.slice(1).map((param: any) => ({
-                        field_one: param.paramName,
-                        field_two: param.dataType,
-                        field_three: param.isOptional === "false" ? "required" : "optional",
-                        field_four: '',
-                        validation: {
-                            required: param.isOptional === "false",
-                            minLength: parseInt(param.minLength) || 1,
-                            maxLength: parseInt(param.maxLength) || 100,
-                            regex: param.regEx,
-                            dataType: param.dataType
-                        }
-                    }));
-
-                    // Check if amount is editable based on billerAmountOptions
-                    const amountOptions = responseData.billerAmountOptions || "";
-                    const isAmountEditable = amountOptions.includes("PARTIAL") ||
-                        amountOptions.includes("ANY") ||
-                        responseData.billerPaymentExactness === "Exact and Above";
-
-                    // Map provider details
-                    const mappedProviderDetails = {
-                        provider_id: provider_id,
-                        provider_name: responseData.billerName || responseData.billerAliasName,
-                        service_name: responseData.billerCategory,
-                        billerId: responseData.billerId,
-                        billerStatus: responseData.billerStatus,
-                        billerCategory: responseData.billerCategory,
-                        billerFetchRequiremet: responseData.billerFetchRequiremet,
-                        billerAmountOptions: responseData.billerAmountOptions,
-                        billerPaymentExactness: responseData.billerPaymentExactness,
-                        supportBillValidation: responseData.billerSupportBillValidation,
-
-                        // Consumer field mapping
-                        consumer_field: consumerField,
-
-                        // Extra params (additional fields after consumer number)
-                        extra_param: extraParams,
-
-                        // Extra static fields (empty for now, can be populated if needed)
-                        extra_static_fields: [],
-
-                        // Amount editability
-                        amount_editable: isAmountEditable,
-
-                        // Store original biller data for later use
-                        billerData: responseData
-                    };
-
-
-                    setSelectedProviderDetails(mappedProviderDetails);
-
-                    // Set amount editable state
-                    setAmountEditable(isAmountEditable);
-
-                    showSuccessNotification("Provider details loaded successfully");
-                } else {
-                    showErrorNotification("No biller data found");
-                }
+                setSelectedProviderDetails({
+                    billerId: responseData.billerId,
+                    requestId: responseData.requestId,
+                    fields,
+                    billerData: responseData,
+                });
+                showSuccessNotification("Provider details loaded successfully");
             } else {
-                showErrorNotification(billerResult?.message || "Unable to fetch biller configuration");
+                showErrorNotification(res?.data?.message || "Unable to fetch biller configuration");
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error("BillAvenue_Biller_Info error:", error);
-
-            // Check if it's an authentication error
-            if (error?.message?.includes("401") ||
-                error?.message?.includes("Unauthorized") ||
-                error?.message?.includes("token")) {
-                showErrorNotification("Authentication error. Please login again.");
-                return;
-            }
-
             handleCustomError(error);
         } finally {
             setIsLoading(false);
         }
-    };
+    }
 
-    const handleFetchDetailsSubmit = async (values: FormikValues) => {
+    // const handleFetchDetailsSubmit = async (values: FormikValues) => {
+    //     try {
+    //         setIsLoading(true);
+
+    //         if (!selectedProviderDetails?.billerData) {
+    //             showErrorNotification("Please select a provider first");
+    //             return;
+    //         }
+
+    //         // Build input params from form values based on biller configuration
+    //         const inputParams: any[] = [];
+    //         const billerInputParams = selectedProviderDetails.billerData.billerInputParams;
+
+    //         if (billerInputParams?.length) {
+    //             billerInputParams.forEach((paramGroup: any) => {
+    //                 if (paramGroup.paramsList?.length) {
+    //                     paramGroup.paramsList.forEach((param: any) => {
+    //                         const paramName = param.paramName;
+
+
+    //                         // Map form field names to parameter names
+    //                         const fieldMappings: { [key: string]: string } = {
+    //                             // Consumer/Customer ID variations
+    //                             'CustomerId': 'consumerNumber',
+    //                             'Customer Id': 'consumerNumber',
+    //                             'customerid': 'consumerNumber',
+    //                             'ConsumerNumber': 'consumerNumber',
+    //                             'Consumer Number': 'consumerNumber',
+    //                             'AccountNumber': 'consumerNumber',
+    //                             'Account Number': 'consumerNumber',
+
+    //                             // Mobile variations
+    //                             'CustomerMobile': 'customerMobileNumber',
+    //                             'Customer Mobile': 'customerMobileNumber',
+    //                             'customerMobile': 'customerMobileNumber',
+    //                             'MobileNumber': 'customerMobileNumber',
+    //                             'Mobile Number': 'customerMobileNumber',
+
+    //                             // Vehicle variations (for FASTag)
+    //                             'Vehicle Number': 'consumerNumber',
+    //                             'VehicleNumber': 'consumerNumber',
+    //                             'vehicleNumber': 'consumerNumber',
+
+    //                             // Other common variations
+    //                             'ServiceNumber': 'consumerNumber',
+    //                             'Service Number': 'consumerNumber',
+    //                             'CANumber': 'consumerNumber',
+    //                             'CA Number': 'consumerNumber',
+    //                         };
+
+    //                         let paramValue = '';
+
+    //                         // Try exact match first
+    //                         if (fieldMappings[paramName]) {
+    //                             paramValue = values[fieldMappings[paramName]];
+    //                         }
+    //                         // Try case-insensitive match
+    //                         else if (!paramValue) {
+    //                             const matchingKey = Object.keys(values).find(key =>
+    //                                 key.toLowerCase() === paramName.toLowerCase().replace(/\s+/g, '')
+    //                             );
+
+    //                             if (matchingKey) {
+    //                                 paramValue = values[matchingKey];
+    //                             }
+    //                         }
+    //                         // Try to find by partial match
+    //                         else if (!paramValue) {
+    //                             const normalizedParamName = paramName.toLowerCase().replace(/[\s_-]/g, '');
+    //                             const matchingKey = Object.keys(values).find(key =>
+    //                                 key.toLowerCase().replace(/[\s_-]/g, '').includes(normalizedParamName) ||
+    //                                 normalizedParamName.includes(key.toLowerCase().replace(/[\s_-]/g, ''))
+    //                             );
+
+    //                             if (matchingKey) {
+    //                                 paramValue = values[matchingKey];
+    //                             }
+    //                         }
+
+    //                         // Only add non-empty values
+    //                         if (paramValue && String(paramValue).trim() !== '') {
+    //                             inputParams.push({
+    //                                 paramName: paramName,
+    //                                 paramValue: String(paramValue).trim()
+    //                             });
+    //                         } else {
+    //                             // If it's a required field, show error
+    //                             if (param.isOptional === "false") {
+    //                                 showErrorNotification(`Missing required field: ${paramName}. Please fill all required fields.`);
+    //                                 setIsLoading(false);
+    //                                 return;
+    //                             }
+    //                         }
+    //                     });
+    //                 }
+    //             });
+    //         }
+
+
+    //         // Validate that we have at least one input param
+    //         if (inputParams.length === 0) {
+    //             showErrorNotification("No input parameters found. Please fill all required fields.");
+    //             return;
+    //         }
+
+    //         // Build the bill fetch payload
+    //         const billFetchPayload = {
+    //             subProductId: subProductId,
+    //             requestId: requestId,
+    //             agentId: "CC01CC01513515340681",
+    //             agentDeviceInfo: {
+    //                 ip: "192.168.2.73",
+    //                 initChannel: "AGT",
+    //                 mac: "01-23-45-67-89-ab"
+    //             },
+    //             customerInfo: {
+    //                 customerMobile: values.customerMobileNumber || "",
+    //                 customerEmail: values.customerEmail || "",
+    //                 customerAdhaar: "",
+    //                 customerPan: ""
+    //             },
+    //             billerId: selectedProviderDetails.provider_id,
+    //             inputParams: {
+    //                 input: inputParams
+    //             }
+    //         };
+
+
+    //         // Call BillAvenue Bill Fetch API
+    //         const billFetchResult = await BillAvenue_Bill_Fetch_Direct(billFetchPayload);
+
+    //         // Handle both response structures: { statusCode: 200, data: {...} } OR { data: { statusCode: 200, data: {...} } }
+    //         const statusCode = billFetchResult?.statusCode || billFetchResult?.data?.statusCode;
+    //         const responseData = billFetchResult?.data || billFetchResult?.data?.data;
+
+    //         if (statusCode === 200 || statusCode === "200") {
+
+    //             if (responseData?.responseCode === "000") {
+    //                 showSuccessNotification("Bill details fetched successfully");
+
+    //                 // Extract data from the new response structure
+    //                 const billerResponse = responseData.billerResponse || {};
+    //                 const additionalInfo = responseData.additionalInfo?.info || [];
+
+    //                 // Convert additionalInfo array to object for easier access
+    //                 const additionalInfoMap: { [key: string]: string } = {};
+    //                 additionalInfo.forEach((info: any) => {
+    //                     additionalInfoMap[info.infoName] = info.infoValue;
+    //                 });
+
+    //                 // Map the response to expected bill details structure
+    //                 const mappedBillDetails = {
+    //                     // Main bill information
+    //                     CustomerName: billerResponse.customerName || "",
+    //                     Billamount: billerResponse.billAmount || "0",
+    //                     billNumber: billerResponse.billNumber || "",
+    //                     billDate: billerResponse.billDate || "",
+    //                     Duedate: billerResponse.dueDate || billerResponse.billDueDate || "",
+
+    //                     // Amount constraints from additionalInfo
+    //                     minBillPaidAmount: parseFloat(
+    //                         additionalInfoMap["Minimum Amount for Top-up"] ||
+    //                         additionalInfoMap["Minimum Amount"] ||
+    //                         additionalInfoMap["Min Amount"] ||
+    //                         "0"
+    //                     ),
+    //                     maxAllowPaidAmount: parseFloat(
+    //                         additionalInfoMap["Maximum Permissible Recharge Amount"] ||
+    //                         additionalInfoMap["Maximum Amount"] ||
+    //                         additionalInfoMap["Max Amount"] ||
+    //                         "999999"
+    //                     ),
+
+    //                     // Additional information (all fields)
+    //                     additionalInfo: additionalInfoMap,
+
+    //                     // Store original response for reference
+    //                     billerResponse: billerResponse,
+    //                     inputParams: responseData.inputParams,
+
+    //                     // Store form values and biller data100000
+    //                     formValues: values,
+    //                     billerData: selectedProviderDetails.billerData,
+    //                     requestId: requestId
+    //                 };
+
+
+    //                 setBillDetails(mappedBillDetails);
+    //                 setBillModalOpened(true);
+
+    //                 // Determine if amount is editable
+    //                 const hasAmountRange = mappedBillDetails.maxAllowPaidAmount > mappedBillDetails.minBillPaidAmount;
+    //                 const isEditable = selectedProviderDetails.amount_editable || hasAmountRange;
+    //                 setAmountEditable(isEditable);
+
+    //             } else {
+    //                 const errorMessage = (responseData?.errorInfo?.error as any[])?.[0]?.errorMessage ||
+    //                     "Unable to fetch bill details";
+    //                 showErrorNotification(errorMessage);
+    //             }
+    //         } else {
+    //             const errorMsg = billFetchResult?.message || billFetchResult?.data?.message || "Unable to fetch bill details";
+    //             showErrorNotification(errorMsg);
+    //         }
+    //     } catch (error: any) {
+    //         await handleCustomError(error);
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
+
+    const handleFetchDetailsSubmit = async (
+        values: FormikValues,
+        { setSubmitting }: any
+    ) => {
+        console.log("SUBMIT VALUES", values);
+
+        // stop double submit
+        setSubmitting(true);
+
         try {
-            setIsLoading(true);
+            const payload = buildFetchBillPayload(values, selectedProviderDetails, subProductId);
+            console.log("FINAL PAYLOAD", payload);
 
-            if (!selectedProviderDetails?.billerData) {
-                showErrorNotification("Please select a provider first");
-                return;
-            }
-
-            // Build input params from form values based on biller configuration
-            const inputParams: any[] = [];
-            const billerInputParams = selectedProviderDetails.billerData.billerInputParams;
-
-            if (billerInputParams?.length) {
-                billerInputParams.forEach((paramGroup: any) => {
-                    if (paramGroup.paramsList?.length) {
-                        paramGroup.paramsList.forEach((param: any) => {
-                            const paramName = param.paramName;
-
-
-                            // Map form field names to parameter names
-                            const fieldMappings: { [key: string]: string } = {
-                                // Consumer/Customer ID variations
-                                'CustomerId': 'consumerNumber',
-                                'Customer Id': 'consumerNumber',
-                                'customerid': 'consumerNumber',
-                                'ConsumerNumber': 'consumerNumber',
-                                'Consumer Number': 'consumerNumber',
-                                'AccountNumber': 'consumerNumber',
-                                'Account Number': 'consumerNumber',
-
-                                // Mobile variations
-                                'CustomerMobile': 'customerMobileNumber',
-                                'Customer Mobile': 'customerMobileNumber',
-                                'customerMobile': 'customerMobileNumber',
-                                'MobileNumber': 'customerMobileNumber',
-                                'Mobile Number': 'customerMobileNumber',
-
-                                // Vehicle variations (for FASTag)
-                                'Vehicle Number': 'consumerNumber',
-                                'VehicleNumber': 'consumerNumber',
-                                'vehicleNumber': 'consumerNumber',
-
-                                // Other common variations
-                                'ServiceNumber': 'consumerNumber',
-                                'Service Number': 'consumerNumber',
-                                'CANumber': 'consumerNumber',
-                                'CA Number': 'consumerNumber',
-                            };
-
-                            let paramValue = '';
-
-                            // Try exact match first
-                            if (fieldMappings[paramName]) {
-                                paramValue = values[fieldMappings[paramName]];
-                            }
-                            // Try case-insensitive match
-                            else if (!paramValue) {
-                                const matchingKey = Object.keys(values).find(key =>
-                                    key.toLowerCase() === paramName.toLowerCase().replace(/\s+/g, '')
-                                );
-
-                                if (matchingKey) {
-                                    paramValue = values[matchingKey];
-                                }
-                            }
-                            // Try to find by partial match
-                            else if (!paramValue) {
-                                const normalizedParamName = paramName.toLowerCase().replace(/[\s_-]/g, '');
-                                const matchingKey = Object.keys(values).find(key =>
-                                    key.toLowerCase().replace(/[\s_-]/g, '').includes(normalizedParamName) ||
-                                    normalizedParamName.includes(key.toLowerCase().replace(/[\s_-]/g, ''))
-                                );
-
-                                if (matchingKey) {
-                                    paramValue = values[matchingKey];
-                                }
-                            }
-
-                            // Only add non-empty values
-                            if (paramValue && String(paramValue).trim() !== '') {
-                                inputParams.push({
-                                    paramName: paramName,
-                                    paramValue: String(paramValue).trim()
-                                });
-                            } else {
-                                // If it's a required field, show error
-                                if (param.isOptional === "false") {
-                                    showErrorNotification(`Missing required field: ${paramName}. Please fill all required fields.`);
-                                    setIsLoading(false);
-                                    return;
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-
-
-            // Validate that we have at least one input param
-            if (inputParams.length === 0) {
-                showErrorNotification("No input parameters found. Please fill all required fields.");
-                return;
-            }
-
-            // Build the bill fetch payload
-            const billFetchPayload = {
-                requestId: requestId,
-                agentId: "CC01CC01513515340681",
-                agentDeviceInfo: {
-                    ip: "192.168.2.73",
-                    initChannel: "AGT",
-                    mac: "01-23-45-67-89-ab"
-                },
-                customerInfo: {
-                    customerMobile: values.customerMobileNumber || "",
-                    customerEmail: values.customerEmail || "",
-                    customerAdhaar: "",
-                    customerPan: ""
-                },
-                billerId: selectedProviderDetails.provider_id,
-                inputParams: {
-                    input: inputParams
-                }
-            };
-
-
-            // Call BillAvenue Bill Fetch API
-            const billFetchResult = await BillAvenue_Bill_Fetch_Direct(billFetchPayload);
-
+            const res = await BillAvenue_Bill_Fetch_Direct(payload);
             // Handle both response structures: { statusCode: 200, data: {...} } OR { data: { statusCode: 200, data: {...} } }
-            const statusCode = billFetchResult?.statusCode || billFetchResult?.data?.statusCode;
-            const responseData = billFetchResult?.data || billFetchResult?.data?.data;
+            const apiStatus = res?.statusCode;
+            const responseData = res?.data;
 
-            if (statusCode === 200 || statusCode === "200") {
+            console.log(res,"response");
 
-                if (responseData?.responseCode === "000") {
-                    showSuccessNotification("Bill details fetched successfully");
-
-                    // Extract data from the new response structure
-                    const billerResponse = responseData.billerResponse || {};
-                    const additionalInfo = responseData.additionalInfo?.info || [];
-
-                    // Convert additionalInfo array to object for easier access
-                    const additionalInfoMap: { [key: string]: string } = {};
-                    additionalInfo.forEach((info: any) => {
-                        additionalInfoMap[info.infoName] = info.infoValue;
-                    });
-
-                    // Map the response to expected bill details structure
-                    const mappedBillDetails = {
-                        // Main bill information
-                        CustomerName: billerResponse.customerName || "",
-                        Billamount: billerResponse.billAmount || "0",
-                        billNumber: billerResponse.billNumber || "",
-                        billDate: billerResponse.billDate || "",
-                        Duedate: billerResponse.dueDate || billerResponse.billDueDate || "",
-
-                        // Amount constraints from additionalInfo
-                        minBillPaidAmount: parseFloat(
-                            additionalInfoMap["Minimum Amount for Top-up"] ||
-                            additionalInfoMap["Minimum Amount"] ||
-                            additionalInfoMap["Min Amount"] ||
-                            "0"
-                        ),
-                        maxAllowPaidAmount: parseFloat(
-                            additionalInfoMap["Maximum Permissible Recharge Amount"] ||
-                            additionalInfoMap["Maximum Amount"] ||
-                            additionalInfoMap["Max Amount"] ||
-                            "999999"
-                        ),
-
-                        // Additional information (all fields)
-                        additionalInfo: additionalInfoMap,
-
-                        // Store original response for reference
-                        billerResponse: billerResponse,
-                        inputParams: responseData.inputParams,
-
-                        // Store form values and biller data100000
-                        formValues: values,
-                        billerData: selectedProviderDetails.billerData,
-                        requestId: requestId
-                    };
-
-
-                    setBillDetails(mappedBillDetails);
-                    setBillModalOpened(true);
-
-                    // Determine if amount is editable
-                    const hasAmountRange = mappedBillDetails.maxAllowPaidAmount > mappedBillDetails.minBillPaidAmount;
-                    const isEditable = selectedProviderDetails.amount_editable || hasAmountRange;
-                    setAmountEditable(isEditable);
-
-                } else {
-                    const errorMessage = (responseData?.errorInfo?.error as any[])?.[0]?.errorMessage ||
-                        "Unable to fetch bill details";
-                    showErrorNotification(errorMessage);
-                }
-            } else {
-                const errorMsg = billFetchResult?.message || billFetchResult?.data?.message || "Unable to fetch bill details";
-                showErrorNotification(errorMsg);
+            // 🔹 API-level success
+            if (apiStatus !== 200) {
+                showErrorNotification(res?.data?.message || "Unable to fetch bill");
+                return;
             }
-        } catch (error: any) {
-            await handleCustomError(error);
+
+            // 🔹 Business-level success
+            if (responseData?.responseCode === "000") {
+                showSuccessNotification("Bill details fetched successfully");
+                setBillDetails(responseData);
+                setBillModalOpened(true);
+                return;
+            }
+
+            // 🔹 Business-level failure
+            showErrorNotification(
+                responseData?.responseMessage || "Bill fetch failed"
+            );
+        } catch (err) {
+            handleCustomError(err);
         } finally {
-            setIsLoading(false);
+            setSubmitting(false);
         }
-    };
+    }
+
 
     const processTransaction = async (
         values: FormikValues,
@@ -514,6 +614,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
         }
     }
 
+    // 1st API FOR PROVIDER LIST
     useEffect(() => {
         if (!serviceName || subProductId === undefined) return;
 
@@ -575,11 +676,13 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                         enableReinitialize
                     >
                         {(formik) => {
+                            console.log(validationSchema, "schea");
+                            console.log("Formik values:", formik.values);
+                            console.log("Formik errors:", formik.errors);
+
                             const {
                                 handleSubmit,
                             } = formik;
-
-                            const consumerField = selectedProviderDetails?.consumer_field || {};
 
                             return (
                                 <>
@@ -589,15 +692,16 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                                                 name="provider"
                                                 placeholder="Select Provider"
                                                 label="Select Provider"
+                                                value={formik.values.provider}
                                                 size="md"
-                                                data={providerList?.map((service: any, index: any) => ({
-                                                    value: `${service.providerId}-${index}`,
+                                                data={providerList?.map((service: any) => ({
+                                                    value: `${service.providerId}`,
                                                     label: service.providerName,
                                                 })) || []}
                                                 withAsterisk
                                                 searchable
                                                 allowDeselect
-                                                onChange={(value: any) => handleSelectProvider(value)}
+                                                onChange={(value: any) => handleSelectProvider(value, formik)}
                                             />
                                         </div>
 
@@ -618,26 +722,13 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                                                         fullWidth
                                                     />
                                                 </div>
-                                                <div className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)] ">
-                                                    <FormikTextInputComponent
-                                                        name="consumerNumber"
-                                                        label={consumerField.label || "Consumer Number"}
-                                                        placeholder={consumerField.placeholder || "Enter Consumer Number"}
-                                                        capitalize={consumerField.capitalize || false}
-                                                        maxLength={consumerField.maxLength || 30}
-                                                        size="md"
-                                                        withAsterisk
-                                                        fullWidth
-                                                    />
-                                                </div>
                                             </>
                                         )}
 
                                         {/* Dynamic provider-dependent fields */}
-                                        <ExtraParamFields params={selectedProviderDetails?.extra_param} />
-
-                                        {/* Static vendor fields */}
-                                        <ExtraStaticFields fields={selectedProviderDetails?.extra_static_fields} />
+                                        {selectedProviderDetails?.fields && (
+                                            <ProviderDynamicFields fields={selectedProviderDetails.fields} />
+                                        )}
                                     </div>
 
                                     {/* Submit Button */}
@@ -730,7 +821,6 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                             </div>
                         )}
                 </Modal>
-
 
                 {/* Transaction Reciept */}
                 <Drawer

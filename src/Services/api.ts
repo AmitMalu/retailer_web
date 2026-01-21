@@ -56,7 +56,7 @@ export const BillAvenue_Bill_Payment = async (payload: any) => {
     const response = await api.post(
       API_ROUTES.BILLAVENUE_BILL_PAYMENT,
       payload,
-      await createHeaders()
+      await createHeaders(),
     );
     return response;
   } catch (error: any) {
@@ -136,7 +136,7 @@ export const Prefund_Request = async (data: FormData) =>
   await api.post(
     `${API_ROUTES.PREFUND_REQUEST}`,
     data,
-    await createMultipartHeaders()
+    await createMultipartHeaders(),
   );
 
 export const Fund_Transfer = async (data: FundTransferProps) =>
@@ -149,7 +149,7 @@ export const Resend_Otp_Fund_Reversal = async (id: string) =>
   await api.post(
     `${API_ROUTES.FUND_REVERSAL_RESEND_OTP}/${id}`,
     {},
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const Wallet_To_Wallet = async (data: WalletToWalletProps) =>
@@ -172,7 +172,7 @@ export const User_Profile = async (id: string) =>
 
 export const Child_Member_List = async (
   id: string,
-  params?: ViewUserAPIProps
+  params?: ViewUserAPIProps,
 ) => {
   const queryParams = new URLSearchParams(params).toString();
 
@@ -183,7 +183,7 @@ export const Child_Member_List = async (
 
 export const Single_Hierarchy_Child_List = async (
   id: string,
-  params?: ViewUserAPIProps
+  params?: ViewUserAPIProps,
 ) => {
   const queryParams = new URLSearchParams(params).toString();
 
@@ -196,73 +196,73 @@ export const Create_White_Label = async (data: FormData) =>
   await api.post(
     `${API_ROUTES.CREATE_WHITE_LABEL}`,
     data,
-    await createMultipartHeaders()
+    await createMultipartHeaders(),
   );
 
 export const Create_Super_Distributor = async (data: FormData) =>
   await api.post(
     `${API_ROUTES.CREATE_SUPER_DISTRIBUTOR}`,
     data,
-    await createMultipartHeaders()
+    await createMultipartHeaders(),
   );
 
 export const Create_Partner = async (data: FormData) =>
   await api.post(
     `${API_ROUTES.CREATE_PARTNER}`,
     data,
-    await createMultipartHeaders()
+    await createMultipartHeaders(),
   );
 
 export const Create_Distributor = async (data: FormData) =>
   await api.post(
     `${API_ROUTES.CREATE_DISTRIBUTOR}`,
     data,
-    await createMultipartHeaders()
+    await createMultipartHeaders(),
   );
 
 export const Create_Retailer = async (data: FormData) =>
   await api.post(
     `${API_ROUTES.CREATE_RETAILER}`,
     data,
-    await createMultipartHeaders()
+    await createMultipartHeaders(),
   );
 
 export const Commission_And_Charges_Report = async (
   params: Record<string, string>,
-  bodyRequest: CommissionAndChargesRequest
+  bodyRequest: CommissionAndChargesRequest,
 ) => {
   const queryParams = new URLSearchParams(params).toString();
 
   return await api.post(
     `${API_ROUTES.COMMISSION_AND_CHARGES}?${queryParams}`,
     bodyRequest,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
 export const Wallet_Report = async (
   params: Record<string, string>,
-  bodyRequest: WalletRequest
+  bodyRequest: WalletRequest,
 ) => {
   const queryParams = new URLSearchParams(params).toString();
 
   return await api.post(
     `${API_ROUTES.WALLET_REPORT}?${queryParams}`,
     bodyRequest,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
 export const Network_Transaction_Report = async (
   params: Record<string, string>,
-  bodyRequest: NetworkTransactionRequest
+  bodyRequest: NetworkTransactionRequest,
 ) => {
   const queryParams = new URLSearchParams(params).toString();
 
   return await api.post(
     `${API_ROUTES.NETWORK_TRANSACTION_REPORT}?${queryParams}`,
     bodyRequest,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -270,15 +270,15 @@ export const Transaction_Details = async (data: TransactionDetailsParams) =>
   await api.post(
     `${API_ROUTES.TRANSACTION_DETAILS}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const fetch_raised_tickets = async (params: RaisedTicketParams) => {
   // Convert all values to string for URLSearchParams
   const queryParams = new URLSearchParams(
     Object.fromEntries(
-      Object.entries(params).map(([key, value]) => [key, String(value ?? "")])
-    )
+      Object.entries(params).map(([key, value]) => [key, String(value ?? "")]),
+    ),
   ).toString();
 
   const url = `${API_ROUTES.FETCH_RAISED_TICKET}${queryParams ? `?${queryParams}` : ""}`;
@@ -290,7 +290,7 @@ export const Raise_Ticket = async (data: FormData) =>
   await api.post(
     `${API_ROUTES.TICKET_RAISE}`,
     data,
-    await createMultipartHeaders()
+    await createMultipartHeaders(),
   );
 
 export const Issue_Type_Dropdown = async () =>
@@ -319,11 +319,11 @@ export const Fetch_Hierarchy_Type_Dropdown = async () =>
   await api.get(`${API_ROUTES.HIERARCHY_TYPE_LIST}`, await createHeaders());
 
 export const Fetch_Hierarchy_List_Dropdown = async (
-  selectedHierarchyCode: string
+  selectedHierarchyCode: string,
 ) =>
   await api.get(
     `${API_ROUTES.HIERARCHY_LIST}/${selectedHierarchyCode}`,
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const Fetch_Card_Bin_Detail = async (data: FetchCardBinDetailProps) =>
@@ -333,7 +333,7 @@ export const Validate_Transaction = async (data: ValidateTransactionProps) =>
   await api.post(
     `${API_ROUTES.VALIDATE_TRANSACTION}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const Create_Order = async (data: CreateOrderProps) =>
@@ -341,7 +341,7 @@ export const Create_Order = async (data: CreateOrderProps) =>
 
 export const Fetch_Sub_User = async (
   id: string | number,
-  params?: FetchSubUserRequest
+  params?: FetchSubUserRequest,
 ) => {
   const safeParams = params ?? {};
   // Convert all values to string for URLSearchParams
@@ -350,8 +350,8 @@ export const Fetch_Sub_User = async (
       Object.entries(safeParams).map(([key, value]) => [
         key,
         String(value ?? ""),
-      ])
-    )
+      ]),
+    ),
   ).toString();
 
   const url = `${API_ROUTES.FETCH_SUB_USER}/${id}${queryParams ? `?${queryParams}` : ""}`;
@@ -363,17 +363,17 @@ export const Create_Sub_User = async (data: SubuserCreationProps) =>
   await api.post(`${API_ROUTES.CREATE_SUB_USER}`, data, await createHeaders());
 
 export const Payout_Save_Beneficiary = async (
-  data: PayoutSaveBeneficiaryProps
+  data: PayoutSaveBeneficiaryProps,
 ) =>
   await api.post(`${API_ROUTES.SAVE_BENEFICIARY}`, data, await createHeaders());
 
 export const Edit_Beneficiary_Bank_Details = async (
-  data: EditBeneficiaryBankRequest
+  data: EditBeneficiaryBankRequest,
 ) =>
   await api.put(
     `${API_ROUTES.EDIT_BENEFICIARY_BANK_DETAILS}/${data.id}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const Payout_Send = async (data: PayoutSendBeneficiaryProps) =>
@@ -383,27 +383,27 @@ export const Payout_Success_Callback = async (data: any) =>
   await api.post(
     `${API_ROUTES.PAYOUT_SUCCESS_CALLBACK}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const Payout_Get_Bank_Details = async (ifscCode: string) =>
   await api.get(
     `${API_ROUTES.GET_BANK_DETAILS}/${ifscCode}`,
-    await createHeaders()
+    await createHeaders(),
   );
 
 // export const Payout_GetAll_Payout_BankDetails = async () =>
 // await api.get(`${API_ROUTES.GET_PAYOUT_ALL_DETAILS}`, await createHeaders());
 
 export const Payout_GetAll_Payout_BankDetails = async (
-  params: PayoutBankDetailsParams
+  params: PayoutBankDetailsParams,
 ) => {
   //////////////
   // Convert all values to string for URLSearchParams
   const queryParams = new URLSearchParams(
     Object.fromEntries(
-      Object.entries(params).map(([key, value]) => [key, String(value ?? "")])
-    )
+      Object.entries(params).map(([key, value]) => [key, String(value ?? "")]),
+    ),
   ).toString();
 
   const url = `${API_ROUTES.GET_PAYOUT_ALL_DETAILS}${queryParams ? `?${queryParams}` : ""}`;
@@ -444,14 +444,14 @@ export const Get_Provider_List = async (data: { subProductId: string }) =>
   await api.post(
     API_ROUTES.GET_PROVIDER_LIST,
     { subProductId: data.subProductId },
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const Get_Services_List = async (data: { subProductId: string }) =>
   await api.post(
     API_ROUTES.GET_SERVICES_LIST,
     { subProductId: data.subProductId },
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const Get_Providers = async (data: {
@@ -475,7 +475,7 @@ export const Fetch_Transaction_Receipt = async (transactionId: string) => {
   return await api.post(
     `${API_ROUTES.FETCH_TRANSACTION_RECEIPT}/${transactionId}`,
     {},
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -483,7 +483,7 @@ export const Find_Remitter = async (data: any) => {
   return await api.post(
     `${API_ROUTES.FIND_REMITTER}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -491,7 +491,7 @@ export const Register_Remitter = async (data: any) => {
   return await api.post(
     `${API_ROUTES.REGISTER_REMITTER}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -499,7 +499,7 @@ export const Update_Remitter = async (data: any) => {
   return await api.put(
     `${API_ROUTES.UPDATE_REMITTER}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -507,7 +507,7 @@ export const Remitter_Send_Otp = async (mobileNumber: string) => {
   return await api.post(
     `${API_ROUTES.REMITTER_SEND_OTP}`,
     { mobile: mobileNumber },
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -515,7 +515,7 @@ export const Remitter_Resend_Otp = async (mobileNumber: string) => {
   return await api.post(
     `${API_ROUTES.REMITTER_RESEND_OTP}`,
     { mobile: mobileNumber },
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -523,14 +523,14 @@ export const Remitter_Kyc = async (data: any) => {
   return await api.post(
     `${API_ROUTES.REMITTER_KYC}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
 export const Remitter_details = async (mobile: string) => {
   return await api.get(
     `${API_ROUTES.FETCH_REMITTER_DETAILS}/${mobile}`,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -538,7 +538,7 @@ export const Register_Beneficiary = async (data: any) => {
   return await api.post(
     `${API_ROUTES.REGISTER_BENEFICIARY}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -552,8 +552,8 @@ export const Fetch_Beneficiaries = async (data: Record<string, any>) => {
       Object.entries({ page, size }).map(([key, value]) => [
         key,
         String(value ?? ""),
-      ])
-    )
+      ]),
+    ),
   ).toString();
 
   // Build final URL
@@ -567,7 +567,7 @@ export const edit_beneficiary = async (data: any) => {
   return await api.put(
     `${API_ROUTES.EDIT_BENEFICIARY}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -575,7 +575,7 @@ export const delete_beneficiary = async (data: any) => {
   return await api.post(
     `${API_ROUTES.DELETE_BENEFICIARY}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -583,7 +583,7 @@ export const Dmt_Tranx_Send_Otp = async (data: any) => {
   return await api.post(
     `${API_ROUTES.DMT_TRANX_SEND_OTP}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -591,7 +591,7 @@ export const Dmt_Transaction = async (data: any) => {
   return await api.post(
     `${API_ROUTES.DMT_TRANSACTION}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -601,7 +601,7 @@ export const Check_Aeps_Onboard_Status = async (data: any) => {
     const response = await api.post(
       API_ROUTES.AEPS_CHECK_STATUS,
       data,
-      await createHeaders()
+      await createHeaders(),
     );
 
     return response;
@@ -614,7 +614,7 @@ export const AepsMerchantOnboardAPI = async (data: any) => {
   return await api.post(
     `${API_ROUTES.AEPS_MERCHANT_ONBOARD}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -622,7 +622,7 @@ export const Aeps_Send_Otp = async (data: any) => {
   return await api.post(
     `${API_ROUTES.AEPS_SEND_OTP}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -630,7 +630,7 @@ export const Aeps_Resend_Otp = async (data: any) => {
   return await api.post(
     `${API_ROUTES.AEPS_RESEND_OTP}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -638,7 +638,7 @@ export const Aeps_Verify_Otp = async (data: any) => {
   return await api.post(
     `${API_ROUTES.AEPS_VALIDATE_EKYC}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -650,7 +650,7 @@ export const Aeps_TwoFactor_Verify = async (data: any) => {
   return await api.post(
     `${API_ROUTES.AEPS_TWO_FA}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -658,7 +658,7 @@ export const Aeps_Cash_Withdrawal = async (data: any) => {
   return await api.post(
     `${API_ROUTES.CASH_WITHDRAWAL}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -666,7 +666,7 @@ export const Aeps_Balance_Inquiry = async (data: any) => {
   return await api.post(
     `${API_ROUTES.BALANCE_INQUIRY}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -678,7 +678,7 @@ export const Check_Aeps_2FA_Status = async ({
   return await api.post(
     `${API_ROUTES.AEPS_2FA_CHECK_STATUS}`,
     { retailerId },
-    await createHeaders()
+    await createHeaders(),
   );
 };
 
@@ -686,35 +686,35 @@ export const Adhaar_Verification = async (aadhaarNumber: number) =>
   await api.post(
     `${API_ROUTES.ADHAAR_VERIFICATION}?aadhaarNumber=${aadhaarNumber}`,
     {},
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const Pan_Verification = async (panNumber: string) =>
   await api.post(
     `${API_ROUTES.PAN_VERIFICATION}?panNumber=${panNumber}`,
     {},
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const Email_Verification = async (emailId: string) =>
   await api.post(
     `${API_ROUTES.EMAIL_VERIFICATION}`,
     { email: emailId },
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const Adhaar_Pan_Link = async (aadhaarNumber: number) =>
   await api.post(
     `${API_ROUTES.ADHAAR_PAN_LINK}?aadhaarNumber=${aadhaarNumber}`,
     {},
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const Voter_Id_Verification = async (voterid: string) =>
   await api.post(
     `${API_ROUTES.VOTER_ID_VERIFICATION}?voterid=${voterid}`,
     {},
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const Bank_Verification = async ({
@@ -725,7 +725,7 @@ export const Bank_Verification = async ({
   await api.post(
     `${API_ROUTES.BANK_VERIFICATION}`,
     { id_number, ifsc, ifsc_details },
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const Add_Bank = async (data: AddBankFormType) =>
@@ -735,7 +735,7 @@ export const Edit_Bank = async (data: EditBankFormType) =>
   await api.put(
     `${API_ROUTES.EDIT_BANK}/${data.id}`,
     data,
-    await createHeaders()
+    await createHeaders(),
   );
 
 export const Delete_Bank = async (id: string) =>
@@ -756,7 +756,7 @@ export const fetchList = createAsyncThunk(
       returnFullData = false,
       sendPaginationIn = "params",
     }: FetchListParams,
-    { dispatch }
+    { dispatch },
   ) => {
     try {
       const params = new URLSearchParams();
@@ -797,7 +797,7 @@ export const fetchList = createAsyncThunk(
           response = await api.post(
             finalUrl,
             finalPayload,
-            await createHeaders()
+            await createHeaders(),
           );
         } else {
           response = await api.post(finalUrl, {}, await createHeaders());
@@ -835,7 +835,7 @@ export const fetchList = createAsyncThunk(
                 pageSize: size ?? pageSize ?? 10,
                 currentPage: (number ?? pageNumber ?? 0) + 1,
               },
-            })
+            }),
           );
         }
 
@@ -858,7 +858,7 @@ export const fetchList = createAsyncThunk(
       // return rejectWithValue(errMsg);
       handleCustomError(error);
     }
-  }
+  },
 );
 
 ////////////////////////// BILL AVENUE APIS ///////////////////////////
@@ -871,7 +871,7 @@ export const BillAvenue_Biller_Info_Direct = async (payload: {
     const response = await api.post(
       API_ROUTES.BILLAVENUE_BILLER_INFO,
       payload,
-      await createHeaders()
+      await createHeaders(),
     );
 
     if (response.data?.statusCode === 200) {
@@ -911,7 +911,7 @@ export const BillAvenue_Bill_Fetch_Direct = async (payload: {
     const response = await api.post(
       API_ROUTES.BILLAVENUE_BILL_FETCH,
       payload,
-      await createHeaders()
+      await createHeaders(),
     );
 
     if (response.data?.statusCode === 200) {
@@ -931,21 +931,21 @@ export const BillAvenue_Biller_Info = createAsyncThunk(
     try {
       const response = await api.post(
         API_ROUTES.BILLAVENUE_BILLER_INFO,
-        payload
+        payload,
       );
 
       if (response.data?.statusCode === 200) {
         return response.data;
       } else {
         throw new Error(
-          response.data?.message || "Failed to fetch biller info"
+          response.data?.message || "Failed to fetch biller info",
         );
       }
     } catch (error: any) {
       handleCustomError(error);
       throw error;
     }
-  }
+  },
 );
 
 export const BillAvenue_Bill_Fetch = createAsyncThunk(
@@ -975,19 +975,19 @@ export const BillAvenue_Bill_Fetch = createAsyncThunk(
     try {
       const response = await api.post(
         API_ROUTES.BILLAVENUE_BILL_FETCH,
-        payload
+        payload,
       );
 
       if (response.data?.statusCode === 200) {
         return response.data;
       } else {
         throw new Error(
-          response.data?.message || "Failed to fetch bill details"
+          response.data?.message || "Failed to fetch bill details",
         );
       }
     } catch (error: any) {
       handleCustomError(error);
       throw error;
     }
-  }
+  },
 );
