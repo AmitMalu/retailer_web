@@ -8,75 +8,72 @@ import DashboardMiniTable from "@/components/Molecules/DashboardMiniTable";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
 import { decryptData } from "@/Utils/helper";
+import { DatesRangeValue } from "@mantine/dates";
+import CustomDateRangePicker from "@/components/Atoms/NewComponents/CustomDateRangePicker";
+import { IconCalendar } from "@tabler/icons-react";
 
-const CommonDashboard = () => {
+interface commonDashboardProps {
+  selectedDate: DatesRangeValue;
+  setSelectedDate: (date: DatesRangeValue) => void;
+  isLoading: Boolean;
+  selectedLabel: string; // "Today" | "Custom" | etc
+  dashboardData: any
+}
+
+const CommonDashboard = (props: commonDashboardProps) => {
   const theme = useTheme()
+  const today = new Date();
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(today.getMonth() - 6);
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
-  const cards = [
-    {
-      label: "FUNDS RECEIVED",
-      value: "0.00",
-      prefix: "₹",
-      borderColor: theme.palette.red.DEFAULT,
-    },
-    {
-      label: "FUNDS TRANSFERRED",
-      value: "0.00",
-      prefix: "₹",
-      borderColor: theme.palette.primary.dark,
-    },
-    {
-      label: "TRANSACTION VOLUME",
-      value: "733",
-      prefix: "₹",
-      borderColor: theme.palette.primary.dark,
-    },
-    {
-      label: "PENDING TRANSACTION",
-      value: "0",
-      borderColor: theme.palette.secondary.dark,
-    },
-    {
-      label: "COMMISSION EARNED",
-      value: "0.80",
-      prefix: "₹",
-      borderColor: theme.palette.warning.dark,
-    },
-    {
-      label: "TOTAL NETWORK BALANCE",
-      value: "900855.86",
-      prefix: "₹",
-      borderColor: theme.palette.primary.dark,
-    },
-    {
-      label: "TOTAL NETWORK",
-      value: "2095",
-      borderColor: theme.palette.info.dark,
-    },
-    {
-      label: "ACTIVE NETWORK",
-      value: "1069",
-      borderColor: theme.palette.success.dark,
-    },
-    {
-      label: "RETAILERS CREATED",
-      value: "1069",
-      borderColor: theme.palette.primary.dark,
-    },
+
+  const colors = [
+    theme.palette.red.DEFAULT,
+    theme.palette.primary.dark,
+    theme.palette.secondary.dark,
+    theme.palette.warning.dark,
   ];
 
-  const headers = [
-    { key: "product", label: "Product" },
-    { key: "inventory", label: "Inventory" },
-  ]
-  const tableData = [
-    { "product": "ID", "inventory": "15" },
-  ]
+  // 🌟 Dynamic Cards
+  const cards =
+    props.dashboardData?.cards?.map((card: any, index: number) => ({
+      label: card.label,
+      value: card.value,
+      prefix: card.prefix || "₹",
+      borderColor: card.color || colors[index % colors.length],
+    })) || [];
+
+  // 🌟 Dynamic Table 1: Last 5 / Top entries
+  const table1Data = props.dashboardData?.tableData || [];
+  const table1Headers = table1Data.length
+    ? Object.keys(table1Data[0]).map((key) => ({
+      key,
+      label: key.charAt(0).toUpperCase() + key.slice(1),
+    }))
+    : [];
+
+  // 🌟 Dynamic Table 2: Product Wise Inventory
+  const table2Data = props.dashboardData?.productInventory || []; // rename from API if exists
+  const table2Headers = table2Data.length
+    ? Object.keys(table2Data[0]).map((key) => ({
+      key,
+      label: key.charAt(0).toUpperCase() + key.slice(1),
+    }))
+    : [];
+
+  // 🌟 Profile
+  const profile = props.dashboardData?.profile || {
+    image: "",
+    name: "",
+    retailerId: "",
+    prepaid: 0,
+    postpaid: 0,
+  };
 
   const getTopFiveTitle = (role: string) => {
     switch (role) {
@@ -96,48 +93,35 @@ const CommonDashboard = () => {
   const role = loginData?.role; // WL, SD, PT, DT, RT, RU
   const topFiveTitle = getTopFiveTitle(role);
 
-  const topFiveHeader = [
-    { key: "id", label: "ID" },
-    { key: "outletName", label: "Outlet Name" },
-    { key: "totalBusiness", label: "Total Business" },
-  ]
-
-  const topFiveData = [
-    {
-      id: "BZT-RT-001",
-      outletName: "Prime Digital Services",
-      totalBusiness: "₹ 12,500"
-    },
-    {
-      id: "BZT-RT-002",
-      outletName: "FastPay Retail Hub",
-      totalBusiness: "₹ 10,940"
-    },
-    {
-      id: "BZT-RT-003",
-      outletName: "Metro Recharge Center",
-      totalBusiness: "₹ 9,780"
-    },
-    {
-      id: "BZT-RT-004",
-      outletName: "SmartPay Collection Point",
-      totalBusiness: "₹ 8,320"
-    },
-    {
-      id: "BZT-RT-005",
-      outletName: "Urban Connect Store",
-      totalBusiness: "₹ 7,550"
-    }
-  ];
-
-
   return (
     <div className="w-full h-full">
       <TextComponent fontSize={20} fontWeight={600}>
-        Today
+        {props.selectedLabel}
       </TextComponent>
+
+      <Grid gutter="md" mt={4}>
+        <Grid.Col span={{ sm: 6, md: 3 }}>
+          <CustomDateRangePicker
+            label="Select Date Range"
+            placeholder="Select date range"
+            size="sm"
+            shortcuts
+            minDate={sixMonthsAgo}
+            maxDate={today}
+            value={props.selectedDate}
+            onChange={(val: DatesRangeValue) => {
+              props.setSelectedDate(val);
+            }}
+            required
+            leftIcon={<IconCalendar size={16} />}
+          />
+        </Grid.Col>
+      </Grid>
+
+
+      {/* Cards */}
       <Grid gutter="md" mt={10}>
-        {cards.map((item, index) => (
+        {cards.map((item: any, index: number) => (
           <Grid.Col key={index} span={{ base: 6, md: 3 }}>
             <DashboardCard {...item} />
           </Grid.Col>
@@ -146,26 +130,11 @@ const CommonDashboard = () => {
 
       <Grid gutter="lg" align="stretch" mt={4}>
         <Grid.Col span={{ base: 12, md: 4 }}>
-          <DashboardProfileCard
-            profile={{
-              image: "",
-              name: "Aditya Pav Bhaji Centre",
-              retailerId: "IM-R-066052",
-              prepaid: 9.96,
-              postpaid: 0,
-            }}
-          />
+          <DashboardProfileCard profile={profile} />
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: 8 }}>
-          <DashboardLineGraph
-            graphData={[
-              { month: "2025-07", value: 50 },
-              { month: "2025-08", value: 120 },
-              { month: "2025-09", value: 90 },
-              { month: "2025-10", value: 200 },
-            ]}
-          />
+          <DashboardLineGraph graphData={props.dashboardData?.graphData || []} />
         </Grid.Col>
       </Grid>
 
@@ -173,22 +142,22 @@ const CommonDashboard = () => {
         <Grid.Col span={{ base: 12, md: 6 }}>
           <DashboardMiniTable
             title={topFiveTitle}
-            headers={topFiveHeader}
-            data={topFiveData}
+            headers={table1Headers}
+            data={table1Data}
             theme={theme}
           />
         </Grid.Col>
-        
+
         <Grid.Col span={{ base: 12, md: 6 }}>
           <DashboardMiniTable
-            title="Product Wise Inventory Available"
-            headers={headers}
-            data={tableData}
+            title="Product Wise Inventory"
+            headers={table2Headers}
+            data={table2Data}
             theme={theme}
           />
         </Grid.Col>
       </Grid>
-    </div>
+    </div >
   )
 }
 

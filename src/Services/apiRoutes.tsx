@@ -16,6 +16,8 @@ export const API_ROUTES = {
   ///////////////// MAIN /////////////////////////////
   USER_PROFILE: `${BASE_URL}/api/dashboard/profile`,
   CHANGE_PASSWORD: `${BASE_URL}/auth/change-password`,
+  DASHBOARD_API: `${BASE_URL}/api/dashboard/data`,
+
 
   ///////////////// FUNDING //////////////////////////
   PREFUND_REQUEST: `${BASE_URL}/api/prefund/request`,

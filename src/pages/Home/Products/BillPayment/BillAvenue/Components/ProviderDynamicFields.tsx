@@ -34,10 +34,7 @@ const ProviderDynamicFields: React.FC<Props> = ({ fields }) => {
         }
 
         // SELECT / LIST field
-        if (
-          field.dataType === "LIST" &&
-          Array.isArray(field.regex)
-        ) {
+        if (Array.isArray(field.values) && field.values.length > 0) {
           return (
             <div key={fieldKey} className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)]">
               <FormikSelectComponent
@@ -45,7 +42,7 @@ const ProviderDynamicFields: React.FC<Props> = ({ fields }) => {
                 label={`Select ${label}`}
                 placeholder={`Select ${label}`}
                 size="md"
-                data={field.regex.map((item: any) => ({
+                data={field.values.map((item: string) => ({
                   value: item,
                   label: item,
                 }))}

@@ -29,9 +29,6 @@ const AepsTwoFactor = () => {
     const iinno = queryParams.get("iinno");  // "cashWithdrawal", "balanceInquiry", etc.
     const service = queryParams.get("service");  // "cashWithdrawal", "balanceInquiry", etc.
 
-
-    console.log('profile_in_2fa', profile)
-
     const loginData = apiResponses?.loginData
         ? decryptData(apiResponses?.loginData)
         : null;

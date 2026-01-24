@@ -108,8 +108,6 @@ const AepsTransaction = () => {
         };
     };
 
-    console.log(receiptData, "data");
-
     const handleSubmit = async (values: any) => {
         console.log("Final Submit Values:", values);
         try {

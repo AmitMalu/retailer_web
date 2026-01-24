@@ -132,6 +132,9 @@ export const Set_Password = async (data: SetPasswordRequestProps) =>
 export const Change_Password = async (data: ChangePasswordRequestProps) =>
   await api.post(API_ROUTES.CHANGE_PASSWORD, data, await createHeaders());
 
+export const Dashboard_Api = async (data: any) =>
+  await api.post(`${API_ROUTES.DASHBOARD_API}`, data, await createHeaders());
+
 export const Prefund_Request = async (data: FormData) =>
   await api.post(
     `${API_ROUTES.PREFUND_REQUEST}`,

@@ -12,31 +12,72 @@ export const buildValidationSchema = (providerDetails: any) => {
     .matches(/^[6-9]\d{9}$/, "Enter valid 10-digit mobile number");
 
   // Dynamic fields
+  // if (providerDetails?.fields?.length) {
+  //   providerDetails.fields.forEach((field: any) => {
+  //     let schema = Yup.string();
+
+  //     if (field.required) {
+  //       schema = schema.required(`${field.label} is required`);
+  //     }
+
+  //     if (field.minLength) {
+  //       schema = schema.min(
+  //         field.minLength,
+  //         `${field.label} must be at least ${field.minLength} characters`,
+  //       );
+  //     }
+
+  //     if (field.maxLength) {
+  //       schema = schema.max(
+  //         field.maxLength,
+  //         `${field.label} must be at most ${field.maxLength} characters`,
+  //       );
+  //     }
+
+  //     if (field.regex) {
+  //       // regex can be string OR array (LIST case)
+  //       if (typeof field.regex === "string") {
+  //         try {
+  //           schema = schema.matches(
+  //             new RegExp(field.regex),
+  //             `Invalid ${field.label}`,
+  //           );
+  //         } catch {
+  //           // ignore invalid regex from backend
+  //         }
+  //       }
+  //     }
+
+  //     shape[field.name] = schema;
+  //   });
+  // }
+
   if (providerDetails?.fields?.length) {
     providerDetails.fields.forEach((field: any) => {
       let schema = Yup.string();
 
+      // ✅ Required for all field types
       if (field.required) {
         schema = schema.required(`${field.label} is required`);
       }
 
-      if (field.minLength) {
-        schema = schema.min(
-          field.minLength,
-          `${field.label} must be at least ${field.minLength} characters`,
-        );
-      }
+      // ✅ TEXT INPUT validations only (no dropdown)
+      if (!field.values) {
+        if (field.minLength) {
+          schema = schema.min(
+            field.minLength,
+            `${field.label} must be at least ${field.minLength} characters`,
+          );
+        }
 
-      if (field.maxLength) {
-        schema = schema.max(
-          field.maxLength,
-          `${field.label} must be at most ${field.maxLength} characters`,
-        );
-      }
+        if (field.maxLength) {
+          schema = schema.max(
+            field.maxLength,
+            `${field.label} must be at most ${field.maxLength} characters`,
+          );
+        }
 
-      if (field.regex) {
-        // regex can be string OR array (LIST case)
-        if (typeof field.regex === "string") {
+        if (field.regex && typeof field.regex === "string") {
           try {
             schema = schema.matches(
               new RegExp(field.regex),

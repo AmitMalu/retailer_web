@@ -1,73 +1,68 @@
+// components/BillPaymentDetails.tsx
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
-import { getCommonFastagBalanceKeys, getCommonFastagStatusKeys } from "../Utils/billHelpers.ts";
-import { normalizeBillDetails } from "../Utils/normalizeBillDetails.js";
 
 interface Props {
-    values: any;
-    billDetails: any;
-    serviceName: string;
+  billDetails: any;
 }
 
-const BillPaymentDetails: React.FC<Props> = ({
-    values,
-    billDetails,
-    serviceName,
-}) => {
-    const normalized = normalizeBillDetails(billDetails);
-    const fastagBalance = getCommonFastagBalanceKeys(normalized);
-    const status = getCommonFastagStatusKeys(normalized);
+const CORE_FIELDS = [
+  { key: "customerName", label: "Customer Name" },
+  { key: "billNumber", label: "Bill Number" },
+  { key: "billDate", label: "Bill Date" },
+  { key: "dueDate", label: "Due Date" },
+  { key: "billPeriod", label: "Bill Period" },
+];
 
-    return (
-        <>
-            <TextInputComponent label="Customer Name" value={values.customerName} disabled />
+const AMOUNT_RELATED_KEYS = ["minimum", "maximum", "amount"];
 
-            {/* Show if NOT FASTAG */}
-            {serviceName?.toLowerCase() !== "fast tag" && (
-                <>
-                    {billDetails?.billNumber && (
-                        <TextInputComponent label="Bill Number" value={values.billNumber} disabled />
-                    )}
-                    <TextInputComponent label="Bill Date" value={values.billDate} disabled />
-                    <TextInputComponent label="Due Date" value={values.dueDate} disabled />
+const BillPaymentDetails: React.FC<Props> = ({ billDetails }) => {
+  const inputParams = billDetails?.inputParams?.input ?? [];
+  const billerResponse = billDetails?.billerResponse ?? {};
+  const additionalInfo = billDetails?.additionalInfo?.info ?? [];
 
-                    {billDetails?.["Product Name"] && (
-                        <TextInputComponent
-                            label="Product Name"
-                            value={values.productName}
-                            disabled
-                        />
-                    )}
-                </>
-            )}
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Input Params */}
+      {inputParams.map((item: any, idx: number) => (
+        <TextInputComponent
+          key={`input-${idx}`}
+          label={item.paramName}
+          value={item.paramValue}
+          disabled
+        />
+      ))}
 
-            {/* FASTAG specific fields */}
-            {(serviceName?.toLowerCase() === "fast tag" ||
-                serviceName?.toLowerCase() === "fasttag") && (
-                    <>
-                        {fastagBalance && (
-                            <TextInputComponent
-                                label="FASTag Balance"
-                                value={fastagBalance}
-                                disabled
-                            />
-                        )}
-                        {status && (
-                            <TextInputComponent label="Status" value={status} disabled />
-                        )}
-                    </>
-                )}
+      {/* Core Bill Fields */}
+      {CORE_FIELDS.map(
+        field =>
+          billerResponse[field.key] && (
+            <TextInputComponent
+              key={field.key}
+              label={field.label}
+              value={billerResponse[field.key]}
+              disabled
+            />
+          )
+      )}
 
-            {/* CREDIT CARD */}
-            {serviceName?.toLowerCase().includes("credit") &&
-                billDetails?.["Current Outstanding Amount"] && (
-                    <TextInputComponent
-                        label="Current Outstanding Amount"
-                        value={`₹${billDetails["Current Outstanding Amount"]}`}
-                        disabled
-                    />
-                )}
-        </>
-    );
+      {/* Additional Info */}
+      {additionalInfo
+        .filter(
+          (info: any) =>
+            !AMOUNT_RELATED_KEYS.some(key =>
+              info.infoName.toLowerCase().includes(key)
+            )
+        )
+        .map((info: any, idx: number) => (
+          <TextInputComponent
+            key={`info-${idx}`}
+            label={info.infoName}
+            value={info.infoValue}
+            disabled
+          />
+        ))}
+    </div>
+  );
 };
 
 export default BillPaymentDetails;

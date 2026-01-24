@@ -15,15 +15,14 @@ import { handleCustomError } from "@/Utils/handleCustomError";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
-import { buildBillDetailsInitialValues, buildInitialValues } from "./Utils/initialValues";
-import { buildBillDetailsValidationSchema, buildValidationSchema } from "./Utils/validationSchemaBuilder";
-import ExtraParamFields from "./Components/ProviderDynamicFields";
-import ExtraStaticFields from "./Components/ExtraStaticFields";
+import { buildInitialValues } from "./Utils/initialValues";
+import { buildValidationSchema } from "./Utils/validationSchemaBuilder";
 import BillReceipt from "./Components/BillReciept";
 import BillPaymentDetails from "./Components/BillPaymentDetails";
 import AmountInput from "./Components/AmountInput";
 import ProviderDynamicFields from "./Components/ProviderDynamicFields";
 import { buildFetchBillPayload } from "./Utils/buildExtraParamPayload";
+import { buildProcessTransactionPayload, getBillFormConfig } from "./Utils/billHelpers";
 
 interface Props {
     serviceName: string;
@@ -45,7 +44,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
 
     const [billModalOpened, setBillModalOpened] = useState(false);
     const [billDetails, setBillDetails] = useState<any>(null);
-    const [amountEditable, setAmountEditable] = useState(false);
+    // const [amountEditable, setAmountEditable] = useState(false);
 
     const [receiptDrawerOpened, setReceiptDrawerOpened] = useState(false);
     const [receiptData, setReceiptData] = useState<any>(null);
@@ -62,6 +61,11 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
         ? decryptData(apiResponses?.loginData)
         : null;
 
+    const schemeCode = loginData?.products
+        ?.flatMap((product: any) => product.subProducts) // Flatten all subProducts into a single array
+        ?.find((subProduct: any) => subProduct.subProductId === subProductId) // Find matching subProductId
+        ?.schemeCode;
+
     // 🔹 Main form (Form-1)
     const initialValues = useMemo(
         () => buildInitialValues(selectedProviderDetails),
@@ -71,17 +75,6 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
     const validationSchema = useMemo(
         () => buildValidationSchema(selectedProviderDetails),
         [selectedProviderDetails]
-    );
-
-    // 🔹 Bill details form (Form-2)
-    const billDetailsInitialValues = useMemo(
-        () => buildBillDetailsInitialValues(billDetails),
-        [billDetails]
-    );
-
-    const billDetailsValidationSchema = useMemo(
-        () => buildBillDetailsValidationSchema(billDetails),
-        [billDetails]
     );
 
     // const handleSelectProvider = async (providerId: string) => {
@@ -214,7 +207,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
     //     }
     // };
 
-    const handleSelectProvider = async (providerId: string, formik: any) => {
+    const handleSelectProvider = async (providerId: string) => {
         if (!providerId) {
             setSelectedProviderDetails(null);
             return;
@@ -247,6 +240,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                     minLength: Number(p.minLength || 0),
                     maxLength: Number(p.maxLength || 100),
                     regex: p.regEx || p.values || null,
+                    values: p.values ? p.values.split(",") : null,
                 }));
 
                 setSelectedProviderDetails({
@@ -496,7 +490,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
             const apiStatus = res?.statusCode;
             const responseData = res?.data;
 
-            console.log(res,"response");
+            console.log(res, "response");
 
             // 🔹 API-level success
             if (apiStatus !== 200) {
@@ -507,15 +501,20 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
             // 🔹 Business-level success
             if (responseData?.responseCode === "000") {
                 showSuccessNotification("Bill details fetched successfully");
-                setBillDetails(responseData);
+                setBillDetails({ formValues: values, ...responseData });
                 setBillModalOpened(true);
+                return;
+            } else {
+                const errorMessage = (responseData?.errorInfo?.error as any[])?.[0]?.errorMessage ||
+                    "Unable to fetch bill details";
+                showErrorNotification(errorMessage);
                 return;
             }
 
             // 🔹 Business-level failure
-            showErrorNotification(
-                responseData?.responseMessage || "Bill fetch failed"
-            );
+            // showErrorNotification(
+            //     responseData?.responseMessage || "Bill fetch failed"
+            // );
         } catch (err) {
             handleCustomError(err);
         } finally {
@@ -523,11 +522,101 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
         }
     }
 
+    console.log(selectedProviderDetails, "response1");
+    console.log(billDetails, "response2");
+
+    // const processTransaction = async (
+    //     values: FormikValues,
+    //     resetForm: () => void
+    // ) => {
+    //     console.log(values, "values for transaction");
+    //     try {
+    //         setIsLoading(true);
+
+    //         if (!billDetails || !selectedProviderDetails) {
+    //             showErrorNotification("Missing bill or provider details");
+    //             return;
+    //         }
+
+    //         const amount = Number(values.amount) || Number(billDetails?.Billamount) || 0;
+
+    //         const paymentPayload = {
+    //             requestId: billDetails?.requestId || requestId,
+    //             retailerId: loginData?.hierarchyId,
+    //             subProductId,
+    //             schemeCode: schemeCode ?? "",
+    //             txnType: `${serviceName} Bill Avenue`,
+    //             billerAdhoc: billDetails?.billerData?.billerAdhoc === "true",
+    //             customerInfo: {
+    //                 customerMobile: billDetails?.formValues?.customerMobileNumber || "",
+    //             },
+    //             billerId: selectedProviderDetails?.provider_id,
+    //             inputParams: billDetails?.inputParams || { input: [] },
+    //             billerResponse: billDetails?.billerResponse || {},
+    //             additionalInfo: {
+    //                 info: Object.entries(billDetails?.additionalInfo || {}).map(
+    //                     ([infoName, infoValue]) => ({ infoName, infoValue })
+    //                 ),
+    //             },
+    //             amountInfo: {
+    //                 amount,
+    //                 currency: 356,
+    //                 custConvFee: 0,
+    //                 amountTags: [],
+    //             },
+    //             paymentMethod: {
+    //                 paymentMode: "Cash",
+    //                 quickPay: "N",
+    //                 splitPay: "N",
+    //             },
+    //             paymentInfo: {
+    //                 info: [
+    //                     {
+    //                         infoName: "Remarks",
+    //                         infoValue: "Received",
+    //                     },
+    //                 ],
+    //             },
+    //         };
+
+    //         const response: any = await BillAvenue_Bill_Payment(paymentPayload);
+
+    //         if (response?.data?.statusCode === 200 || response?.data?.statusCode === "200") {
+    //             const respData = response?.data?.data || {};
+    //             showSuccessNotification(response?.data?.message || "Transaction Successful");
+    //             setAmountEditable(false);
+    //             setBillModalOpened(false);
+    //             resetForm();
+
+    //             const basicReceipt = {
+    //                 ...respData,
+    //                 customerName: billDetails?.CustomerName || respData?.respCustomerName || "",
+    //                 category: selectedProviderDetails?.service_name || "",
+    //                 billerName: selectedProviderDetails?.provider_name || "",
+    //                 amount: respData?.respAmount || String(amount),
+    //                 approvalRefNumber: respData?.approvalRefNumber,
+    //                 txnRefId: respData?.txnRefId,
+    //             };
+
+    //             setReceiptData(basicReceipt);
+    //             setReceiptDrawerOpened(true);
+    //         } else {
+    //             showErrorNotification(
+    //                 response?.data?.message || "Transaction failed"
+    //             );
+    //         }
+    //     } catch (error) {
+    //         await handleCustomError(error);
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // }
 
     const processTransaction = async (
         values: FormikValues,
         resetForm: () => void
     ) => {
+        console.log(values, "values for transaction");
         try {
             setIsLoading(true);
 
@@ -536,70 +625,76 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                 return;
             }
 
-            const amount = Number(values.amount) || Number(billDetails?.Billamount) || 0;
+            const paymentPayload = buildProcessTransactionPayload({
+                billerInfo: selectedProviderDetails,
+                fetchBillResponse: billDetails,
+                formValues: {
+                    amount: values.amount,
+                    remarks: values.remarks,
+                },
+                agentContext: {
+                    agentId: loginData?.hierarchyId,
+                    requestId: billDetails?.requestId || requestId,
+                    retailerId: loginData?.hierarchyId,
+                    subProductId,
+                    schemeCode: schemeCode ?? "",
+                    txnType: `${serviceName}`,
+                    // txnType: `Fast Tag Bill Avenue`,
+                    ip: "192.168.2.73",
+                    initChannel: "AGT",
+                    mac: "01-23-45-67-89-ab",
+                    customerMobile: billDetails?.formValues?.customerMobileNumber,
+                    customerEmail: billDetails?.formValues?.customerEmail,
+                    customerAdhaar: billDetails?.formValues?.customerAdhaar,
+                    customerPan: billDetails?.formValues?.customerPan,
+                },
+                paymentMode: "Cash",
+            });
 
-            const paymentPayload = {
-                requestId: billDetails?.requestId || requestId,
-                retailerId: loginData?.hierarchyId,
-                subProductId,
-                schemeCode: "BBPS_Bill_Avenue",
-                // txnType: serviceName,
-                txnType: "Fast Tag Bill Avenue",
-                billerAdhoc: true,
-                customerInfo: {
-                    customerMobile: billDetails?.formValues?.customerMobileNumber || "",
-                },
-                billerId: selectedProviderDetails?.provider_id,
-                inputParams: billDetails?.inputParams || { input: [] },
-                billerResponse: {
-                    billAmount: String(billDetails?.Billamount || amount),
-                    customerName: billDetails?.CustomerName || "",
-                },
-                additionalInfo: {
-                    info: Object.entries(billDetails?.additionalInfo || {}).map(
-                        ([infoName, infoValue]) => ({ infoName, infoValue })
-                    ),
-                },
-                amountInfo: {
-                    amount,
-                    currency: 356,
-                    custConvFee: 0,
-                    amountTags: [],
-                },
-                paymentMethod: {
-                    paymentMode: "Cash",
-                    quickPay: "N",
-                    splitPay: "N",
-                },
-                paymentInfo: {
-                    info: [
-                        {
-                            infoName: "Remarks",
-                            infoValue: "Received",
-                        },
-                    ],
-                },
-            };
+            console.log("FINAL TRANSACTION PAYLOAD", paymentPayload);
 
             const response: any = await BillAvenue_Bill_Payment(paymentPayload);
+            const apiStatus = response?.data?.statusCode;
 
-            if (response?.data?.statusCode === 200 || response?.data?.statusCode === "200") {
+            if (apiStatus === 200 || apiStatus === "200") {
                 const respData = response?.data?.data || {};
                 showSuccessNotification(response?.data?.message || "Transaction Successful");
-                setAmountEditable(false);
                 setBillModalOpened(false);
                 resetForm();
 
+                // const basicReceipt = {
+                //     ...respData,
+                //     customerName:
+                //         billDetails?.billerResponse?.customerName ||
+                //         respData?.respCustomerName ||
+                //         "",
+                //     category: selectedProviderDetails?.service_name || "",
+                //     billerName: selectedProviderDetails?.provider_name || "",
+                //     amount: respData?.respAmount || String(values.amount),
+                //     approvalRefNumber: respData?.approvalRefNumber,
+                //     txnRefId: respData?.txnRefId,
+                // };
                 const basicReceipt = {
-                    ...respData,
-                    customerName: billDetails?.CustomerName || respData?.respCustomerName || "",
-                    category: selectedProviderDetails?.service_name || "",
-                    billerName: selectedProviderDetails?.provider_name || "",
-                    amount: respData?.respAmount || String(amount),
-                    approvalRefNumber: respData?.approvalRefNumber,
-                    txnRefId: respData?.txnRefId,
-                };
+                    // from transaction response
+                    txnId: respData?.txnRefId || "",
+                    approvalRefNumber: respData?.approvalRefNumber || "",
+                    txnStatus: respData?.txnStatus || "SUCCESS",
+                    createdDateTime: respData?.createdDateTime || new Date().toISOString(),
+                    txnAmount: respData?.respAmount || String(values.amount),
 
+                    // from bill fetch response
+                    customerName:
+                        billDetails?.billerResponse?.customerName ||
+                        respData?.respCustomerName ||
+                        "",
+
+                    consumerNumber:
+                        billDetails?.inputParams?.input?.[0]?.paramValue || "",
+
+                    // from provider context
+                    billerName: selectedProviderDetails?.billerData?.billerName || "",
+                    category: selectedProviderDetails?.billerData?.billerCategory || "",
+                };
                 setReceiptData(basicReceipt);
                 setReceiptDrawerOpened(true);
             } else {
@@ -701,7 +796,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                                                 withAsterisk
                                                 searchable
                                                 allowDeselect
-                                                onChange={(value: any) => handleSelectProvider(value, formik)}
+                                                onChange={(value: any) => handleSelectProvider(value)}
                                             />
                                         </div>
 
@@ -775,50 +870,53 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                             <p className="text-lg text-gray-700">Processing your transaction...</p>
                         </div>
                         : (
-                            <div className="flex w-full items-center justify-center flex-col gap-5">
-                                <Formik
-                                    initialValues={billDetailsInitialValues}
-                                    validationSchema={billDetailsValidationSchema}
-                                    enableReinitialize
-                                    onSubmit={(values, { resetForm }) => processTransaction(values, resetForm)}
-                                >
-                                    {({ values, handleChange, errors, touched, handleSubmit }) => {
-                                        return (
-                                            <form onSubmit={handleSubmit} className="flex flex-col w-full p-4 overflow-y-auto gap-4">
-                                                <BillPaymentDetails
-                                                    values={values}
-                                                    billDetails={billDetails}
-                                                    serviceName={serviceName}
-                                                />
+                            (() => {
+                                const { initialValues, validationSchema, amountEditable } =
+                                    getBillFormConfig(billDetails);
 
-                                                {/* Editable Amount Field */}
-                                                <AmountInput
-                                                    value={values.amount}
-                                                    onChange={handleChange("amount")}
-                                                    error={touched.amount ? (typeof errors.amount === 'string' ? errors.amount : "") : ""}
-                                                    min={billDetails?.minBillPaidAmount}
-                                                    max={billDetails?.maxAllowPaidAmount}
-                                                    disabled={!amountEditable || isLoading}
-                                                />
+                                return (
+                                    <div className="flex w-full items-center justify-center flex-col gap-5">
+                                        <Formik
+                                            initialValues={initialValues}
+                                            validationSchema={validationSchema}
+                                            enableReinitialize
+                                            onSubmit={(values, { resetForm }) => processTransaction(values, resetForm)}
+                                        >
+                                            {({ values, handleChange, errors, touched, handleSubmit }) => {
+                                                return (
+                                                    <form onSubmit={handleSubmit} className="flex flex-col w-full p-4 overflow-y-auto gap-4">
+                                                        <BillPaymentDetails
+                                                            billDetails={billDetails}
+                                                        />
+
+                                                        {/* Editable Amount Field */}
+                                                        <AmountInput
+                                                            value={values.amount}
+                                                            onChange={handleChange("amount")}
+                                                            error={touched.amount ? errors.amount as string : ""}
+                                                            disabled={!amountEditable || isLoading}
+                                                        />
 
 
-                                                <div className="mt-6 flex h-9 w-full items-center justify-end">
-                                                    <ButtonComponent
-                                                        width={120}
-                                                        title={"SUBMIT"}
-                                                        variant="filled"
-                                                        onClick={() => null}
-                                                        disabled={isLoading}
-                                                        radius={28}
-                                                        fontSize={14}
-                                                        fullWidth
-                                                    />
-                                                </div>
-                                            </form>
-                                        )
-                                    }}
-                                </Formik>
-                            </div>
+                                                        <div className="mt-6 flex h-9 w-full items-center justify-end">
+                                                            <ButtonComponent
+                                                                width={120}
+                                                                title={"SUBMIT"}
+                                                                variant="filled"
+                                                                onClick={() => null}
+                                                                disabled={isLoading}
+                                                                radius={28}
+                                                                fontSize={14}
+                                                                fullWidth
+                                                            />
+                                                        </div>
+                                                    </form>
+                                                )
+                                            }}
+                                        </Formik>
+                                    </div>
+                                )
+                            })()
                         )}
                 </Modal>
 
@@ -826,6 +924,9 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                 <Drawer
                     opened={receiptDrawerOpened}
                     onClose={() => {
+                        setBillDetails(null);
+                        setSelectedProviderDetails(null);
+                        setRequestId('');
                         setReceiptDrawerOpened(false);
                         navigate("/products/billPay"); // redirect after closing
                     }}
