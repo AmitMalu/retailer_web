@@ -28,7 +28,6 @@ const paginationSlice = createSlice({
 
     clearPagination: (state, action: PayloadAction<{ key?: string }>) => {
       const { key } = action.payload;
-      console.log(key,"key");
       
       if (key) {
         delete state[key];

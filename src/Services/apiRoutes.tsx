@@ -119,6 +119,7 @@ export const API_ROUTES = {
   BANK_VERIFICATION: `${BASE_URL}/verification/bank-validate`,
   CASH_WITHDRAWAL: `${BASE_URL}/api/aeps/cash-withdrawal`,
   BALANCE_INQUIRY: `${BASE_URL}/api/aeps/balance-inquiry`,
+  MINI_STATEMENT: `${BASE_URL}/api/aeps/mini-statement`,
 
   /////////////////////////// bANKS ////////////////////////////////////
   ADD_BANK: `${BASE_URL}/api/bank-details`,

@@ -673,6 +673,14 @@ export const Aeps_Balance_Inquiry = async (data: any) => {
   );
 };
 
+export const Aeps_Mini_Statement = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.MINI_STATEMENT}`,
+    data,
+    await createHeaders(),
+  );
+};
+
 export const Check_Aeps_2FA_Status = async ({
   retailerId,
 }: {

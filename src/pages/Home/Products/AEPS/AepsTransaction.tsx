@@ -4,11 +4,11 @@ import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSe
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
 import { RootState } from "@/Redux/Store";
-import { Aeps_Bank_List, Aeps_Cash_Withdrawal, Aeps_Balance_Inquiry } from "@/Services/api";
+import { Aeps_Bank_List, Aeps_Cash_Withdrawal, Aeps_Balance_Inquiry, Aeps_Mini_Statement } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification } from "@/Utils/notifications";
-import { Card, Drawer, Grid, Loader, UnstyledButton } from "@mantine/core";
+import { Card, Drawer, Grid, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Yup from 'yup'
 import TransactionReciept from "./TransactionReciept";
+import Loader from "@/components/Atoms/Loader";
 
 const SERVICE_TITLES: any = {
     cashWithdrawal: "Cash Withdrawal",
@@ -116,6 +117,15 @@ const AepsTransaction = () => {
             let res;
             if (service === "balanceInquiry") {
                 res = await Aeps_Balance_Inquiry({
+                    subProductId: subProductId,
+                    retailerId: loginData?.hierarchyId,
+                    schemeCode,
+                    nationalBankIdentificationNumber: values.bank,
+                    transactionAmount: "0",
+                    captureResponse: values.pidData,
+                });
+            } else if (service === "miniStatement") {
+                res = await Aeps_Mini_Statement({
                     subProductId: subProductId,
                     retailerId: loginData?.hierarchyId,
                     schemeCode,
@@ -293,7 +303,7 @@ const AepsTransaction = () => {
                                             disabled={loadingBanks}
                                             rightSection={
                                                 <>
-                                                    {loadingBanks && <Loader size={14} />}
+                                                    {loadingBanks && <Loader />}
                                                     {!loadingBanks && bankList.length < 1 && (
                                                         <div
                                                             onClick={fetchBanks}

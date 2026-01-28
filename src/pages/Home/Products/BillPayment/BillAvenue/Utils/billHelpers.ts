@@ -14,32 +14,111 @@ export const getCommonFastagStatusKeys = (normalized: Record<string, any>) =>
   normalized["tag status"] ||
   normalized["vehicle tag status"];
 
-// utils/billAmountHelpers.ts
-export const getAmountConfig = (billDetails: any) => {
-  const billAmount = billDetails?.billerResponse?.billAmount;
+const paiseToRupee = (paise?: string | number) => {
+  if (!paise) return undefined;
+  return Number((Number(paise) / 100).toFixed(2));
+};
 
-  const info = billDetails?.additionalInfo?.info ?? [];
+const normalizeRupees = (value: string | number) => {
+  if (value === "" || value === undefined || value === null) return "0.00";
+  return Number(value).toFixed(2);
+};
 
-  const min = info.find((i: any) =>
-    i.infoName.toLowerCase().includes("minimum"),
-  )?.infoValue;
+const getPaymentModeLimits = (billerInfo: any) => {
 
-  const max = info.find((i: any) =>
-    i.infoName.toLowerCase().includes("maximum"),
-  )?.infoValue;
+  const modes =
+    billerInfo?.billerData?.billerPaymentModes?.paymentModeList || [];
+  if (!modes.length) return {};
 
-  const editable = Boolean(min || max);
+  const findMode = (name: string) =>
+    modes.find(
+      (m: any) => m.paymentModeName?.toLowerCase() === name.toLowerCase(),
+    );
+
+  const selectedMode =
+    findMode("cash") ||
+    findMode("online") ||
+    modes.find((m: any) => m.minAmount || m.maxAmount);
+
+  if (!selectedMode) return {};
+
+  const min = Number(selectedMode.minAmount || 0);
+  const max = Number(selectedMode.maxAmount || 0);
 
   return {
-    amount: billAmount ? Number(billAmount) / 100 : "",
-    min: min ? Number(min) : undefined,
-    max: max ? Number(max) : undefined,
-    editable,
+    min: min ? min / 100 : undefined,
+    max: max ? max / 100 : undefined,
   };
 };
 
-export const getBillFormConfig = (billDetails: any) => {
-  const amountConfig = getAmountConfig(billDetails);
+// utils/billAmountHelpers.ts
+export const getAmountConfig = ({
+  billerInfo,
+  fetchBillResponse,
+}: {
+  billerInfo: any;
+  fetchBillResponse: any;
+}) => {
+
+  const exactness = billerInfo?.billerData?.billerPaymentExactness || "";
+
+  // Bill amount (paise → rupees)
+  const billAmount = paiseToRupee(
+    fetchBillResponse?.billerResponse?.billAmount,
+  );
+
+  // CASE 1: Exact
+  if (exactness === "Exact") {
+    return {
+      amount: billAmount,
+      editable: false,
+      min: billAmount,
+      max: billAmount,
+    };
+  }
+
+  // CASE 2: Exact and above
+  if (exactness === "Exact and above") {
+    return {
+      amount: billAmount,
+      editable: true,
+      min: billAmount,
+      max: undefined,
+    };
+  }
+
+  // CASE 3: Exact and below
+  if (exactness === "Exact and below") {
+    return {
+      amount: billAmount,
+      editable: true,
+      min: 0,
+      max: billAmount,
+    };
+  }
+
+  // CASE 4: exactness === "" → CASH MODE
+  const { min, max } = getPaymentModeLimits(billerInfo);
+
+  return {
+    amount: "",
+    editable: true,
+    min,
+    max,
+  };
+};
+
+export const getBillFormConfig = ({
+  billerInfo,
+  fetchBillResponse,
+}: {
+  billerInfo: any;
+  fetchBillResponse: any;
+}) => {
+  const amountConfig = getAmountConfig({
+    billerInfo,
+    fetchBillResponse,
+  });
 
   return {
     initialValues: {
@@ -48,6 +127,7 @@ export const getBillFormConfig = (billDetails: any) => {
 
     validationSchema: Yup.object({
       amount: Yup.number()
+        .typeError("Enter valid amount")
         .required("Amount is required")
         .min(
           amountConfig.min ?? 0,
@@ -55,11 +135,11 @@ export const getBillFormConfig = (billDetails: any) => {
             ? `Minimum amount is ₹${amountConfig.min}`
             : undefined,
         )
-        .max(1000000
-        //   amountConfig.max ?? Infinity,
-        //   amountConfig.max
-        //     ? `Maximum amount is ₹${amountConfig.max}`
-        //     : undefined,
+        .max(
+          amountConfig.max ?? Infinity,
+          amountConfig.max
+            ? `Maximum amount is ₹${amountConfig.max}`
+            : undefined,
         ),
     }),
 
@@ -77,7 +157,13 @@ export const buildProcessTransactionPayload = ({
   agentContext,
   paymentMode = "Cash",
 }: any) => {
+  const numberValue =
+    fetchBillResponse?.formValues?.field_0 ||
+    fetchBillResponse?.formValues?.customerMobileNumber ||
+    "";
+
   const payload: any = {
+    number: numberValue ? String(numberValue) : "NA",
     requestId: agentContext?.requestId,
     retailerId: agentContext?.retailerId,
     subProductId: agentContext?.subProductId,
@@ -106,7 +192,7 @@ export const buildProcessTransactionPayload = ({
     paymentRefId: formValues.paymentRefId,
 
     amountInfo: {
-      amount: Number(formValues.amount),
+      amount: normalizeRupees(formValues.amount), //Send in Paise
       currency: 356,
       custConvFee: 0,
       amountTags: [],

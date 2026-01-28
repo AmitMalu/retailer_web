@@ -30,11 +30,10 @@ interface Props {
     vendor: string;
 }
 
-const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-disable-line @typescript-eslint/no-unused-vars */ }) => {
+const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-line @typescript-eslint/no-unused-vars */ }) => {
     // vendor prop is reserved for future vendor-specific logic
     const navigate = useNavigate();
     const theme = useTheme();
-    console.log(vendor);
 
     const [isLoading, setIsLoading] = useState(false);
     const [providerList, setProviderList] = useState([]);
@@ -224,7 +223,6 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
             if (res?.data?.statusCode == 200) {
                 // Handle nested response structure
                 const responseData = res?.data?.data
-                console.log(responseData, "Biller Info Response");
                 if (!responseData) throw new Error("Invalid biller response");
                 if (!responseData.requestId) throw new Error("No Request ID found");
                 setRequestId(responseData.requestId);
@@ -476,21 +474,17 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
         values: FormikValues,
         { setSubmitting }: any
     ) => {
-        console.log("SUBMIT VALUES", values);
 
         // stop double submit
         setSubmitting(true);
 
         try {
             const payload = buildFetchBillPayload(values, selectedProviderDetails, subProductId);
-            console.log("FINAL PAYLOAD", payload);
 
             const res = await BillAvenue_Bill_Fetch_Direct(payload);
             // Handle both response structures: { statusCode: 200, data: {...} } OR { data: { statusCode: 200, data: {...} } }
             const apiStatus = res?.statusCode;
             const responseData = res?.data;
-
-            console.log(res, "response");
 
             // 🔹 API-level success
             if (apiStatus !== 200) {
@@ -521,9 +515,6 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
             setSubmitting(false);
         }
     }
-
-    console.log(selectedProviderDetails, "response1");
-    console.log(billDetails, "response2");
 
     // const processTransaction = async (
     //     values: FormikValues,
@@ -771,9 +762,6 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                         enableReinitialize
                     >
                         {(formik) => {
-                            console.log(validationSchema, "schea");
-                            console.log("Formik values:", formik.values);
-                            console.log("Formik errors:", formik.errors);
 
                             const {
                                 handleSubmit,
@@ -872,13 +860,17 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
                         : (
                             (() => {
                                 const { initialValues, validationSchema, amountEditable } =
-                                    getBillFormConfig(billDetails);
+                                    getBillFormConfig({
+                                        billerInfo: selectedProviderDetails,
+                                        fetchBillResponse: billDetails,
+                                    });
 
                                 return (
                                     <div className="flex w-full items-center justify-center flex-col gap-5">
                                         <Formik
                                             initialValues={initialValues}
                                             validationSchema={validationSchema}
+                                            validateOnChange
                                             enableReinitialize
                                             onSubmit={(values, { resetForm }) => processTransaction(values, resetForm)}
                                         >
@@ -891,7 +883,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor /* eslint-dis
 
                                                         {/* Editable Amount Field */}
                                                         <AmountInput
-                                                            value={values.amount}
+                                                            value={values.amount ?? ""}
                                                             onChange={handleChange("amount")}
                                                             error={touched.amount ? errors.amount as string : ""}
                                                             disabled={!amountEditable || isLoading}

@@ -14,25 +14,32 @@ const AmountInput: React.FC<Props> = ({
     value,
     onChange,
     error,
-    // min,
-    // max,
+    min,
+    max,
     disabled,
 }) => {
-    // const hint =
-    //     min || max
-    //         ? `Allowed range: ₹${min ?? 0} – ₹${max ?? "∞"}`
-    //         : undefined;
+    const hint =
+        min || max
+            ? `Allowed range: ₹${min ?? 0} – ₹${max ?? "∞"}`
+            : undefined;
 
     return (
         <div className="mt-2">
             <TextInputComponent
                 label="Amount"
-                type="number"
+                type="text"
                 value={value}
                 onChange={onChange}
                 error={error}
                 disabled={disabled}
+                allowDecimal
+                decimalPlaces={2}
             />
+            {hint && (
+                <p className="text-xs text-gray-500 mt-1">
+                    {hint}
+                </p>
+            )}
         </div>
     );
 };

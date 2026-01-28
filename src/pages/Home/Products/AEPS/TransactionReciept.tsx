@@ -2,7 +2,6 @@ import { RootState } from "@/Redux/Store";
 import { decryptData } from "@/Utils/helper";
 import { Card, Table, Text, Group, Divider, Button, Badge } from "@mantine/core";
 import { useSelector } from "react-redux";
-import moment from "moment";
 import ImLogo from '@/assets/svg/ImFullLogo'
 import { useTheme } from "@mui/system";
 import "./TransactionReciept.css";
@@ -75,7 +74,7 @@ const TransactionReciept = ({ data }: { data: any }) => {
                         <Table.Td fw={500}>Date</Table.Td>
                         <Table.Td>
                             {data?.dateTime
-                                ? moment(data.dateTime).format("DD-MM-YYYY hh:mm A")
+                                ? data?.dateTime
                                 : "-"}
                         </Table.Td>
 

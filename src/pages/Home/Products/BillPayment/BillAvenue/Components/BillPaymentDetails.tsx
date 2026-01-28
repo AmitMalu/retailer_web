@@ -13,7 +13,7 @@ const CORE_FIELDS = [
   { key: "billPeriod", label: "Bill Period" },
 ];
 
-const AMOUNT_RELATED_KEYS = ["minimum", "maximum", "amount"];
+// const AMOUNT_RELATED_KEYS = ["minimum", "maximum", "amount"];
 
 const BillPaymentDetails: React.FC<Props> = ({ billDetails }) => {
   const inputParams = billDetails?.inputParams?.input ?? [];
@@ -47,12 +47,12 @@ const BillPaymentDetails: React.FC<Props> = ({ billDetails }) => {
 
       {/* Additional Info */}
       {additionalInfo
-        .filter(
-          (info: any) =>
-            !AMOUNT_RELATED_KEYS.some(key =>
-              info.infoName.toLowerCase().includes(key)
-            )
-        )
+        // .filter(
+        //   (info: any) =>
+        //     !AMOUNT_RELATED_KEYS.some(key =>
+        //       info.infoName.toLowerCase().includes(key)
+        //     )
+        // )
         .map((info: any, idx: number) => (
           <TextInputComponent
             key={`info-${idx}`}

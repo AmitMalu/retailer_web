@@ -14,7 +14,6 @@ const ProviderDynamicFields: React.FC<Props> = ({ fields }) => {
       {fields.map((field) => {
         const fieldKey = field.name;
         const label = field.label;
-        console.log("Rendering field:", field.name);
 
         // DATE field
         if (field.dataType === "DATE") {
