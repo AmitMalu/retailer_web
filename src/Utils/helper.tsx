@@ -465,3 +465,57 @@ export const hasRouteAccess = (
 
   return false;
 };
+
+export const getCurrentLocation = (): Promise<{
+  latitude: number;
+  longitude: number;
+  accuracy: number;
+  capturedAt: string;
+}> => {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject({ code: "NOT_SUPPORTED" });
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude, accuracy } = position.coords;
+
+        if (accuracy > 1000) {
+          reject({ code: "LOW_ACCURACY" });
+          return;
+        }
+
+        resolve({
+          latitude,
+          longitude,
+          accuracy,
+          capturedAt: new Date().toISOString(),
+        });
+      },
+      (error) => {
+        switch (error.code) {
+          case 1:
+            reject({ code: "PERMISSION_DENIED" });
+            break;
+          case 2:
+            reject({ code: "POSITION_UNAVAILABLE" });
+            break;
+          case 3:
+            reject({ code: "TIMEOUT" }); // ignored or slow GPS
+            break;
+          default:
+            reject({ code: "UNKNOWN_ERROR" });
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0,
+      }
+    );
+  });
+};
+
+

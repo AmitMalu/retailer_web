@@ -65,9 +65,9 @@ export const API_ROUTES = {
 
   /////////////// PAYOUT ////////////////////////////////////////////
   SAVE_BENEFICIARY: `${BASE_URL}/api/payout/save-beneficiary`,
-  // SEND_PAYOUT: `${BASE_URL}/api/payout/send-payout-request`,
-  // PAYOUT_SUCCESS_CALLBACK: `${BASE_URL}/api/payout/update-callback-url`,
-  SEND_PAYOUT: `${BASE_URL}/api/send-payout`,
+  // SEND_PAYOUT: `${BASE_URL}/api/send-payout`,
+  // PAYOUT_SUCCESS_CALLBACK: `${BASE_URL}/api/update-callback-url`,
+  SEND_PAYOUT: `${BASE_URL}/api/send-payout-vo`,
   PAYOUT_SUCCESS_CALLBACK: `${BASE_URL}/api/update-callback-url`,
   GET_BANK_DETAILS: `${BASE_URL}/api/network-banks/details-by-ifsc`,
   GET_PAYOUT_ALL_DETAILS: `${BASE_URL}/api/payout/all`,
@@ -102,6 +102,7 @@ export const API_ROUTES = {
 
   ///////////////////////////// AEPS ////////////////////////////////
   AEPS_CHECK_STATUS: `${BASE_URL}/api/merchant/check-status`,
+  VERIFY_LOCATION: `${BASE_URL}/api/geo/check`,
   AEPS_MERCHANT_ONBOARD: `${BASE_URL}/api/merchant/onboarding`,
   AEPS_SEND_OTP: `${BASE_URL}/aeps/ekyc/send-otp`,
   AEPS_RESEND_OTP: `${BASE_URL}/aeps/ekyc/resend-otp`,

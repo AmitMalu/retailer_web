@@ -2,7 +2,6 @@ import { RootState } from "@/Redux/Store";
 import { decryptData } from "@/Utils/helper";
 import { Card, Table, Text, Group, Divider, Button, Badge } from "@mantine/core";
 import { useSelector } from "react-redux";
-import ImLogo from '@/assets/svg/ImFullLogo'
 import { useTheme } from "@mui/system";
 import "./TransactionReciept.css";
 
@@ -28,21 +27,21 @@ const TransactionReciept = ({ data }: { data: any }) => {
             {/* --- Header Section --- */}
             <Group justify="space-between" align="center" mb="md">
                 <Group gap={2}>
-                    {/* <Image src={ImLogo} alt="Company Logo" width={70} /> */}
-                    <ImLogo />
-                    <div>
-                        {/* <Text fw={700} size="xl" c="orange.8">
-                            Instant Mudra
-                        </Text> */}
-                        {/* <Text size="xs" c="dimmed">
-                            Smart Pay Solutions
-                        </Text> */}
-                    </div>
+                    <img
+                        style={{
+                            width: 120,
+                            height: 120,
+                            objectFit: "contain",
+                        }}
+                        src={loginData?.logoUrl ?? ""} alt="img"
+                    />
+                    {/* <ImLogo /> */}
                 </Group>
+
                 <Text fw={600} size="sm" ta="right">
                     {loginData
                         ? `${loginData?.outletName ?? ""}/${loginData?.hierarchyId ?? ""}/${loginData?.mobileNumber ?? ""}`
-                        : "Retailer Info Unavailable"}
+                        : ""}
                 </Text>
             </Group>
 
@@ -50,7 +49,7 @@ const TransactionReciept = ({ data }: { data: any }) => {
 
             {/* --- Title --- */}
             <Text fw={600} ta="center" size="md" mb="sm">
-                {data.serviceType} Receipt
+                {data.serviceTitle} Receipt
             </Text>
 
             <Badge
@@ -82,15 +81,19 @@ const TransactionReciept = ({ data }: { data: any }) => {
                         <Table.Td>{data?.status ?? "-"}</Table.Td> */}
                     </Table.Tr>
 
-                    {data?.serviceType === "BALANCE INQUIRY" && <Table.Tr>
-                        <Table.Td fw={500}>Avilable Balance</Table.Td>
-                        <Table.Td colSpan={3}>{data?.balanceAmount ?? "0"}</Table.Td>
-                    </Table.Tr>}
+                    {data.serviceKey === "cashWithdrawal" && (
+                        <Table.Tr>
+                            <Table.Td fw={500}>Transaction Amount</Table.Td>
+                            <Table.Td>{data.transactionAmount}</Table.Td>
+                        </Table.Tr>
+                    )}
 
-                    {data?.serviceType !== "BALANCE INQUIRY" && <Table.Tr>
-                        <Table.Td fw={500}>Transaction Amount</Table.Td>
-                        <Table.Td>{data?.transactionAmount ?? "-"}</Table.Td>
-                    </Table.Tr>}
+                    {data.serviceKey !== "cashWithdrawal" && (
+                        <Table.Tr>
+                            <Table.Td fw={500}>Available Balance</Table.Td>
+                            <Table.Td>{data.balanceAmount}</Table.Td>
+                        </Table.Tr>
+                    )}
 
                     <Table.Tr>
                         <Table.Td fw={500}>RRN</Table.Td>

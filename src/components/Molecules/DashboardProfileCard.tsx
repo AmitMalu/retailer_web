@@ -18,8 +18,14 @@ const DashboardProfileCard = ({ profile }: any) => {
                     src={hasImage ? profile?.image : null}
                     size={120}
                     radius="md"
-                    variant='white'
+                    // bg="white"
                     alt={profile?.name}
+                    styles={{
+                        image: {
+                            objectFit: "contain",
+                            // backgroundColor: "white",
+                        },
+                    }}
                 />
             </div>
 

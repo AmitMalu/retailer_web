@@ -85,74 +85,117 @@ const AepsTransaction = () => {
         pidData: "",
     };
 
-    const normalizeReceiptData = (apiResponse: any, serviceType: string) => {
-        const txnData = apiResponse?.data?.data || {};
+    // const normalizeReceiptData = (apiResponse: any) => {
+    //     const txnData = apiResponse?.data?.data || {};
+
+    //     return {
+    //         // Common
+    //         status: apiResponse?.data?.status ? "SUCCESS" : "FAILED",
+    //         statusMessage: apiResponse?.data?.message || apiResponse?.message,
+    //         serviceType: title, // CASH WITHDRAWAL | BALANCE INQUIRY || MINI STATEMENT
+    //         dateTime: txnData.requestTransactionTime,
+    //         terminalId: txnData.terminalId,
+    //         rrn: txnData.bankRRN,
+    //         txnType: txnData.transactionType,
+
+    //         // Amounts
+    //         transactionAmount: txnData.transactionAmount,
+    //         balanceAmount: txnData.balanceAmount,
+
+    //         // Codes
+    //         responseCode: txnData.responseCode,
+    //         errorCode: txnData.errorCode,
+    //         errorMessage: txnData.errorMessage,
+    //     };
+    // };
+
+    const normalizeReceiptData = (apiResponse: any, service: string) => {
+        const wrapper = apiResponse?.data || {};
+        const txn = wrapper?.data || {};
+
+        const isSuccess =
+            wrapper?.status === true ||
+            txn?.transactionStatus === "successful";
 
         return {
-            // Common
-            status: apiResponse?.data?.status ? "SUCCESS" : "FAILED",
-            statusMessage: apiResponse?.data?.message || apiResponse?.message,
-            serviceType, // CASH WITHDRAWAL | BALANCE INQUIRY
-            dateTime: txnData.requestTransactionTime,
-            terminalId: txnData.terminalId,
-            rrn: txnData.bankRRN,
-            txnType: txnData.transactionType,
+            status: isSuccess ? "SUCCESS" : "FAILED",
+            statusMessage: wrapper?.message || apiResponse?.message,
 
-            // Amounts
-            transactionAmount: txnData.transactionAmount,
-            balanceAmount: txnData.balanceAmount,
+            // 🔑 LOGIC VALUE (do NOT change format)
+            serviceKey: service, // cashWithdrawal | balanceInquiry | miniStatement
 
-            // Codes
-            responseCode: txnData.responseCode,
-            errorCode: txnData.errorCode,
-            errorMessage: txnData.errorMessage,
+            // 🎨 DISPLAY VALUE
+            serviceTitle: SERVICE_TITLES[service] ?? "AEPS Transaction",
+
+            dateTime: txn.requestTransactionTime,
+            terminalId: txn.terminalId,
+            rrn: txn.bankRRN,
+            txnType: txn.transactionType,
+
+            transactionAmount: txn.transactionAmount,
+            balanceAmount: txn.balanceAmount,
+
+            responseCode: txn.responseCode,
+            errorCode: txn.errorCode,
+            errorMessage: txn.errorMessage,
         };
     };
+
 
     const handleSubmit = async (values: any) => {
         console.log("Final Submit Values:", values);
         try {
             setIsLoading(true);
+            // Capture fresh location here
+            // const location = await getCurrentLocation();
 
             let res;
+            const commonPayload = {
+                subProductId,
+                retailerId: loginData?.hierarchyId,
+                schemeCode,
+                nationalBankIdentificationNumber: values.bank,
+                captureResponse: values.pidData,
+
+                // 🔥 Send location to backend
+                // latitude: location.latitude,
+                // longitude: location.longitude,
+                // locationCapturedAt: location.capturedAt,
+            };
+
             if (service === "balanceInquiry") {
                 res = await Aeps_Balance_Inquiry({
-                    subProductId: subProductId,
-                    retailerId: loginData?.hierarchyId,
-                    schemeCode,
-                    nationalBankIdentificationNumber: values.bank,
+                    ...commonPayload,
                     transactionAmount: "0",
-                    captureResponse: values.pidData,
                 });
             } else if (service === "miniStatement") {
                 res = await Aeps_Mini_Statement({
-                    subProductId: subProductId,
-                    retailerId: loginData?.hierarchyId,
-                    schemeCode,
-                    nationalBankIdentificationNumber: values.bank,
+                    ...commonPayload,
                     transactionAmount: "0",
-                    captureResponse: values.pidData,
                 });
-            } else {
+            } else if (service === "cashWithdrawal") {
                 res = await Aeps_Cash_Withdrawal({
-                    subProductId: subProductId,
-                    retailerId: loginData?.hierarchyId,
-                    schemeCode,
-                    nationalBankIdentificationNumber: values.bank,
-                    transactionAmount: service === "cashWithdrawal" ? values.amount : 0,
-                    captureResponse: values.pidData,
+                    ...commonPayload,
+                    transactionAmount: values.amount,
                 });
             }
 
             // If response exists → show receipt
             if (res?.data) {
-                const normalized = normalizeReceiptData(res.data, "BALANCE INQUIRY");
+                const normalized = normalizeReceiptData(res?.data, service!);
                 setReceiptData(normalized);
                 setReceiptDrawerOpened(true);
             } else {
-                showErrorNotification(res.data?.data?.message || res.data?.message || "Failed to process transaction");
+                showErrorNotification(res?.data?.data?.message || res?.data?.message || "Failed to process transaction");
             }
-        } catch (err) {
+        } catch (err: any) {
+            // if (err.code === "PERMISSION_DENIED") {
+            //     showErrorNotification("Location permission is required to complete AEPS transaction");
+            // } else if (err.code === "TIMEOUT") {
+            //     showErrorNotification("Please allow location access to continue transaction");
+            // } else {
+            //     handleCustomError(err);
+            // }
             handleCustomError(err);
         } finally {
             setIsLoading(false);

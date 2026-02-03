@@ -613,6 +613,20 @@ export const Check_Aeps_Onboard_Status = async (data: any) => {
   }
 };
 
+export const verifyAepsLocation = async (data: any) => {
+  try {
+    const response = await api.post(
+      API_ROUTES.VERIFY_LOCATION,
+      data,
+      await createHeaders(),
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const AepsMerchantOnboardAPI = async (data: any) => {
   return await api.post(
     `${API_ROUTES.AEPS_MERCHANT_ONBOARD}`,
