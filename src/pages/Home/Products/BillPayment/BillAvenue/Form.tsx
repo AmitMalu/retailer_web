@@ -244,6 +244,8 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                 setSelectedProviderDetails({
                     billerId: responseData.billerId,
                     requestId: responseData.requestId,
+                    billerCategory: responseData.billerCategory,
+                    description: responseData.billerDescription,
                     fields,
                     billerData: responseData,
                 });
@@ -720,6 +722,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
 
         loadProviders();
     }, [serviceName]);
+    console.log(selectedProviderDetails, "selectedProviderDetails");
 
     return (
         <>
@@ -810,7 +813,11 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
 
                                         {/* Dynamic provider-dependent fields */}
                                         {selectedProviderDetails?.fields && (
-                                            <ProviderDynamicFields fields={selectedProviderDetails.fields} />
+                                            <ProviderDynamicFields
+                                                fields={selectedProviderDetails?.fields}
+                                                billerCategory={selectedProviderDetails?.billerCategory}
+                                                description={selectedProviderDetails?.description}
+                                            />
                                         )}
                                     </div>
 

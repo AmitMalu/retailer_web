@@ -4,10 +4,20 @@ import FormikTextInputComponent from "@/components/Molecules/NewComponents/Formi
 
 interface Props {
   fields: any[];
+  billerCategory?: string;
+  description?: string;
 }
 
-const ProviderDynamicFields: React.FC<Props> = ({ fields }) => {
+const ProviderDynamicFields: React.FC<Props> = ({
+  fields,
+  billerCategory,
+  description,
+}) => {
+  console.log(fields, "feidls");
+
   if (!fields?.length) return null;
+
+  const shouldCapitalize = billerCategory?.toUpperCase() === "FASTAG";
 
   return (
     <>
@@ -58,6 +68,7 @@ const ProviderDynamicFields: React.FC<Props> = ({ fields }) => {
         return (
           <div key={fieldKey} className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)]">
             <FormikTextInputComponent
+              capitalize={shouldCapitalize}
               name={fieldKey}
               label={label}
               placeholder={`Enter ${label}`}
@@ -68,6 +79,13 @@ const ProviderDynamicFields: React.FC<Props> = ({ fields }) => {
           </div>
         );
       })}
+
+      {/* Helper / Description */}
+      {description && (
+        <div className="w-full text-xs text-gray-500 mt-2">
+          Note : {description}
+        </div>
+      )}
     </>
   );
 };

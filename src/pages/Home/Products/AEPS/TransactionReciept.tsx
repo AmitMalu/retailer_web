@@ -22,6 +22,8 @@ const TransactionReciept = ({ data }: { data: any }) => {
         window.print();
     };
 
+    const dash = (val: any) => val ?? "-";
+
     return (
         <Card shadow="sm" radius="md" withBorder p="md">
             {/* --- Header Section --- */}
@@ -69,16 +71,36 @@ const TransactionReciept = ({ data }: { data: any }) => {
                 horizontalSpacing="sm"
             >
                 <Table.Tbody>
+                    {/* Date */}
                     <Table.Tr>
                         <Table.Td fw={500}>Date</Table.Td>
-                        <Table.Td>
-                            {data?.dateTime
-                                ? data?.dateTime
-                                : "-"}
-                        </Table.Td>
+                        <Table.Td>{dash(data?.dateTime)}</Table.Td>
+                    </Table.Tr>
 
-                        {/* <Table.Td fw={500}>Transaction Status</Table.Td>
-                        <Table.Td>{data?.status ?? "-"}</Table.Td> */}
+                    {/* Aadhaar + Mobile */}
+                    <Table.Tr>
+                        <Table.Td fw={500}>Aadhaar Number</Table.Td>
+                        <Table.Td>
+                            {data?.aadhaarNumber} with mobile {data?.mobileNumber}
+                        </Table.Td>
+                    </Table.Tr>
+
+                    {/* Bank Name */}
+                    <Table.Tr>
+                        <Table.Td fw={500}>Bank Name</Table.Td>
+                        <Table.Td>{dash(data?.bankName)}</Table.Td>
+                    </Table.Tr>
+
+                    {/* Transaction Type */}
+                    <Table.Tr>
+                        <Table.Td fw={500}>Transaction Type</Table.Td>
+                        <Table.Td>{dash(data?.serviceTitle)}</Table.Td>
+                    </Table.Tr>
+
+                    {/* Transaction ID */}
+                    <Table.Tr>
+                        <Table.Td fw={500}>Transaction ID</Table.Td>
+                        <Table.Td>{dash(data?.transactionId)}</Table.Td>
                     </Table.Tr>
 
                     {data.serviceKey === "cashWithdrawal" && (
@@ -95,15 +117,16 @@ const TransactionReciept = ({ data }: { data: any }) => {
                         </Table.Tr>
                     )}
 
+                    {/* RRN */}
                     <Table.Tr>
                         <Table.Td fw={500}>RRN</Table.Td>
-                        <Table.Td>{data?.rrn ?? "-"}</Table.Td>
-
+                        <Table.Td>{dash(data?.rrn)}</Table.Td>
                     </Table.Tr>
 
+                    {/* Terminal ID */}
                     <Table.Tr>
-                        <Table.Td fw={500}>Terminal Id</Table.Td>
-                        <Table.Td>{data?.terminalId ?? "-"}</Table.Td>
+                        <Table.Td fw={500}>Terminal ID</Table.Td>
+                        <Table.Td>{dash(data?.terminalId)}</Table.Td>
                     </Table.Tr>
                 </Table.Tbody>
             </Table>

@@ -37,13 +37,15 @@ const ServicesScreen = () => {
                     // Extract unique serviceName
                     const unique = Array.from(
                         new Map(
-                            servicesArray?.map((item: any, index: number) => [
-                                item.serviceName,
-                                {
-                                    id: index,
-                                    title: item.serviceName
-                                }
-                            ])
+                            servicesArray
+                                ?.filter((item: any) => item.serviceName !== "Education Fees")
+                                ?.map((item: any, index: number) => [
+                                    item.serviceName,
+                                    {
+                                        id: index,
+                                        title: item.serviceName
+                                    }
+                                ])
                         ).values()
                     );
 

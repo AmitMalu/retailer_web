@@ -33,7 +33,7 @@ const AepsTransaction = () => {
     const queryParams = new URLSearchParams(location.search);
     const service = queryParams.get("service");  // "cashWithdrawal", "balanceInquiry", etc.
     const title = service ? SERVICE_TITLES[service] : "AEPS Transaction";
-    const [bankList, setBankList] = useState([]);
+    const [bankList, setBankList] = useState<{ label: string, value: string }[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [loadingBanks, setLoadingBanks] = useState(false);
 
@@ -85,31 +85,7 @@ const AepsTransaction = () => {
         pidData: "",
     };
 
-    // const normalizeReceiptData = (apiResponse: any) => {
-    //     const txnData = apiResponse?.data?.data || {};
-
-    //     return {
-    //         // Common
-    //         status: apiResponse?.data?.status ? "SUCCESS" : "FAILED",
-    //         statusMessage: apiResponse?.data?.message || apiResponse?.message,
-    //         serviceType: title, // CASH WITHDRAWAL | BALANCE INQUIRY || MINI STATEMENT
-    //         dateTime: txnData.requestTransactionTime,
-    //         terminalId: txnData.terminalId,
-    //         rrn: txnData.bankRRN,
-    //         txnType: txnData.transactionType,
-
-    //         // Amounts
-    //         transactionAmount: txnData.transactionAmount,
-    //         balanceAmount: txnData.balanceAmount,
-
-    //         // Codes
-    //         responseCode: txnData.responseCode,
-    //         errorCode: txnData.errorCode,
-    //         errorMessage: txnData.errorMessage,
-    //     };
-    // };
-
-    const normalizeReceiptData = (apiResponse: any, service: string) => {
+    const normalizeReceiptData = (apiResponse: any, service: string, formValues: any) => {
         const wrapper = apiResponse?.data || {};
         const txn = wrapper?.data || {};
 
@@ -118,23 +94,31 @@ const AepsTransaction = () => {
             txn?.transactionStatus === "successful";
 
         return {
+            /* ================= STATUS ================= */
             status: isSuccess ? "SUCCESS" : "FAILED",
             statusMessage: wrapper?.message || apiResponse?.message,
 
-            // 🔑 LOGIC VALUE (do NOT change format)
-            serviceKey: service, // cashWithdrawal | balanceInquiry | miniStatement
-
-            // 🎨 DISPLAY VALUE
+            /* ================= SERVICE ================= */
+            serviceKey: service,
             serviceTitle: SERVICE_TITLES[service] ?? "AEPS Transaction",
 
+            /* ================= DATE / IDS ================= */
             dateTime: txn.requestTransactionTime,
             terminalId: txn.terminalId,
             rrn: txn.bankRRN,
+            transactionId: txn?.transactionId,
             txnType: txn.transactionType,
 
-            transactionAmount: txn.transactionAmount,
-            balanceAmount: txn.balanceAmount,
+            /* ================= USER INPUT (FROM FORM) ================= */
+            aadhaarNumber: maskAadhaar(formValues?.aadhaar),
+            mobileNumber: formValues?.mobile,
+            bankName: getBankName(formValues?.bank),
 
+            /* ================= AMOUNTS ================= */
+            transactionAmount: txn?.transactionAmount,
+            balanceAmount: txn?.balanceAmount,
+
+            /* ================= ERROR ================= */
             responseCode: txn.responseCode,
             errorCode: txn.errorCode,
             errorMessage: txn.errorMessage,
@@ -182,7 +166,7 @@ const AepsTransaction = () => {
 
             // If response exists → show receipt
             if (res?.data) {
-                const normalized = normalizeReceiptData(res?.data, service!);
+                const normalized = normalizeReceiptData(res?.data, service!, values);
                 setReceiptData(normalized);
                 setReceiptDrawerOpened(true);
             } else {
@@ -205,6 +189,13 @@ const AepsTransaction = () => {
         //     state: { profile }
         // })
     }
+
+    const maskAadhaar = (aadhaar?: string) =>
+        aadhaar ? `XXXXXXXX${aadhaar.slice(-4)}` : "—";
+
+    const getBankName = (bankCode: string) => {
+        return bankList.find((b) => b.value === bankCode)?.label || "—";
+    };
 
     // Fetch banks
     const fetchBanks = async () => {
