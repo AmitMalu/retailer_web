@@ -884,14 +884,16 @@ export type FindRemitterProps = {
   name?: string;
   // dob?: string;
   aadhaarNumber?: string;
+  deviceType: string;
+  csp: boolean;
+  pidData: string;
   otp?: string;
 };
 
 export interface RemitterModalProps {
   isOpen: boolean;
-  onClose: (source: "icon" | "button") => void;
+  onClose: () => void;
   modelMode: "ekyc" | "register" | null;
-  isNewRemitter: boolean;
   handleRemitterKyc: (values: any) => void;
   handleRegisterRemitterSubmit: (values: any) => void;
 }

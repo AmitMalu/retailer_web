@@ -16,67 +16,38 @@ const DEVICE_LIST = [
 ];
 
 const AEPS_RD_ENDPOINTS: any = {
-    Mantra: { 
+    Mantra: {
         discovery: "http://127.0.0.1:11100",
         capture: "http://127.0.0.1:11100/rd/capture"
     },
-    Morpho: { 
+    Morpho: {
         discovery: "http://127.0.0.1:8005",
         capture: "http://127.0.0.1:8005/capture"
     },
-    Startek: { 
+    Startek: {
         discovery: "http://127.0.0.1:11102",
         capture: "http://127.0.0.1:11102/capture"
     },
-    SecuGen: { 
+    SecuGen: {
         discovery: "http://127.0.0.1:8443",
         capture: "http://127.0.0.1:8443/rd/capture"
     },
-    Tatvik: { 
+    Tatvik: {
         discovery: "http://127.0.0.1:8001",
         capture: "http://127.0.0.1:8001/rd/capture"
     },
-    Precision: { 
+    Precision: {
         discovery: "http://127.0.0.1:11103",
         capture: "http://127.0.0.1:11103/capture"
     },
-    Cogent: { 
+    Cogent: {
         discovery: "http://127.0.0.1:8004",
         capture: "http://127.0.0.1:8004/capture"
     },
 };
 
-// Create XML body required for Mantra, Morpho, Startek etc.
-// const pidOptions = `<?xml version="1.0"?>
-// <PidOptions ver="1.0">
-//   <Opts fCount="1" fType="2" iCount="0" iType="0" format="0" pidVer="2.0" timeout="20000" otp="" env="P" />
-// </PidOptions>`;
-
-// Calculate WADH dynamically based on EKYC options
-// const calculateWadh = () => {
-//     const ekycOptions = {
-//         ver: "2.5",
-//         ra: "F", // F for fingerprint
-//         rc: "Y", // Y for consent
-//         lr: "N", // N for English only
-//         de: "N", // N for KUA decrypts
-//         pfr: "N"  // N for no PDF
-//     };
-    
-//     const optionsString = ekycOptions.ver + ekycOptions.ra + ekycOptions.rc + ekycOptions.lr + ekycOptions.de + ekycOptions.pfr;
-    
-//     // Simple SHA256 + Base64 implementation
-//     // In production, you should use a proper crypto library
-//     const encoder = new TextEncoder();
-//     encoder.encode(optionsString);
-    
-//     // For now, return the working hardcoded value
-//     // TODO: Implement proper SHA256 + Base64
-//     return "E0jzJ/P8UopUHAieZn8CKqS4WPMi5ZSYXgfnlfkWjrc=";
-// };
-
 // Generate PID options based on use case (2FA vs KYC)
-const generatePidOptions = (is2FA: boolean = true) => {
+const generatePidOptions = (is2FA = true, wadh = "") => {
     return `<?xml version="1.0"?>
 <PidOptions ver="1.0" env="P">
   <Opts 
@@ -89,14 +60,13 @@ const generatePidOptions = (is2FA: boolean = true) => {
     format="0"
     pidVer="2.0"
     timeout="20000"
-    wadh="${is2FA ? '' : 'E0jzJ/P8UopUHAieZn8CKqS4WPMi5ZSYXgfnlfkWjrc='}"
+    wadh="${is2FA ? '' : wadh}"
     posh="UNKNOWN"
   />
 </PidOptions>`;
 };
 
-// wadh="E0jzJ/P8UopUHAieZn8CKqS4WPMi5ZSYXgfnlfkWjrc="
-
+// wadh='E0jzJ/P8UopUHAieZn8CKqS4WPMi5ZSYXgfnlfkWjrc=' for aeps
 // -------------------------------
 // Parse PID XML
 // -------------------------------
@@ -143,84 +113,85 @@ const BiometricCapture = ({
     validateForm,
     requiredFieldsBeforeScan,
     onSuccessScan,
-    is2FA = true
+    is2FA = true,
+    wadh
 }: any) => {
     const theme = useTheme();
 
-// Check RD service status before capture
-const checkDeviceStatus = async (device: string) => {
-    const endpoints = AEPS_RD_ENDPOINTS[device];
-    if (!endpoints) {
-        return { ready: false, error: "Device not supported" };
-    }
-
-    try {
-        const res = await fetch(endpoints.discovery, {
-            method: "RDSERVICE",
-            headers: { "Content-Type": "text/xml" }
-        });
-
-        const xmlText = await res.text();
-        const xml = new DOMParser().parseFromString(xmlText, "text/xml");
-        const rdService = xml.querySelector("RDService");
-        const status = rdService?.getAttribute("status");
-
-        if (status === "READY") {
-            return { ready: true, error: null };
-        } else {
-            return { ready: false, error: `Device status: ${status}` };
+    // Check RD service status before capture
+    const checkDeviceStatus = async (device: string) => {
+        const endpoints = AEPS_RD_ENDPOINTS[device];
+        if (!endpoints) {
+            return { ready: false, error: "Device not supported" };
         }
-    } catch (err) {
-        console.error(`Device discovery failed for ${device}:`, err);
-        return { ready: false, error: "Device not connected or RD service not running" };
-    }
-};
 
-// -------------------------------
-// Fingerprint Capture
-// -------------------------------
-const captureFingerprint = async (device: string) => {
-    const endpoints = AEPS_RD_ENDPOINTS[device];
+        try {
+            const res = await fetch(endpoints.discovery, {
+                method: "RDSERVICE",
+                headers: { "Content-Type": "text/xml" }
+            });
 
-    if (!endpoints) {
-        setFieldError("pidData", "Device not supported");
-        return null;
-    }
+            const xmlText = await res.text();
+            const xml = new DOMParser().parseFromString(xmlText, "text/xml");
+            const rdService = xml.querySelector("RDService");
+            const status = rdService?.getAttribute("status");
 
-    // Check device status first
-    const statusCheck = await checkDeviceStatus(device);
-    if (!statusCheck.ready) {
-        setFieldTouched("pidData", true);
-        setFieldError("pidData", statusCheck.error || "Device not ready");
-        showErrorNotification(statusCheck.error || "Device not ready");
-        return null;
-    }
+            if (status === "READY") {
+                return { ready: true, error: null };
+            } else {
+                return { ready: false, error: `Device status: ${status}` };
+            }
+        } catch (err) {
+            console.error(`Device discovery failed for ${device}:`, err);
+            return { ready: false, error: "Device not connected or RD service not running" };
+        }
+    };
 
-    try {
-        const pidOptions = generatePidOptions(is2FA);
-        const res = await fetch(endpoints.capture, {
-            method: "CAPTURE",
-            headers: { "Content-Type": "text/xml" },
-            body: pidOptions
-        });
+    // -------------------------------
+    // Fingerprint Capture
+    // -------------------------------
+    const captureFingerprint = async (device: string) => {
+        const endpoints = AEPS_RD_ENDPOINTS[device];
 
-        const xmlText = await res.text();
-        if (!xmlText) {
-            setFieldTouched("pidData", true);
-            setFieldError("pidData", "Failed to capture fingerprint");
-            showErrorNotification("Failed to capture fingerprint")
+        if (!endpoints) {
+            setFieldError("pidData", "Device not supported");
             return null;
         }
 
-        setFieldError("pidData", "");
-        return xmlText;
-    } catch (err) {
-        console.error(err);
-        setFieldTouched("pidData", true);
-        setFieldError("pidData", "Unable to capture fingerprint");
-        handleCustomError(err || "Unable to capture fingerprint");
-        return null;
-    }
+        // Check device status first
+        const statusCheck = await checkDeviceStatus(device);
+        if (!statusCheck.ready) {
+            setFieldTouched("pidData", true);
+            setFieldError("pidData", statusCheck.error || "Device not ready");
+            showErrorNotification(statusCheck.error || "Device not ready");
+            return null;
+        }
+
+        try {
+            const pidOptions = generatePidOptions(is2FA, wadh);
+            const res = await fetch(endpoints.capture, {
+                method: "CAPTURE",
+                headers: { "Content-Type": "text/xml" },
+                body: pidOptions
+            });
+
+            const xmlText = await res.text();
+            if (!xmlText) {
+                setFieldTouched("pidData", true);
+                setFieldError("pidData", "Failed to capture fingerprint");
+                showErrorNotification("Failed to capture fingerprint")
+                return null;
+            }
+
+            setFieldError("pidData", "");
+            return xmlText;
+        } catch (err) {
+            console.error(err);
+            setFieldTouched("pidData", true);
+            setFieldError("pidData", "Unable to capture fingerprint");
+            handleCustomError(err || "Unable to capture fingerprint");
+            return null;
+        }
     };
 
     // -------------------------------

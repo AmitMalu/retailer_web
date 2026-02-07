@@ -13,7 +13,6 @@ const ProviderDynamicFields: React.FC<Props> = ({
   billerCategory,
   description,
 }) => {
-  console.log(fields, "feidls");
 
   if (!fields?.length) return null;
 
@@ -70,6 +69,7 @@ const ProviderDynamicFields: React.FC<Props> = ({
             <FormikTextInputComponent
               capitalize={shouldCapitalize}
               name={fieldKey}
+              size="md"
               label={label}
               placeholder={`Enter ${label}`}
               withAsterisk={field.required}

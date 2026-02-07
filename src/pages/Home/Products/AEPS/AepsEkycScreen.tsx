@@ -303,7 +303,12 @@ const AepsEkycScreen = () => {
                                                         handleSubmit({ ...values, pidData: parsedPid });
                                                     }, 0);
                                                 }}
+                                                // When 2FA mode is false, Provided Wadh is sent to RD service, 
+                                                // as per provider requirement. 
+                                                // If your provider does not require Wadh,
+                                                // set is2FA to true and do not provide Wadh value
                                                 is2FA={false}
+                                                wadh={import.meta.env.VITE_AEPS_FINGPAY_LIVE_WADH}
                                             />}
                                         </Grid>
                                     </div>

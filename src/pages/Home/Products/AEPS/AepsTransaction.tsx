@@ -367,6 +367,10 @@ const AepsTransaction = () => {
                                     setFieldError={setFieldError}
                                     setFieldTouched={setFieldTouched}
                                     validateForm={validateForm}
+                                    // When 2FA mode is true, Wadh is not sent to RD service, as per provider requirement. 
+                                    // If your provider requires Wadh for 2FA as well, set is2FA to false and provide Wadh value
+                                    // wadh={import.meta.env.VITE_AEPS_FINGPAY_LIVE_WADH} 
+                                    is2FA={true}
                                     requiredFieldsBeforeScan={getRequiredFieldsBeforeScan()}
                                     onSuccessScan={async (parsedPid: any, rawXml: string) => {
                                         await setFieldValue("pidData", rawXml, true);

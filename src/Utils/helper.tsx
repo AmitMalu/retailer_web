@@ -519,3 +519,24 @@ export const getCurrentLocation = (): Promise<{
 };
 
 
+export const encryptPidData = (
+  pidData: string,
+  key: string,
+  iv: string
+) => {
+  const encrypted = CryptoJS.AES.encrypt(
+    CryptoJS.enc.Utf8.parse(pidData),
+    CryptoJS.enc.Utf8.parse(key),
+    {
+      iv: CryptoJS.enc.Utf8.parse(iv),
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7,
+    }
+  );
+
+  // PHP uses RAW_DATA + base64_encode
+  return CryptoJS.enc.Base64.stringify(encrypted.ciphertext);
+};
+
+
+

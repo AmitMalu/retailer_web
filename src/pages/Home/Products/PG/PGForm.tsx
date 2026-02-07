@@ -389,6 +389,8 @@ const PGFormModal = ({
                           }
                           withAsterisk
                           className="w-max"
+                          allowNumber={false}
+                          allowSpecialChar={false}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">

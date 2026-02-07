@@ -8,7 +8,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { FindRemitterProps } from "@/Common/interface";
-import { MobileNoRegex } from "@/Utils/helper";
+import { encryptPidData, MobileNoRegex } from "@/Utils/helper";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import NewButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
 import RemitterReceiptModal from "@/components/Organism/DMT/RemitterReceipt";
@@ -45,6 +45,9 @@ const SearchRemitterScreen = () => {
       aadhaarNumber: Yup.string()
         .max(12, "Enter valid Aadhaar Number")
         .required("Aadhaar Number is Required"),
+      deviceType: Yup.string()
+        .required("Please select a device"),
+      pidData: Yup.string().required("Fingerprint required"),
     }),
     ...(modelMode === "register" && {
       otp: Yup.string().max(6, "Enter valid OTP").required("OTP is Required"),
@@ -55,26 +58,16 @@ const SearchRemitterScreen = () => {
     mobileNumber: "",
     name: "",
     aadhaarNumber: "",
+    deviceType: "",
+    csp: false,
+    pidData: "",
     otp: "",
   };
 
-  const handleModelClose = (source?: "icon" | "button") => {
-    // If closed by top X icon — always close completely
-    if (source === "icon") {
-      setIsModelOpen(false);
-      setModelMode(null);
-      setIsNewRemitter(false);
-      return;
-    }
-    if (isNewRemitter && modelMode === "register") {
-      // ✅ If user is new and currently on Register — go back to EKYC screen
-      setModelMode("ekyc");
-    } else {
-      // ✅ Otherwise close everything
-      setIsModelOpen(false);
-      setModelMode(null);
-      setIsNewRemitter(false);
-    }
+  const handleModelClose = () => {
+    setIsModelOpen(false);
+    setModelMode(null);
+    setIsNewRemitter(false);
   }
 
   // ---------- FIND REMITTER ----------
@@ -124,15 +117,36 @@ const SearchRemitterScreen = () => {
   };
 
   // ---------- REMITTER eKYC ----------
+  // 1. Once ekyc is done partner then need to register the remitter within 30 min.
+  //  Post 30min (if remitter register not done) then partner needs to do remitter ekyc again
+  // 2. Only 2 attempts are allowed for each remitter in a single day.
+  //  After 2 failures attempt remitter will not be able to do ekyc for next 24hrs.
   const handleRemitterKyc = async (values: FindRemitterProps) => {
     try {
       setIsLoading(true);
+
+      // 1. PID data from biometric SDK
+      const pidDataRaw = values.pidData; // XML string
+
+      if (!pidDataRaw) {
+        showErrorNotification("Fingerprint required");
+        return;
+      }
+
+      // 2. Encrypt PID data
+      const encryptedPidData = encryptPidData(
+        pidDataRaw,
+        import.meta.env.VITE_DMT_PAYSPRINT_LIVE_ENC_KEY,
+        import.meta.env.VITE_DMT_PAYSPRINT_LIVE_ENC_IV
+      );
+
       const payload = {
         mobile: values.mobileNumber,
         aadhaar_number: values.aadhaarNumber,
         name: values.name,
-        data: "encrypted value of pid data",
-        is_iris: 2,
+        // data: "encryptedPidData",
+        data: encryptedPidData,
+        is_iris: 2, // 1 for iris, 2 for Finger print // 4 for Face
         subProductId: subProductId
       };
       const response = await Remitter_Kyc(payload);
@@ -275,7 +289,6 @@ const SearchRemitterScreen = () => {
                     isOpen={isModelOpen}
                     onClose={handleModelClose}
                     modelMode={modelMode} // "ekyc" or "register"
-                    isNewRemitter={isNewRemitter}
                     handleRemitterKyc={handleRemitterKyc}
                     handleRegisterRemitterSubmit={handleRegisterRemitterSubmit}
                     formik={formik}
