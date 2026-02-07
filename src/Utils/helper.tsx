@@ -539,4 +539,13 @@ export const encryptPidData = (
 };
 
 
+const AEPS_LOCATION_KEY = "aeps_verified_location";
 
+export const saveAepsLocation = (location: any) => {
+  sessionStorage.setItem(AEPS_LOCATION_KEY, JSON.stringify(location));
+};
+
+export const getAepsLocation = () => {
+  const data = sessionStorage.getItem(AEPS_LOCATION_KEY);
+  return data ? JSON.parse(data) : null;
+};

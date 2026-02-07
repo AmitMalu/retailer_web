@@ -145,7 +145,7 @@ export default function Products() {
               );
 
             return (
-              <div className="scale-90">
+              <div key={product.id} className="scale-90">
                 <ProductCard
                   key={product?.id}
                   image={product?.image}
@@ -176,7 +176,7 @@ export default function Products() {
               );
 
             return (
-              <div className="scale-90">
+              <div key={product.id} className="scale-90">
                 <ProductCard
                   key={product?.id}
                   image={product?.image}
@@ -207,7 +207,7 @@ export default function Products() {
               );
 
             return (
-              <div className="scale-90">
+              <div key={product.id} className="scale-90">
                 <ProductCard
                   key={product?.id}
                   image={product?.image}

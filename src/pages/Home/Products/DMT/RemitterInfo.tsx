@@ -101,8 +101,8 @@ const RemitterInfo = () => {
           amount: Yup.number()
             .required("Required")
             .positive("Amount must be positive")
-            .min(1, "Minimum amount is 1")
-            .max(5000, "Maximum amount is 5000"),
+            .min(100, "Min amount is 100")
+            .max(5000, "Max amount is 5000"),
         });
 
         const initialValues = {
@@ -469,19 +469,26 @@ const RemitterInfo = () => {
 
       const response = await Dmt_Transaction(payload);
       const data = response?.data
+      const apiData = data?.data;
+
+      // Failure message builder (safe)
+      const failureMessage = apiData?.remarks
+        ? `${data?.message} - ${apiData.remarks}`
+        : data?.message || "Transaction Failed";
+
       if (data?.statusCode == "200") {
         showSuccessNotification(response?.data?.message || "Transaction Success");
         handleCloseDeleteModal();
         fetchRemitterDetails(mobileNumber);
         await getBeneficiariesList(page, size, searchValues); // refresh with same filters
       } else if (data?.statusCode == "202") {
-        toast.warning(response?.data?.message || "Transaction is in Pending");
+        toast.warning(failureMessage || "Transaction is in Pending");
         handleCloseDeleteModal();
         fetchRemitterDetails(mobileNumber);
         await getBeneficiariesList(page, size, searchValues);
       }
       else {
-        showErrorNotification(response?.data?.message || "Transaction failed")
+        showErrorNotification(failureMessage);
       }
     } catch (error) {
       handleCustomError(error);

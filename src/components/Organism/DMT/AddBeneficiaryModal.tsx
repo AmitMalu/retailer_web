@@ -32,7 +32,9 @@ const AddBeneficiaryModal = ({
     //   .matches(/^[6-9]\d{9}$/, "Please enter valid number")
     //   .required("Mobile number is required"),
     beneficiaryName: Yup.string().required("Beneficiary name is required"),
-    bankId: Yup.string().required("Bank ID is required"),
+    bankId: Yup.string().required("Bank ID is required")
+      .min(2, "Must be at least 2 characters")
+      .max(4, "Must be at most 4 characters"),
     accountNumber: Yup.string()
       .transform((value) => (value ? value.replace(/\s+/g, "") : ""))
       .required("Account number is required")
@@ -192,7 +194,7 @@ const AddBeneficiaryModal = ({
                       placeholder="Enter Bank ID"
                       required
                       withAsterisk
-                      maxLength={30}
+                      maxLength={4}
                     />
                   </Grid.Col>
 

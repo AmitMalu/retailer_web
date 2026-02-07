@@ -26,7 +26,7 @@ const SubProductScreen = () => {
     (product: any) => product.productName.toLowerCase() === "bbps"
   );
 
-  // ✅ Sub-product status map
+  // Sub-product status map
   const subProductStatusMap = React.useMemo(() => {
     const map: Record<string, any> = {};
     bbpsProduct?.subProducts?.forEach((sp: any) => {

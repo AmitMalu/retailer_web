@@ -66,10 +66,17 @@ const Login: React.FC = () => {
         // url: getCurrentUrl(),
       };
       const response = await login(bodyRequest);
+      const AllowedRoles = ["RT", "RU", "DT", "PT", "SD", "EN", "WL"]
       if (response && response?.data &&
         response?.data?.statusCode === 200 ||
         response?.data?.statusCode === "200"
       ) {
+        const data = response?.data?.data;
+        if (!AllowedRoles.includes(data?.role)) {
+          showErrorNotification("Invalid credentials");
+          return;
+        }
+
         navigate("/otpInput", {
           state: { userName: values.userName, login: true },
         });

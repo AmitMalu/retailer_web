@@ -5,7 +5,7 @@ import PayoutCard from "@/components/Molecules/PayoutCard";
 import { PGTezMasterSvgIcon } from "@/assets/svg/Products/PG";
 import { UnstyledButton } from "@mantine/core";
 import { BackSvgIcon } from "@/assets/svg";
-import { createTriangularLayout, decryptData, getCurrentLocation } from "@/Utils/helper";
+import { createTriangularLayout, decryptData, getAepsLocation, getCurrentLocation, saveAepsLocation } from "@/Utils/helper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
 import React from "react";
@@ -13,12 +13,13 @@ import { showErrorNotification } from "@/Utils/notifications";
 import FullScreenLoader from "@/components/Atoms/Loader";
 import { verifyAepsLocation } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
+import { toast } from "react-toastify";
 
 export default function AepsSubProductsScreen() {
     const theme = useTheme();
     const navigate = useNavigate();
 
-    const [isCheckingLocation, setIsCheckingLocation] = React.useState(true);
+    const [isCheckingLocation, setIsCheckingLocation] = React.useState(false);
     const [locationAllowed, setLocationAllowed] = React.useState(false);
     const [verifiedLocation, setVerifiedLocation] = React.useState<any>(null);
 
@@ -67,8 +68,20 @@ export default function AepsSubProductsScreen() {
 
     React.useEffect(() => {
         const verifyLocation = async () => {
+
+            // Reuse session location if present
+            const cachedLocation = getAepsLocation();
+            if (cachedLocation) {
+                setLocationAllowed(true);
+                setVerifiedLocation(cachedLocation);
+                return;
+            }
+
+            let toastId: string | number | undefined;
             try {
+                // Show loader toast
                 setIsCheckingLocation(true);
+                toastId = toast.loading("Fetching your location, please wait...");
 
                 // Get location (permission prompt happens here)
                 const location = await getCurrentLocation();
@@ -82,14 +95,8 @@ export default function AepsSubProductsScreen() {
                 });
 
                 // If API response is invalid
-                if (!res?.data) {
-                    showErrorNotification("Unable to verify your location.");
-                    navigate(`/products/aeps`);
-                    return;
-                }
-
-                // If API returns error code
-                if (res?.data?.statusCode !== 200) {
+                if (res?.data?.statusCode !== 200 || !res?.data?.data) {
+                    toast.dismiss(toastId);
                     showErrorNotification(
                         res?.data?.message || "Unable to verify your location."
                     );
@@ -100,15 +107,21 @@ export default function AepsSubProductsScreen() {
                 if (res?.data?.data?.accepted) {
                     setLocationAllowed(true);
                     setVerifiedLocation(location);
+                    // Save once for entire session
+                    saveAepsLocation(location);
+
+                    //  SUCCESS → just stop loader
+                    toast.dismiss(toastId);
                 } else {
                     setLocationAllowed(false);
+                    toast.dismiss(toastId);
                     showErrorNotification(
                         "AEPS services are not available at your current location."
                     );
                 }
             } catch (err: any) {
                 setLocationAllowed(false);
-
+                toast.dismiss(toastId);
                 if (err.code === "PERMISSION_DENIED") {
                     showErrorNotification(
                         "Location permission is mandatory to use AEPS services."
