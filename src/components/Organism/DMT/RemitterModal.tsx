@@ -23,7 +23,10 @@ const RemitterModal = ({
     return (
         <Modal
             opened={isOpen}
-            onClose={onClose}
+            onClose={() => {
+                formik.resetForm();
+                onClose()
+            }}
             centered
             closeOnClickOutside={false}
             transitionProps={{ transition: 'fade', duration: 600, timingFunction: 'linear' }}
@@ -41,7 +44,7 @@ const RemitterModal = ({
             <Form className="w-full overflow-auto scrollbar-hide pt-2 pb-3 px-2 bg-white rounded-2xl">
                 <Grid gutter="sm">
                     {/* Mobile Number */}
-                    <Grid.Col span={{ base: 12, sm: 12 }}>
+                    <Grid.Col span={{ base: 12, sm: modelMode === "ekyc" ? 6 : 12 }}>
                         <FormikTextInputComponent
                             label="Mobile Number"
                             name="mobileNumber"
@@ -49,22 +52,14 @@ const RemitterModal = ({
                             disabled
                             required
                             withAsterisk
+                            size={modelMode === "ekyc" ? "sm" : "md"}
                         />
                     </Grid.Col>
 
                     {/* E-KYC Fields */}
                     {modelMode === "ekyc" && (
                         <>
-                            <Grid.Col span={{ base: 12, sm: 12 }}>
-                                <FormikTextInputComponent
-                                    label="Full Name"
-                                    name="name"
-                                    placeholder="Enter Remitter Name"
-                                    required
-                                    withAsterisk
-                                />
-                            </Grid.Col>
-                            <Grid.Col span={{ base: 12, sm: 12 }}>
+                            <Grid.Col span={{ base: 12, sm: 6 }}>
                                 <FormikTextInputComponent
                                     label="Aadhaar Number"
                                     name="aadhaarNumber"
@@ -72,6 +67,31 @@ const RemitterModal = ({
                                     required
                                     withAsterisk
                                     maxLength={12}
+                                    size="sm"
+                                />
+                            </Grid.Col>
+
+                            <Grid.Col span={{ base: 12, sm: 6 }}>
+                                <FormikTextInputComponent
+                                    label="First Name"
+                                    name="firstName"
+                                    placeholder="Enter Remitter First Name"
+                                    required
+                                    withAsterisk
+                                    maxLength={30}
+                                    size="sm"
+                                />
+                            </Grid.Col>
+
+                            <Grid.Col span={{ base: 12, sm: 6 }}>
+                                <FormikTextInputComponent
+                                    label="Last Name"
+                                    name="lastName"
+                                    placeholder="Enter Remitter Last Name"
+                                    required
+                                    withAsterisk
+                                    maxLength={30}
+                                    size="sm"
                                 />
                             </Grid.Col>
 
@@ -86,7 +106,8 @@ const RemitterModal = ({
                                     validateForm={formik.validateForm}
                                     requiredFieldsBeforeScan={[
                                         "mobileNumber",
-                                        "name",
+                                        "firstName",
+                                        "lastName",
                                         "aadhaarNumber",
                                         "deviceType",
                                     ]}

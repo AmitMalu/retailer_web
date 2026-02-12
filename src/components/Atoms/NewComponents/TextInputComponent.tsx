@@ -32,6 +32,7 @@ interface TextInputComponentProps {
     allowCharacter?: boolean;
     allowSpecialChar?: boolean;
     allowSpace?: boolean;
+    disablePaste?: boolean;
 }
 
 const TextInputComponent = forwardRef<HTMLInputElement, TextInputComponentProps>(({
@@ -62,6 +63,7 @@ const TextInputComponent = forwardRef<HTMLInputElement, TextInputComponentProps>
     allowCharacter = true,
     allowSpecialChar = true,
     allowSpace = true,
+    disablePaste = false,
 }, ref) => {
     const screenSize = useScreenSize();
     // const [isFocused, setIsFocused] = useState(false);
@@ -117,8 +119,10 @@ const TextInputComponent = forwardRef<HTMLInputElement, TextInputComponentProps>
         value,
         onChange: handleChange,
         onKeyDown,
-        // onFocus: () => setIsFocused(true),
-        // onBlur: () => setIsFocused(false),
+        onPaste: disablePaste ? (e: React.ClipboardEvent<HTMLInputElement>) => e.preventDefault() : undefined,
+        onCopy: disablePaste ? (e: React.ClipboardEvent<HTMLInputElement>) => e.preventDefault() : undefined,
+        onCut: disablePaste ? (e: React.ClipboardEvent<HTMLInputElement>) => e.preventDefault() : undefined,
+        onDrop: disablePaste ? (e: React.DragEvent<HTMLInputElement>) => e.preventDefault() : undefined,
         error: typeof error === "string" ? true : !!error,
         required,
         maxLength,

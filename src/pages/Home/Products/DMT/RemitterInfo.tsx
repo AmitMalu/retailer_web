@@ -1,4 +1,5 @@
 import { BackSvgIcon, FilterSvgIcon, PlusSvgIcon, TrashSvgIcon } from "@/assets/svg";
+import { TableColumn } from "@/Common/interface";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import Loader from "@/components/Atoms/Loader";
@@ -62,7 +63,7 @@ const RemitterInfo = () => {
     ?.find((subProduct: any) => subProduct.subProductId === subProductId) // Find matching subProductId
     ?.schemeCode; // Get the schemeCode
 
-  const tableColumns = [
+  const tableColumns: TableColumn[] = [
     {
       key: "bene_id",
       label: "ID",

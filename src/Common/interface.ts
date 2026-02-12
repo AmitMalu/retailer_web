@@ -881,7 +881,8 @@ export type TwoFAFormBodyProps = {
 
 export type FindRemitterProps = {
   mobileNumber: string;
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   // dob?: string;
   aadhaarNumber?: string;
   deviceType: string;
@@ -913,12 +914,13 @@ export type AddBeneficiaryFormProps = {
   beneficiaryName: string;
   bankId: string;
   accountNumber: string;
+  confirmAccountNumber: string;
   ifscCode: string;
   verified: string | undefined;
-  gstState: string;
-  dob: Date | null;
-  address: string;
-  pincode: string;
+  // gstState: string;
+  // dob: Date | null;
+  // address: string;
+  // pincode: string;
 };
 
 export type AddBeneficiaryPayload = {
@@ -928,10 +930,10 @@ export type AddBeneficiaryPayload = {
   accno: string;
   ifsccode: string;
   verified: string; // "0" or "1"
-  gst_state: string;
-  dob: string | null;
-  address: string;
-  pincode: string;
+  // gst_state: string;
+  // dob: string | null;
+  // address: string;
+  // pincode: string;
   subProductId: string;
 };
 

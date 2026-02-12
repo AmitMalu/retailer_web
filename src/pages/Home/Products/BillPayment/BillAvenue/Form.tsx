@@ -275,9 +275,12 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                 setReceiptData(basicReceipt);
                 setReceiptDrawerOpened(true);
             } else {
-                showErrorNotification(
-                    response?.data?.message || "Transaction failed"
-                );
+                const errorMessage =
+                    response?.data?.data?.vErrorRootVO?.error?.[0]?.errorMessage ||
+                    response?.data?.message ||
+                    "Transaction failed";
+
+                showErrorNotification(errorMessage);
             }
         } catch (error) {
             await handleCustomError(error);

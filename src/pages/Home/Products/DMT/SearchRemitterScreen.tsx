@@ -41,7 +41,9 @@ const SearchRemitterScreen = () => {
       .matches(MobileNoRegex, "Please enter valid number")
       .required("Mobile Number is Required"),
     ...(modelMode === "ekyc" && {
-      name: Yup.string().required("Name is Required"),
+      // name: Yup.string().required("Name is Required"),
+      firstName: Yup.string().required("First Name is Required"),
+      lastName: Yup.string().required("Last Name is Required"),
       aadhaarNumber: Yup.string()
         .max(12, "Enter valid Aadhaar Number")
         .required("Aadhaar Number is Required"),
@@ -56,7 +58,8 @@ const SearchRemitterScreen = () => {
 
   const initialValues: FindRemitterProps = {
     mobileNumber: "",
-    name: "",
+    firstName: "",
+    lastName: "",
     aadhaarNumber: "",
     deviceType: "",
     csp: false,
@@ -143,7 +146,7 @@ const SearchRemitterScreen = () => {
       const payload = {
         mobile: values.mobileNumber,
         aadhaar_number: values.aadhaarNumber,
-        name: values.name,
+        name: `${values.firstName} ${values.lastName}`,
         // data: "encryptedPidData",
         data: encryptedPidData,
         is_iris: 2, // 1 for iris, 2 for Finger print // 4 for Face

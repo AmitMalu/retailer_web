@@ -99,6 +99,7 @@ export const API_ROUTES = {
   DELETE_BENEFICIARY: `${BASE_URL}/api/beneficiary/delete`,
   DMT_TRANX_SEND_OTP: `${BASE_URL}/api/dmt/send-otp`,
   DMT_TRANSACTION: `${BASE_URL}/api/dmt/transaction`,
+  DMT_BANK_LIST: `${BASE_URL}/api/dmt/bank-list`,
 
   ///////////////////////////// AEPS ////////////////////////////////
   AEPS_CHECK_STATUS: `${BASE_URL}/api/merchant/check-status`,

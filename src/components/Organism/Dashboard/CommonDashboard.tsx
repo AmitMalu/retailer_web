@@ -39,7 +39,7 @@ const CommonDashboard = (props: commonDashboardProps) => {
     theme.palette.warning.dark,
   ];
 
-  // 🌟 Dynamic Cards
+  // Dynamic Cards
   const cards =
     props.dashboardData?.cards?.map((card: any, index: number) => ({
       label: card.label,
@@ -48,7 +48,7 @@ const CommonDashboard = (props: commonDashboardProps) => {
       borderColor: card.color || colors[index % colors.length],
     })) || [];
 
-  // 🌟 Dynamic Table 1: Last 5 / Top entries
+  // Dynamic Table 1: Last 5 / Top entries
   const table1Data = props.dashboardData?.tableData || [];
   const table1Headers = table1Data.length
     ? Object.keys(table1Data[0]).map((key) => ({
@@ -57,7 +57,7 @@ const CommonDashboard = (props: commonDashboardProps) => {
     }))
     : [];
 
-  // 🌟 Dynamic Table 2: Product Wise Inventory
+  // Dynamic Table 2: Product Wise Inventory
   const table2Data = props.dashboardData?.productInventory || []; // rename from API if exists
   const table2Headers = table2Data.length
     ? Object.keys(table2Data[0]).map((key) => ({
@@ -66,7 +66,7 @@ const CommonDashboard = (props: commonDashboardProps) => {
     }))
     : [];
 
-  // 🌟 Profile
+  // Profile
   const profile = props.dashboardData?.profile || {
     image: "",
     name: "",

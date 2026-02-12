@@ -545,6 +545,10 @@ export const Register_Beneficiary = async (data: any) => {
   );
 };
 
+export const Dmt_Bank_List = async () => {
+  return await api.get(`${API_ROUTES.DMT_BANK_LIST}`, await createHeaders());
+};
+
 export const Fetch_Beneficiaries = async (data: Record<string, any>) => {
   // Extract page and size for query params
   const { page, size, ...bodyData } = data;
