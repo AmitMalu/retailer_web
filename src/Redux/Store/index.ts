@@ -6,6 +6,7 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import navigationReducer from "../Reducers/navigationReducer";
 import paginationSlice from "../Reducers/paginationSlice";
+import locationReducer from "../Reducers/locationSlice";
 
 const rootReducer = combineReducers({
   ui: uiReducer,
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   apiResponse: apiReducer,
   navigation: navigationReducer,
   pagination: paginationSlice,
+  location: locationReducer,
 });
 
 const persistConfig = {

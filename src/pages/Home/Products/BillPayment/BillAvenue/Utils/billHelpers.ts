@@ -14,18 +14,18 @@ export const getCommonFastagStatusKeys = (normalized: Record<string, any>) =>
   normalized["tag status"] ||
   normalized["vehicle tag status"];
 
-const paiseToRupee = (paise?: string | number) => {
-  if (!paise) return undefined;
-  return Number((Number(paise) / 100).toFixed(2));
+export const paiseToRupee = (paise?: string | number) => {
+  if (paise === undefined || paise === null) return undefined;
+  // return Number((Number(paise) / 100).toFixed(2));
+  return (Number(paise) / 100).toFixed(2); // REMOVE Number()
 };
 
-const normalizeRupees = (value: string | number) => {
+export const normalizeRupees = (value: string | number) => {
   if (value === "" || value === undefined || value === null) return "0.00";
   return Number(value).toFixed(2);
 };
 
 const getPaymentModeLimits = (billerInfo: any) => {
-
   const modes =
     billerInfo?.billerData?.billerPaymentModes?.paymentModeList || [];
   if (!modes.length) return {};
@@ -59,30 +59,34 @@ export const getAmountConfig = ({
   billerInfo: any;
   fetchBillResponse: any;
 }) => {
-
   const exactness = billerInfo?.billerData?.billerPaymentExactness || "";
 
   // Bill amount (paise → rupees)
-  const billAmount = paiseToRupee(
+  const billAmountString = paiseToRupee(
     fetchBillResponse?.billerResponse?.billAmount,
   );
+
+  // number for validation comparison
+  const billAmountNumber = billAmountString
+    ? Number(billAmountString)
+    : undefined;
 
   // CASE 1: Exact
   if (exactness === "Exact") {
     return {
-      amount: billAmount,
+      amount: billAmountString,
       editable: false,
-      min: billAmount,
-      max: billAmount,
+      min: billAmountNumber,
+      max: billAmountNumber,
     };
   }
 
   // CASE 2: Exact and above
   if (exactness === "Exact and above") {
     return {
-      amount: billAmount,
+      amount: billAmountString,
       editable: true,
-      min: billAmount,
+      min: billAmountNumber,
       max: undefined,
     };
   }
@@ -90,10 +94,10 @@ export const getAmountConfig = ({
   // CASE 3: Exact and below
   if (exactness === "Exact and below") {
     return {
-      amount: billAmount,
+      amount: billAmountString,
       editable: true,
       min: 0,
-      max: billAmount,
+      max: billAmountNumber,
     };
   }
 
@@ -126,20 +130,37 @@ export const getBillFormConfig = ({
     },
 
     validationSchema: Yup.object({
-      amount: Yup.number()
-        .typeError("Enter valid amount")
+      // amount: Yup.number()
+      //   .typeError("Enter valid amount")
+      //   .required("Amount is required")
+      //   .min(
+      //     amountConfig.min ?? 0,
+      //     amountConfig.min
+      //       ? `Minimum amount is ₹${amountConfig.min}`
+      //       : undefined,
+      //   )
+      //   .max(
+      //     amountConfig.max ?? Infinity,
+      //     amountConfig.max
+      //       ? `Maximum amount is ₹${amountConfig.max}`
+      //       : undefined,
+      //   ),
+      amount: Yup.string()
         .required("Amount is required")
-        .min(
-          amountConfig.min ?? 0,
-          amountConfig.min
-            ? `Minimum amount is ₹${amountConfig.min}`
-            : undefined,
+        .test(
+          "is-valid-number",
+          "Enter valid amount",
+          (value) => !isNaN(Number(value)),
         )
-        .max(
-          amountConfig.max ?? Infinity,
-          amountConfig.max
-            ? `Maximum amount is ₹${amountConfig.max}`
-            : undefined,
+        .test(
+          "min-check",
+          amountConfig.min ? `Minimum amount is ₹${amountConfig.min}` : "",
+          (value) => !amountConfig.min || Number(value) >= amountConfig.min,
+        )
+        .test(
+          "max-check",
+          amountConfig.max ? `Maximum amount is ₹${amountConfig.max}` : "",
+          (value) => !amountConfig.max || Number(value) <= amountConfig.max,
         ),
     }),
 

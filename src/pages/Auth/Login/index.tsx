@@ -23,10 +23,12 @@ import AuthLayout from "@/components/layouts/AuthLayout";
 import { LoginRequest } from "@/Common/interface";
 import LoginImage from "@/assets/svg/Auth/login";
 import { useTheme } from "@mui/system";
+import { useAppSelector } from "@/Redux/hooks";
 
 const Login: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { lat, lng, loading } = useAppSelector(state => state.location)
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -50,10 +52,23 @@ const Login: React.FC = () => {
   // };
 
   const handleSubmit = async (values: LoginRequest) => {
+    if (loading) {
+      showErrorNotification("Fetching your location, please wait...");
+      return;
+    }
+
+    if (!lat || !lng) {
+      showErrorNotification("Please enable your location to continue.");
+      return;
+    }
     try {
       setIsLoading(true);
 
       const { encryptedUsername, encryptedPassword, salt, iv } = encryptCredentials(values.userName, values.password);
+
+      const isDevEnv = ["localhost", "127.0.0.1"].includes(window.location.hostname) ||
+        window.location.hostname.startsWith("192.168.") ||
+        window.location.hostname === ""; // in case of file:// or blank
 
       let bodyRequest = {
         // userName: values.userName,
@@ -62,8 +77,9 @@ const Login: React.FC = () => {
         password: encryptedPassword,
         salt,
         iv,
-        url: "https://uat.decipay.in/",
-        // url: getCurrentUrl(),
+        lat,
+        lng,
+        url: isDevEnv ? "https://uat.decipay.in/" : `${window.location.origin}/`,
       };
       const response = await login(bodyRequest);
       const AllowedRoles = ["RT", "RU", "DT", "PT", "SD", "EN", "WL"]
@@ -203,7 +219,10 @@ const Login: React.FC = () => {
                       radius={28}
                       fullWidth={true}
                       disabled={
-                        isLoading || !values.userName || !values.password
+                        isLoading ||
+                        loading ||                // 👈 add this
+                        !values.userName ||
+                        !values.password
                       }
                       isAuth={true}
                     />

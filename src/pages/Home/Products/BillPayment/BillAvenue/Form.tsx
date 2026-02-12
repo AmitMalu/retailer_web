@@ -22,7 +22,7 @@ import BillPaymentDetails from "./Components/BillPaymentDetails";
 import AmountInput from "./Components/AmountInput";
 import ProviderDynamicFields from "./Components/ProviderDynamicFields";
 import { buildFetchBillPayload } from "./Utils/buildExtraParamPayload";
-import { buildProcessTransactionPayload, getBillFormConfig } from "./Utils/billHelpers";
+import { buildProcessTransactionPayload, getBillFormConfig, paiseToRupee } from "./Utils/billHelpers";
 
 interface Props {
     serviceName: string;
@@ -257,7 +257,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                     approvalRefNumber: respData?.approvalRefNumber || "",
                     txnStatus: respData?.txnStatus || "SUCCESS",
                     createdDateTime: respData?.createdDateTime || new Date().toISOString(),
-                    txnAmount: respData?.respAmount || String(values.amount),
+                    txnAmount: paiseToRupee(respData?.respAmount) || paiseToRupee(values.amount),
 
                     // from bill fetch response
                     customerName:
@@ -468,6 +468,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                                             onSubmit={(values, { resetForm }) => processTransaction(values, resetForm)}
                                         >
                                             {({ values, handleChange, errors, touched, handleSubmit }) => {
+
                                                 return (
                                                     <form onSubmit={handleSubmit} className="flex flex-col w-full p-4 overflow-y-auto gap-4">
                                                         <BillPaymentDetails
