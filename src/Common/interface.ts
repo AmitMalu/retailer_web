@@ -747,6 +747,24 @@ export type PendingTransactionParams = {
   [key: string]: any;
 };
 
+export type TransactionReportParams = {
+  dateRange?: DatesRangeValue;
+  productId?: string | number;
+  subProductId?: string | number;
+  walletType?: string;
+  tranStatus?: string;
+  [key: string]: any;
+};
+
+export type TransactionWalletReportParams = {
+  dateRange?: DatesRangeValue;
+  productId?: string | number;
+  subProductId?: string | number;
+  walletType?: string;
+  tranStatus?: string;
+  [key: string]: any;
+};
+
 export type FundLoadingParams = {
   dateRange: DatesRangeValue;
   [key: string]: any;
@@ -1113,6 +1131,52 @@ export interface PendingTransactionTableType {
   txType: string | null;
   remarks: string | null;
   medium: string | null;
+  dateOfTransaction: string; // e.g. "2025-10-14"
+  timeOfTransaction: string; // e.g. "18:14:18.35"
+  updatedAt: string | null;
+  updatedDateOfTransaction: string | null;
+  updatedTimeOfTransaction: string | null;
+}
+
+export interface TransactionReportTableType {
+  txId: string;
+  userId: string;
+  productName: string;
+  subProductName: string;
+  vendor: string | null;
+  schemeName: string | null;
+  mobileNo: string | null;
+  amount: number;
+  txStatus: string;
+  txType: string | null;
+  remarks: string | null;
+  medium: string | null;
+  walletType: string | null;
+  dateOfTransaction: string; // e.g. "2025-10-14"
+  timeOfTransaction: string; // e.g. "18:14:18.35"
+  updatedAt: string | null;
+  updatedDateOfTransaction: string | null;
+  updatedTimeOfTransaction: string | null;
+}
+
+export interface TransactionWalletReportTableType {
+  txId: string;
+  userId: string;
+  productName: string;
+  subProductName: string;
+  vendor: string | null;
+  schemeName: string | null;
+  mobileNo: string | null;
+  amount: number;
+  chargeAmount: number | string | null;
+  commissionAmount: number | string | null;
+  gstAmount: number | string | null;
+  tdsAmount: number | string | null;
+  txStatus: string;
+  txType: string | null;
+  remarks: string | null;
+  medium: string | null;
+  walletType: string | null;
   dateOfTransaction: string; // e.g. "2025-10-14"
   timeOfTransaction: string; // e.g. "18:14:18.35"
   updatedAt: string | null;

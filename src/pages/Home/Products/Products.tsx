@@ -36,6 +36,7 @@ export default function Products() {
         isVisible: p.isVisible,
         blocked: p.blocked,
         active: p.active,
+        subProducts: p.subProducts || [],
       };
     });
 
@@ -52,6 +53,13 @@ export default function Products() {
     if (!status.active) {
       showErrorNotification(
         "This product is currently inactive. Please contact support for more information."
+      );
+      return;
+    }
+    
+    if (!status.subProducts || status.subProducts.length < 1) {
+      showErrorNotification(
+        "No Scheme Found For You on this Product."
       );
       return;
     }
@@ -132,7 +140,6 @@ export default function Products() {
       <div>
         <div className="flex justify-center gap-12 my-1">
           {row1?.map((product: any) => {
-
             const status = productStatusMap[product.key];
 
             if (!status?.isVisible)
@@ -163,7 +170,6 @@ export default function Products() {
         <div className="flex justify-center gap-12 mb-0 mt-[-32px]">
           <div className="w-20" />
           {row2?.map((product: any) => {
-
             const status = productStatusMap[product.key];
 
             if (!status?.isVisible)

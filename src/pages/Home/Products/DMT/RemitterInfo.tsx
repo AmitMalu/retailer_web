@@ -17,7 +17,7 @@ import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { useBankVerification } from "@/Utils/Verification";
-import { UnstyledButton } from "@mantine/core";
+import { Drawer, UnstyledButton } from "@mantine/core";
 import { Refresh } from "@mui/icons-material";
 import { useTheme } from "@mui/system";
 import { Formik } from "formik";
@@ -26,6 +26,7 @@ import { useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from 'yup'
+import DMTTransactionReceipt from "./DMTTransactionReceipt";
 
 const RemitterInfo = () => {
 
@@ -48,7 +49,16 @@ const RemitterInfo = () => {
   const [selectedRow, setSelectedRow] = useState<Record<string, any> | null>(null);
   const [remitterDetails, setRemitterDetails] = useState<any>({});
   const { verify: verifyBank } = useBankVerification();
-  const [tranxData, setTranxData] = useState({});
+  const [tranxData, setTranxData] = useState<{
+    retailerId?: string;
+    subProductId?: string;
+    mobile?: string;
+    beneId?: string;
+    txnType?: string;
+    amount?: string;
+    stateresp?: string;
+    referenceId?: string;
+  }>({});
 
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
@@ -62,6 +72,11 @@ const RemitterInfo = () => {
     ?.flatMap((product: any) => product.subProducts) // Flatten all subProducts into a single array
     ?.find((subProduct: any) => subProduct.subProductId === subProductId) // Find matching subProductId
     ?.schemeCode; // Get the schemeCode
+
+  const [receiptDrawerOpened, setReceiptDrawerOpened] = useState(false);
+  const [receiptData, setReceiptData] = useState<any>(null);
+  const [receiptTxnType, setReceiptTxnType] = useState<string>("");
+
 
   const tableColumns: TableColumn[] = [
     {
@@ -479,17 +494,40 @@ const RemitterInfo = () => {
 
       if (data?.statusCode == "200") {
         showSuccessNotification(response?.data?.message || "Transaction Success");
+
+        // Store receipt data
+        setReceiptData(apiData);
+        setReceiptTxnType(tranxData?.txnType || "");
+
+        // Open drawer
+        setReceiptDrawerOpened(true);
+
         handleCloseDeleteModal();
         fetchRemitterDetails(mobileNumber);
         await getBeneficiariesList(page, size, searchValues); // refresh with same filters
       } else if (data?.statusCode == "202") {
         toast.warning(failureMessage || "Transaction is in Pending");
+
+        // Store receipt data
+        setReceiptData(apiData);
+        setReceiptTxnType(tranxData?.txnType || "");
+
+        // Open drawer
+        setReceiptDrawerOpened(true);
+
         handleCloseDeleteModal();
         fetchRemitterDetails(mobileNumber);
         await getBeneficiariesList(page, size, searchValues);
       }
       else {
         showErrorNotification(failureMessage);
+        
+        // Store receipt data
+        setReceiptData(apiData);
+        setReceiptTxnType(tranxData?.txnType || "");
+
+        // Open drawer
+        setReceiptDrawerOpened(true);
       }
     } catch (error) {
       handleCustomError(error);
@@ -638,6 +676,29 @@ const RemitterInfo = () => {
         onClose={() => setShowOtpModal(false)}
         onSubmit={handleOtpSubmit}
       />
+
+      <Drawer
+        opened={receiptDrawerOpened}
+        onClose={() => {
+          setReceiptDrawerOpened(false);
+          setReceiptData(null);
+          navigate("/products/dmt");
+        }}
+        closeOnEscape={false}
+        closeOnClickOutside={false}
+        position="right"
+        size="xl"
+        overlayProps={{ backgroundOpacity: 0.4, blur: 2 }}
+        transitionProps={{ transition: "slide-right", duration: 300 }}
+      >
+        {receiptData && (
+          <DMTTransactionReceipt
+            data={receiptData}
+            txnType={receiptTxnType}
+          />
+        )}
+      </Drawer>
+
     </>
   )
 }

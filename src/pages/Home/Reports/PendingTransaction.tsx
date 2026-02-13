@@ -202,8 +202,8 @@ const PendingTransaction = () => {
             subProductKey,
             refetchProducts
           } = useProductSubProduct({
-            selectedProductId: String(values.productId),
-            selectedSubProductId: String(values.subProductId),
+            selectedProductId: values.productId ? String(values.productId) : null,
+            selectedSubProductId: values.subProductId ? String(values.subProductId) : null,
             onSubProductReset: () => setFieldValue("subProductId", ""),
           });
 

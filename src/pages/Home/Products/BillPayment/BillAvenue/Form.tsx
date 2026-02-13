@@ -241,7 +241,6 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
             });
 
             console.log("FINAL TRANSACTION PAYLOAD", paymentPayload);
-
             const response: any = await BillAvenue_Bill_Payment(paymentPayload);
             const apiStatus = response?.data?.statusCode;
 

@@ -20,7 +20,7 @@ import { useSelector } from "react-redux";
 
 export const getMenuItems = (role: UserRole): MenuItem[] => {
   const apiResponses = useSelector(
-    (state: RootState) => state.apiResponse.responses
+    (state: RootState) => state.apiResponse.responses,
   );
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses.loginData)
@@ -241,6 +241,18 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
       roles: ["DT", "RT", "SD", "WL", "PT", "RU"],
       subItems: [
         {
+          name: "Transaction Report",
+          path: "/reports/transaction-report",
+          //   icon: <ListIcon />,
+          roles: ["RT", "RU"],
+        },
+        {
+          name: "TXN and Wallet Report",
+          path: "/reports/txn-wallet-report",
+          //   icon: <ListIcon />,
+          roles: ["RT", "RU"],
+        },
+        {
           name: "Commission and Charges",
           path: "/reports/commissionAndCharges",
           //   icon: <ListIcon />,
@@ -256,7 +268,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           name: "Network Transaction",
           path: "/reports/networkTransaction",
           //   icon: <PendingIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT", "RU"],
+          roles: ["DT", "SD", "WL", "PT"],
         },
         // {
         //   name: "Account Summary",
@@ -280,7 +292,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           name: "Fund Loading",
           path: "/reports/fundLoading",
           //   icon: <ListIcon />,
-          roles: ["RT", "RU"],
+          roles: ["DT", "RT", "SD", "WL", "PT", "RU"],
         },
         // {
         //   name: "Payment Loading",
@@ -350,7 +362,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           const menuRoutes = subRouteMapping[item.path];
           const filteredSubItems = item.subItems.filter((subItem) => {
             const routeIndex = menuRoutes.findIndex((route) =>
-              subItem.path.includes(route)
+              subItem.path.includes(route),
             );
 
             if (routeIndex === -1) {

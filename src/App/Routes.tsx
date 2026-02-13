@@ -13,6 +13,8 @@ import AepsEkycScreen from "@/pages/Home/Products/AEPS/AepsEkycScreen";
 import AepsTransaction from "@/pages/Home/Products/AEPS/AepsTransaction";
 import AepsTwoFactor from "@/pages/Home/Products/AEPS/AepsTwoFactor";
 import WrapperFormPage from "@/pages/Home/Products/BillPayment/WrapperFormPage";
+import TransactionReport from "@/pages/Home/Reports/TransactionReport";
+import TransactionWalletReport from "@/pages/Home/Reports/TransactionWalletReport";
 const Dashboard = lazy(() => import("@/pages/Home/Dashboard"));
 const CreateUser = lazy(() => import("@/pages/Home/ManageUser/CreateUser"));
 const DebitAndCreditUser = lazy(
@@ -796,7 +798,7 @@ const RouterOutlet = () => {
             path="reports/networkTransaction"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
+                allowedRoles={["WL", "SD", "PT", "DT"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -807,6 +809,44 @@ const RouterOutlet = () => {
               element={
                 <MainLayout>
                   <NetworkTransaction />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="reports/transaction-report"
+            element={
+              <ProtectedRoute
+                allowedRoles={["RT", "RU"]}
+              >
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <TransactionReport />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="reports/txn-wallet-report"
+            element={
+              <ProtectedRoute
+                allowedRoles={["RT", "RU"]}
+              >
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <TransactionWalletReport />
                 </MainLayout>
               }
             />
@@ -891,7 +931,9 @@ const RouterOutlet = () => {
           <Route
             path="reports/fundLoading"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }

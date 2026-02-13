@@ -47,6 +47,8 @@ export const API_ROUTES = {
   DOWNLINE_BALANCE_REPORT: `${BASE_URL}/api/downline-balance/report`,
   PENDING_TRANSACTION_REPORT: `${BASE_URL}/api/funding/settlement`,
   FUND_LOADING_REPORT: `${BASE_URL}/api/prefund/all`,
+  TRANSACTION_REPORT: `${BASE_URL}/api/funding/transaction-report`,
+  TXN_AND_WALLET_REPORT: `${BASE_URL}/api/funding/detailed-txn-report`,
 
   /////////////// TICKETING SYSTEM //////////////////////////
   TRANSACTION_DETAILS: `${BASE_URL}/api/ticket/transaction-details`,

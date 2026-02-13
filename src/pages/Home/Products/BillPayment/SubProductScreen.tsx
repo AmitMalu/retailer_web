@@ -77,7 +77,7 @@ const SubProductScreen = () => {
                 const status =
                   subProductStatusMap[card.title.toUpperCase()];
 
-                // 1️⃣ If not visible, 
+                // If not visible, 
                 if (!status?.isVisible) {
                   return (
                     <BbpsCard key={card.id} title={card.title} placeholder />
