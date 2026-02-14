@@ -24,6 +24,7 @@ import GenericMasterTable from "@/components/Molecules/GenericMasterTable";
 import { useProductSubProduct } from "@/Utils/CustomHooks/useProductSubProduct";
 import * as Yup from "yup"
 import { useAppSelector } from "@/Redux/hooks";
+import { useNavigate } from "react-router-dom";
 
 const KEY = "transaction_report"
 
@@ -31,6 +32,7 @@ const TransactionReport = () => {
 
     const dispatch = useDispatch();
     const theme = useTheme()
+    const navigate = useNavigate();
     const { responses } = useAppSelector(state => state.apiResponse)
 
     const loginData = responses?.loginData
@@ -351,6 +353,20 @@ const TransactionReport = () => {
                     filterValues={filterValues}
                     onFilterChange={handleFilterChange}
                     onFilterSubmit={handleFilterSubmit}
+                    extraColumnPosition="left"
+                    renderExtraHeader={() => <></>} // empty header for action column/>
+                    renderExtraRowCell={(item) => (
+                        <div className="flex justify-center gap-2 min-w-10">
+                            <span
+                                onClick={() => navigate(`/support/ticketingSystem?txId=${item.txId}`)}
+                                title="Raise Ticket"
+                                className="cursor-pointer hover:scale-110 transition-all duration-200"
+                            >
+                                <i className="fa-solid fa-ticket fa-lg" style={{ color: "#bf2024ff" }}></i>
+                            </span>
+                        </div>
+                    )
+                    }
                 />
             )}
 

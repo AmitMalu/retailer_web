@@ -31,6 +31,7 @@ interface TextInputComponentProps {
     allowNumber?: boolean;
     allowCharacter?: boolean;
     allowSpecialChar?: boolean;
+    strictSpecialCharBlock?: boolean;
     allowSpace?: boolean;
     disablePaste?: boolean;
 }
@@ -62,6 +63,7 @@ const TextInputComponent = forwardRef<HTMLInputElement, TextInputComponentProps>
     allowNumber = true,
     allowCharacter = true,
     allowSpecialChar = true,
+    strictSpecialCharBlock = false,
     allowSpace = true,
     disablePaste = false,
 }, ref) => {
@@ -92,8 +94,15 @@ const TextInputComponent = forwardRef<HTMLInputElement, TextInputComponentProps>
         }
 
         if (!allowSpecialChar) {
-            newValue = newValue.replace(/[^a-zA-Z0-9\s._\-()]/g, "");
+            if (strictSpecialCharBlock) {
+                // Strict: allow ONLY letters + numbers + space
+                newValue = newValue.replace(/[^a-zA-Z0-9\s]/g, "");
+            } else {
+                // Your old behaviour (keep as it is)
+                newValue = newValue.replace(/[^a-zA-Z0-9\s._\-()]/g, "");
+            }
         }
+
 
         if (!allowSpace) {
             newValue = newValue.replace(/\s+/g, "");

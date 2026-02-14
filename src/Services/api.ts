@@ -549,6 +549,10 @@ export const Dmt_Bank_List = async () => {
   return await api.get(`${API_ROUTES.DMT_BANK_LIST}`, await createHeaders());
 };
 
+export const Network_Bank_Master_List_Dropdown = async () => {
+  return await api.get(`${API_ROUTES.NETWORK_BANK_MASTER_LIST_DROPDOWN}`, await createHeaders());
+};
+
 export const Fetch_Beneficiaries = async (data: Record<string, any>) => {
   // Extract page and size for query params
   const { page, size, ...bodyData } = data;

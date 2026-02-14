@@ -945,6 +945,7 @@ export type AddBeneficiaryPayload = {
   mobile: string;
   benename: string;
   bankid: string;
+  bankName : string;
   accno: string;
   ifsccode: string;
   verified: string; // "0" or "1"

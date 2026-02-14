@@ -29,7 +29,7 @@ const EditRemitterModal = ({
     const validationSchema = Yup.object().shape({
         beneficiaryName: Yup.string()
             .required('Remitter name is required')
-            .max(50, 'Maximum 50 characters allowed'),
+            .max(50, 'Maximum 30 characters allowed'),
         otp: Yup.string().when('otpRequired', {
             is: true,
             then: schema =>
@@ -173,11 +173,12 @@ const EditRemitterModal = ({
                                     <FormikTextInputComponent
                                         label="Name"
                                         name="beneficiaryName"
-                                        placeholder="Enter Beneficiary Name"
+                                        placeholder="Enter Remitter Name"
                                         required
                                         withAsterisk
                                         allowSpecialChar={false}
-                                        maxLength={50}
+                                        allowNumber={false}
+                                        maxLength={30}
                                     />
                                 </Grid.Col>
 

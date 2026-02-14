@@ -3,7 +3,6 @@ import TextComponent from "@/components/Atoms/TextComponent";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
-import { RootState } from "@/Redux/Store";
 import { Aeps_Bank_List, Aeps_Cash_Withdrawal, Aeps_Balance_Inquiry, Aeps_Mini_Statement } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
@@ -12,11 +11,11 @@ import { Card, Drawer, Grid, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Yup from 'yup'
 import TransactionReciept from "./TransactionReciept";
 import Loader from "@/components/Atoms/Loader";
+import { useAppSelector } from "@/Redux/hooks";
 
 const SERVICE_TITLES: any = {
     cashWithdrawal: "Cash Withdrawal",
@@ -41,12 +40,11 @@ const AepsTransaction = () => {
     const [receiptData, setReceiptData] = useState<any>(null);
     // const [receiptLoading, setReceiptLoading] = useState(false);
 
-    const apiResponses = useSelector(
-        (state: RootState) => state.apiResponse.responses
-    );
+    const { lat, lng } = useAppSelector(state => state.location)
+    const { responses } = useAppSelector(state => state.apiResponse)
 
-    const loginData = apiResponses?.loginData
-        ? decryptData(apiResponses.loginData)
+    const loginData = responses?.loginData
+        ? decryptData(responses.loginData)
         : null;
 
     const schemeCode = loginData?.products
@@ -141,9 +139,9 @@ const AepsTransaction = () => {
                 nationalBankIdentificationNumber: values.bank,
                 captureResponse: values.pidData,
 
-                // 🔥 Send location to backend
-                // latitude: location.latitude,
-                // longitude: location.longitude,
+                // Send location to backend
+                latitude: lat,
+                longitude: lng,
                 // locationCapturedAt: location.capturedAt,
             };
 
@@ -391,7 +389,7 @@ const AepsTransaction = () => {
                 onClose={() => {
                     setReceiptDrawerOpened(false);
                     setReceiptData(null)
-                    navigate("/products/aeps");
+                    navigate(`/products/service/${subProductId}`);
                 }}
                 closeOnEscape={false}
                 closeOnClickOutside={false}

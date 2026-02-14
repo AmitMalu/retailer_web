@@ -682,7 +682,7 @@ const RemitterInfo = () => {
         onClose={() => {
           setReceiptDrawerOpened(false);
           setReceiptData(null);
-          navigate("/products/dmt");
+          // navigate("/products/dmt");
         }}
         closeOnEscape={false}
         closeOnClickOutside={false}

@@ -141,4 +141,7 @@ export const API_ROUTES = {
   BILLAVENUE_BILL_FETCH: `${BASE_URL}/api/billavenue/bill-fetch`,
   BILLAVENUE_BILL_PAYMENT: `${BASE_URL}/api/billavenue/bill-payment`,
 
+  /////////////////////////// COMMON ////////////////////////////////////
+  NETWORK_BANK_MASTER_LIST_DROPDOWN: `${BASE_URL}/api/network-banks/all`,
+
 };

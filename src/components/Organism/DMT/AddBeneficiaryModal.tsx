@@ -8,7 +8,7 @@ import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import theme from "@/theme/ThemeConfig";
-import { Dmt_Bank_List, Register_Beneficiary } from "@/Services/api";
+import { Network_Bank_Master_List_Dropdown, Register_Beneficiary } from "@/Services/api";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import NewButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent"
@@ -74,24 +74,32 @@ const AddBeneficiaryModal = ({
   const mapFormToAddBeneficiaryPayload = (
     values: AddBeneficiaryFormProps,
     subProductId: string
-  ): AddBeneficiaryPayload => ({
-    mobile: mobile ?? "",
-    benename: values.beneficiaryName,
-    bankid: values.bankId,
-    accno: values.accountNumber,
-    ifsccode: values.ifscCode,
-    verified: values.verified ?? "0", // always "0" initially, can be dynamic later
-    // gst_state: values.gstState,
-    // dob: formatDate(values?.dob),
-    // address: values.address,
-    // pincode: values.pincode,
-    subProductId,
-  });
+  ): AddBeneficiaryPayload => {
+
+    const selectedBank: any = bankList?.find(
+      (bank: any) => String(bank?.bankId) === values.bankId
+    );
+
+    return {
+      mobile: mobile ?? "",
+      benename: values.beneficiaryName,
+      bankid: values.bankId,
+      bankName: selectedBank?.bankName || "",
+      accno: values.accountNumber,
+      ifsccode: values.ifscCode,
+      verified: values.verified ?? "0", // always "0" initially, can be dynamic later
+      // gst_state: values.gstState,
+      // dob: formatDate(values?.dob),
+      // address: values.address,
+      // pincode: values.pincode,
+      subProductId,
+    }
+  }
 
   const getBankList = async () => {
     try {
       setIsBankLoading(true);
-      const response = await Dmt_Bank_List();
+      const response = await Network_Bank_Master_List_Dropdown();
       if (response?.data && response?.data?.statusCode == 200) {
         setBankList(response?.data?.data);
       } else {
@@ -177,7 +185,7 @@ const AddBeneficiaryModal = ({
           onSubmit={handleSubmit}
           enableReinitialize={true}
         >
-          {({ resetForm }) => {
+          {({ setFieldValue, resetForm }) => {
 
             return (
               <Form className="w-full overflow-auto scrollbar-hide pt-1 pb-1 px-2 bg-white rounded-2xl">
@@ -197,6 +205,18 @@ const AddBeneficiaryModal = ({
                       withAsterisk
                       required
                       disabled={isBankLoading}
+                      onChange={(value: string) => {
+                        setFieldValue("bankId", value);
+
+                        // Find selected bank
+                        const selectedBank: any = bankList?.find(
+                          (bank: any) => String(bank?.bankId) === value
+                        );
+
+                        if (selectedBank) {
+                          setFieldValue("ifscCode", selectedBank.ifscCode || "");
+                        }
+                      }}
                       rightSection={
                         <>
                           {isBankLoading && (
@@ -226,6 +246,8 @@ const AddBeneficiaryModal = ({
                       required
                       withAsterisk
                       allowSpecialChar={false}
+                      strictSpecialCharBlock={true}
+                      allowNumber={false}
                       maxLength={50}
                     />
                   </Grid.Col>
