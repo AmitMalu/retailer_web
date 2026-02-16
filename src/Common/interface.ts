@@ -945,7 +945,7 @@ export type AddBeneficiaryPayload = {
   mobile: string;
   benename: string;
   bankid: string;
-  bankName : string;
+  bankName: string;
   accno: string;
   ifsccode: string;
   verified: string; // "0" or "1"
@@ -1205,6 +1205,7 @@ export interface FundLoadingTableType {
 
 export interface WalletReportTableType {
   tranxId?: string;
+  productName?: string;
   subProductName?: string;
   balBefore?: string;
   amount?: string;
@@ -1218,6 +1219,7 @@ export interface WalletReportTableType {
 
 export interface CommissionAndChargeTableType {
   txId: string;
+  productName: string;
   subProductName: string;
   walletType: string;
   txType: string;

@@ -37,7 +37,8 @@ const KEY = "commision_and_charge_report"
 
 const headers: GenericTableHeader<CommissionAndChargeTableType>[] = [
   { key: "txId", label: "Transaction ID", filterType: "text", copyable: true },
-  { key: "subProductName", label: "Sub Product Name", filterType: "text" },
+  { key: "productName", label: "Product Name", filterType: "text" },
+  // { key: "subProductName", label: "Sub Product Name", filterType: "text" },
   { key: "walletType", label: "Wallet Type", filterType: "boolean", filterOptions: walletTypeSelectData }, // Could add options if needed
   { key: "txType", label: "Transaction Type", filterType: "text" },
   { key: "operator", label: "Operator", filterType: "text" },

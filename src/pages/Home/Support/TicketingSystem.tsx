@@ -38,11 +38,12 @@ import moment from "moment";
 import TableComponent from "@/components/Molecules/TableComponent";
 import ColumsSelectionModal from "@/components/Molecules/ColumsSelectionModal";
 import { Refresh } from "@mui/icons-material";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 // import { maxWidth } from "@mui/system";
 
 const Ticketing = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [showTicketForm, setShowTicketForm] = useState(false);
   // const [isTicketData, setIsTicketData] = useState<TransactionDetailsData>({});
@@ -158,9 +159,14 @@ const Ticketing = () => {
       const response = await Raise_Ticket(formData);
       if (response?.status === 200 || response?.data?.statusCode === "200") {
         showSuccessNotification(response?.data?.message);
-        setShowTicketForm(false);
-        // setSearchValue("");
-        FetchRaisedTickets(page, size, searchValues);
+        if (txIdFromQuery) {
+          navigate("/reports/transaction-report", {
+            state: { fromTicket: true }
+          }); // your report page route
+        } else {
+          setShowTicketForm(false);
+          FetchRaisedTickets(page, size, searchValues);
+        }
       } else {
         showErrorNotification(response?.data?.message || "Unable to raise");
       }
@@ -552,8 +558,13 @@ const Ticketing = () => {
             {/* Back Button */}
             <UnstyledButton
               onClick={() => {
-                setShowTicketForm(false);
-                // setSearchValue("");
+                if (txIdFromQuery) {
+                  navigate("/reports/transaction-report", {
+                    state: { fromTicket: true }
+                  }); // your report page route
+                } else {
+                  setShowTicketForm(false);
+                }
               }}
               className="mb-4"
             >

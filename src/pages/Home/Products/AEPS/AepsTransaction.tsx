@@ -389,7 +389,7 @@ const AepsTransaction = () => {
                 onClose={() => {
                     setReceiptDrawerOpened(false);
                     setReceiptData(null)
-                    navigate(`/products/service/${subProductId}`);
+                    navigate(`/products/aeps/service/${subProductId}`);
                 }}
                 closeOnEscape={false}
                 closeOnClickOutside={false}

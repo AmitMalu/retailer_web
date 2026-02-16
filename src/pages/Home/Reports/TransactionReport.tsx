@@ -24,7 +24,8 @@ import GenericMasterTable from "@/components/Molecules/GenericMasterTable";
 import { useProductSubProduct } from "@/Utils/CustomHooks/useProductSubProduct";
 import * as Yup from "yup"
 import { useAppSelector } from "@/Redux/hooks";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { clearReportState, saveReportState } from "@/Redux/Reducers/reportStateSlice";
 
 const KEY = "transaction_report"
 
@@ -33,8 +34,12 @@ const TransactionReport = () => {
     const dispatch = useDispatch();
     const theme = useTheme()
     const navigate = useNavigate();
+    const location = useLocation();
+    const fromTicket = location.state?.fromTicket;
     const { responses } = useAppSelector(state => state.apiResponse)
-
+    const reportState = useAppSelector(
+        (state) => state.reportState?.[KEY]
+    );
     const loginData = responses?.loginData
         ? decryptData(responses.loginData)
         : null;
@@ -53,7 +58,7 @@ const TransactionReport = () => {
     const headers: GenericTableHeader<TransactionReportTableType>[] = [
         { key: "txId", label: "Transaction ID", filterType: "text", copyable: true },
         { key: "productName", label: "Product Name", filterType: "none" },
-        { key: "subProductName", label: "Sub Product Name", filterType: "none" },
+        // { key: "subProductName", label: "Sub Product Name", filterType: "none" },
         { key: "userId", label: "User ID", filterType: "none" },
         // { key: "mobileNo", label: "Mobile No", filterType: "text" },
         // { key: "schemeName", label: "Scheme Name", filterType: "text" },
@@ -94,7 +99,7 @@ const TransactionReport = () => {
             sendPaginationIn: "params",
         });
 
-    const InitialValues: TransactionReportParams = {
+    const defaultValues: TransactionReportParams = {
         dateRange: [
             moment().subtract(6, "days").toDate(), // from: 6 days ago
             moment().toDate(), // to: today
@@ -104,6 +109,8 @@ const TransactionReport = () => {
         walletType: "",
         tranStatus: "",
     };
+
+    const InitialValues = reportState?.formValues || defaultValues;
 
     const validationSchema = Yup.object({
         dateRange: dateRangeValidationSchema,
@@ -133,13 +140,29 @@ const TransactionReport = () => {
                 pagination: { ...pagination, currentPage: 1, pageSize: pagination.pageSize },
             })
         );
-        setSubmittedFilter((prev) => ({ ...prev, [key]: value }));
+        const updatedFilter = { ...(submittedFilter || {}), [key]: value };
+
+        setSubmittedFilter(updatedFilter);
+
+        // SAVE TO REDUX IMMEDIATELY
+        dispatch(
+            saveReportState({
+                key: KEY,
+                data: {
+                    formValues: formikRef.current?.values,
+                    submittedFilter: updatedFilter,
+                },
+            })
+        );
     };
 
 
     const handleRefresh = () => {
         // Reset redux pagination / master state
         dispatch(clearPagination({ key: KEY }));
+
+        // CLEAR REPORT STATE
+        dispatch(clearReportState({ key: KEY }));
 
         // Reset table view state
         setVisibleColumns(headers.map((h) => h.key as string));
@@ -172,6 +195,19 @@ const TransactionReport = () => {
 
 
     const throttledSubmit = useThrottledFormSubmit((values: any) => {
+        dispatch(clearPagination({ key: KEY }));
+
+        // SAVE TO REDUX
+        dispatch(
+            saveReportState({
+                key: KEY,
+                data: {
+                    formValues: values,
+                    submittedFilter,
+                },
+            })
+        );
+
         setPayload(() => ({
             ...transformPayload(values), // top filters
             ...(submittedFilter || {}),                      // 🔴 keep inline filters
@@ -190,6 +226,30 @@ const TransactionReport = () => {
         }
     }, [submittedFilter])
 
+    useEffect(() => {
+        if (fromTicket && reportState?.formValues) {
+            setPayload({
+                ...transformPayload(reportState.formValues),
+                ...(reportState.submittedFilter || {}),
+            });
+
+            setViewSubmitted(true);
+        }
+    }, [fromTicket, reportState]);
+
+    useEffect(() => {
+        if (fromTicket) {
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+    }, [fromTicket]);
+
+
+    //To trigger auto api call when returning from ticketing form page
+    useEffect(() => {
+        if (reportState?.submittedFilter) {
+            setSubmittedFilter(reportState.submittedFilter);
+        }
+    }, []);
 
     return (
         <div className="w-full">

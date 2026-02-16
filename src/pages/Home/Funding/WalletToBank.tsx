@@ -46,8 +46,7 @@ const WalletToBank = () => {
     ?.find(
       (subProduct: any) =>
         subProduct?.subProductName?.toLowerCase().includes("mtb")
-    ).subProductId;
-
+    )?.subProductId;
 
   const [hierarchyBankList, setHierarchyBankList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);

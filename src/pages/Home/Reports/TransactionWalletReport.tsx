@@ -51,7 +51,7 @@ const TransactionWalletReport = () => {
     const headers: GenericTableHeader<TransactionWalletReportTableType>[] = [
         { key: "txId", label: "Transaction ID", filterType: "text", copyable: true },
         { key: "productName", label: "Product Name", filterType: "none" },
-        { key: "subProductName", label: "Sub Product Name", filterType: "none" },
+        // { key: "subProductName", label: "Sub Product Name", filterType: "none" },
         { key: "amount", label: "Amount", filterType: "number" },
         { key: "chargeAmount", label: "Charge", filterType: "number" },
         { key: "gstAmount", label: "GST", filterType: "number" },
