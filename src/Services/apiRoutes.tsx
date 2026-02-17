@@ -24,8 +24,6 @@ export const API_ROUTES = {
   WALLET_TO_WALLET: `${BASE_URL}/api/wallet-to-wallet/transfer`,
   FUND_REVERSAL: `${BASE_URL}/api/fund-reversal`,
   FUND_REVERSAL_RESEND_OTP: `${BASE_URL}/api/fund-reversal/resend-otp`,
-  CHILD_MEMBER_LIST: `${BASE_URL}/api/dropdown-manager/child-accounts`,
-  SINGLE_HIERARCHY_CHILD_LIST: `${BASE_URL}/api/dropdown-manager/child`,
   FUND_TRANSFER: `${BASE_URL}/api/fund-transfer`,
   WALLET_BALANCE: `${BASE_URL}/api/dashboard/wallet-balance`,
   WALLET_TO_BANK: `${BASE_URL}/api/move-to-bank/send-payout-request`,
@@ -131,8 +129,11 @@ export const API_ROUTES = {
   DELETE_BANK: `${BASE_URL}/api/bank-details`,
 
   /////////////////////////// COMMON ////////////////////////////////////
-  HIERARCHY_TYPE_LIST: `${BASE_URL}/api/hierarchy/name-code`,
-  HIERARCHY_LIST: `${BASE_URL}/api/hierarchy/hierarchy-details`,
+  HIERARCHY_TYPE_LIST: `${BASE_URL}/api/hierarchy/name-code`, // Hierarchy Types and Codes List
+  HIERARCHY_LIST: `${BASE_URL}/api/hierarchy/hierarchy-details`, //Based on Hierarchy Code Suppose if SD -> Overall SD List 
+
+  CHILD_MEMBER_LIST: `${BASE_URL}/api/dropdown-manager/child-accounts`, //Give All Child Accounts List 
+  SINGLE_HIERARCHY_CHILD_LIST: `${BASE_URL}/api/dropdown-manager/child`, // Give One Child Down List
   PRODUCT_LIST: `${BASE_URL}/api/products/dropdown/active`,
   SUB_PRODUCT_DROPDOWN: `${BASE_URL}/api/sub-products/dropdown`,
 

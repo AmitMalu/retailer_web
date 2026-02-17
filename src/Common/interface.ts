@@ -790,7 +790,7 @@ export interface SearchTransReportTableType {
   balBefore: number;
   amount: number;
   balAfter: number;
-  subProductName: string | null;
+  productName: string | null;
   narration: string | null;
   status: string;
   date: string;
@@ -1109,7 +1109,8 @@ export type FormValues = {
 //////////////////////////REPORTS//////////////////////////////
 export interface NetworkTransactionTableType {
   tranxId: string;
-  subProductName: string;
+  productName: string;
+  schemeName: string;
   balBefore: string;
   amount: string;
   balAfter: string;
@@ -1123,6 +1124,7 @@ export interface NetworkTransactionTableType {
 export interface PendingTransactionTableType {
   txId: string;
   userId: string;
+  productName: string;
   subProductName: string;
   vendor: string | null;
   schemeName: string | null;
@@ -1207,6 +1209,8 @@ export interface WalletReportTableType {
   tranxId?: string;
   productName?: string;
   subProductName?: string;
+  schemeName?: string;
+  hierarchyId?: string;
   balBefore?: string;
   amount?: string;
   balAfter?: string;
@@ -1221,6 +1225,7 @@ export interface CommissionAndChargeTableType {
   txId: string;
   productName: string;
   subProductName: string;
+  hierarchyId: string;
   walletType: string;
   txType: string;
   operator: string;

@@ -67,13 +67,19 @@ export const textField = (
   field = "This field",
   max = 100,
   required = false,
-  allowSpecialChars = false
+  allowSpecialChars = false,
+  min?: number
 ) => {
   let schema = Yup.string()
     .transform((value) => (value ? value.trim() : value)) // Trim before validation
     .max(max, `${field} cannot exceed ${max} characters`)
     .nullable()
     .notRequired(); // allow null and undefined by default
+
+  // Add minimum length if provided
+  if (min) {
+    schema = schema.min(min, `${field} must be at least ${min} chars`);
+  }
 
   if (!allowSpecialChars) {
     schema = schema.test(

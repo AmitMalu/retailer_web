@@ -57,11 +57,11 @@ const TransactionReport = () => {
 
     const headers: GenericTableHeader<TransactionReportTableType>[] = [
         { key: "txId", label: "Transaction ID", filterType: "text", copyable: true },
-        { key: "productName", label: "Product Name", filterType: "none" },
+        { key: "productName", label: "Product Name", filterType: "text" },
         // { key: "subProductName", label: "Sub Product Name", filterType: "none" },
         { key: "userId", label: "User ID", filterType: "none" },
         // { key: "mobileNo", label: "Mobile No", filterType: "text" },
-        // { key: "schemeName", label: "Scheme Name", filterType: "text" },
+        { key: "schemeName", label: "Scheme Name", filterType: "text" },
         { key: "amount", label: "Amount", filterType: "number" },
         { key: "txStatus", label: "Transaction Status", filterType: "text" },
         // { key: "txType", label: "Transaction Type", filterType: "text" },
@@ -82,7 +82,7 @@ const TransactionReport = () => {
             fromDate: fromDate ? formatYMDdate(fromDate) : null,
             toDate: toDate ? formatYMDdate(toDate) : null,
             productId: values?.productId ?? "",
-            subProductId: values.subProductId ?? "",
+            // subProductId: values.subProductId ?? "",
             walletType: values.walletType ?? "",
             tranStatus: "",
             userId: loginData.hierarchyId
@@ -264,18 +264,15 @@ const TransactionReport = () => {
                 validationSchema={validationSchema}
                 onSubmit={throttledSubmit}
             >
-                {({ values, setFieldValue }) => {
+                {() => {
                     const {
                         productDropdownData,
                         loadingProductList,
-                        subProductDropdownData,
-                        loadingSubProductList,
-                        subProductKey,
                         refetchProducts
                     } = useProductSubProduct({
-                        selectedProductId: values.productId ? String(values.productId) : null,
-                        selectedSubProductId: values.subProductId ? String(values.subProductId) : null,
-                        onSubProductReset: () => setFieldValue("subProductId", ""),
+                        // selectedProductId: values.productId ? String(values.productId) : null,
+                        // selectedSubProductId: values.subProductId ? String(values.subProductId) : null,
+                        // onSubProductReset: () => setFieldValue("subProductId", ""),
                     });
 
                     return (
@@ -328,7 +325,7 @@ const TransactionReport = () => {
                                     />
                                 </Grid.Col>
 
-                                <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
+                                {/* <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
                                     <FormikSelectComponent
                                         name="subProductId"
                                         key={`${subProductKey}-${values.productId}`}
@@ -342,7 +339,7 @@ const TransactionReport = () => {
                                         size="xs"
                                         disabled={loadingSubProductList}
                                     />
-                                </Grid.Col>
+                                </Grid.Col> */}
 
                                 <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
                                     <FormikSelectComponent

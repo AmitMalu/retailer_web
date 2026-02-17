@@ -44,10 +44,11 @@ const PendingTransaction = () => {
 
   const headers: GenericTableHeader<PendingTransactionTableType>[] = [
     { key: "txId", label: "Transaction ID", filterType: "text", copyable: true },
-    { key: "subProductName", label: "Sub Product Name", filterType: "text" },
+    { key: "productName", label: "Product Name", filterType: "text" },
+    // { key: "subProductName", label: "Sub Product Name", filterType: "text" },
     { key: "userId", label: "User ID", filterType: "text" },
     { key: "mobileNo", label: "Mobile No", filterType: "text" },
-    // { key: "schemeName", label: "Scheme Name", filterType: "text" },
+    { key: "schemeName", label: "Scheme Name", filterType: "text" },
     { key: "amount", label: "Amount", filterType: "number" },
     { key: "txStatus", label: "Transaction Status", filterType: "text" },
     { key: "txType", label: "Transaction Type", filterType: "text" },
@@ -67,7 +68,7 @@ const PendingTransaction = () => {
       fromDate: fromDate ? formatYMDdate(fromDate) : null,
       toDate: toDate ? formatYMDdate(toDate) : null,
       productId: values?.productId ?? "",
-      subProductId: values.subProductId ?? "",
+      // subProductId: values.subProductId ?? "",
       walletType: values.walletType ?? "",
       tranStatus: "PENDING",
     }
@@ -193,19 +194,12 @@ const PendingTransaction = () => {
         validationSchema={validationSchema}
         onSubmit={throttledSubmit}
       >
-        {({ values, setFieldValue }) => {
+        {() => {
           const {
             productDropdownData,
             loadingProductList,
-            subProductDropdownData,
-            loadingSubProductList,
-            subProductKey,
             refetchProducts
-          } = useProductSubProduct({
-            selectedProductId: values.productId ? String(values.productId) : null,
-            selectedSubProductId: values.subProductId ? String(values.subProductId) : null,
-            onSubProductReset: () => setFieldValue("subProductId", ""),
-          });
+          } = useProductSubProduct({});
 
           return (
             <Form className="flex flex-col gap-2 mt-4">
@@ -257,7 +251,7 @@ const PendingTransaction = () => {
                   />
                 </Grid.Col>
 
-                <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
+                {/* <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
                   <FormikSelectComponent
                     name="subProductId"
                     key={`${subProductKey}-${values.productId}`}
@@ -271,7 +265,7 @@ const PendingTransaction = () => {
                     size="xs"
                     disabled={loadingSubProductList}
                   />
-                </Grid.Col>
+                </Grid.Col> */}
 
                 <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
                   <FormikSelectComponent

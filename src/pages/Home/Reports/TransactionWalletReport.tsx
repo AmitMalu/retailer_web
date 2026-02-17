@@ -77,7 +77,7 @@ const TransactionWalletReport = () => {
             fromDate: fromDate ? formatYMDdate(fromDate) : null,
             toDate: toDate ? formatYMDdate(toDate) : null,
             productId: values?.productId ?? "",
-            subProductId: values.subProductId ?? "",
+            // subProductId: values.subProductId ?? "",
             walletType: values.walletType ?? "",
             tranStatus: "",
             userId: loginData.hierarchyId
@@ -204,19 +204,12 @@ const TransactionWalletReport = () => {
                 validationSchema={validationSchema}
                 onSubmit={throttledSubmit}
             >
-                {({ values, setFieldValue }) => {
+                {() => {
                     const {
                         productDropdownData,
                         loadingProductList,
-                        subProductDropdownData,
-                        loadingSubProductList,
-                        subProductKey,
                         refetchProducts
-                    } = useProductSubProduct({
-                        selectedProductId: values.productId ? String(values.productId) : null,
-                        selectedSubProductId: values.subProductId ? String(values.subProductId) : null,
-                        onSubProductReset: () => setFieldValue("subProductId", ""),
-                    });
+                    } = useProductSubProduct({});
 
                     return (
                         <Form className="flex flex-col gap-2 mt-4">
@@ -268,7 +261,7 @@ const TransactionWalletReport = () => {
                                     />
                                 </Grid.Col>
 
-                                <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
+                                {/* <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
                                     <FormikSelectComponent
                                         name="subProductId"
                                         key={`${subProductKey}-${values.productId}`}
@@ -282,7 +275,7 @@ const TransactionWalletReport = () => {
                                         size="xs"
                                         disabled={loadingSubProductList}
                                     />
-                                </Grid.Col>
+                                </Grid.Col> */}
 
                                 <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
                                     <FormikSelectComponent
