@@ -1,4 +1,4 @@
-import { store } from "@/Redux/Store";
+import { persistor, store } from "@/Redux/Store";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -11,14 +11,38 @@ export const useLogoutHandling = () => {
   const justLoggedIn = useRef<boolean>(false);
   const navigatingNormally = useRef<boolean>(false);
 
-  const logout = (): void => {
-    setIsLoading(true);
-    document.cookie = `authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict`;
-    localStorage.clear();
-    sessionStorage.clear();
-    store.dispatch({ type: "@@redux/INIT" });
-    setLogoutModal(false);
-    navigate("/login", { replace: true });
+  const logout = async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+
+      // 1. Stop persisting
+      persistor.pause();
+
+      // 2. Flush pending writes
+      await persistor.flush();
+
+      // 3. Clear persisted redux storage
+      await persistor.purge();
+
+      // 4. Reset redux state
+      store.dispatch({ type: "RESET_APP" });
+
+      // 5. Clear cookie
+      document.cookie = `authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict`;
+
+      // Clear browser storage
+      localStorage.clear();
+      sessionStorage.clear();
+
+      setLogoutModal(false);
+
+      // navigate("/login", { replace: true });
+      window.location.reload();
+    } catch (err) {
+      console.error("Logout failed", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -36,7 +60,7 @@ export const useLogoutHandling = () => {
     }, 500);
   }, [location.pathname]);
 
-  const handlePopState = (): void => {
+  const handlePopState = async (): Promise<void> => {
     if (navigatingNormally.current || justLoggedIn.current) return;
 
     const currentPath: string = window.location.pathname;
@@ -55,7 +79,7 @@ export const useLogoutHandling = () => {
     // Only show popup if we have an active session and are navigating away
     const result: boolean = window.confirm("Are you sure you want to leave?");
     if (result) {
-      logout();
+      await logout();
     } else {
       window.history.forward();
     }
@@ -69,7 +93,7 @@ export const useLogoutHandling = () => {
     };
   }, []);
 
-  const manageLogoutHandler = (isInit: boolean): void => {
+  const manageLogoutHandler = async (isInit: boolean): Promise<void> => {
     if (isInit) {
       navigatingNormally.current = true;
 
@@ -85,7 +109,7 @@ export const useLogoutHandling = () => {
         sessionStorage.removeItem("justLoggedIn");
       }
     } else {
-      logout();
+      await logout();
     }
   };
 

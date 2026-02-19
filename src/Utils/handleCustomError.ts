@@ -1,7 +1,7 @@
 import { AxiosError } from "axios";
 import { showErrorNotification } from "./notifications";
 // import { CustomError } from "@/Common/interface";
-import { store } from "@/Redux/Store";
+import { persistor, store } from "@/Redux/Store";
 
 // export const handleCustomError = (error: AxiosError | any): void => {
 //   console.error("handleCustomError →", error);
@@ -37,7 +37,9 @@ import { store } from "@/Redux/Store";
 //   showErrorNotification(message);
 // };
 
-export const handleCustomError = (error: AxiosError | any): void => {
+export const handleCustomError = async (
+  error: AxiosError | any,
+): Promise<void> => {
   try {
     // Handle Axios errors
     if (error.isAxiosError) {
@@ -45,7 +47,7 @@ export const handleCustomError = (error: AxiosError | any): void => {
       const response = axiosError?.response;
       const responseData = response?.data;
 
-      // ✅ Timeout or Network Error (no response)
+      // Timeout or Network Error (no response)
       if (axiosError.code === "ECONNABORTED") {
         showErrorNotification("Request timed out. Please try again.");
         return;
@@ -53,25 +55,44 @@ export const handleCustomError = (error: AxiosError | any): void => {
 
       if (!response) {
         showErrorNotification(
-          "Unable to connect to the server. Please try again later."
+          "Unable to connect to the server. Please try again later.",
         );
         return;
       }
 
       // ✅ Handle 401 Unauthorized
       if (response?.status === 401) {
-        document.cookie = `authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict`;
-        localStorage.clear();
-        Object.keys(localStorage).forEach((key: string) => {
-          localStorage.removeItem(key);
-        });
-        sessionStorage.clear();
-        store.dispatch({ type: "@@redux/INIT" });
-        window.location.reload();
-        return;
+        try {
+          // 1. Stop persisting
+          persistor.pause();
+
+          // 2. Flush pending writes
+          await persistor.flush();
+
+          // 3. Clear persisted storage
+          await persistor.purge();
+
+          // 4. Reset redux
+          store.dispatch({ type: "RESET_APP" });
+
+          // 5. Clear cookies
+          document.cookie = `authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict`;
+
+          // 6. Clear other storage
+          localStorage.clear();
+          sessionStorage.clear();
+
+          // 7. Redirect (DO NOT reload)
+          // window.location.href = "/login";
+          window.location.reload();
+
+          return;
+        } catch (err) {
+          console.error("Logout failed", err);
+        }
       }
 
-      // ✅ Handle Profile Creation Validation Errors (messages array)
+      // Handle Profile Creation Validation Errors (messages array)
       if (
         Array.isArray(responseData?.messages) &&
         responseData.messages.length > 0

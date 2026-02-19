@@ -59,7 +59,7 @@ const TransactionReport = () => {
         { key: "txId", label: "Transaction ID", filterType: "text", copyable: true },
         { key: "productName", label: "Product Name", filterType: "text" },
         // { key: "subProductName", label: "Sub Product Name", filterType: "none" },
-        { key: "userId", label: "User ID", filterType: "none" },
+        { key: "userId", label: "User ID", filterType: "text" },
         // { key: "mobileNo", label: "Mobile No", filterType: "text" },
         { key: "schemeName", label: "Scheme Name", filterType: "text" },
         { key: "amount", label: "Amount", filterType: "number" },
@@ -85,7 +85,7 @@ const TransactionReport = () => {
             // subProductId: values.subProductId ?? "",
             walletType: values.walletType ?? "",
             tranStatus: "",
-            userId: loginData.hierarchyId
+            // hierarchyId: loginData.hierarchyId
         }
     }
 

@@ -246,9 +246,9 @@ export default function Sidebar({ onClose }: SidebarProps) {
         }}
       >
         <ActionIcon
-          onClick={() => {
+          onClick={async () => {
             if (onClose) onClose();
-            logout();
+            await logout();
           }}
           size="lg"
           radius="md"

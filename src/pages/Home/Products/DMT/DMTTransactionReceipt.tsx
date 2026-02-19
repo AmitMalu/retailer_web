@@ -31,6 +31,7 @@ const DMTTransactionReceipt = ({
         ? decryptData(apiResponses?.loginData)
         : null;
 
+    console.log(data, txnType, "check");
     if (!data) return <Text>No receipt data available.</Text>;
 
     const handlePrint = () => {
@@ -148,7 +149,7 @@ const DMTTransactionReceipt = ({
             </Table>
 
             {/* --- Failure Reason --- */}
-            {data?.status === "FAILED" && (
+            {(data?.status === "FAILED" || data?.status === "PENDING") && (
                 <Card
                     mt="sm"
                     p="sm"
@@ -157,7 +158,7 @@ const DMTTransactionReceipt = ({
                     style={{ borderColor: "#fa5252" }}
                 >
                     <Text fw={600} c="red" size="sm">
-                        Transaction Failed Reason
+                        Transaction {data?.status} Reason
                     </Text>
                     <Text c="red" size="sm">
                         {data?.message ||

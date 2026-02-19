@@ -152,7 +152,7 @@ const WalletReport = () => {
     setPayload(transformPayload(InitialValues));
     setRefreshKey((prev) => prev + 1);
 
-    // ✅ Reset Formik ONLY
+    // Reset Formik ONLY
     formikRef.current?.resetForm({
       values: InitialValues,
     });
@@ -205,16 +205,12 @@ const WalletReport = () => {
         validationSchema={validationSchema}
         onSubmit={throttledSubmit}
       >
-        {({ values, setFieldValue }) => {
+        {() => {
           const {
             productDropdownData,
             loadingProductList,
             refetchProducts
-          } = useProductSubProduct({
-            selectedProductId: String(values.productId),
-            selectedSubProductId: String(values.subProductId),
-            onSubProductReset: () => setFieldValue("subProductId", ""),
-          });
+          } = useProductSubProduct({});
 
           return (
             <Form className="flex flex-col gap-2 mt-4">
@@ -233,10 +229,10 @@ const WalletReport = () => {
 
                 <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
                   <FormikSelectComponent
-                    key={values.productId}
+                    // key={values.productId}
                     name="productId"
                     label="Product"
-                    value={values.productId}
+                    // value={values.productId}
                     placeholder="Select Product"
                     searchable={true}
                     nothingFoundMessage="No Product Found"

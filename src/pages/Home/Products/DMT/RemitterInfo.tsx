@@ -487,6 +487,12 @@ const RemitterInfo = () => {
       const data = response?.data
       const apiData = data?.data;
 
+      // No receipt data → show snackbar only
+      if (!apiData) {
+        showErrorNotification(data?.message || "No receipt available");
+        return;
+      }
+
       // Failure message builder (safe)
       const failureMessage = apiData?.remarks
         ? `${data?.message} - ${apiData.remarks}`
@@ -521,7 +527,7 @@ const RemitterInfo = () => {
       }
       else {
         showErrorNotification(failureMessage);
-        
+
         // Store receipt data
         setReceiptData(apiData);
         setReceiptTxnType(tranxData?.txnType || "");

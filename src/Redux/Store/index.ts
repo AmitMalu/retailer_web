@@ -9,7 +9,7 @@ import paginationSlice from "../Reducers/paginationSlice";
 import locationReducer from "../Reducers/locationSlice";
 import reportStateSlice from "../Reducers/reportStateSlice";
 
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
   ui: uiReducer,
   settings: settingsReducer,
   apiResponse: apiReducer,
@@ -18,6 +18,13 @@ const rootReducer = combineReducers({
   location: locationReducer,
   reportState: reportStateSlice,
 });
+
+const rootReducer = (state: any, action: any) => {
+  if (action.type === "RESET_APP") {
+    state = undefined; // 🔥 resets everything safely
+  }
+  return appReducer(state, action);
+};
 
 const persistConfig = {
   key: "root",
