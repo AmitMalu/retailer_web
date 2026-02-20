@@ -4,7 +4,7 @@ import { API_ROUTES } from "@/Services/apiRoutes";
 import { useFetchList } from "@/Utils/CustomHooks/useFetchList";
 import NewTextComponent from "@/components/Atoms/NewComponents/TextComponent";
 import { useThrottledFormSubmit } from "@/Utils/CustomHooks/useThrottleFormSubmit";
-import { dateRangeValidationSchema, decryptData, exportToCsv, formatYMDdate } from "@/Utils/helper";
+import { dateRangeValidationSchema, decryptData, deserializeFormValues, exportToCsv, formatYMDdate, serializeFormValues } from "@/Utils/helper";
 import { DatesRangeValue } from "@mantine/dates";
 import { useTheme } from "@mui/system";
 import moment from "moment";
@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { Form, Formik, FormikProps } from "formik";
-import { Grid, Loader } from "@mantine/core";
+import { Drawer, Grid, Loader } from "@mantine/core";
 import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
 import { IconCalendar } from "@tabler/icons-react";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
@@ -26,6 +26,10 @@ import * as Yup from "yup"
 import { useAppSelector } from "@/Redux/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
 import { clearReportState, saveReportState } from "@/Redux/Reducers/reportStateSlice";
+import ReceiptRenderer from "@/components/Organism/RecieptRenderer";
+import { Get_Products_Reciept } from "@/Services/api";
+import { showErrorNotification } from "@/Utils/notifications";
+import { handleCustomError } from "@/Utils/handleCustomError";
 
 const KEY = "transaction_report"
 
@@ -36,13 +40,9 @@ const TransactionReport = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const fromTicket = location.state?.fromTicket;
-    const { responses } = useAppSelector(state => state.apiResponse)
     const reportState = useAppSelector(
         (state) => state.reportState?.[KEY]
     );
-    const loginData = responses?.loginData
-        ? decryptData(responses.loginData)
-        : null;
 
     const formikRef = useRef<FormikProps<TransactionReportParams>>(null);
     const dataRef = useRef<TransactionReportTableType[] | null>(null);
@@ -53,6 +53,9 @@ const TransactionReport = () => {
     const [submittedFilter, setSubmittedFilter] = useState<Record<string, any> | null>(null);
     const [viewSubmitted, setViewSubmitted] = useState(false);
 
+    const [receiptDrawerOpened, setReceiptDrawerOpened] = useState(false);
+    const [receiptData, setReceiptData] = useState<any>(null);
+
     const [refreshKey, setRefreshKey] = useState(0);
 
     const headers: GenericTableHeader<TransactionReportTableType>[] = [
@@ -61,7 +64,7 @@ const TransactionReport = () => {
         // { key: "subProductName", label: "Sub Product Name", filterType: "none" },
         { key: "userId", label: "User ID", filterType: "text" },
         // { key: "mobileNo", label: "Mobile No", filterType: "text" },
-        { key: "schemeName", label: "Scheme Name", filterType: "text" },
+        { key: "schemeName", label: "Scheme", filterType: "text" },
         { key: "amount", label: "Amount", filterType: "number" },
         { key: "txStatus", label: "Transaction Status", filterType: "text" },
         // { key: "txType", label: "Transaction Type", filterType: "text" },
@@ -110,7 +113,9 @@ const TransactionReport = () => {
         tranStatus: "",
     };
 
-    const InitialValues = reportState?.formValues || defaultValues;
+    const InitialValues = reportState?.formValues
+        ? deserializeFormValues(reportState.formValues)
+        : defaultValues;
 
     const validationSchema = Yup.object({
         dateRange: dateRangeValidationSchema,
@@ -149,7 +154,7 @@ const TransactionReport = () => {
             saveReportState({
                 key: KEY,
                 data: {
-                    formValues: formikRef.current?.values,
+                    formValues: serializeFormValues(formikRef.current?.values),
                     submittedFilter: updatedFilter,
                 },
             })
@@ -158,25 +163,26 @@ const TransactionReport = () => {
 
 
     const handleRefresh = () => {
-        // Reset redux pagination / master state
+        // CLEAR REDUX
+        dispatch(clearReportState({ key: KEY }));
         dispatch(clearPagination({ key: KEY }));
 
-        // CLEAR REPORT STATE
-        dispatch(clearReportState({ key: KEY }));
-
-        // Reset table view state
-        setVisibleColumns(headers.map((h) => h.key as string));
-        setFilterVisible(false);
-        setFilterValues({});
+        // RESET LOCAL STATE
         setSubmittedFilter(null);
+        setFilterValues({});
+        setFilterVisible(false);
+        setVisibleColumns(headers.map((h) => h.key as string));
 
-        setPayload(transformPayload(InitialValues));
-        setRefreshKey((prev) => prev + 1);
-
-        // Reset Formik ONLY
+        // Reset Formik 
         formikRef.current?.resetForm({
-            values: InitialValues as any,
+            values: defaultValues,
         });
+
+        // SET PAYLOAD ONLY ONCE
+        setPayload(transformPayload(defaultValues));
+
+        // TRIGGER API
+        setRefreshKey((prev) => prev + 1);
     };
 
     const handleToggleColumn = (key: string) => {
@@ -193,6 +199,35 @@ const TransactionReport = () => {
         }
     };
 
+    const fetchProductReceipt = async (
+        txnId: string,
+        walletType: "POSTPAID" | "PREPAID" | null,
+        productName: string,
+    ) => {
+        try {
+            if (!txnId || !walletType || !productName) {
+                showErrorNotification("Sorry Receipt Can't be Generated for this Transaction");
+                return;
+            }
+
+            const response = await Get_Products_Reciept({ txnId, walletType })
+            if (response?.data?.statusCode == "200") {
+                const apiData = response?.data?.data || {};
+
+                setReceiptData({
+                    productType: productName,
+                    ...apiData,
+                });
+                setReceiptDrawerOpened(true);
+            } else {
+                showErrorNotification(response?.data?.message || "Failed to fetch Receipt");
+                setReceiptData(null);
+            }
+        } catch (err) {
+            handleCustomError(err);
+        }
+    }
+
 
     const throttledSubmit = useThrottledFormSubmit((values: any) => {
         dispatch(clearPagination({ key: KEY }));
@@ -202,7 +237,7 @@ const TransactionReport = () => {
             saveReportState({
                 key: KEY,
                 data: {
-                    formValues: values,
+                    formValues: serializeFormValues(values),
                     submittedFilter,
                 },
             })
@@ -252,80 +287,81 @@ const TransactionReport = () => {
     }, []);
 
     return (
-        <div className="w-full">
-            <NewTextComponent fontSize={22} color={theme.palette.red.DEFAULT} fontFamily="Inter" fontWeight={600}>
-                TRANSACTION REPORT
-            </NewTextComponent>
+        <>
+            <div className="w-full">
+                <NewTextComponent fontSize={22} color={theme.palette.red.DEFAULT} fontFamily="Inter" fontWeight={600}>
+                    TRANSACTION REPORT
+                </NewTextComponent>
 
-            <Formik
-                key={refreshKey}
-                innerRef={formikRef}
-                initialValues={InitialValues}
-                validationSchema={validationSchema}
-                onSubmit={throttledSubmit}
-            >
-                {() => {
-                    const {
-                        productDropdownData,
-                        loadingProductList,
-                        refetchProducts
-                    } = useProductSubProduct({
-                        // selectedProductId: values.productId ? String(values.productId) : null,
-                        // selectedSubProductId: values.subProductId ? String(values.subProductId) : null,
-                        // onSubProductReset: () => setFieldValue("subProductId", ""),
-                    });
+                <Formik
+                    key={refreshKey}
+                    innerRef={formikRef}
+                    initialValues={InitialValues}
+                    validationSchema={validationSchema}
+                    onSubmit={throttledSubmit}
+                >
+                    {() => {
+                        const {
+                            productDropdownData,
+                            loadingProductList,
+                            refetchProducts
+                        } = useProductSubProduct({
+                            // selectedProductId: values.productId ? String(values.productId) : null,
+                            // selectedSubProductId: values.subProductId ? String(values.subProductId) : null,
+                            // onSubProductReset: () => setFieldValue("subProductId", ""),
+                        });
 
-                    return (
-                        <Form className="flex flex-col gap-2 mt-4">
-                            <Grid gutter="sm">
-                                <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2.5 }}>
-                                    <FormikDateRangePicker
-                                        name="dateRange"
-                                        label="Date Range"
-                                        placeholder="Select Date Range"
-                                        size="xs"
-                                        shortcuts
-                                        required
-                                        leftIcon={<IconCalendar size={16} />}
-                                    />
-                                </Grid.Col>
+                        return (
+                            <Form className="flex flex-col gap-2 mt-4">
+                                <Grid gutter="sm">
+                                    <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2.5 }}>
+                                        <FormikDateRangePicker
+                                            name="dateRange"
+                                            label="Date Range"
+                                            placeholder="Select Date Range"
+                                            size="xs"
+                                            shortcuts
+                                            required
+                                            leftIcon={<IconCalendar size={16} />}
+                                        />
+                                    </Grid.Col>
 
-                                <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
-                                    <FormikSelectComponent
-                                        // key={values.productId}
-                                        name="productId"
-                                        label="Product"
-                                        // value={values.productId}
-                                        placeholder="Select Product"
-                                        searchable={true}
-                                        nothingFoundMessage="No Product Found"
-                                        size="xs"
-                                        // withAsterisk
-                                        // required
-                                        allowDeselect={true}
-                                        data={productDropdownData}
-                                        disabled={loadingProductList}
-                                        rightSection={
-                                            <>
-                                                {loadingProductList && (
-                                                    <Loader size={14} color="blue" />
-                                                )}
-                                                {!loadingProductList && productDropdownData.length < 1 && (
-                                                    <div
-                                                        onClick={refetchProducts}
-                                                        className="cursor-pointer"
-                                                        style={{ pointerEvents: "auto", display: "flex", alignItems: "center" }}
-                                                        title="Refresh Products"
-                                                    >
-                                                        <RefreshIcon />
-                                                    </div>
-                                                )}
-                                            </>
-                                        }
-                                    />
-                                </Grid.Col>
+                                    <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
+                                        <FormikSelectComponent
+                                            // key={values.productId}
+                                            name="productId"
+                                            label="Product"
+                                            // value={values.productId}
+                                            placeholder="Select Product"
+                                            searchable={true}
+                                            nothingFoundMessage="No Product Found"
+                                            size="xs"
+                                            // withAsterisk
+                                            // required
+                                            allowDeselect={true}
+                                            data={productDropdownData}
+                                            disabled={loadingProductList}
+                                            rightSection={
+                                                <>
+                                                    {loadingProductList && (
+                                                        <Loader size={14} color="blue" />
+                                                    )}
+                                                    {!loadingProductList && productDropdownData.length < 1 && (
+                                                        <div
+                                                            onClick={refetchProducts}
+                                                            className="cursor-pointer"
+                                                            style={{ pointerEvents: "auto", display: "flex", alignItems: "center" }}
+                                                            title="Refresh Products"
+                                                        >
+                                                            <RefreshIcon />
+                                                        </div>
+                                                    )}
+                                                </>
+                                            }
+                                        />
+                                    </Grid.Col>
 
-                                {/* <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
+                                    {/* <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
                                     <FormikSelectComponent
                                         name="subProductId"
                                         key={`${subProductKey}-${values.productId}`}
@@ -341,93 +377,123 @@ const TransactionReport = () => {
                                     />
                                 </Grid.Col> */}
 
-                                <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
-                                    <FormikSelectComponent
-                                        name="walletType"
-                                        size="xs"
-                                        label="Wallet Type"
-                                        placeholder="Select Wallet Type"
-                                        allowDeselect={true}
-                                        data={[
-                                            { label: "PREPAID", value: "PREPAID" },
-                                            { label: "POSTPAID", value: "POSTPAID" },
-                                        ]}
-                                    />
-                                </Grid.Col>
+                                    <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
+                                        <FormikSelectComponent
+                                            name="walletType"
+                                            size="xs"
+                                            label="Wallet Type"
+                                            placeholder="Select Wallet Type"
+                                            allowDeselect={true}
+                                            data={[
+                                                { label: "PREPAID", value: "PREPAID" },
+                                                { label: "POSTPAID", value: "POSTPAID" },
+                                            ]}
+                                        />
+                                    </Grid.Col>
 
-                                <Grid.Col span="auto">
-                                    <div className="flex justify-end items-center mt-4">
-                                        {<ButtonComponent
-                                            fontSize="14"
-                                            fullWidth={false}
-                                            radius={6}
-                                            size="sm"
-                                            borderColor="#fff"
-                                            variant="filled"
-                                            type="submit"
-                                            bgColor="#C30305"
-                                            textColor="#FFFFFF"
-                                        >
-                                            VIEW
-                                        </ButtonComponent>}
-                                    </div>
-                                </Grid.Col>
-                            </Grid>
-                        </Form>
-                    )
-                }}
-            </Formik>
+                                    <Grid.Col span="auto">
+                                        <div className="flex justify-end items-center mt-4">
+                                            {<ButtonComponent
+                                                fontSize="14"
+                                                fullWidth={false}
+                                                radius={6}
+                                                size="sm"
+                                                borderColor="#fff"
+                                                variant="filled"
+                                                type="submit"
+                                                bgColor="#C30305"
+                                                textColor="#FFFFFF"
+                                            >
+                                                VIEW
+                                            </ButtonComponent>}
+                                        </div>
+                                    </Grid.Col>
+                                </Grid>
+                            </Form>
+                        )
+                    }}
+                </Formik>
 
-            <GenericMasterToolbar
-                onRefresh={handleRefresh}
-                onExport={handleExportClick}
-                onColumnChange={handleToggleColumn}
-                visibleColumns={visibleColumns}
-                onToggleAll={handleToggleAllColumns}
-                onFilter={() => setFilterVisible((prev) => !prev)}
-                headers={headers}
-                loading={loading}
-                error={error ? error.toString() : null}
-            />
-
-            {loading ? (
-                // Render shimmer
-                <ShimmerTableRows rowCount={6} columnCount={headers.length} />
-            ) : (
-                <GenericMasterTable<TransactionReportTableType>
-                    data={data}
-                    headers={headers.filter((h) =>
-                        visibleColumns.includes(h.key as string)
-                    )}
-                    pagination
-                    currentPage={pagination.currentPage}
-                    totalPages={pagination.totalPages}
-                    onPageChange={setPage}
-                    onPageSizeChange={setPageSize}
-                    pageSize={pagination.pageSize}
-                    message={`Showing page ${pagination.currentPage} of ${pagination.totalPages}`}
-                    filterVisible={filterVisible}
-                    filterValues={filterValues}
-                    onFilterChange={handleFilterChange}
-                    onFilterSubmit={handleFilterSubmit}
-                    extraColumnPosition="left"
-                    renderExtraHeader={() => <></>} // empty header for action column/>
-                    renderExtraRowCell={(item) => (
-                        <div className="flex justify-center gap-2 min-w-10">
-                            <span
-                                onClick={() => navigate(`/support/ticketingSystem?txId=${item.txId}`)}
-                                title="Raise Ticket"
-                                className="cursor-pointer hover:scale-110 transition-all duration-200"
-                            >
-                                <i className="fa-solid fa-ticket fa-lg" style={{ color: "#bf2024ff" }}></i>
-                            </span>
-                        </div>
-                    )
-                    }
+                <GenericMasterToolbar
+                    onRefresh={handleRefresh}
+                    onExport={handleExportClick}
+                    onColumnChange={handleToggleColumn}
+                    visibleColumns={visibleColumns}
+                    onToggleAll={handleToggleAllColumns}
+                    onFilter={() => setFilterVisible((prev) => !prev)}
+                    headers={headers}
+                    loading={loading}
+                    error={error ? error.toString() : null}
                 />
-            )}
 
-        </div >
+                {loading ? (
+                    // Render shimmer
+                    <ShimmerTableRows rowCount={6} columnCount={headers.length} />
+                ) : (
+                    <GenericMasterTable<TransactionReportTableType>
+                        data={data}
+                        headers={headers.filter((h) =>
+                            visibleColumns.includes(h.key as string)
+                        )}
+                        pagination
+                        currentPage={pagination.currentPage}
+                        totalPages={pagination.totalPages}
+                        onPageChange={setPage}
+                        onPageSizeChange={setPageSize}
+                        pageSize={pagination.pageSize}
+                        message={`Showing page ${pagination.currentPage} of ${pagination.totalPages}`}
+                        filterVisible={filterVisible}
+                        filterValues={filterValues}
+                        onFilterChange={handleFilterChange}
+                        onFilterSubmit={handleFilterSubmit}
+                        extraColumnPosition="left"
+                        renderExtraHeader={() => <>ACTION</>} // empty header for action column/>
+                        renderExtraRowCell={(item) => (
+                            <div className="flex justify-center gap-3 min-w-10">
+                                <span
+                                    onClick={() => navigate(`/support/ticketingSystem?txId=${item.txId}`)}
+                                    title="Raise Ticket"
+                                    className="cursor-pointer hover:scale-110 transition-all duration-200"
+                                >
+                                    <i className="fa-solid fa-ticket fa-lg" style={{ color: "#BF2024" }}></i>
+                                </span>
+                                <span
+                                    onClick={() =>
+                                        fetchProductReceipt(item.txId, item.walletType, item.productName)
+                                    }
+                                    title="View Reciept"
+                                    className="cursor-pointer hover:scale-110 transition-all duration-200"
+                                >
+                                    <i className="fa-solid fa-ticket fa-lg" style={{ color: "#BF2024" }}></i>
+                                </span>
+                            </div>
+                        )
+                        }
+                    />
+                )}
+            </div>
+
+            <Drawer
+                opened={receiptDrawerOpened}
+                onClose={() => {
+                    setReceiptDrawerOpened(false);
+                    setReceiptData(null);
+                }}
+                closeOnEscape={false}
+                closeOnClickOutside={false}
+                position="right"
+                size="xl"
+                overlayProps={{ backgroundOpacity: 0.4, blur: 2 }}
+                transitionProps={{ transition: "slide-right", duration: 300 }}
+            >
+                {receiptData && (
+                    <ReceiptRenderer
+                        productType={receiptData?.productType}
+                        data={receiptData}
+                    />
+                )}
+            </Drawer>
+        </>
     );
 };
 

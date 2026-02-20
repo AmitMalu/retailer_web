@@ -550,7 +550,21 @@ export const Dmt_Bank_List = async () => {
 };
 
 export const Network_Bank_Master_List_Dropdown = async () => {
-  return await api.get(`${API_ROUTES.NETWORK_BANK_MASTER_LIST_DROPDOWN}`, await createHeaders());
+  return await api.get(
+    `${API_ROUTES.NETWORK_BANK_MASTER_LIST_DROPDOWN}`,
+    await createHeaders(),
+  );
+};
+
+export const Get_Products_Reciept = async (data: {
+  txnId: string;
+  walletType: "POSTPAID" | "PREPAID" | null;
+}) => {
+  return await api.post(
+    `${API_ROUTES.PRODUCT_RECIEPT}`,
+    data,
+    await createHeaders(),
+  );
 };
 
 export const Fetch_Beneficiaries = async (data: Record<string, any>) => {

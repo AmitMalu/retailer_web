@@ -144,5 +144,5 @@ export const API_ROUTES = {
 
   /////////////////////////// COMMON ////////////////////////////////////
   NETWORK_BANK_MASTER_LIST_DROPDOWN: `${BASE_URL}/api/network-banks/all`,
-
+  PRODUCT_RECIEPT: `${BASE_URL}/api/report-receipt`,
 };

@@ -93,8 +93,10 @@ const BillReceipt = ({ data }: { data: any }) => {
                     <Table.Tr>
                         <Table.Td fw={500}>Category</Table.Td>
                         <Table.Td>{data?.category ?? "-"}</Table.Td>
-                        <Table.Td fw={500}>Approval Ref No</Table.Td>
-                        <Table.Td>{data?.approvalRefNumber ?? "-"}</Table.Td>
+                        <Table.Td fw={500}>Ref No</Table.Td>
+                        <Table.Td>
+                            {data?.approvalRefNumber || data?.referenceNumber || data?.refNo || "-"}
+                        </Table.Td>
                     </Table.Tr>
 
                     <Table.Tr>

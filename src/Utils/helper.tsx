@@ -492,3 +492,22 @@ export const encryptPidData = (
 };
 
 
+export const serializeFormValues = (values: any) => {
+    return {
+        ...values,
+        dateRange: values?.dateRange?.map((d: any) =>
+            d instanceof Date ? d.toISOString() : d
+        ),
+    };
+};
+
+export const deserializeFormValues = (values: any) => {
+    return {
+        ...values,
+        dateRange: values?.dateRange?.map((d: any) =>
+            typeof d === "string" ? new Date(d) : d
+        ),
+    };
+};
+
+

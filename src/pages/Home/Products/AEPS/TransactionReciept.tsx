@@ -81,7 +81,9 @@ const TransactionReciept = ({ data }: { data: any }) => {
                     <Table.Tr>
                         <Table.Td fw={500}>Aadhaar Number</Table.Td>
                         <Table.Td>
-                            {data?.aadhaarNumber} with mobile {data?.mobileNumber}
+                            {data?.aadhaarNumber
+                                ? `${data.aadhaarNumber}${data?.mobileNumber ? ` with mobile ${data.mobileNumber}` : ""}`
+                                : "-"}
                         </Table.Td>
                     </Table.Tr>
 

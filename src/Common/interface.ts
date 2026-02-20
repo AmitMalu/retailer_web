@@ -1154,7 +1154,7 @@ export interface TransactionReportTableType {
   txType: string | null;
   remarks: string | null;
   medium: string | null;
-  walletType: string | null;
+  walletType: "POSTPAID" | "PREPAID" | null;
   dateOfTransaction: string; // e.g. "2025-10-14"
   timeOfTransaction: string; // e.g. "18:14:18.35"
   updatedAt: string | null;

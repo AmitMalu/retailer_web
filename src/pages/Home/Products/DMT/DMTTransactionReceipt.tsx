@@ -31,7 +31,6 @@ const DMTTransactionReceipt = ({
         ? decryptData(apiResponses?.loginData)
         : null;
 
-    console.log(data, txnType, "check");
     if (!data) return <Text>No receipt data available.</Text>;
 
     const handlePrint = () => {
@@ -93,7 +92,9 @@ const DMTTransactionReceipt = ({
                     <Table.Tr>
                         <Table.Td fw={500}>Date</Table.Td>
                         <Table.Td>
-                            {moment().format("DD-MM-YYYY hh:mm A")}
+                            {data?.dateTime ?
+                                moment(data?.dateTime).format("DD-MM-YYYY hh:mm A")
+                                : moment().format("DD-MM-YYYY hh:mm A")}
                         </Table.Td>
                     </Table.Tr>
 
