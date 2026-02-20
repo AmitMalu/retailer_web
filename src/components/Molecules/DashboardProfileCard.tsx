@@ -15,16 +15,22 @@ const DashboardProfileCard = ({ profile }: any) => {
         >
             <div className="flex flex-col items-center">
                 <Avatar
-                    src={hasImage ? profile.image : null}
+                    src={hasImage ? profile?.image : null}
                     size={120}
                     radius="md"
-                    variant='white'
-                    alt={profile.name}
+                    // bg="white"
+                    alt={profile?.name}
+                    styles={{
+                        image: {
+                            objectFit: "contain",
+                            // backgroundColor: "white",
+                        },
+                    }}
                 />
             </div>
 
-            <h1 className='mt-3 font-bold'>{profile.name || "-"}</h1>
-            <p className='mt-2 font-semibold'>{profile.retailerId || "-"}</p>
+            <h1 className='mt-3 font-bold'>{profile?.name || "-"}</h1>
+            <p className='mt-2 font-semibold'>{profile?.retailerId || "-"}</p>
 
             <div className="flex w-full mt-4">
                 <div className="flex-1 text-center border-r border-white/40 py-2">

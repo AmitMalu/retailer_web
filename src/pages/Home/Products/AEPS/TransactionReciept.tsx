@@ -2,8 +2,6 @@ import { RootState } from "@/Redux/Store";
 import { decryptData } from "@/Utils/helper";
 import { Card, Table, Text, Group, Divider, Button, Badge } from "@mantine/core";
 import { useSelector } from "react-redux";
-import moment from "moment";
-import ImLogo from '@/assets/svg/ImFullLogo'
 import { useTheme } from "@mui/system";
 import "./TransactionReciept.css";
 
@@ -24,26 +22,28 @@ const TransactionReciept = ({ data }: { data: any }) => {
         window.print();
     };
 
+    const dash = (val: any) => val ?? "-";
+
     return (
         <Card shadow="sm" radius="md" withBorder p="md">
             {/* --- Header Section --- */}
             <Group justify="space-between" align="center" mb="md">
                 <Group gap={2}>
-                    {/* <Image src={ImLogo} alt="Company Logo" width={70} /> */}
-                    <ImLogo />
-                    <div>
-                        {/* <Text fw={700} size="xl" c="orange.8">
-                            Instant Mudra
-                        </Text> */}
-                        {/* <Text size="xs" c="dimmed">
-                            Smart Pay Solutions
-                        </Text> */}
-                    </div>
+                    <img
+                        style={{
+                            width: 120,
+                            height: 120,
+                            objectFit: "contain",
+                        }}
+                        src={loginData?.logoUrl ?? ""} alt="img"
+                    />
+                    {/* <ImLogo /> */}
                 </Group>
+
                 <Text fw={600} size="sm" ta="right">
                     {loginData
                         ? `${loginData?.outletName ?? ""}/${loginData?.hierarchyId ?? ""}/${loginData?.mobileNumber ?? ""}`
-                        : "Retailer Info Unavailable"}
+                        : ""}
                 </Text>
             </Group>
 
@@ -51,7 +51,7 @@ const TransactionReciept = ({ data }: { data: any }) => {
 
             {/* --- Title --- */}
             <Text fw={600} ta="center" size="md" mb="sm">
-                {data.serviceType} Receipt
+                {data.serviceTitle} Receipt
             </Text>
 
             <Badge
@@ -71,37 +71,64 @@ const TransactionReciept = ({ data }: { data: any }) => {
                 horizontalSpacing="sm"
             >
                 <Table.Tbody>
+                    {/* Date */}
                     <Table.Tr>
                         <Table.Td fw={500}>Date</Table.Td>
+                        <Table.Td>{dash(data?.dateTime)}</Table.Td>
+                    </Table.Tr>
+
+                    {/* Aadhaar + Mobile */}
+                    <Table.Tr>
+                        <Table.Td fw={500}>Aadhaar Number</Table.Td>
                         <Table.Td>
-                            {data?.dateTime
-                                ? moment(data.dateTime).format("DD-MM-YYYY hh:mm A")
+                            {data?.aadhaarNumber
+                                ? `${data.aadhaarNumber}${data?.mobileNumber ? ` with mobile ${data.mobileNumber}` : ""}`
                                 : "-"}
                         </Table.Td>
-
-                        {/* <Table.Td fw={500}>Transaction Status</Table.Td>
-                        <Table.Td>{data?.status ?? "-"}</Table.Td> */}
                     </Table.Tr>
 
-                    {data?.serviceType === "BALANCE INQUIRY" && <Table.Tr>
-                        <Table.Td fw={500}>Avilable Balance</Table.Td>
-                        <Table.Td colSpan={3}>{data?.balanceAmount ?? "0"}</Table.Td>
-                    </Table.Tr>}
+                    {/* Bank Name */}
+                    <Table.Tr>
+                        <Table.Td fw={500}>Bank Name</Table.Td>
+                        <Table.Td>{dash(data?.bankName)}</Table.Td>
+                    </Table.Tr>
 
-                    {data?.serviceType !== "BALANCE INQUIRY" && <Table.Tr>
-                        <Table.Td fw={500}>Transaction Amount</Table.Td>
-                        <Table.Td>{data?.transactionAmount ?? "-"}</Table.Td>
-                    </Table.Tr>}
+                    {/* Transaction Type */}
+                    <Table.Tr>
+                        <Table.Td fw={500}>Transaction Type</Table.Td>
+                        <Table.Td>{dash(data?.serviceTitle)}</Table.Td>
+                    </Table.Tr>
 
+                    {/* Transaction ID */}
+                    <Table.Tr>
+                        <Table.Td fw={500}>Transaction ID</Table.Td>
+                        <Table.Td>{dash(data?.transactionId)}</Table.Td>
+                    </Table.Tr>
+
+                    {data.serviceKey === "cashWithdrawal" && (
+                        <Table.Tr>
+                            <Table.Td fw={500}>Transaction Amount</Table.Td>
+                            <Table.Td>{data.transactionAmount}</Table.Td>
+                        </Table.Tr>
+                    )}
+
+                    {data.serviceKey !== "cashWithdrawal" && (
+                        <Table.Tr>
+                            <Table.Td fw={500}>Available Balance</Table.Td>
+                            <Table.Td>{data.balanceAmount}</Table.Td>
+                        </Table.Tr>
+                    )}
+
+                    {/* RRN */}
                     <Table.Tr>
                         <Table.Td fw={500}>RRN</Table.Td>
-                        <Table.Td>{data?.rrn ?? "-"}</Table.Td>
-
+                        <Table.Td>{dash(data?.rrn)}</Table.Td>
                     </Table.Tr>
 
+                    {/* Terminal ID */}
                     <Table.Tr>
-                        <Table.Td fw={500}>Terminal Id</Table.Td>
-                        <Table.Td>{data?.terminalId ?? "-"}</Table.Td>
+                        <Table.Td fw={500}>Terminal ID</Table.Td>
+                        <Table.Td>{dash(data?.terminalId)}</Table.Td>
                     </Table.Tr>
                 </Table.Tbody>
             </Table>

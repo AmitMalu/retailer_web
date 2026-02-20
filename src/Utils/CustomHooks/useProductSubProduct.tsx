@@ -4,8 +4,8 @@ import { handleCustomError } from "../handleCustomError";
 import { Product_Dropdown, Sub_Product_Dropdown, Sub_Product_Settlement_Dropdown } from "@/Services/api";
 
 interface UseProductSubProductProps {
-  selectedProductId?: string;
-  selectedSubProductId?: string;
+  selectedProductId?: string | null;
+  selectedSubProductId?: string | null;
   onSubProductReset?: () => void;
   isSettlement?: boolean;
 }

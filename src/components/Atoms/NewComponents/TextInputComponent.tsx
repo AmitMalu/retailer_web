@@ -31,7 +31,9 @@ interface TextInputComponentProps {
     allowNumber?: boolean;
     allowCharacter?: boolean;
     allowSpecialChar?: boolean;
+    strictSpecialCharBlock?: boolean;
     allowSpace?: boolean;
+    disablePaste?: boolean;
 }
 
 const TextInputComponent = forwardRef<HTMLInputElement, TextInputComponentProps>(({
@@ -61,7 +63,9 @@ const TextInputComponent = forwardRef<HTMLInputElement, TextInputComponentProps>
     allowNumber = true,
     allowCharacter = true,
     allowSpecialChar = true,
+    strictSpecialCharBlock = false,
     allowSpace = true,
+    disablePaste = false,
 }, ref) => {
     const screenSize = useScreenSize();
     // const [isFocused, setIsFocused] = useState(false);
@@ -90,8 +94,15 @@ const TextInputComponent = forwardRef<HTMLInputElement, TextInputComponentProps>
         }
 
         if (!allowSpecialChar) {
-            newValue = newValue.replace(/[^a-zA-Z0-9\s._\-()]/g, "");
+            if (strictSpecialCharBlock) {
+                // Strict: allow ONLY letters + numbers + space
+                newValue = newValue.replace(/[^a-zA-Z0-9\s]/g, "");
+            } else {
+                // Your old behaviour (keep as it is)
+                newValue = newValue.replace(/[^a-zA-Z0-9\s._\-()]/g, "");
+            }
         }
+
 
         if (!allowSpace) {
             newValue = newValue.replace(/\s+/g, "");
@@ -117,8 +128,10 @@ const TextInputComponent = forwardRef<HTMLInputElement, TextInputComponentProps>
         value,
         onChange: handleChange,
         onKeyDown,
-        // onFocus: () => setIsFocused(true),
-        // onBlur: () => setIsFocused(false),
+        onPaste: disablePaste ? (e: React.ClipboardEvent<HTMLInputElement>) => e.preventDefault() : undefined,
+        onCopy: disablePaste ? (e: React.ClipboardEvent<HTMLInputElement>) => e.preventDefault() : undefined,
+        onCut: disablePaste ? (e: React.ClipboardEvent<HTMLInputElement>) => e.preventDefault() : undefined,
+        onDrop: disablePaste ? (e: React.DragEvent<HTMLInputElement>) => e.preventDefault() : undefined,
         error: typeof error === "string" ? true : !!error,
         required,
         maxLength,

@@ -16,14 +16,14 @@ export const API_ROUTES = {
   ///////////////// MAIN /////////////////////////////
   USER_PROFILE: `${BASE_URL}/api/dashboard/profile`,
   CHANGE_PASSWORD: `${BASE_URL}/auth/change-password`,
+  DASHBOARD_API: `${BASE_URL}/api/dashboard/data`,
+
 
   ///////////////// FUNDING //////////////////////////
   PREFUND_REQUEST: `${BASE_URL}/api/prefund/request`,
   WALLET_TO_WALLET: `${BASE_URL}/api/wallet-to-wallet/transfer`,
   FUND_REVERSAL: `${BASE_URL}/api/fund-reversal`,
   FUND_REVERSAL_RESEND_OTP: `${BASE_URL}/api/fund-reversal/resend-otp`,
-  CHILD_MEMBER_LIST: `${BASE_URL}/api/dropdown-manager/child-accounts`,
-  SINGLE_HIERARCHY_CHILD_LIST: `${BASE_URL}/api/dropdown-manager/child`,
   FUND_TRANSFER: `${BASE_URL}/api/fund-transfer`,
   WALLET_BALANCE: `${BASE_URL}/api/dashboard/wallet-balance`,
   WALLET_TO_BANK: `${BASE_URL}/api/move-to-bank/send-payout-request`,
@@ -44,6 +44,9 @@ export const API_ROUTES = {
   DEBIT_HISTORY_REPORT: `${BASE_URL}/api/debit-credit/report`,
   DOWNLINE_BALANCE_REPORT: `${BASE_URL}/api/downline-balance/report`,
   PENDING_TRANSACTION_REPORT: `${BASE_URL}/api/funding/settlement`,
+  FUND_LOADING_REPORT: `${BASE_URL}/api/prefund/all`,
+  TRANSACTION_REPORT: `${BASE_URL}/api/funding/transaction-report`,
+  TXN_AND_WALLET_REPORT: `${BASE_URL}/api/funding/detailed-txn-report`,
 
   /////////////// TICKETING SYSTEM //////////////////////////
   TRANSACTION_DETAILS: `${BASE_URL}/api/ticket/transaction-details`,
@@ -62,9 +65,9 @@ export const API_ROUTES = {
 
   /////////////// PAYOUT ////////////////////////////////////////////
   SAVE_BENEFICIARY: `${BASE_URL}/api/payout/save-beneficiary`,
-  // SEND_PAYOUT: `${BASE_URL}/api/payout/send-payout-request`,
-  // PAYOUT_SUCCESS_CALLBACK: `${BASE_URL}/api/payout/update-callback-url`,
-  SEND_PAYOUT: `${BASE_URL}/api/send-payout`,
+  // SEND_PAYOUT: `${BASE_URL}/api/send-payout`,
+  // PAYOUT_SUCCESS_CALLBACK: `${BASE_URL}/api/update-callback-url`,
+  SEND_PAYOUT: `${BASE_URL}/api/send-payout-vo`,
   PAYOUT_SUCCESS_CALLBACK: `${BASE_URL}/api/update-callback-url`,
   GET_BANK_DETAILS: `${BASE_URL}/api/network-banks/details-by-ifsc`,
   GET_PAYOUT_ALL_DETAILS: `${BASE_URL}/api/payout/all`,
@@ -96,9 +99,11 @@ export const API_ROUTES = {
   DELETE_BENEFICIARY: `${BASE_URL}/api/beneficiary/delete`,
   DMT_TRANX_SEND_OTP: `${BASE_URL}/api/dmt/send-otp`,
   DMT_TRANSACTION: `${BASE_URL}/api/dmt/transaction`,
+  DMT_BANK_LIST: `${BASE_URL}/api/dmt/bank-list`,
 
   ///////////////////////////// AEPS ////////////////////////////////
   AEPS_CHECK_STATUS: `${BASE_URL}/api/merchant/check-status`,
+  VERIFY_LOCATION: `${BASE_URL}/api/geo/check`,
   AEPS_MERCHANT_ONBOARD: `${BASE_URL}/api/merchant/onboarding`,
   AEPS_SEND_OTP: `${BASE_URL}/aeps/ekyc/send-otp`,
   AEPS_RESEND_OTP: `${BASE_URL}/aeps/ekyc/resend-otp`,
@@ -116,6 +121,7 @@ export const API_ROUTES = {
   BANK_VERIFICATION: `${BASE_URL}/verification/bank-validate`,
   CASH_WITHDRAWAL: `${BASE_URL}/api/aeps/cash-withdrawal`,
   BALANCE_INQUIRY: `${BASE_URL}/api/aeps/balance-inquiry`,
+  MINI_STATEMENT: `${BASE_URL}/api/aeps/mini-statement`,
 
   /////////////////////////// bANKS ////////////////////////////////////
   ADD_BANK: `${BASE_URL}/api/bank-details`,
@@ -123,8 +129,11 @@ export const API_ROUTES = {
   DELETE_BANK: `${BASE_URL}/api/bank-details`,
 
   /////////////////////////// COMMON ////////////////////////////////////
-  HIERARCHY_TYPE_LIST: `${BASE_URL}/api/hierarchy/name-code`,
-  HIERARCHY_LIST: `${BASE_URL}/api/hierarchy/hierarchy-details`,
+  HIERARCHY_TYPE_LIST: `${BASE_URL}/api/hierarchy/name-code`, // Hierarchy Types and Codes List
+  HIERARCHY_LIST: `${BASE_URL}/api/hierarchy/hierarchy-details`, //Based on Hierarchy Code Suppose if SD -> Overall SD List 
+
+  CHILD_MEMBER_LIST: `${BASE_URL}/api/dropdown-manager/child-accounts`, //Give All Child Accounts List 
+  SINGLE_HIERARCHY_CHILD_LIST: `${BASE_URL}/api/dropdown-manager/child`, // Give One Child Down List
   PRODUCT_LIST: `${BASE_URL}/api/products/dropdown/active`,
   SUB_PRODUCT_DROPDOWN: `${BASE_URL}/api/sub-products/dropdown`,
 
@@ -133,4 +142,7 @@ export const API_ROUTES = {
   BILLAVENUE_BILL_FETCH: `${BASE_URL}/api/billavenue/bill-fetch`,
   BILLAVENUE_BILL_PAYMENT: `${BASE_URL}/api/billavenue/bill-payment`,
 
+  /////////////////////////// COMMON ////////////////////////////////////
+  NETWORK_BANK_MASTER_LIST_DROPDOWN: `${BASE_URL}/api/network-banks/all`,
+  PRODUCT_RECIEPT: `${BASE_URL}/api/report-receipt`,
 };

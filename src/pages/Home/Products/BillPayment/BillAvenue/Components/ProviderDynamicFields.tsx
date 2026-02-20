@@ -1,0 +1,93 @@
+import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePicker";
+import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
+import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
+
+interface Props {
+  fields: any[];
+  billerCategory?: string;
+  description?: string;
+}
+
+const ProviderDynamicFields: React.FC<Props> = ({
+  fields,
+  billerCategory,
+  description,
+}) => {
+
+  if (!fields?.length) return null;
+
+  const shouldCapitalize = billerCategory?.toUpperCase() === "FASTAG";
+
+  return (
+    <>
+      {fields.map((field) => {
+        const fieldKey = field.name;
+        const label = field.label;
+
+        // DATE field
+        if (field.dataType === "DATE") {
+          return (
+            <div key={fieldKey} className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)]">
+              <FormikDatePicker
+                name={fieldKey}
+                label={label}
+                placeholder={`Select ${label}`}
+                size="md"
+                required={field.required}
+                maxDate={new Date()}
+                valueFormat="YYYY-MM-DD"
+              />
+            </div>
+          );
+        }
+
+        // SELECT / LIST field
+        if (Array.isArray(field.values) && field.values.length > 0) {
+          return (
+            <div key={fieldKey} className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)]">
+              <FormikSelectComponent
+                name={fieldKey}
+                label={`Select ${label}`}
+                placeholder={`Select ${label}`}
+                size="md"
+                data={field.values.map((item: string) => ({
+                  value: item,
+                  label: item,
+                }))}
+                withAsterisk={field.required}
+                searchable
+                allowDeselect
+                fullWidth
+              />
+            </div>
+          );
+        }
+
+        // DEFAULT → Text input
+        return (
+          <div key={fieldKey} className="w-full lg:w-[calc(33.33%-12px)] sm:w-[calc(50%-12px)]">
+            <FormikTextInputComponent
+              capitalize={shouldCapitalize}
+              name={fieldKey}
+              size="md"
+              label={label}
+              placeholder={`Enter ${label}`}
+              withAsterisk={field.required}
+              fullWidth
+              maxLength={field.maxLength}
+            />
+          </div>
+        );
+      })}
+
+      {/* Helper / Description */}
+      {description && (
+        <div className="w-full text-xs text-gray-500 mt-2">
+          Note : {description}
+        </div>
+      )}
+    </>
+  );
+};
+
+export default ProviderDynamicFields;

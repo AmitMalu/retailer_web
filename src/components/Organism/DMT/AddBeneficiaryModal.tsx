@@ -2,19 +2,18 @@ import {
   AddBeneficiaryFormProps,
   AddBeneficiaryPayload,
 } from "@/Common/interface";
-import { Grid, Modal } from "@mantine/core";
-import { useState } from "react";
+import { Grid, Loader, Modal } from "@mantine/core";
+import { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import theme from "@/theme/ThemeConfig";
-import { formatDate } from "@/Utils/helper";
-import { Register_Beneficiary } from "@/Services/api";
+import { Network_Bank_Master_List_Dropdown, Register_Beneficiary } from "@/Services/api";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
-import CustomDatePicker from "@/components/Atoms/NewComponents/CustomDatePicker";
-import { CalendarIcon } from "@mui/x-date-pickers";
 import NewButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent"
+import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
+import { RefreshIcon } from "@/assets/svg";
 
 const AddBeneficiaryModal = ({
   opened,
@@ -25,6 +24,8 @@ const AddBeneficiaryModal = ({
 }: any) => {
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isBankLoading, setIsBankLoading] = useState(false);
+  const [bankList, setBankList] = useState([]);
 
   const validationSchema: Yup.ObjectSchema<AddBeneficiaryFormProps> = Yup.object({
     // mobileNumber: Yup.string()
@@ -32,25 +33,28 @@ const AddBeneficiaryModal = ({
     //   .matches(/^[6-9]\d{9}$/, "Please enter valid number")
     //   .required("Mobile number is required"),
     beneficiaryName: Yup.string().required("Beneficiary name is required"),
-    bankId: Yup.string().required("Bank ID is required"),
+    bankId: Yup.string().required("Please Select the Bank"),
     accountNumber: Yup.string()
       .transform((value) => (value ? value.replace(/\s+/g, "") : ""))
       .required("Account number is required")
       .matches(/^[0-9]+$/, "Must be only digits")
       .min(9, "Must be at least 9 digits")
       .max(20, "Must be at most 20 digits"),
+    confirmAccountNumber: Yup.string()
+      .required("Please confirm account number")
+      .oneOf([Yup.ref("accountNumber")], "Account number did not matched"),
     ifscCode: Yup.string()
       .required("IFSC Code is required")
       .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Enter valid IFSC code"),
     verified: Yup.string(),
-    gstState: Yup.string().required("State is required"),
-    dob: Yup.date()
-      .nullable()
-      .required("Date of birth is required"),
-    address: Yup.string().required("Address is required"),
-    pincode: Yup.string()
-      .required("Pincode is required")
-      .matches(/^\d{6}$/, "Enter valid 6-digit pincode"),
+    // gstState: Yup.string().required("State is required"),
+    // dob: Yup.date()
+    //   .nullable()
+    //   .required("Date of birth is required"),
+    // address: Yup.string().required("Address is required"),
+    // pincode: Yup.string()
+    //   .required("Pincode is required")
+    //   .matches(/^\d{6}$/, "Enter valid 6-digit pincode"),
   });
 
   const initialValues: AddBeneficiaryFormProps = {
@@ -58,30 +62,57 @@ const AddBeneficiaryModal = ({
     beneficiaryName: "",
     bankId: "",
     accountNumber: "",
+    confirmAccountNumber: "",
     ifscCode: "",
     verified: "0",
-    gstState: "",
-    dob: null,
-    address: "",
-    pincode: "",
+    // gstState: "",
+    // dob: null,
+    // address: "",
+    // pincode: "",
   };
 
   const mapFormToAddBeneficiaryPayload = (
     values: AddBeneficiaryFormProps,
     subProductId: string
-  ): AddBeneficiaryPayload => ({
-    mobile: mobile ?? "",
-    benename: values.beneficiaryName,
-    bankid: values.bankId,
-    accno: values.accountNumber,
-    ifsccode: values.ifscCode,
-    verified: values.verified ?? "0", // always "0" initially, can be dynamic later
-    gst_state: values.gstState,
-    dob: formatDate(values?.dob),
-    address: values.address,
-    pincode: values.pincode,
-    subProductId,
-  });
+  ): AddBeneficiaryPayload => {
+
+    const selectedBank: any = bankList?.find(
+      (bank: any) => String(bank?.bankId) === values.bankId
+    );
+
+    return {
+      mobile: mobile ?? "",
+      benename: values.beneficiaryName,
+      bankid: values.bankId,
+      bankName: selectedBank?.bankName || "",
+      accno: values.accountNumber,
+      ifsccode: values.ifscCode,
+      verified: values.verified ?? "0", // always "0" initially, can be dynamic later
+      // gst_state: values.gstState,
+      // dob: formatDate(values?.dob),
+      // address: values.address,
+      // pincode: values.pincode,
+      subProductId,
+    }
+  }
+
+  const getBankList = async () => {
+    try {
+      setIsBankLoading(true);
+      const response = await Network_Bank_Master_List_Dropdown();
+      if (response?.data && response?.data?.statusCode == 200) {
+        setBankList(response?.data?.data);
+      } else {
+        showErrorNotification(response?.data?.message);
+        setBankList([]);
+      }
+    } catch (error) {
+      await handleCustomError(error);
+      setBankList([]);
+    } finally {
+      setIsBankLoading(false);
+    }
+  };
 
   const handleSubmit = async (values: AddBeneficiaryFormProps) => {
     try {
@@ -103,12 +134,18 @@ const AddBeneficiaryModal = ({
     }
   };
 
+  useEffect(() => {
+    if (opened) {
+      getBankList();
+    }
+  }, [opened]);
+
   return (
     <Modal
       opened={opened}
       onClose={onClose}
       title="Add Beneficiary"
-      size="xl"
+      size="lg"
       centered
       closeOnEscape={false}
       closeOnClickOutside={false}
@@ -148,30 +185,58 @@ const AddBeneficiaryModal = ({
           onSubmit={handleSubmit}
           enableReinitialize={true}
         >
-          {(formik) => {
-            const {
-              setFieldValue,
-              errors,
-              touched,
-              values,
-            } = formik;
+          {({ setFieldValue, resetForm }) => {
+
             return (
               <Form className="w-full overflow-auto scrollbar-hide pt-1 pb-1 px-2 bg-white rounded-2xl">
                 <Grid gutter="sm">
-                  {/* Mobile Number */}
-                  {/* <Grid.Col span={{ base: 12, md: 6 }}>
-                    <FormikTextInputComponent
-                      label="Mobile Number"
-                      name="mobileNumber"
-                      placeholder="Enter Mobile Number"
-                      required
+                  <Grid.Col span={{ base: 12, md: 12 }}>
+                    <FormikSelectComponent
+                      label="Bank"
+                      name="bankId"
+                      placeholder="Select Bank"
+                      data={bankList?.map((bank: any) => ({
+                        value: String(bank?.bankId),
+                        label: bank?.bankName,
+                      })) || []}
+                      size="md"
+                      searchable
+                      allowDeselect
                       withAsterisk
-                      allowCharacter={false}
-                      allowSpecialChar={false}
-                      allowSpace={false}
-                      maxLength={10}
+                      required
+                      disabled={isBankLoading}
+                      onChange={(value: string) => {
+                        setFieldValue("bankId", value);
+
+                        // Find selected bank
+                        const selectedBank: any = bankList?.find(
+                          (bank: any) => String(bank?.bankId) === value
+                        );
+
+                        if (selectedBank) {
+                          setFieldValue("ifscCode", selectedBank.ifscCode || "");
+                        }
+                      }}
+                      rightSection={
+                        <>
+                          {isBankLoading && (
+                            <Loader size={14} color="blue" />
+                          )}
+                          {!isBankLoading && bankList?.length < 1 && (
+                            <div
+                              onClick={getBankList}
+                              className="cursor-pointer"
+                              style={{ pointerEvents: "auto", display: "flex", alignItems: "center" }}
+                              title="Refresh Bank"
+                            >
+                              <RefreshIcon />
+                            </div>
+                          )}
+                        </>
+                      }
+
                     />
-                  </Grid.Col> */}
+                  </Grid.Col>
 
                   <Grid.Col span={{ base: 12, md: 6 }}>
                     <FormikTextInputComponent
@@ -181,20 +246,27 @@ const AddBeneficiaryModal = ({
                       required
                       withAsterisk
                       allowSpecialChar={false}
+                      strictSpecialCharBlock={true}
+                      allowNumber={false}
                       maxLength={50}
                     />
                   </Grid.Col>
 
                   <Grid.Col span={{ base: 12, md: 6 }}>
                     <FormikTextInputComponent
-                      label="Bank ID"
-                      name="bankId"
-                      placeholder="Enter Bank ID"
+                      name="ifscCode"
+                      label="IFSC Code"
+                      placeholder="Enter IFSC Code"
                       required
                       withAsterisk
-                      maxLength={30}
+                      capitalize
+                      allowSpecialChar={false}     // block special characters
+                      allowSpace={false}
+                      maxLength={12}
+                      fullWidth
                     />
                   </Grid.Col>
+
 
                   <Grid.Col span={{ base: 12, md: 6 }}>
                     <FormikTextInputComponent
@@ -213,20 +285,21 @@ const AddBeneficiaryModal = ({
 
                   <Grid.Col span={{ base: 12, md: 6 }}>
                     <FormikTextInputComponent
-                      name="ifscCode"
-                      label="IFSC Code"
-                      placeholder="Enter IFSC Code"
-                      required
-                      withAsterisk
-                      capitalize
-                      allowSpecialChar={false}     // block special characters
+                      name="confirmAccountNumber"
+                      label="Confirm Account Number"
+                      placeholder="Re-enter Account Number"
+                      allowCharacter={false}
                       allowSpace={false}
-                      maxLength={15}
+                      allowSpecialChar={false}
+                      maxLength={20}
+                      minLength={9}
+                      withAsterisk
                       fullWidth
+                      disablePaste
                     />
                   </Grid.Col>
 
-                  <Grid.Col span={{ base: 12, md: 6 }}>
+                  {/* <Grid.Col span={{ base: 12, md: 6 }}>
                     <FormikTextInputComponent
                       name="gstState"
                       label="State"
@@ -280,7 +353,7 @@ const AddBeneficiaryModal = ({
                       fullWidth
                       maxLength={150}
                     />
-                  </Grid.Col>
+                  </Grid.Col> */}
                 </Grid>
 
                 {/* Action Buttons */}
@@ -289,7 +362,10 @@ const AddBeneficiaryModal = ({
                     fw="500"
                     bgColor="#B0B0B0"
                     textColor="white"
-                    onClick={() => onClose()}
+                    onClick={() => {
+                      resetForm()
+                      onClose()
+                    }}
                     fontSize="14"
                     disabled={isLoading}
                   >

@@ -38,10 +38,12 @@ import moment from "moment";
 import TableComponent from "@/components/Molecules/TableComponent";
 import ColumsSelectionModal from "@/components/Molecules/ColumsSelectionModal";
 import { Refresh } from "@mui/icons-material";
+import { useNavigate, useSearchParams } from "react-router-dom";
 // import { maxWidth } from "@mui/system";
 
 const Ticketing = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [showTicketForm, setShowTicketForm] = useState(false);
   // const [isTicketData, setIsTicketData] = useState<TransactionDetailsData>({});
@@ -57,6 +59,9 @@ const Ticketing = () => {
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
+
+  const [searchParams] = useSearchParams();
+  const txIdFromQuery = searchParams.get("txId") || "";
 
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
@@ -116,7 +121,7 @@ const Ticketing = () => {
     // transactionId: isTicketData?.transaction_id
     //   ? isTicketData?.transaction_id
     //   : "",
-    transactionId: "",
+    transactionId: txIdFromQuery,
     issueType: "",
     description: "",
     subProductName: "",
@@ -154,9 +159,14 @@ const Ticketing = () => {
       const response = await Raise_Ticket(formData);
       if (response?.status === 200 || response?.data?.statusCode === "200") {
         showSuccessNotification(response?.data?.message);
-        setShowTicketForm(false);
-        // setSearchValue("");
-        FetchRaisedTickets(page, size, searchValues);
+        if (txIdFromQuery) {
+          navigate("/reports/transaction-report", {
+            state: { fromTicket: true }
+          }); // your report page route
+        } else {
+          setShowTicketForm(false);
+          FetchRaisedTickets(page, size, searchValues);
+        }
       } else {
         showErrorNotification(response?.data?.message || "Unable to raise");
       }
@@ -397,7 +407,7 @@ const Ticketing = () => {
     }
 
     setSearchValues(newSearchValues);
-    setPage(1); // ✅ Reset to first page when search changes
+    setPage(1); // Reset to first page when search changes
   };
 
 
@@ -437,6 +447,12 @@ const Ticketing = () => {
     FetchRaisedTickets(page, size, searchValues);
   }, [page, size, searchValues])
 
+  useEffect(() => {
+    if (txIdFromQuery) {
+      setShowTicketForm(true);
+    }
+  }, [txIdFromQuery]);
+
   return (
     <>
       {isLoading && <Loader />}
@@ -464,25 +480,6 @@ const Ticketing = () => {
 
               {/* Search Bar and Create New Ticket button */}
               <div className="flex items-center justify-between gap-3">
-                {/* Search by TxId Search Bar */}
-                {/* <div className="mt-5">
-                  <TextInputComponent
-                    placeholder="Search by transaction ID"
-                    value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    withAsterisk
-                    className="w-max font-medium"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        FetchUserList();
-                      }
-                    }}
-                    leftSection={
-                      <SearchSvgIcon color={theme.palette.red.DEFAULT} />
-                    }
-                    isAuth={true}
-                  />
-                </div> */}
                 <div className="flex items-center justify-end gap-2">
                   <div className="flex w-max items-center mt-6 justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px] ">
                     <UnstyledButton
@@ -553,79 +550,6 @@ const Ticketing = () => {
                 visibleColumns={visibleColumns}
                 setVisibleColumns={setVisibleColumns}
               />
-              {/* {isTicketData && Object.keys(isTicketData).length > 0 ? (
-                <>
-                  <div className="mb-2 flex w-full items-center justify-between ">
-                    <div className="flex items-center justify-center w-1/6">
-                      <TextComponent
-                        fontSize={18}
-                        fontWeight={500}
-                        color={theme.palette.red.DEFAULT}
-                      >
-                        Requested By
-                      </TextComponent>
-                    </div>
-                    <div className="flex items-center justify-center w-1/6">
-                      <TextComponent
-                        fontSize={18}
-                        fontWeight={500}
-                        color={theme.palette.red.DEFAULT}
-                      >
-                        Ticket ID No
-                      </TextComponent>
-                    </div>
-                    <div className=" flex items-center justify-center w-1/3">
-                      <div>
-                        <TextComponent
-                          fontSize={18}
-                          fontWeight={500}
-                          color={theme.palette.red.DEFAULT}
-                        >
-                          Subject
-                        </TextComponent>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-center w-1/12">
-                      <TextComponent
-                        fontSize={18}
-                        fontWeight={500}
-                        color={theme.palette.red.DEFAULT}
-                      >
-                        Status
-                      </TextComponent>
-                    </div>
-                    <div className="flex items-center justify-center w-1/4 ">
-                      <TextComponent
-                        fontSize={18}
-                        fontWeight={500}
-                        color={theme.palette.red.DEFAULT}
-                      >
-                        Created Date
-                      </TextComponent>
-                    </div>
-                  </div>
-                  <TicketComponent
-                    key={isTicketData.id}
-                    name={loginData?.hierarchyId}
-                    id={isTicketData.transaction_id}
-                    subject={isTicketData.subject}
-                    description={isTicketData.remarks}
-                    status={isTicketData.tran_status}
-                    createdDate={isTicketData.date_of_transaction}
-                  />
-                </>
-              ) : (
-                <div>
-                  <TextComponent
-                    fontSize={24}
-                    fontWeight={500}
-                    color={theme.palette.red.DEFAULT}
-                    align="center"
-                  >
-                    No Ticket Available
-                  </TextComponent>
-                </div>
-              )} */}
             </div>
           </div>
         ) : (
@@ -634,8 +558,13 @@ const Ticketing = () => {
             {/* Back Button */}
             <UnstyledButton
               onClick={() => {
-                setShowTicketForm(false);
-                // setSearchValue("");
+                if (txIdFromQuery) {
+                  navigate("/reports/transaction-report", {
+                    state: { fromTicket: true }
+                  }); // your report page route
+                } else {
+                  setShowTicketForm(false);
+                }
               }}
               className="mb-4"
             >
@@ -658,146 +587,6 @@ const Ticketing = () => {
               >
                 Facing an issue? We're just a ticket away.
               </TextComponent>
-            </div>
-
-            <div>
-              {/* Search Bar */}
-              {/* <div className="mt-5 w-[calc(30%-12px)] ">
-                <TextInputComponent
-                  placeholder="Search by transaction ID"
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  withAsterisk
-                  className="w-max font-medium"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      FetchUserList();
-                    }
-                  }}
-                  isAuth={true}
-                  leftSection={
-                    <SearchSvgIcon color={theme.palette.red.DEFAULT} />
-                  }
-                />
-              </div> */}
-
-              {/* When Search from TxId Data displayed if Available */}
-              {/* {isTicketData && Object.keys(isTicketData).length > 0 && (
-                <div className="mt-4 w-full flex flex-wrap items-start justify-between gap-2 ">
-                  <div className="w-full sm:w-[calc(18%-12px)] lg:w-[calc(18%-16px)] gap-2">
-                    <TextComponent
-                      fontSize={18}
-                      fontWeight={600}
-                      color={theme.palette.red.DEFAULT}
-                    >
-                      Transaction ID:
-                    </TextComponent>
-                    <TextComponent
-                      fontSize={18}
-                      fontWeight={600}
-                      color={theme.palette.gray.DEFAULT}
-                    >
-                      {isTicketData?.transaction_id || "-"}
-                    </TextComponent>
-                  </div>
-                  <div className="w-full sm:w-[calc(15%-12px)] lg:w-[calc(15%-16px)] gap-2">
-                    <TextComponent
-                      fontSize={18}
-                      fontWeight={600}
-                      color={theme.palette.red.DEFAULT}
-                    >
-                      Created On:
-                    </TextComponent>
-                    <TextComponent
-                      fontSize={18}
-                      fontWeight={600}
-                      color={theme.palette.gray.DEFAULT}
-                    >
-                      {isTicketData?.date_of_transaction || "-"}
-                    </TextComponent>
-                  </div>
-                  <div className="w-full sm:w-[calc(15%-12px)] lg:w-[calc(15%-16px)] gap-2">
-                    <TextComponent
-                      fontSize={18}
-                      fontWeight={600}
-                      color={theme.palette.red.DEFAULT}
-                    >
-                      User ID:
-                    </TextComponent>
-                    <TextComponent
-                      fontSize={18}
-                      fontWeight={600}
-                      color={theme.palette.gray.DEFAULT}
-                    >
-                      {loginData?.hierarchyId || "-"}
-                    </TextComponent>
-                  </div>
-                  <div className="w-full sm:w-[calc(15%-12px)] lg:w-[calc(15%-16px)] gap-2">
-                    <TextComponent
-                      fontSize={18}
-                      fontWeight={600}
-                      color={theme.palette.red.DEFAULT}
-                    >
-                      Sub Product:
-                    </TextComponent>
-                    <TextComponent
-                      fontSize={18}
-                      fontWeight={600}
-                      color={theme.palette.gray.DEFAULT}
-                    >
-                      {isTicketData?.sub_product_name || "-"}
-                    </TextComponent>
-                  </div>
-                  <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] gap-2">
-                    <TextComponent
-                      fontSize={18}
-                      fontWeight={600}
-                      color={theme.palette.red.DEFAULT}
-                    >
-                      Wallet Type:
-                    </TextComponent>
-                    <TextComponent
-                      fontSize={18}
-                      fontWeight={600}
-                      color={theme.palette.gray.DEFAULT}
-                    >
-                      {UserProfileData?.address?.pinCode || "-"}
-                    </TextComponent>
-                  </div>
-                  <div className="w-full sm:w-[calc(15%-12px)] lg:w-[calc(15%-16px)] gap-2">
-                    <TextComponent
-                      fontSize={18}
-                      fontWeight={600}
-                      color={theme.palette.red.DEFAULT}
-                    >
-                      Amount:
-                    </TextComponent>
-                    <TextComponent
-                      fontSize={18}
-                      fontWeight={600}
-                      color={theme.palette.gray.DEFAULT}
-                    >
-                      {isTicketData?.amount || "-"}
-                    </TextComponent>
-                  </div>
-                  <div className="w-full sm:w-[calc(15%-12px)] lg:w-[calc(15%-16px)] gap-2">
-                    <TextComponent
-                      fontSize={18}
-                      fontWeight={600}
-                      color={theme.palette.red.DEFAULT}
-                    >
-                      Status:
-                    </TextComponent>
-                    <TextComponent
-                      fontSize={18}
-                      fontWeight={600}
-                      color={theme.palette.gray.DEFAULT}
-                    >
-                      {isTicketData?.tran_status || "-"}
-                    </TextComponent>
-                  </div>
-                </div>
-              )} */}
             </div>
 
             {/* //Create New Ticket Form */}

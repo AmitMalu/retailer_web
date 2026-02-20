@@ -67,13 +67,19 @@ export const textField = (
   field = "This field",
   max = 100,
   required = false,
-  allowSpecialChars = false
+  allowSpecialChars = false,
+  min?: number
 ) => {
   let schema = Yup.string()
     .transform((value) => (value ? value.trim() : value)) // Trim before validation
     .max(max, `${field} cannot exceed ${max} characters`)
     .nullable()
     .notRequired(); // allow null and undefined by default
+
+  // Add minimum length if provided
+  if (min) {
+    schema = schema.min(min, `${field} must be at least ${min} chars`);
+  }
 
   if (!allowSpecialChars) {
     schema = schema.test(
@@ -465,3 +471,43 @@ export const hasRouteAccess = (
 
   return false;
 };
+
+export const encryptPidData = (
+  pidData: string,
+  key: string,
+  iv: string
+) => {
+  const encrypted = CryptoJS.AES.encrypt(
+    CryptoJS.enc.Utf8.parse(pidData),
+    CryptoJS.enc.Utf8.parse(key),
+    {
+      iv: CryptoJS.enc.Utf8.parse(iv),
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7,
+    }
+  );
+
+  // PHP uses RAW_DATA + base64_encode
+  return CryptoJS.enc.Base64.stringify(encrypted.ciphertext);
+};
+
+
+export const serializeFormValues = (values: any) => {
+    return {
+        ...values,
+        dateRange: values?.dateRange?.map((d: any) =>
+            d instanceof Date ? d.toISOString() : d
+        ),
+    };
+};
+
+export const deserializeFormValues = (values: any) => {
+    return {
+        ...values,
+        dateRange: values?.dateRange?.map((d: any) =>
+            typeof d === "string" ? new Date(d) : d
+        ),
+    };
+};
+
+

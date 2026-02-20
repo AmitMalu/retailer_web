@@ -1,9 +1,10 @@
+// components/AmountInput.tsx
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 
 interface Props {
-    value: any;
+    value: number | string;
+    onChange: (e: any) => void;
     error?: string;
-    onChange: (val: any) => void;
     min?: number;
     max?: number;
     disabled?: boolean;
@@ -11,31 +12,36 @@ interface Props {
 
 const AmountInput: React.FC<Props> = ({
     value,
-    error,
     onChange,
+    error,
     min,
     max,
     disabled,
-}) => (
-    <div className="relative">
-        <TextInputComponent
-            label="Amount"
-            value={value}
-            onChange={onChange}
-            error={error}
-            withAsterisk
-            type="number"
-            disabled={disabled}
-            min={min}
-            max={max}
-        />
+}) => {
+    const hint =
+        min || max
+            ? `Allowed range: ₹${min ?? 0} – ₹${max ?? "∞"}`
+            : undefined;
 
-        {(min || max) && (
-            <p className="text-xs text-gray-600 mt-1">
-                {`Min: ₹${min || 0} | Max: ₹${max || 0}`}
-            </p>
-        )}
-    </div>
-);
+    return (
+        <div className="mt-2">
+            <TextInputComponent
+                label="Amount"
+                type="text"
+                value={value}
+                onChange={onChange}
+                error={error}
+                disabled={disabled}
+                allowDecimal
+                decimalPlaces={2}
+            />
+            {hint && (
+                <p className="text-xs text-gray-500 mt-1">
+                    {hint}
+                </p>
+            )}
+        </div>
+    );
+};
 
 export default AmountInput;

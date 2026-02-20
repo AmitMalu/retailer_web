@@ -4,14 +4,14 @@ import { API_ROUTES } from "@/Services/apiRoutes";
 import { useFetchList } from "@/Utils/CustomHooks/useFetchList";
 import NewTextComponent from "@/components/Atoms/NewComponents/TextComponent";
 import { useThrottledFormSubmit } from "@/Utils/CustomHooks/useThrottleFormSubmit";
-import { dateRangeValidationSchema, exportToCsv, formatYMDdate, textField } from "@/Utils/helper";
+import { dateRangeValidationSchema, exportToCsv, formatYMDdate } from "@/Utils/helper";
 import { DatesRangeValue } from "@mantine/dates";
 import { useTheme } from "@mui/system";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { Form, Formik } from "formik";
+import { Form, Formik, FormikProps } from "formik";
 import { Grid, Loader } from "@mantine/core";
 import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
 import { IconCalendar } from "@tabler/icons-react";
@@ -31,6 +31,7 @@ const PendingTransaction = () => {
   const dispatch = useDispatch();
   const theme = useTheme()
 
+  const formikRef = useRef<FormikProps<PendingTransactionParams>>(null);
   const dataRef = useRef<PendingTransactionTableType[] | null>(null);
 
   const [payload, setPayload] = useState<any>(null);
@@ -43,10 +44,11 @@ const PendingTransaction = () => {
 
   const headers: GenericTableHeader<PendingTransactionTableType>[] = [
     { key: "txId", label: "Transaction ID", filterType: "text", copyable: true },
-    { key: "subProductName", label: "Sub Product Name", filterType: "text" },
+    { key: "productName", label: "Product Name", filterType: "text" },
+    // { key: "subProductName", label: "Sub Product Name", filterType: "text" },
     { key: "userId", label: "User ID", filterType: "text" },
     { key: "mobileNo", label: "Mobile No", filterType: "text" },
-    // { key: "schemeName", label: "Scheme Name", filterType: "text" },
+    { key: "schemeName", label: "Scheme Name", filterType: "text" },
     { key: "amount", label: "Amount", filterType: "number" },
     { key: "txStatus", label: "Transaction Status", filterType: "text" },
     { key: "txType", label: "Transaction Type", filterType: "text" },
@@ -66,7 +68,7 @@ const PendingTransaction = () => {
       fromDate: fromDate ? formatYMDdate(fromDate) : null,
       toDate: toDate ? formatYMDdate(toDate) : null,
       productId: values?.productId ?? "",
-      subProductId: values.subProductId ?? "",
+      // subProductId: values.subProductId ?? "",
       walletType: values.walletType ?? "",
       tranStatus: "PENDING",
     }
@@ -93,16 +95,10 @@ const PendingTransaction = () => {
     tranStatus: "",
   };
 
-
   const validationSchema = Yup.object({
     dateRange: dateRangeValidationSchema,
-    productId: textField("Product", 100, true, true),
-    subProductId: textField("Sub Product", 100, false, true),
-    walletType: textField("Wallet Type", 150, false, true),
-    tranStatus: textField("Transaction Status", 50, false, true),
   })
 
-  const [formValues, setFormValues] = useState(InitialValues);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
     headers.map((h) => h.key as string)
   );
@@ -132,12 +128,22 @@ const PendingTransaction = () => {
 
 
   const handleRefresh = () => {
+    // Reset redux pagination / master state
     dispatch(clearPagination({ key: KEY }));
-    setFilterValues({});
+
+    // Reset table view state
     setVisibleColumns(headers.map((h) => h.key as string));
-    setSubmittedFilter(null);
-    setRefreshKey((prev) => prev + 1);
     setFilterVisible(false);
+    setFilterValues({});
+    setSubmittedFilter(null);
+
+    setPayload(transformPayload(InitialValues));
+    setRefreshKey((prev) => prev + 1);
+
+    // ✅ Reset Formik ONLY
+    formikRef.current?.resetForm({
+      values: InitialValues as any,
+    });
   };
 
   const handleToggleColumn = (key: string) => {
@@ -156,19 +162,17 @@ const PendingTransaction = () => {
 
 
   const throttledSubmit = useThrottledFormSubmit((values: any) => {
-    setFormValues(values);
-    const payload = transformPayload(values);
-    setPayload(payload);
-    setRefreshKey((prev) => prev + 1);
+    setPayload(() => ({
+      ...transformPayload(values), // top filters
+      ...(submittedFilter || {}),                      // 🔴 keep inline filters
+    }));
+
     setViewSubmitted(true);
   }, 3000);
 
   useEffect(() => {
-    return () => {
-      setFormValues(InitialValues); // Reset form data on unmount
-      dispatch(clearPagination({ key: KEY }));
-    }
-  }, []);
+    dataRef.current = data;
+  }, [data]);
 
   useEffect(() => {
     if (submittedFilter) {
@@ -176,9 +180,6 @@ const PendingTransaction = () => {
     }
   }, [submittedFilter])
 
-  useEffect(() => {
-    dataRef.current = data;
-  }, [data]);
 
   return (
     <div className="w-full">
@@ -187,24 +188,18 @@ const PendingTransaction = () => {
       </NewTextComponent>
 
       <Formik
-        initialValues={formValues}
-        enableReinitialize
+        key={refreshKey}
+        innerRef={formikRef}
+        initialValues={InitialValues}
         validationSchema={validationSchema}
         onSubmit={throttledSubmit}
       >
-        {({ values, setFieldValue }) => {
+        {() => {
           const {
             productDropdownData,
             loadingProductList,
-            subProductDropdownData,
-            loadingSubProductList,
-            subProductKey,
             refetchProducts
-          } = useProductSubProduct({
-            selectedProductId: String(values.productId),
-            selectedSubProductId: String(values.subProductId),
-            onSubProductReset: () => setFieldValue("subProductId", ""),
-          });
+          } = useProductSubProduct({});
 
           return (
             <Form className="flex flex-col gap-2 mt-4">
@@ -223,16 +218,17 @@ const PendingTransaction = () => {
 
                 <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
                   <FormikSelectComponent
-                    key={values.productId}
+                    // key={values.productId}
                     name="productId"
                     label="Product"
-                    value={values.productId}
+                    // value={values.productId}
                     placeholder="Select Product"
                     searchable={true}
                     nothingFoundMessage="No Product Found"
                     size="xs"
-                    withAsterisk
-                    required
+                    // withAsterisk
+                    // required
+                    allowDeselect={true}
                     data={productDropdownData}
                     disabled={loadingProductList}
                     rightSection={
@@ -255,7 +251,7 @@ const PendingTransaction = () => {
                   />
                 </Grid.Col>
 
-                <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
+                {/* <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
                   <FormikSelectComponent
                     name="subProductId"
                     key={`${subProductKey}-${values.productId}`}
@@ -269,7 +265,7 @@ const PendingTransaction = () => {
                     size="xs"
                     disabled={loadingSubProductList}
                   />
-                </Grid.Col>
+                </Grid.Col> */}
 
                 <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2 }}>
                   <FormikSelectComponent

@@ -6,14 +6,25 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import navigationReducer from "../Reducers/navigationReducer";
 import paginationSlice from "../Reducers/paginationSlice";
+import locationReducer from "../Reducers/locationSlice";
+import reportStateSlice from "../Reducers/reportStateSlice";
 
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
   ui: uiReducer,
   settings: settingsReducer,
   apiResponse: apiReducer,
   navigation: navigationReducer,
   pagination: paginationSlice,
+  location: locationReducer,
+  reportState: reportStateSlice,
 });
+
+const rootReducer = (state: any, action: any) => {
+  if (action.type === "RESET_APP") {
+    state = undefined; // 🔥 resets everything safely
+  }
+  return appReducer(state, action);
+};
 
 const persistConfig = {
   key: "root",

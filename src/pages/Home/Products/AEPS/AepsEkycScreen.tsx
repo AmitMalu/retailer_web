@@ -1,10 +1,10 @@
-import { BackSvgIcon, FingerprintSvgIcon } from "@/assets/svg";
+import { BackSvgIcon } from "@/assets/svg";
 import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
-import { Radio, Checkbox, UnstyledButton, Grid } from "@mantine/core";
+import { UnstyledButton, Grid } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
@@ -14,15 +14,15 @@ import { Aeps_Resend_Otp, Aeps_Send_Otp, Aeps_Verify_Otp } from "@/Services/api"
 import ButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
 
-const AEPS_RD_ENDPOINTS: any = {
-    Mantra: "http://127.0.0.1:11100/rd/capture",
-    Morpho: "http://127.0.0.1:8005/capture",
-    Startek: "http://127.0.0.1:11102/capture",
-    SecuGen: "http://127.0.0.1:8443/rd/capture",
-    Tatvik: "http://127.0.0.1:8001/rd/capture",
-    Precision: "http://127.0.0.1:11103/capture",
-    Cogent: "http://127.0.0.1:8004/rd/capture",
-};
+// const AEPS_RD_ENDPOINTS: any = {
+//     Mantra: "http://127.0.0.1:11100/rd/capture",
+//     Morpho: "http://127.0.0.1:8005/capture",
+//     Startek: "http://127.0.0.1:11102/capture",
+//     SecuGen: "http://127.0.0.1:8443/rd/capture",
+//     Tatvik: "http://127.0.0.1:8001/rd/capture",
+//     Precision: "http://127.0.0.1:11103/capture",
+//     Cogent: "http://127.0.0.1:8004/rd/capture",
+// };
 
 const AepsEkycScreen = () => {
     const theme = useTheme();
@@ -200,7 +200,7 @@ const AepsEkycScreen = () => {
                         validationSchema={validationSchema}
                         onSubmit={handleSubmit}
                     >
-                        {({ values, validateForm, handleChange, submitForm, setFieldValue, setFieldError, setFieldTouched, touched, errors }) => {
+                        {({ values, validateForm, handleChange, setFieldValue, setFieldError, setFieldTouched, touched, errors }) => {
 
                             return (
                                 <Form className="w-full">
@@ -303,7 +303,12 @@ const AepsEkycScreen = () => {
                                                         handleSubmit({ ...values, pidData: parsedPid });
                                                     }, 0);
                                                 }}
+                                                // When 2FA mode is false, Provided Wadh is sent to RD service, 
+                                                // as per provider requirement. 
+                                                // If your provider does not require Wadh,
+                                                // set is2FA to true and do not provide Wadh value
                                                 is2FA={false}
+                                                wadh={import.meta.env.VITE_AEPS_FINGPAY_LIVE_WADH}
                                             />}
                                         </Grid>
                                     </div>

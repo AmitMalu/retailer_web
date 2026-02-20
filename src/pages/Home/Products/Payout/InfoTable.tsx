@@ -27,7 +27,7 @@ import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import PayoutFormModal from "./PayoutForm";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
-import { Edit_Beneficiary_Bank_Details, Payout_GetAll_Payout_BankDetails, Payout_Send, Payout_Success_Callback } from "@/Services/api";
+import { Edit_Beneficiary_Bank_Details, Payout_GetAll_Payout_BankDetails, Payout_Send } from "@/Services/api";
 import {
   showErrorNotification,
   showSuccessNotification,
@@ -222,21 +222,22 @@ const InfoTable = () => {
             };
 
             const response = await Payout_Send(payload);
-            if (response?.data?.statusCode == 200) {
+            const status = response?.data?.statusCode
+            if (status == 200 || status == "202") {
               showSuccessNotification(response?.data?.message);
-              const req = {
-                subProductId: values.subProductId
-              }
-              const res2 = await Payout_Success_Callback(req)
-              if (res2?.data?.statusCode == 200) {
-                showSuccessNotification(res2?.data?.message);
-                return true;
-              } else {
-                showErrorNotification(
-                  response?.data?.message || "Transfer Initiation failed"
-                );
-                return false;
-              }
+              // const req = {
+              //   subProductId: values.subProductId
+              // }
+              // const res2 = await Payout_Success_Callback(req)
+              // if (res2?.data?.statusCode == 200) {
+              //   showSuccessNotification(res2?.data?.message);
+              //   return true;
+              // } else {
+              //   showErrorNotification(
+              //     response?.data?.message || "Transfer Initiation failed"
+              //   );
+              //   return false;
+              // }
 
             } else {
               showErrorNotification(

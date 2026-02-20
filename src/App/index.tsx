@@ -5,10 +5,12 @@ import RouterOutlet from "./Routes";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "@/theme/ThemeConfig";
 import RouteChangeHandler from "@/components/RouteChangeHandler";
+import LocationGuard from "@/components/LocationGuard";
 
 const AppContent = () => {
   return (
     <MantineProvider>
+      <LocationGuard />
       <RouterOutlet />
     </MantineProvider>
   );

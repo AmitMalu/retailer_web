@@ -8,6 +8,8 @@ export function ProductCard({
   fill = false,
   onClick,
   size = 32, // default fallback,
+  disabled = false,
+  placeholder = false,
 }: ProductCardProps) {
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.up("md"));
@@ -35,29 +37,40 @@ export function ProductCard({
 
   const { box, font, padding, gap, rounded } = sizeConfig[resolvedSize] || sizeConfig[32];
 
+  if (placeholder) {
+    return (
+      <div className="relative flex flex-col items-center scale-90 pointer-events-none">
+        <div className={`relative ${box} rotate-45 ${rounded} border-2 border-red-500`} />
+      </div>
+    );
+  }
+
   return (
     <div className="relative flex flex-col items-center group">
-      <div className="absolute top-0 h-10 w-px bg-black" />
+      <div className={`absolute top-0 h-10 w-px ${disabled ? "bg-transparent" : "bg-black"}`} />
 
       <div
-        onClick={onClick}
-        className={`relative ${box} rotate-45 ${rounded} border-2 cursor-pointer border-red-dark shadow-md z-1 transition-all duration-300 ease-in-out ${fill
-          ? "bg-red-dark"
-          : "bg-white hover:bg-red-light group-hover:scale-105 group-hover:shadow-lg"
+        onClick={!disabled ? onClick : undefined}
+        className={`relative ${box} rotate-45 ${rounded} border-2 cursor-pointer border-red-dark shadow-md z-1 transition-all duration-300 ease-in-out 
+        ${disabled
+            ? "opacity-50 cursor-not-allowed bg-gray-200"
+            : fill
+              ? "bg-red-dark"
+              : "bg-white hover:bg-red-light group-hover:scale-105 group-hover:shadow-lg"
           }`}
       >
         <div className={`absolute inset-0 -rotate-45 flex flex-col items-center justify-center ${padding} ${gap}`}>
-          <div className="transition-transform duration-300 group-hover:scale-110">
+          {image && <div className="transition-transform duration-300 group-hover:scale-110">
             {image}
-          </div>
-          <TextComponent
+          </div>}
+          {title && <TextComponent
             fontSize={font}
             fontWeight={500}
             color={fill ? "white" : theme.palette.red.dark}
             className="transition-colors duration-300"
           >
             {title}
-          </TextComponent>
+          </TextComponent>}
         </div>
       </div>
     </div>

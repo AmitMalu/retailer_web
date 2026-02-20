@@ -54,7 +54,7 @@ export default function AepsStatusScreen() {
 
                 // SUCCESS CASE
                 const data = res?.data?.data;
-                const { onboardStatus, profile = { name: "Amaan", aadhaar: "123", retailerId: "12344", phone: "99303" } } = data;
+                const { onboardStatus, profile } = data;
 
                 setApiData(profile);
 

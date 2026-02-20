@@ -47,3 +47,31 @@ export const buildExtraParamPayload = ({
 
   return payload;
 };
+
+export const buildFetchBillPayload = (
+  values: FormikValues,
+  providerDetails: any,
+  subProductId: string,
+) => {
+  return {
+    subProductId,
+    requestId: providerDetails.requestId,
+    billerId: providerDetails.billerId,
+    agentId: "CC01CC01513515340681",
+    agentDeviceInfo: {
+      ip: "192.168.2.73",
+      initChannel: "AGT",
+      mac: "01-23-45-67-89-ab",
+    },
+    customerInfo: {
+      customerMobile: values.customerMobileNumber,
+    },
+
+    inputParams: {
+      input: providerDetails.fields.map((field: any) => ({
+        paramName: field.label, // "Vehicle Number"
+        paramValue: values[field.name], // values.field_0
+      })),
+    },
+  };
+};

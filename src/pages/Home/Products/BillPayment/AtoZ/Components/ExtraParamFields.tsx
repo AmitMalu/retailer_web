@@ -20,6 +20,7 @@ const ExtraParamFields: React.FC<Props> = ({ params = [] }) => {
         label?: string
     ) => {
         if (!label) return null;
+        console.log(idx);
 
         const lowerLabel = label.toLowerCase();
 

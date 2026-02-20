@@ -1,4 +1,4 @@
 export const BUILD_INFO = {
   version: "v1.0.1",
-  builtAt: "23/12, 10:49 am"
+  builtAt: "17/02, 06:05 pm"
 };

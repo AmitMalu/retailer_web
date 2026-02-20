@@ -425,7 +425,6 @@ const FetchBillDetails: React.FC<Props> = ({ serviceName, subProductId }) => {
         showErrorNotification("Missing bill or provider details");
         return;
       }
-      console.log(billDetails, "billdetails");
 
       // Build payload with only known required fields first
       const payload: Partial<TransactionProps> = {

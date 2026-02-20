@@ -353,7 +353,7 @@ export type TableColumn = {
   render?: (
     value: any,
     index: number,
-    row: Record<string, any>
+    row: Record<string, any>,
   ) => React.ReactNode;
   searchKey?: string;
   sortable?: boolean;
@@ -467,11 +467,13 @@ export type ResendOtpRequestProps = {
 };
 
 export type ProductCardProps = {
-  image: React.ReactNode;
-  title: string;
-  fill: boolean;
-  onClick: () => void;
+  image?: React.ReactNode;
+  title?: string;
+  fill?: boolean;
+  onClick?: () => void;
   size?: number | { base: number; md?: number; lg?: number };
+  disabled?: boolean;
+  placeholder?: boolean;
 };
 
 export type FundRequestProps = {
@@ -728,20 +730,43 @@ export type NetworkTransactionParams = {
 
 export type WalletReportParams = {
   dateRange: DatesRangeValue;
-  hierarchyType: string;
-  hierarchyId: string;
-  productId: string;
-  walletType: string;
-  status: string;
+  hierarchyType?: string;
+  hierarchyId?: string;
+  productId?: string;
+  walletType?: string;
+  status?: string;
   [key: string]: any;
 };
 
 export type PendingTransactionParams = {
+  dateRange?: DatesRangeValue;
+  productId?: string | number;
+  subProductId?: string | number;
+  walletType?: string;
+  tranStatus?: string;
+  [key: string]: any;
+};
+
+export type TransactionReportParams = {
+  dateRange?: DatesRangeValue;
+  productId?: string | number;
+  subProductId?: string | number;
+  walletType?: string;
+  tranStatus?: string;
+  [key: string]: any;
+};
+
+export type TransactionWalletReportParams = {
+  dateRange?: DatesRangeValue;
+  productId?: string | number;
+  subProductId?: string | number;
+  walletType?: string;
+  tranStatus?: string;
+  [key: string]: any;
+};
+
+export type FundLoadingParams = {
   dateRange: DatesRangeValue;
-  productId: string | number;
-  subProductId: string | number;
-  walletType: string;
-  tranStatus: string;
   [key: string]: any;
 };
 
@@ -765,7 +790,7 @@ export interface SearchTransReportTableType {
   balBefore: number;
   amount: number;
   balAfter: number;
-  subProductName: string | null;
+  productName: string | null;
   narration: string | null;
   status: string;
   date: string;
@@ -874,17 +899,20 @@ export type TwoFAFormBodyProps = {
 
 export type FindRemitterProps = {
   mobileNumber: string;
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   // dob?: string;
   aadhaarNumber?: string;
+  deviceType: string;
+  csp: boolean;
+  pidData: string;
   otp?: string;
 };
 
 export interface RemitterModalProps {
   isOpen: boolean;
-  onClose: (source: "icon" | "button") => void;
+  onClose: () => void;
   modelMode: "ekyc" | "register" | null;
-  isNewRemitter: boolean;
   handleRemitterKyc: (values: any) => void;
   handleRegisterRemitterSubmit: (values: any) => void;
 }
@@ -904,25 +932,27 @@ export type AddBeneficiaryFormProps = {
   beneficiaryName: string;
   bankId: string;
   accountNumber: string;
+  confirmAccountNumber: string;
   ifscCode: string;
   verified: string | undefined;
-  gstState: string;
-  dob: Date | null;
-  address: string;
-  pincode: string;
+  // gstState: string;
+  // dob: Date | null;
+  // address: string;
+  // pincode: string;
 };
 
 export type AddBeneficiaryPayload = {
   mobile: string;
   benename: string;
   bankid: string;
+  bankName: string;
   accno: string;
   ifsccode: string;
   verified: string; // "0" or "1"
-  gst_state: string;
-  dob: string | null;
-  address: string;
-  pincode: string;
+  // gst_state: string;
+  // dob: string | null;
+  // address: string;
+  // pincode: string;
   subProductId: string;
 };
 
@@ -1079,7 +1109,8 @@ export type FormValues = {
 //////////////////////////REPORTS//////////////////////////////
 export interface NetworkTransactionTableType {
   tranxId: string;
-  subProductName: string;
+  productName: string;
+  schemeName: string;
   balBefore: string;
   amount: string;
   balAfter: string;
@@ -1093,6 +1124,7 @@ export interface NetworkTransactionTableType {
 export interface PendingTransactionTableType {
   txId: string;
   userId: string;
+  productName: string;
   subProductName: string;
   vendor: string | null;
   schemeName: string | null;
@@ -1109,22 +1141,91 @@ export interface PendingTransactionTableType {
   updatedTimeOfTransaction: string | null;
 }
 
-export interface WalletReportTableType {
-  tranxId: string;
+export interface TransactionReportTableType {
+  txId: string;
+  userId: string;
+  productName: string;
   subProductName: string;
-  balBefore: string;
-  amount: string;
-  balAfter: string;
-  actionOnBalanceAmount: string;
+  vendor: string | null;
+  schemeName: string | null;
+  mobileNo: string | null;
+  amount: number;
+  txStatus: string;
+  txType: string | null;
+  remarks: string | null;
+  medium: string | null;
+  walletType: "POSTPAID" | "PREPAID" | null;
+  dateOfTransaction: string; // e.g. "2025-10-14"
+  timeOfTransaction: string; // e.g. "18:14:18.35"
+  updatedAt: string | null;
+  updatedDateOfTransaction: string | null;
+  updatedTimeOfTransaction: string | null;
+}
+
+export interface TransactionWalletReportTableType {
+  txId: string;
+  userId: string;
+  productName: string;
+  subProductName: string;
+  vendor: string | null;
+  schemeName: string | null;
+  mobileNo: string | null;
+  amount: number;
+  chargeAmount: number | string | null;
+  commissionAmount: number | string | null;
+  gstAmount: number | string | null;
+  tdsAmount: number | string | null;
+  txStatus: string;
+  txType: string | null;
+  remarks: string | null;
+  medium: string | null;
+  walletType: string | null;
+  dateOfTransaction: string; // e.g. "2025-10-14"
+  timeOfTransaction: string; // e.g. "18:14:18.35"
+  updatedAt: string | null;
+  updatedDateOfTransaction: string | null;
+  updatedTimeOfTransaction: string | null;
+}
+
+export interface FundLoadingTableType {
+  id: string | number;
+  paymentMode: string;
+  bankTranId: string;
+  depositAmount: string;
+  bankAccountNumber: string;
+  depositDate: string;
+  depositImage: string | null;
+  requestedBy: string;
+  ipAddress: string;
+  mobileNumber: string;
   status: string;
-  transactionDate: number;
-  transactionTime: number;
-  narration: string;
+  remarks: string;
+  createDateTime: string;
+  approveOrRejectDate: string;
+  approveOrRejectTime: string;
+}
+
+export interface WalletReportTableType {
+  tranxId?: string;
+  productName?: string;
+  subProductName?: string;
+  schemeName?: string;
+  hierarchyId?: string;
+  balBefore?: string;
+  amount?: string;
+  balAfter?: string;
+  actionOnBalanceAmount?: string;
+  status?: string;
+  transactionDate?: number;
+  transactionTime?: number;
+  narration?: string;
 }
 
 export interface CommissionAndChargeTableType {
   txId: string;
+  productName: string;
   subProductName: string;
+  hierarchyId: string;
   walletType: string;
   txType: string;
   operator: string;

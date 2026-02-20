@@ -29,9 +29,6 @@ const AepsTwoFactor = () => {
     const iinno = queryParams.get("iinno");  // "cashWithdrawal", "balanceInquiry", etc.
     const service = queryParams.get("service");  // "cashWithdrawal", "balanceInquiry", etc.
 
-
-    console.log('profile_in_2fa', profile)
-
     const loginData = apiResponses?.loginData
         ? decryptData(apiResponses?.loginData)
         : null;
@@ -64,40 +61,40 @@ const AepsTwoFactor = () => {
             console.log('Type:', typeof values.pidData);
             console.log('Keys:', Object.keys(values.pidData || {}));
             console.log('Full payload:', JSON.stringify(values.pidData, null, 2));
-            
+
             // Check biometric quality before sending
             const qScore = parseInt(values.pidData?.qScore || "0");
             const nmPoints = parseInt(values.pidData?.nmPoints || "0");
             const errCode = values.pidData?.errCode || "0";
             const errInfo = values.pidData?.errInfo || "";
-            
+
             console.log('Biometric Quality - qScore:', qScore, 'nmPoints:', nmPoints);
             console.log('RD Service Status - errCode:', errCode, 'errInfo:', errInfo);
-            
+
             // Validate RD Service success
             if (errCode !== "0" || errInfo.toLowerCase().includes("fail")) {
                 showErrorNotification(`RD Service failed: ${errInfo}. Please scan again.`);
                 setIsLoading(false);
                 return;
             }
-            
+
             // Validate biometric quality (AEPS typically requires higher quality)
             if (qScore < 50 || nmPoints < 10) {
                 showErrorNotification(`Low biometric quality detected. Quality: ${qScore}% (min 70%), Points: ${nmPoints} (min 40). Please try again with better finger placement.`);
                 setIsLoading(false);
                 return;
             }
-            
+
             // Validate required fields are present
             const requiredFields = ['Piddata', 'sessionKey', 'hmac', 'dpID', 'rdsID', 'rdsVer'];
             const missingFields = requiredFields.filter(field => !values.pidData?.[field]);
-            
+
             if (missingFields.length > 0) {
                 showErrorNotification(`Missing required biometric data: ${missingFields.join(', ')}. Please scan again.`);
                 setIsLoading(false);
                 return;
             }
-            
+
             // Validate PID data format
             const pidData = values.pidData?.Piddata;
             if (!pidData || pidData.length < 100) {
@@ -105,22 +102,22 @@ const AepsTwoFactor = () => {
                 setIsLoading(false);
                 return;
             }
-            
+
             // Validate device RDS ID and version (common AEPS devices)
             const rdsID = values.pidData?.rdsID;
             const validRdsDevices = [
                 'RENESAS.MANTRA.001',
-                'MANTRA.AND.101', 
+                'MANTRA.AND.101',
                 'MORPHO.AND.001',
                 'STARTEK.AND.001'
             ];
-            
+
             if (!validRdsDevices.includes(rdsID)) {
                 showErrorNotification(`Device RDS ID ${rdsID} may not be whitelisted. Please check device registration.`);
                 setIsLoading(false);
                 return;
             }
-            
+
             // Validate device info consistency
             const deviceType = values.deviceType as keyof typeof validDevicePrefixes;
             const dpID = values.pidData?.dpID;
@@ -133,13 +130,13 @@ const AepsTwoFactor = () => {
                 'Precision': 'PRECISION',
                 'Cogent': 'COGENT'
             };
-            
+
             if (validDevicePrefixes[deviceType] && !dpID?.startsWith(validDevicePrefixes[deviceType])) {
                 showErrorNotification(`Device mismatch: Selected ${deviceType} but PID data shows ${dpID}. Please ensure correct device selection.`);
                 setIsLoading(false);
                 return;
             }
-            
+
             console.log('================================');
 
             const res = await Aeps_TwoFactor_Verify({
@@ -173,9 +170,9 @@ const AepsTwoFactor = () => {
                 });
             } else {
                 const errMsg = res?.data?.data?.data?.responseMessage || res?.data?.message || "2FA Failed";
-                
+
                 // Specific handling for biometric errors
-                if (errMsg?.toLowerCase().includes("invalid biometric") || 
+                if (errMsg?.toLowerCase().includes("invalid biometric") ||
                     errMsg?.toLowerCase().includes("biometric") ||
                     errMsg?.toLowerCase().includes("fingerprint")) {
                     showErrorNotification("Biometric verification failed. Please ensure:\n• Same finger as registered with Aadhaar\n• Clean finger placement\n• Try again with different finger");
@@ -250,6 +247,9 @@ const AepsTwoFactor = () => {
                                     setFieldTouched={setFieldTouched}
                                     validateForm={validateForm}
                                     requiredFieldsBeforeScan={["aadhaar", "deviceType"]}
+                                    // When 2FA mode is true, Wadh is not sent to RD service, as per provider requirement. 
+                                    // If your provider requires Wadh for 2FA as well, set is2FA to false and provide Wadh value
+                                    // wadh={import.meta.env.VITE_AEPS_FINGPAY_LIVE_WADH} 
                                     is2FA={true}
                                     onSuccessScan={async (parsedPid: any) => {
                                         await setFieldValue("pidData", parsedPid, true);

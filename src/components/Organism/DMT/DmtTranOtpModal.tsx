@@ -20,7 +20,7 @@ const DmtTranOtpModal = ({
     const validationSchema = Yup.object().shape({
         otp: Yup.string()
             .required('Please enter the OTP')
-            .length(4, "OTP must be 6 digits"),
+            .length(4, "OTP must be 4 digits"),
     });
 
     return (

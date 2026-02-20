@@ -27,7 +27,7 @@ export const searchTransInitialValues = {
 
 // Yup schema
 export const SearchTransReportSchema = {
-  transactionId: textField("Transaction ID", 100, true, true),
+  transactionId: textField("Transaction ID", 30, true, true, 17),
 };
 
 export const SearchTransReportHeaders: GenericTableHeader<SearchTransReportTableType>[] =
@@ -39,6 +39,7 @@ export const SearchTransReportHeaders: GenericTableHeader<SearchTransReportTable
       copyable: true,
     },
     { key: "hierarchyId", label: "Hierarchy ID", filterType: "text" },
+    { key: "productName", label: "Product Name", filterType: "text" },
     {
       key: "walletType",
       label: "Wallet Type",
@@ -48,7 +49,6 @@ export const SearchTransReportHeaders: GenericTableHeader<SearchTransReportTable
     { key: "balBefore", label: "Balance Before", filterType: "text" },
     { key: "amount", label: "Amount", filterType: "text" },
     { key: "balAfter", label: "Balance After", filterType: "text" },
-    { key: "subProductName", label: "Sub Product Name", filterType: "text" },
     { key: "narration", label: "Narration", filterType: "text" },
     {
       key: "status",
@@ -154,7 +154,7 @@ const SearchTransactionReport = () => {
                     size="sm"
                     required
                     withAsterisk
-                    maxLength={20}
+                    maxLength={30}
                   />
                 </Grid.Col>
 

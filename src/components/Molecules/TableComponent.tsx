@@ -294,104 +294,85 @@ const TableComponent: React.FC<TableProps> = ({
                         }}
                       >
 
-                        {column.disableSearch ? null :
-                          (colType === "date" ? (
-                            <CustomDatePicker
-                              clearable
-                              value={
-                                searchValues[column.key]
-                                  ? parseDateString(searchValues[column.key])
-                                  : null
-                              }
-                              onChange={(date) => {
-                                if (date) {
-                                  const formattedDate = formatYMDdate(date) || "";
-                                  handleSearch(column.key, formattedDate);
-                                } else {
-                                  handleSearch(column.key, "");
+                        <div className="flex justify-center">
+                          {column.disableSearch ? null :
+                            (colType === "date" ? (
+                              <CustomDatePicker
+                                clearable
+                                value={
+                                  searchValues[column.key]
+                                    ? parseDateString(searchValues[column.key])
+                                    : null
                                 }
-                              }}
-                              valueFormat="YYYY-MM-DD"
-                              placeholder="Pick date"
-                              className="w-full font-medium min-w-[100px]"
-                              maxDate={new Date()}
-                            />
-                          ) : colType === "time" ? (
-                            <TimeComponent
-                              value={searchValues[column.key] || ""}
-                              onChange={(value) =>
-                                handleSearch(column.key, value)
-                              }
-                              withSeconds={true}
-                              maxTime={new Date().toLocaleTimeString()}
-                              className="w-full font-medium"
-                            />
-                          ) : colType === "dropdown" ? (
-                            <SelectComponent
-                              placeholder={`Search ${column.label || ""}`}
-                              name={column.key}
-                              data={column?.options || []}
-                              value={searchValues[column.key] || null}
-                              onChange={(value) => {
-                                if (value === null) {
-                                  // user deselected → clear the search
-                                  handleSearch(column.key, "");
-                                } else {
-                                  handleSearch(column.key, String(value));
-                                }
-                              }} className="w-max font-medium"
-                              size="xs"
-                              searchable
-                              allowDeselect
-                            />
-                          ) : colType === "boolean" ? (
-                            <SelectComponent
-                              placeholder={`Search ${column.label || ""}`}
-                              name={column.key}
-                              data={column?.options || YesNoSelectData}
-                              value={searchValues[column.key] || null}
-                              onChange={(value) => {
-                                if (value === null || value === "") {
-                                  // user deselected → clear the search
-                                  handleSearch(column.key, "");
-                                } else {
-                                  handleSearch(column.key, String(value));
-                                }
-                              }}
-                              size="xs"
-                              className="w-max font-medium"
-                              allowDeselect
-                            />
-                          ) : colType === "number" ? (
-                            <TextInputComponent
-                              allowCharacter={false}
-                              allowSpecialChar={false}
-                              name={column.key} // 🔑 important for Formik or event mapping
-                              value={searchValues[column.key] || ""}
-                              placeholder={`Search ${column.label || ""}`}
-                              withAsterisk
-                              size="xs"
-                              className="w-max font-medium"
-                              onChange={(e) => {
-                                if (searchTrigger === "change") {
-                                  handleSearch(column.key, e.target.value); // 🔍 search on typing
-                                } else {
-                                  setSearchValues((prev) => ({
-                                    ...prev,
-                                    [column.key]: e.target.value,
-                                  }));
-                                }
-                              }}
-                              onKeyDown={(e) => {
-                                if (searchTrigger === "enter" && e.key === "Enter") {
-                                  handleSearch(column.key, searchValues[column.key] || "");
-                                }
-                              }}
-                            />
-                          ) : (
-                            <div>
-                              {/* <TextInputComponent
+                                onChange={(date) => {
+                                  if (date) {
+                                    const formattedDate = formatYMDdate(date) || "";
+                                    handleSearch(column.key, formattedDate);
+                                  } else {
+                                    handleSearch(column.key, "");
+                                  }
+                                }}
+                                valueFormat="YYYY-MM-DD"
+                                placeholder="Pick date"
+                                className="w-full font-medium min-w-[100px]"
+                                maxDate={new Date()}
+                              />
+                            ) : colType === "time" ? (
+                              <TimeComponent
                                 value={searchValues[column.key] || ""}
+                                onChange={(value) =>
+                                  handleSearch(column.key, value)
+                                }
+                                withSeconds={true}
+                                maxTime={new Date().toLocaleTimeString()}
+                                className="w-full font-medium"
+                              />
+                            ) : colType === "dropdown" ? (
+                              <SelectComponent
+                                placeholder={`Search ${column.label || ""}`}
+                                name={column.key}
+                                data={column?.options || []}
+                                value={searchValues[column.key] || null}
+                                onChange={(value) => {
+                                  if (value === null) {
+                                    // user deselected → clear the search
+                                    handleSearch(column.key, "");
+                                  } else {
+                                    handleSearch(column.key, String(value));
+                                  }
+                                }} className="w-max font-medium"
+                                size="xs"
+                                searchable
+                                allowDeselect
+                              />
+                            ) : colType === "boolean" ? (
+                              <SelectComponent
+                                placeholder={`Search ${column.label || ""}`}
+                                name={column.key}
+                                data={column?.options || YesNoSelectData}
+                                value={searchValues[column.key] || null}
+                                onChange={(value) => {
+                                  if (value === null || value === "") {
+                                    // user deselected → clear the search
+                                    handleSearch(column.key, "");
+                                  } else {
+                                    handleSearch(column.key, String(value));
+                                  }
+                                }}
+                                size="xs"
+                                className="w-max font-medium"
+                                allowDeselect
+                              />
+                            ) : colType === "number" ? (
+                              <TextInputComponent
+                                allowCharacter={false}
+                                allowSpecialChar={false}
+                                name={column.key} // 🔑 important for Formik or event mapping
+                                value={searchValues[column.key] || ""}
+                                placeholder={`Search ${column.label || ""}`}
+                                withAsterisk
+                                size="xs"
+                                className="w-max font-medium"
                                 onChange={(e) => {
                                   if (searchTrigger === "change") {
                                     handleSearch(column.key, e.target.value); // 🔍 search on typing
@@ -407,9 +388,8 @@ const TableComponent: React.FC<TableProps> = ({
                                     handleSearch(column.key, searchValues[column.key] || "");
                                   }
                                 }}
-                                withAsterisk
-                                className="w-max font-medium h-5"
-                              /> */}
+                              />
+                            ) : (
                               <TextInputComponent
                                 name={column.key} // 🔑 important for Formik or event mapping
                                 value={searchValues[column.key] || ""}
@@ -433,8 +413,8 @@ const TableComponent: React.FC<TableProps> = ({
                                   }
                                 }}
                               />
-                            </div>
-                          ))}
+                            ))}
+                        </div>
                       </Table.Th>
                     );
                   })}
