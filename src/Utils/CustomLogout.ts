@@ -1,9 +1,9 @@
 import { persistor, store } from "@/Redux/Store";
 import { useState, useRef, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import {  useLocation } from "react-router-dom";
 
 export const useLogoutHandling = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [logoutModal, setLogoutModal] = useState<boolean>(false);
@@ -31,6 +31,7 @@ export const useLogoutHandling = () => {
       document.cookie = `authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict`;
 
       // Clear browser storage
+      localStorage.removeItem("chat");
       localStorage.clear();
       sessionStorage.clear();
 

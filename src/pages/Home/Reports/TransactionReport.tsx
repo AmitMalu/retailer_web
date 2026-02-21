@@ -4,7 +4,7 @@ import { API_ROUTES } from "@/Services/apiRoutes";
 import { useFetchList } from "@/Utils/CustomHooks/useFetchList";
 import NewTextComponent from "@/components/Atoms/NewComponents/TextComponent";
 import { useThrottledFormSubmit } from "@/Utils/CustomHooks/useThrottleFormSubmit";
-import { dateRangeValidationSchema, decryptData, deserializeFormValues, exportToCsv, formatYMDdate, serializeFormValues } from "@/Utils/helper";
+import { dateRangeValidationSchema, deserializeFormValues, exportToCsv, formatYMDdate, serializeFormValues } from "@/Utils/helper";
 import { DatesRangeValue } from "@mantine/dates";
 import { useTheme } from "@mui/system";
 import moment from "moment";

@@ -79,6 +79,7 @@ export const handleCustomError = async (
           document.cookie = `authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict`;
 
           // 6. Clear other storage
+          localStorage.removeItem("chat");
           localStorage.clear();
           sessionStorage.clear();
 
