@@ -37,7 +37,7 @@ const DMTTransactionReceipt = ({
         window.print();
     };
 
-    const dash = (val: any) => val ?? "-";
+    const dash = (val: any) => (val !== null && val !== undefined && val !== "" ? val : "-");
 
     return (
         <Card shadow="sm" radius="md" withBorder p="md" className="print-area">

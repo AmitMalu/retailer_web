@@ -47,7 +47,7 @@ export default function ChatBot() {
     const intervalId = window.setInterval(() => {
       setIsShaking(true);
       window.setTimeout(() => setIsShaking(false), 700);
-    }, 5000);
+    }, 10000);
 
     return () => window.clearInterval(intervalId);
   }, [isOpen]);

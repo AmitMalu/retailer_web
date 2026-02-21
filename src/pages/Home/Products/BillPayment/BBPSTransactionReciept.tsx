@@ -1,20 +1,18 @@
-import { RootState } from "@/Redux/Store";
 import { decryptData } from "@/Utils/helper";
 import { Card, Table, Text, Group, Divider, Button } from "@mantine/core";
-import { useSelector } from "react-redux";
 import moment from "moment";
-import ImLogo from '@/assets/svg/ImFullLogo'
 import { useTheme } from "@mui/system";
-import "./BillReciept.css";
+import "./BBPSTransactionReciept.css";
+import { useAppSelector } from "@/Redux/hooks";
 
-const BillReceipt = ({ data }: { data: any }) => {
+const BBPSTransactionReciept = ({ data }: { data: any }) => {
 
     const theme = useTheme();
-    const apiResponses = useSelector(
-        (state: RootState) => state.apiResponse.responses
-    );
-    const loginData = apiResponses?.loginData
-        ? decryptData(apiResponses?.loginData)
+
+    const { responses } = useAppSelector(state => state.apiResponse)
+
+    const loginData = responses?.loginData
+        ? decryptData(responses?.loginData)
         : null;
 
     if (!data) return <Text>No receipt data available.</Text>;
@@ -23,26 +21,28 @@ const BillReceipt = ({ data }: { data: any }) => {
         window.print();
     };
 
+    const dash = (val: any) => (val !== null && val !== undefined && val !== "" ? val : "-");
+
     return (
         <Card shadow="sm" radius="md" withBorder p="md">
             {/* --- Header Section --- */}
             <Group justify="space-between" align="center" mb="md">
                 <Group gap={2}>
-                    {/* <Image src={ImLogo} alt="Company Logo" width={70} /> */}
-                    <ImLogo />
-                    <div>
-                        {/* <Text fw={700} size="xl" c="orange.8">
-                            Instant Mudra
-                        </Text> */}
-                        {/* <Text size="xs" c="dimmed">
-                            Smart Pay Solutions
-                        </Text> */}
-                    </div>
+                    <img
+                        style={{
+                            width: 120,
+                            height: 120,
+                            objectFit: "contain",
+                        }}
+                        src={loginData?.logoUrl ?? ""}
+                        alt="img"
+                    />
                 </Group>
+
                 <Text fw={600} size="sm" ta="right">
                     {loginData
                         ? `${loginData?.outletName ?? ""}/${loginData?.hierarchyId ?? ""}/${loginData?.mobileNumber ?? ""}`
-                        : "Retailer Info Unavailable"}
+                        : ""}
                 </Text>
             </Group>
 
@@ -50,7 +50,7 @@ const BillReceipt = ({ data }: { data: any }) => {
 
             {/* --- Title --- */}
             <Text fw={600} ta="center" size="md" mb="sm">
-                Transaction Receipt
+                BBPS Transaction Receipt
             </Text>
 
             {/* --- Transaction Details --- */}
@@ -71,37 +71,41 @@ const BillReceipt = ({ data }: { data: any }) => {
                         </Table.Td>
 
                         <Table.Td fw={500}>Transaction Status</Table.Td>
-                        <Table.Td>{data?.txnStatus ?? "-"}</Table.Td>
+                        <Table.Td>{dash(data?.txnStatus)}</Table.Td>
                     </Table.Tr>
 
                     <Table.Tr>
                         <Table.Td fw={500}>Biller Name</Table.Td>
-                        <Table.Td>{data?.billerName ?? "-"}</Table.Td>
+                        <Table.Td>{dash(data?.billerName)}</Table.Td>
 
                         <Table.Td fw={500}>Transaction Amount</Table.Td>
-                        <Table.Td>{data?.txnAmount ?? "-"}</Table.Td>
+                        <Table.Td>{dash(data?.txnAmount)}</Table.Td>
                     </Table.Tr>
 
                     <Table.Tr>
                         <Table.Td fw={500}>Customer Name</Table.Td>
-                        <Table.Td>{data?.customerName ?? "-"}</Table.Td>
+                        <Table.Td>{dash(data?.customerName)}</Table.Td>
 
                         <Table.Td fw={500}>Consumer Number</Table.Td>
-                        <Table.Td>{data?.consumerNumber ?? "-"}</Table.Td>
+                        <Table.Td>{dash(data?.consumerNumber)}</Table.Td>
                     </Table.Tr>
 
                     <Table.Tr>
                         <Table.Td fw={500}>Category</Table.Td>
-                        <Table.Td>{data?.category ?? "-"}</Table.Td>
+                        <Table.Td>{dash(data?.category)}</Table.Td>
                         <Table.Td fw={500}>Ref No</Table.Td>
                         <Table.Td>
-                            {data?.approvalRefNumber || data?.referenceNumber || data?.refNo || "-"}
+                            {dash(
+                                data?.approvalRefNumber ||
+                                data?.referenceNumber ||
+                                data?.refNo
+                            )}
                         </Table.Td>
                     </Table.Tr>
 
                     <Table.Tr>
                         <Table.Td fw={500}>Transaction ID</Table.Td>
-                        <Table.Td colSpan={3}>{data?.txnId ?? "-"}</Table.Td>
+                        <Table.Td colSpan={3}>{dash(data?.txnId)}</Table.Td>
                     </Table.Tr>
                 </Table.Tbody>
             </Table>
@@ -122,4 +126,4 @@ const BillReceipt = ({ data }: { data: any }) => {
     );
 };
 
-export default BillReceipt;
+export default BBPSTransactionReciept;

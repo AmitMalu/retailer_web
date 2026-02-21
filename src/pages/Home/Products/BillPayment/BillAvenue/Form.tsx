@@ -17,12 +17,12 @@ import FormikTextInputComponent from "@/components/Molecules/NewComponents/Formi
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import { buildInitialValues } from "./Utils/initialValues";
 import { buildValidationSchema } from "./Utils/validationSchemaBuilder";
-import BillReceipt from "./Components/BillReciept";
 import BillPaymentDetails from "./Components/BillPaymentDetails";
 import AmountInput from "./Components/AmountInput";
 import ProviderDynamicFields from "./Components/ProviderDynamicFields";
 import { buildFetchBillPayload } from "./Utils/buildExtraParamPayload";
 import { buildProcessTransactionPayload, getBillFormConfig, paiseToRupee } from "./Utils/billHelpers";
+import BBPSTransactionReciept from "../BBPSTransactionReciept";
 
 interface Props {
     serviceName: string;
@@ -47,10 +47,8 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
 
     const [receiptDrawerOpened, setReceiptDrawerOpened] = useState(false);
     const [receiptData, setReceiptData] = useState<any>(null);
-    // const [receiptLoading, setReceiptLoading] = useState(false);
 
     const [requestId, setRequestId] = useState('')
-    // const [providerId, setProviderId] = useState('')
 
     const apiResponses = useSelector(
         (state: RootState) => state.apiResponse?.responses
@@ -205,7 +203,6 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
         values: FormikValues,
         resetForm: () => void
     ) => {
-        console.log(values, "values for transaction");
         try {
             setIsLoading(true);
 
@@ -530,7 +527,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                     ) : (
                         <BillReceipt data={receiptData} />
                     )} */}
-                    <BillReceipt data={receiptData} />
+                    <BBPSTransactionReciept data={receiptData} />
                 </Drawer>
             </div>
         </>

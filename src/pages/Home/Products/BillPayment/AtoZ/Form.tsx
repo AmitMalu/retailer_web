@@ -22,10 +22,10 @@ import ExtraStaticFields from "./Components/ExtraStaticFields";
 import { FetchBillDetailsProps, TransactionProps } from "@/Common/interface";
 import moment from "moment";
 import TransactionSuccessModel from "@/components/Atoms/TransactionSuccessModel";
-import BillReceipt from "./Components/BillReciept";
 import { buildExtraParamPayload } from "./Utils/buildExtraParamPayload";
 import BillPaymentDetails from "./Components/BillPaymentDetails";
 import AmountInput from "./Components/AmountInput";
+import BBPSTransactionReciept from "../BBPSTransactionReciept";
 
 interface Props {
     serviceName: string;
@@ -527,7 +527,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId }) => {
                             <Loader />
                         </div>
                     ) : (
-                        <BillReceipt data={receiptData} />
+                        <BBPSTransactionReciept data={receiptData} />
                     )}
                 </Drawer>
             </div>

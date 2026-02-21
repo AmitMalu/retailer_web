@@ -3,7 +3,7 @@ import { decryptData } from "@/Utils/helper";
 import { Card, Table, Text, Group, Divider, Button, Badge } from "@mantine/core";
 import { useSelector } from "react-redux";
 import { useTheme } from "@mui/system";
-import "./TransactionReciept.css";
+import "./AepsTransactionReciept.css";
 
 const TransactionReciept = ({ data }: { data: any }) => {
     console.log(data);
@@ -22,7 +22,7 @@ const TransactionReciept = ({ data }: { data: any }) => {
         window.print();
     };
 
-    const dash = (val: any) => val ?? "-";
+    const dash = (val: any) => (val !== null && val !== undefined && val !== "" ? val : "-");
 
     return (
         <Card shadow="sm" radius="md" withBorder p="md">

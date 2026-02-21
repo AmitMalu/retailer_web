@@ -13,7 +13,7 @@ import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Yup from 'yup'
-import TransactionReciept from "./TransactionReciept";
+import AepsTransactionReciept from "./AepsTransactionReciept";
 import Loader from "@/components/Atoms/Loader";
 import { useAppSelector } from "@/Redux/hooks";
 
@@ -399,7 +399,7 @@ const AepsTransaction = () => {
                 transitionProps={{ transition: "slide-right", duration: 300 }}
             >
 
-                <TransactionReciept data={receiptData} />
+                <AepsTransactionReciept data={receiptData} />
             </Drawer>
 
         </>
