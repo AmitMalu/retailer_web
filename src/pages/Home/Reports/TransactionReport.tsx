@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 import { Form, Formik, FormikProps } from "formik";
 import { Drawer, Grid, Loader } from "@mantine/core";
 import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
-import { IconCalendar, IconEye } from "@tabler/icons-react";
+import { IconCalendar } from "@tabler/icons-react";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 import { RefreshIcon } from "@/assets/svg";
 import ButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
