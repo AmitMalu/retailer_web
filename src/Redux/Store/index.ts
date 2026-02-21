@@ -8,6 +8,7 @@ import navigationReducer from "../Reducers/navigationReducer";
 import paginationSlice from "../Reducers/paginationSlice";
 import locationReducer from "../Reducers/locationSlice";
 import reportStateSlice from "../Reducers/reportStateSlice";
+import chatSlice from "../Reducers/chatSlice";
 
 const appReducer = combineReducers({
   ui: uiReducer,
@@ -17,6 +18,7 @@ const appReducer = combineReducers({
   pagination: paginationSlice,
   location: locationReducer,
   reportState: reportStateSlice,
+  chat: chatSlice,
 });
 
 const rootReducer = (state: any, action: any) => {
