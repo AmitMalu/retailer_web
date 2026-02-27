@@ -3,12 +3,30 @@ import { Table } from "@mantine/core";
 import moment from "moment";
 import React from "react";
 import SelectComponent from "../Atoms/NewComponents/SelectComponent";
-import { booleanSelectData2, ellipsisCellStyle, formatDateTime } from "@/Utils/helper";
+import { booleanSelectData2, ellipsisCellStyle, formatDateTime, formatTime } from "@/Utils/helper";
 import CustomDatePicker from "../Atoms/NewComponents/CustomDatePicker";
 import TextInputComponent from "../Atoms/NewComponents/TextInputComponent";
 import { EllipsisPopoverCell } from "./EllipsisPopoverCell";
 import TableStatusBadge from "./TableStatusBadge";
 import { AddIconButton } from "@/assets/svg";
+
+const dateKeys = [
+  "createdon",
+  "editedon",
+  "lasteditedon",
+  "createdat",
+  "requestdatetime",
+  "createdatetime",
+  "responsedatetime",
+  "timestamp"
+];
+
+const timeKeys = [
+  "time",
+  "timeoftransaction",
+  "updatedtimeoftransaction",
+  "transactiontime"
+];
 
 const TableBody = <T,>({
   data,
@@ -138,20 +156,19 @@ const TableBody = <T,>({
                     <TableStatusBadge status={String(cellData)} />
                   ) : (
                     (() => {
-                      const dateKeys = [
-                        "createdon",
-                        "editedon",
-                        "lasteditedon",
-                        "createdat",
-                        "requestdatetime",
-                        "createdatetime",
-                        "responsedatetime",
-                        "timestamp"
-                      ];
+                      const keyName = key.toString().toLowerCase();
 
-                      const finalValue = dateKeys.includes(key.toString().toLowerCase())
-                        ? formatDateTime(displayValue)
-                        : displayValue;
+                      let finalValue = displayValue;
+
+                      // DATE formatting (existing logic)
+                      if (dateKeys.includes(keyName)) {
+                        finalValue = formatDateTime(displayValue);
+                      }
+
+                      // TIME formatting (NEW)
+                      else if (timeKeys.includes(keyName)) {
+                        finalValue = formatTime(displayValue);
+                      }
 
                       return (
                         <EllipsisPopoverCell value={finalValue} showCopy={copyable} />

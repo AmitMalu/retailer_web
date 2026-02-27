@@ -1,5 +1,5 @@
 import { decryptData } from "@/Utils/helper";
-import { Card, Table, Text, Group, Divider, Button } from "@mantine/core";
+import { Card, Table, Text, Group, Divider, Button, Badge } from "@mantine/core";
 import moment from "moment";
 import { useTheme } from "@mui/system";
 import "./BBPSTransactionReciept.css";
@@ -52,6 +52,15 @@ const BBPSTransactionReciept = ({ data }: { data: any }) => {
             <Text fw={600} ta="center" size="md" mb="sm">
                 BBPS Transaction Receipt
             </Text>
+
+            {/* --- Status Badge --- */}
+            <Badge
+                color={data?.txnStatus === "SUCCESS" ? "green" : "red"}
+                variant="filled"
+                mb="md"
+            >
+                {data?.txnStatus}
+            </Badge>
 
             {/* --- Transaction Details --- */}
             <Table

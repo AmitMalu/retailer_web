@@ -1,5 +1,5 @@
 import { decryptData } from "@/Utils/helper";
-import { Card, Table, Text, Group, Divider, Button } from "@mantine/core";
+import { Card, Table, Text, Group, Divider, Button, Badge } from "@mantine/core";
 import moment from "moment";
 import { useTheme } from "@mui/system";
 import { useAppSelector } from "@/Redux/hooks";
@@ -52,6 +52,15 @@ const PGTransactionReceipt = ({ data }: { data: any }) => {
             <Text fw={600} ta="center" size="md" mb="sm">
                 PG Transaction Receipt
             </Text>
+
+            {/* --- Status Badge --- */}
+            <Badge
+                color={data?.txnStatus === "SUCCESS" ? "green" : "red"}
+                variant="filled"
+                mb="md"
+            >
+                {data?.txnStatus}
+            </Badge>
 
             {/* --- Table --- */}
             <Table
@@ -116,9 +125,7 @@ const PGTransactionReceipt = ({ data }: { data: any }) => {
             <Divider mt="md" mb="xs" />
 
             <Text size="sm" c="dimmed" ta="center">
-                Note: Charges Applicable*
-                <br />
-                This is a computer-generated slip; no signature is required.
+                Note: This is a computer-generated slip; no signature is required.
             </Text>
 
             {/* --- Print Button --- */}

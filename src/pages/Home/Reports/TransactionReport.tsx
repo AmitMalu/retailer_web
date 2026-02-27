@@ -65,7 +65,7 @@ const TransactionReport = () => {
         // { key: "subProductName", label: "Sub Product Name", filterType: "none" },
         { key: "userId", label: "User ID", filterType: "text" },
         // { key: "mobileNo", label: "Mobile No", filterType: "text" },
-        { key: "schemeName", label: "Scheme", filterType: "text" },
+        // { key: "schemeName", label: "Scheme", filterType: "text" },
         { key: "amount", label: "Amount", filterType: "number" },
         { key: "txStatus", label: "Transaction Status", filterType: "text" },
         // { key: "txType", label: "Transaction Type", filterType: "text" },
