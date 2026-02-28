@@ -150,26 +150,15 @@ const PGFormModal = ({
 
       const response = await Create_Order(payload);
       // Outer success check (HTTP or API-level)
-      if (response?.data?.statusCode === 200 || response?.status === 200) {
+      if (response?.data?.statusCode == 200) {
         // Parse the inner JSON (which might be stringified)
-        let orderData;
-        try {
-          orderData =
-            typeof response.data.data === "string"
-              ? JSON.parse(response.data.data)
-              : response.data.data;
-        } catch {
-          orderData = {};
-        }
+        const orderData = response?.data?.data || {};
 
         // Inner (business logic) success check
-        if (orderData.status === "SUCCESS") {
+        if (orderData?.paymentLink) {
           // showSuccessNotification(orderData.message || "Order created successfully");
-
-          if (orderData.paymentLink) {
-            // ✅ Open payment link in a new tab
-            window.open(orderData.paymentLink, "_blank");
-          }
+          // Open payment link in a new tab
+          window.open(orderData?.paymentLink, "_blank");
 
           // Close modal and reset UI
           setIsBinDetails(false);
