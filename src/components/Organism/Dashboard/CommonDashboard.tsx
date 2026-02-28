@@ -7,7 +7,7 @@ import TextComponent from "@/components/Atoms/NewComponents/TextComponent";
 import DashboardMiniTable from "@/components/Molecules/DashboardMiniTable";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
-import { decryptData } from "@/Utils/helper";
+import { decryptData, formatIndianNumber } from "@/Utils/helper";
 import { DatesRangeValue } from "@mantine/dates";
 import CustomDateRangePicker from "@/components/Atoms/NewComponents/CustomDateRangePicker";
 import { IconCalendar } from "@tabler/icons-react";
@@ -43,8 +43,8 @@ const CommonDashboard = (props: commonDashboardProps) => {
   const cards =
     props.dashboardData?.cards?.map((card: any, index: number) => ({
       label: card.label,
-      value: card.value,
-      prefix: card.prefix || "₹",
+      value: formatIndianNumber(card.value),
+      prefix: card.prefix,
       borderColor: card.color || colors[index % colors.length],
     })) || [];
 

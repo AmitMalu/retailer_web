@@ -17,7 +17,7 @@ import {
   RefreshSvgIcon,
   // ThemeSettingSvgIcon,
 } from "@/assets/svg";
-import { decryptData, useWalletBalance } from "@/Utils/helper";
+import { decryptData, formatIndianNumber, useWalletBalance } from "@/Utils/helper";
 import { NavLink } from "react-router-dom";
 // import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
 
@@ -49,38 +49,41 @@ export default function Navbar({
   }: {
     title: string;
     amount?: number | null | undefined;
-  }) => (
-    <Paper
-      elevation={0}
-      className="flex items-center justify-center w-auto py-2 px-3 cursor-default rounded-xl shadow-xl shadow-slate-700"
-      sx={{
-        transition: "all 0.2s ease-in-out",
-        background: (theme) =>
-          theme.palette.mode === "dark"
-            ? "rgba(30, 41, 59, 0.7)"
-            : theme.palette.red.light,
-      }}
-      onMouseEnter={(e) =>
-        (e.currentTarget.style.transform = "translateY(-1px)")
-      }
-      onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
-    >
-      <Box display="flex" alignItems="center">
-        <TextComponent fontSize={14} fontWeight={500} color="red.DEFAULT">
-          {title}
-        </TextComponent>
-        {amount != null && amount >= 0 ? (
-          <TextComponent fontSize={12} fontWeight={400} color="red.DEFAULT">
-            -
-          </TextComponent>
-        ) : null}
+  }) => {
+    const formattedAmount = formatIndianNumber(amount);
 
-        <TextComponent fontSize={16} fontWeight={700} color="red.DEFAULT">
-          {amount}
-        </TextComponent>
-      </Box>
-    </Paper>
-  );
+    const numericAmount = Number(
+      String(amount ?? 0).replace(/₹|,/g, "").trim()
+    );
+
+    return (
+      <Paper
+        elevation={0}
+        className="flex items-center justify-center w-auto py-2 px-3 cursor-default rounded-xl shadow-xl shadow-slate-700"
+        sx={{
+          transition: "all 0.2s ease-in-out",
+          background: (theme) =>
+            theme.palette.mode === "dark"
+              ? "rgba(30, 41, 59, 0.7)"
+              : theme.palette.red.light,
+        }}
+        onMouseEnter={(e) =>
+          (e.currentTarget.style.transform = "translateY(-1px)")
+        }
+        onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+      >
+        <Box display="flex" alignItems="center">
+          <TextComponent fontSize={14} fontWeight={500} color="red.DEFAULT">
+            {title}
+          </TextComponent>
+          {amount != null && numericAmount >= 0 && <TextComponent color="red.DEFAULT"> - </TextComponent>}
+          <TextComponent fontSize={16} fontWeight={700} color="red.DEFAULT">
+            {formattedAmount}
+          </TextComponent>
+        </Box>
+      </Paper>
+    )
+  };
 
   return (
     <>

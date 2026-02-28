@@ -527,3 +527,29 @@ export const deserializeFormValues = (values: any) => {
 };
 
 
+export const formatIndianNumber = (input: any) => {
+  if (input === null || input === undefined) return "";
+
+  let value = input;
+
+  // Convert to string
+  if (typeof value === "number") {
+    value = value.toString();
+  }
+
+  if (typeof value !== "string") return value;
+
+  // Remove ₹, commas, spaces
+  const cleaned = value.replace(/₹|,/g, "").trim();
+
+  // Check if it's a valid number
+  if (isNaN(Number(cleaned))) return input;
+
+  const number = Number(cleaned);
+
+  // Format in Indian style
+  return new Intl.NumberFormat("en-IN", {
+    minimumFractionDigits: cleaned.includes(".") ? 2 : 0,
+    maximumFractionDigits: 2,
+  }).format(number);
+};
