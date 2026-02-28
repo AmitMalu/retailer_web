@@ -1,6 +1,8 @@
-import TransactionReciept from "@/pages/Home/Products/AEPS/TransactionReciept";
-import BillReceipt from "@/pages/Home/Products/BillPayment/BillAvenue/Components/BillReciept";
+import AepsTransactionReciept from "@/pages/Home/Products/AEPS/AepsTransactionReciept";
+import BBPSTransactionReciept from "@/pages/Home/Products/BillPayment/BBPSTransactionReciept";
 import DMTTransactionReceipt from "@/pages/Home/Products/DMT/DMTTransactionReceipt";
+import PayoutTransactionReceipt from "@/pages/Home/Products/Payout/PayoutTransactionReceipt";
+import PGTransactionReceipt from "@/pages/Home/Products/PG/PGTransactionReceipt";
 import { Text } from "@mantine/core";
 
 const resolveProductType = (productName: string) => {
@@ -11,6 +13,8 @@ const resolveProductType = (productName: string) => {
   if (val.includes("AEPS")) return "AEPS";
   if (val.includes("DMT")) return "DMT";
   if (val.includes("BBPS") || val.includes("BILL")) return "BBPS";
+  if (val.includes("PAYOUT")) return "PAYOUT";
+  if (val.includes("PAYMENT GATEWAY") || val.includes("PG") || val.includes("GATEWAY")) return "PG";
 
   return "UNKNOWN";
 };
@@ -20,7 +24,7 @@ const ReceiptRenderer = ({ productType, data }: any) => {
 
   switch (resolvedType) {
     case "AEPS":
-      return <TransactionReciept data={data} />;
+      return <AepsTransactionReciept data={data} />;
 
     case "DMT":
       return (
@@ -31,7 +35,13 @@ const ReceiptRenderer = ({ productType, data }: any) => {
       );
 
     case "BBPS":
-      return <BillReceipt data={data} />;
+      return <BBPSTransactionReciept data={data} />;
+
+    case "PAYOUT":
+      return <PayoutTransactionReceipt data={data} />;
+
+    case "PG":
+      return <PGTransactionReceipt data={data} />;
 
     default:
       return <Text>No receipt available</Text>;

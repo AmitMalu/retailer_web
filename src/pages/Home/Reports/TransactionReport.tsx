@@ -30,6 +30,7 @@ import ReceiptRenderer from "@/components/Organism/RecieptRenderer";
 import { Get_Products_Reciept } from "@/Services/api";
 import { showErrorNotification } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 
 const KEY = "transaction_report"
 
@@ -64,7 +65,7 @@ const TransactionReport = () => {
         // { key: "subProductName", label: "Sub Product Name", filterType: "none" },
         { key: "userId", label: "User ID", filterType: "text" },
         // { key: "mobileNo", label: "Mobile No", filterType: "text" },
-        { key: "schemeName", label: "Scheme", filterType: "text" },
+        // { key: "schemeName", label: "Scheme", filterType: "text" },
         { key: "amount", label: "Amount", filterType: "number" },
         { key: "txStatus", label: "Transaction Status", filterType: "text" },
         // { key: "txType", label: "Transaction Type", filterType: "text" },
@@ -449,26 +450,30 @@ const TransactionReport = () => {
                         extraColumnPosition="left"
                         renderExtraHeader={() => <>ACTION</>} // empty header for action column/>
                         renderExtraRowCell={(item) => (
-                            <div className="flex justify-center gap-3 min-w-10">
-                                <span
+                            <div className="flex justify-center items-center gap-2 min-w-40">
+                                {/* Ticket Icon (Secondary Action) */}
+                                <button
                                     onClick={() => navigate(`/support/ticketingSystem?txId=${item.txId}`)}
                                     title="Raise Ticket"
-                                    className="cursor-pointer hover:scale-110 transition-all duration-200"
+                                    className="flex items-center justify-center w-8 h-8 rounded-md text-gray-500 hover:bg-gray-100 hover:text-[#BF2024] transition-all duration-200"
                                 >
-                                    <i className="fa-solid fa-ticket fa-lg" style={{ color: "#BF2024" }}></i>
-                                </span>
-                                <span
+                                    <i className="fa-solid fa-ticket text-lg"></i>
+                                </button>
+
+                                {/* Receipt Button (Primary Action) */}
+                                <button
                                     onClick={() =>
                                         fetchProductReceipt(item.txId, item.walletType, item.productName)
                                     }
-                                    title="View Reciept"
-                                    className="cursor-pointer hover:scale-110 transition-all duration-200"
+                                    title="View Receipt"
+                                    className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 hover:border-gray-400 transition-all duration-200"
                                 >
-                                    <i className="fa-solid fa-ticket fa-lg" style={{ color: "#BF2024" }}></i>
-                                </span>
+                                    Receipt
+                                    <ReceiptLongIcon fontSize="small" />
+                                </button>
+
                             </div>
-                        )
-                        }
+                        )}
                     />
                 )}
             </div>

@@ -32,7 +32,7 @@ const headers: GenericTableHeader<WalletReportTableType>[] = [
   { key: "tranxId", label: "Transaction ID", filterType: "text", copyable: true },
   { key: "productName", label: "Product Name", filterType: "text" },
   // { key: "subProductName", label: "Sub Product Name", filterType: "text" },
-  { key: "schemeName", label: "Scheme Name", filterType: "text" },
+  // { key: "schemeName", label: "Scheme Name", filterType: "text" },
   { key: "hierarchyId", label: "User ID", filterType: "text" },
   // { key: "outletName", label: "Outlet Name", filterType: "text" },
   // { key: "transactionType", label: "Transaction Type", filterType: "text" },

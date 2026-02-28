@@ -48,7 +48,7 @@ const PendingTransaction = () => {
     // { key: "subProductName", label: "Sub Product Name", filterType: "text" },
     { key: "userId", label: "User ID", filterType: "text" },
     { key: "mobileNo", label: "Mobile No", filterType: "text" },
-    { key: "schemeName", label: "Scheme Name", filterType: "text" },
+    // { key: "schemeName", label: "Scheme Name", filterType: "text" },
     { key: "amount", label: "Amount", filterType: "number" },
     { key: "txStatus", label: "Transaction Status", filterType: "text" },
     { key: "txType", label: "Transaction Type", filterType: "text" },

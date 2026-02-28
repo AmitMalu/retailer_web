@@ -42,7 +42,7 @@ const headers: GenericTableHeader<CommissionAndChargeTableType>[] = [
   { key: "hierarchyId", label: "User ID", filterType: "text" },
   { key: "walletType", label: "Wallet Type", filterType: "boolean", filterOptions: walletTypeSelectData }, // Could add options if needed
   { key: "txType", label: "Transaction Type", filterType: "text" },
-  { key: "operator", label: "Operator", filterType: "text" },
+  // { key: "operator", label: "Operator", filterType: "text" },
   { key: "balBefore", label: "Balance Before", filterType: "number" },
   { key: "amount", label: "Amount", filterType: "number" },
   { key: "balAfter", label: "Balance After", filterType: "number" },

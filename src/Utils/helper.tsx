@@ -10,6 +10,13 @@ import * as Yup from 'yup'
 import * as Papa from "papaparse";
 import moment from "moment";
 
+
+export const redirectTo = (path: string) => {
+  const basePath = import.meta.env.VITE_APP_BASE_PATH || "";
+
+  window.location.href = `${basePath}${path}`;
+};
+
 const KEY = CryptoJS.enc.Hex.parse(
   "a7f3d9c6e8421fb62e7e5c3410b974e2d5c6a8f90fd13b4aa12f658f9a34bc29"
 );
@@ -61,6 +68,15 @@ export const formatDateTime = (dateString: string) => {
   return parsed.format("DD-MM-YYYY HH:mm:ss");
 };
 
+export const formatTime = (time: string) => {
+  if (!time) return "-";
+
+  const cleanTime = time.split(".")[0];
+
+  const parsed = moment(cleanTime, ["HH:mm:ss", "HH:mm"], true);
+
+  return parsed.isValid() ? parsed.format("HH:mm:ss") : time;
+};
 
 // Common text field validation
 export const textField = (
@@ -493,21 +509,21 @@ export const encryptPidData = (
 
 
 export const serializeFormValues = (values: any) => {
-    return {
-        ...values,
-        dateRange: values?.dateRange?.map((d: any) =>
-            d instanceof Date ? d.toISOString() : d
-        ),
-    };
+  return {
+    ...values,
+    dateRange: values?.dateRange?.map((d: any) =>
+      d instanceof Date ? d.toISOString() : d
+    ),
+  };
 };
 
 export const deserializeFormValues = (values: any) => {
-    return {
-        ...values,
-        dateRange: values?.dateRange?.map((d: any) =>
-            typeof d === "string" ? new Date(d) : d
-        ),
-    };
+  return {
+    ...values,
+    dateRange: values?.dateRange?.map((d: any) =>
+      typeof d === "string" ? new Date(d) : d
+    ),
+  };
 };
 
 
