@@ -3,6 +3,7 @@ import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
+import { useAppSelector } from "@/Redux/hooks";
 import { RootState } from "@/Redux/Store";
 import { Aeps_TwoFactor_Verify } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
@@ -19,6 +20,7 @@ import * as Yup from 'yup'
 const AepsTwoFactor = () => {
     const theme = useTheme();
     const navigate = useNavigate();
+    const { lat, lng } = useAppSelector(state => state.location)
     const { subProductId } = useParams();
     const apiResponses = useSelector(
         (state: RootState) => state.apiResponse.responses
@@ -146,11 +148,11 @@ const AepsTwoFactor = () => {
                     indicatorforUID: 0,
                     nationalBankIdentificationNumber: iinno || "607152"
                 },
-                latitude: 13.0641367, // Should come from geolocation
-                longitude: 80.2480973, // Should come from geolocation
+                latitude: lat, // Should come from geolocation
+                longitude: lng, // Should come from geolocation
                 requestRemarks: "TN3000CA0006530", // Should be dynamic
                 transactionType: "AUO",
-                merchantUserName: loginData?.username || "sai", // Should come from login data
+                merchantUserName: loginData?.username || "user", // Should come from login data
                 merchantPin: loginData?.pin || "81DC9BDB52D04DC20036DBD8313ED055", // Should be MD5 hashed
                 superMerchantId: "2", // Should come from config
                 merchantTranId: `TXN${Date.now()}`, // Generate unique transaction ID

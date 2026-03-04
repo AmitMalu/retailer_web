@@ -16,6 +16,15 @@ import * as Yup from 'yup'
 import AepsTransactionReciept from "./AepsTransactionReciept";
 import Loader from "@/components/Atoms/Loader";
 import { useAppSelector } from "@/Redux/hooks";
+interface AepsFormValues {
+    mobile: string;
+    aadhaar: string;
+    amount: string;
+    bank: string;
+    deviceType: string;
+    csp: boolean;
+    pidData: any;
+}
 
 const SERVICE_TITLES: any = {
     cashWithdrawal: "Cash Withdrawal",
@@ -124,7 +133,7 @@ const AepsTransaction = () => {
     };
 
 
-    const handleSubmit = async (values: any) => {
+    const handleSubmit = async (values: AepsFormValues) => {
         console.log("Final Submit Values:", values);
         try {
             setIsLoading(true);
@@ -138,6 +147,8 @@ const AepsTransaction = () => {
                 schemeCode,
                 nationalBankIdentificationNumber: values.bank,
                 captureResponse: values.pidData,
+                adhaarNumber: values.aadhaar,
+                mobileNumber: values.mobile,
 
                 // Send location to backend
                 latitude: lat,
