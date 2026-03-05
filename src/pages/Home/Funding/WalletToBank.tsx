@@ -6,6 +6,7 @@ import TextComponent from "@/components/Atoms/TextComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import { RootState } from "@/Redux/Store";
 import { Get_Hierarchy_Banks, Wallet_To_Bank } from "@/Services/api";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
@@ -40,6 +41,8 @@ const WalletToBank = () => {
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses.loginData)
     : null;
+
+  const { checkDuplicate, store } = useTransactionCooldown("MOVETOBANK");
 
   const subProductId = loginData?.products
     ?.flatMap((product: any) => (product?.subProducts || []))
@@ -108,6 +111,12 @@ const WalletToBank = () => {
         subProductId: subProductId ?? "",
       };
 
+      if (checkDuplicate(selectedBank.accountNumber, Number(values.amount))) {
+        showErrorNotification(
+          "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
+        );
+        return;
+      }
       const response = await Wallet_To_Bank(bodyData);
 
       const statusCodes = [200, 201];
@@ -116,6 +125,7 @@ const WalletToBank = () => {
         response &&
         statusCodes.includes(response?.data?.data?.statusCode)
       ) {
+        store(selectedBank.accountNumber, Number(values.amount));
         showSuccessNotification(response?.data?.message);
         resetForm();
       } else {

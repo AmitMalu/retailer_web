@@ -26,7 +26,7 @@ export const API_ROUTES = {
   FUND_REVERSAL_RESEND_OTP: `${BASE_URL}/api/fund-reversal/resend-otp`,
   FUND_TRANSFER: `${BASE_URL}/api/fund-transfer`,
   WALLET_BALANCE: `${BASE_URL}/api/dashboard/wallet-balance`,
-  WALLET_TO_BANK: `${BASE_URL}/api/move-to-bank/send-payout-request`,
+  WALLET_TO_BANK: `${BASE_URL}/api/move-to-bank/send-payout-request-VO`,
   FETCH_HIERARCHY_BANKS: `${BASE_URL}/api/bank-details/verified`,
 
   ///////////////// CREATE USER //////////////////////////
