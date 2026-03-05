@@ -27,6 +27,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from 'yup'
 import DMTTransactionReceipt from "./DMTTransactionReceipt";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 
 const RemitterInfo = () => {
 
@@ -63,6 +64,8 @@ const RemitterInfo = () => {
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
+  const { checkDuplicate, store } = useTransactionCooldown("DMT");
+
 
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses.loginData)
@@ -130,6 +133,8 @@ const RemitterInfo = () => {
           paymentMode: "IMPS",
         };
         const handleSubmit = async (values: any, { resetForm }: any) => {
+          if (!values.beneId) return
+          
           try {
             setIsLoading(true);
             const payload = {
@@ -140,7 +145,12 @@ const RemitterInfo = () => {
               txnType: values.paymentMode,
               amount: String(values.amount),
             };
-
+            if (checkDuplicate(values.beneId, Number(values.amount))) {
+              showErrorNotification(
+                "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
+              );
+              return;
+            }
             const response = await Dmt_Tranx_Send_Otp(payload)
             const data = response?.data
             if (data?.statusCode == 200) {
@@ -202,11 +212,11 @@ const RemitterInfo = () => {
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const val = e.target.value;
 
-                      // 🧠 If current value is 0 and user types a number → replace it
+                      // If current value is 0 and user types a number → replace it
                       if (Number(values.amount) === 0 && /^\d$/.test(val)) {
                         setFieldValue("amount", Number(val));
                       }
-                      // ✅ Otherwise, handle normally
+                      // Otherwise, handle normally
                       else if (/^\d*$/.test(val)) {
                         setFieldValue("amount", Number(val || 0));
                       }
@@ -500,7 +510,9 @@ const RemitterInfo = () => {
 
       if (data?.statusCode == "200") {
         showSuccessNotification(response?.data?.message || "Transaction Success");
-
+        if (tranxData?.beneId) {
+          store(tranxData?.beneId, Number(tranxData?.amount));
+        }
         // Store receipt data
         setReceiptData(apiData);
         setReceiptTxnType(tranxData?.txnType || "");

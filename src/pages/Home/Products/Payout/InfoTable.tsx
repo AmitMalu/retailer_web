@@ -35,6 +35,7 @@ import {
 import PayoutBankDeleteModal from "@/components/Organism/PayoutBankDeleteModal";
 import { useBankVerification } from "@/Utils/Verification";
 import { Refresh } from "@mui/icons-material";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 
 interface LocationState {
   payoutType?: subProductObjType;
@@ -63,6 +64,7 @@ const InfoTable = () => {
   const apiResponses = useSelector(
     (state: RootState) => state?.apiResponse?.responses
   );
+  const { checkDuplicate, store } = useTransactionCooldown("PAYOUT");
 
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
@@ -221,24 +223,18 @@ const InfoTable = () => {
               // callbackurl: values.callbackurl,
             };
 
+            if (checkDuplicate(values.accountNumber, Number(values.amount))) {
+              showErrorNotification(
+                "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
+              );
+              return;
+            }
+
             const response = await Payout_Send(payload);
             const status = response?.data?.statusCode
             if (status == 200 || status == "202") {
               showSuccessNotification(response?.data?.message);
-              // const req = {
-              //   subProductId: values.subProductId
-              // }
-              // const res2 = await Payout_Success_Callback(req)
-              // if (res2?.data?.statusCode == 200) {
-              //   showSuccessNotification(res2?.data?.message);
-              //   return true;
-              // } else {
-              //   showErrorNotification(
-              //     response?.data?.message || "Transfer Initiation failed"
-              //   );
-              //   return false;
-              // }
-
+              store(values.accountNumber, Number(values.amount));
             } else {
               showErrorNotification(
                 response?.data?.message || "Transfer failed"

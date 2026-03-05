@@ -23,6 +23,7 @@ import ProviderDynamicFields from "./Components/ProviderDynamicFields";
 import { buildFetchBillPayload } from "./Utils/buildExtraParamPayload";
 import { buildProcessTransactionPayload, getBillFormConfig, paiseToRupee } from "./Utils/billHelpers";
 import BBPSTransactionReciept from "../BBPSTransactionReciept";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 
 interface Props {
     serviceName: string;
@@ -53,6 +54,8 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
     const apiResponses = useSelector(
         (state: RootState) => state.apiResponse?.responses
     );
+
+    const { checkDuplicate, store } = useTransactionCooldown("BBPS_AVENUE");
 
     const loginData = apiResponses?.loginData
         ? decryptData(apiResponses?.loginData)
@@ -238,10 +241,19 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
             });
 
             console.log("FINAL TRANSACTION PAYLOAD", paymentPayload);
+
+            if (checkDuplicate(selectedProviderDetails.billerId, Number(values.amount))) {
+                showErrorNotification(
+                    "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
+                );
+                return;
+            }
+
             const response: any = await BillAvenue_Bill_Payment(paymentPayload);
             const apiStatus = response?.data?.statusCode;
 
             if (apiStatus === 200 || apiStatus === "200") {
+                store(selectedProviderDetails.billerId, Number(values.amount))
                 const respData = response?.data?.data || {};
                 showSuccessNotification(response?.data?.message || "Transaction Successful");
                 setBillModalOpened(false);
