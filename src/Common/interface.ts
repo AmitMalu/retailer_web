@@ -1259,3 +1259,20 @@ export interface DownlineBalanceTableType {
   createdOn: string;
   narration: string;
 }
+
+export interface RechargeTransactionType {
+  operatorCode: string;
+  operatorName: string;
+  customerNumber: string;
+  amount: number;
+  subProductId: string;
+  schemeCode: string;
+}
+
+export interface RechargeOperatorListType {
+  id: number;
+  name: string;
+  code: string;
+  type: "MOBILE" | "DTH";
+  [key: string]: any;
+}

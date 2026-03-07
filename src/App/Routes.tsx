@@ -15,6 +15,8 @@ import AepsTwoFactor from "@/pages/Home/Products/AEPS/AepsTwoFactor";
 import WrapperFormPage from "@/pages/Home/Products/BillPayment/WrapperFormPage";
 import TransactionReport from "@/pages/Home/Reports/TransactionReport";
 import TransactionWalletReport from "@/pages/Home/Reports/TransactionWalletReport";
+import RechargeSubProducts from "@/pages/Home/Products/Recharge/RechargeSubProducts";
+import Recharge from "@/pages/Home/Products/Recharge/Recharge";
 const Dashboard = lazy(() => import("@/pages/Home/Dashboard"));
 const CreateUser = lazy(() => import("@/pages/Home/ManageUser/CreateUser"));
 const DebitAndCreditUser = lazy(
@@ -658,6 +660,8 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
+          {/* MPOS */}
           <Route
             path="products/mpos"
             element={
@@ -675,6 +679,8 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
+          {/* BBPS */}
           <Route
             path="products/billPay"
             element={
@@ -726,23 +732,22 @@ const RouterOutlet = () => {
               }
             />
           </Route>
-          {/* <Route
-            path="products/billPay/service/billDetails"
+
+          {/* RECHARGE */}
+          <Route
+            path="products/recharge"
             element={
               <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
+                <MainLayout>
+                  <Outlet />
+                </MainLayout>
               </ProtectedRoute>
             }
           >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <FetchBillDetails />
-                </MainLayout>
-              }
-            />
-          </Route> */}
+            <Route index element={<RechargeSubProducts />} />
+            <Route path=":subProductId" element={<Recharge />} />
+          </Route>
+
           <Route
             path="/manageUser/createUser"
             element={
@@ -908,7 +913,6 @@ const RouterOutlet = () => {
               }
             />
           </Route>
-
           <Route
             path="reports/downloadReport"
             element={
@@ -1068,6 +1072,7 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
           <Route
             path="settings/myProfile"
             element={
@@ -1121,7 +1126,6 @@ const RouterOutlet = () => {
               }
             />
           </Route>
-
           <Route
             path="settings/changeTPIN"
             element={
@@ -1194,6 +1198,7 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
           <Route
             path="support/bioMetricDevice"
             element={

@@ -21,6 +21,7 @@ import {
   PayoutSaveBeneficiaryProps,
   PayoutSendBeneficiaryProps,
   RaisedTicketParams,
+  RechargeTransactionType,
   ResendOtpRequestProps,
   SetPasswordRequestProps,
   SubuserCreationProps,
@@ -683,6 +684,21 @@ export const Aeps_Verify_Otp = async (data: any) => {
 
 export const Aeps_Bank_List = async () => {
   return await api.get(`${API_ROUTES.AEPS_BANK_LIST}`, await createHeaders());
+};
+
+export const Recharge_Fetch_Operator = async () => {
+  return await api.get(
+    `${API_ROUTES.RECHARGE_FETCH_OPERATORS}`,
+    await createHeaders(),
+  );
+};
+
+export const Recharge_Transaction = async (data: RechargeTransactionType) => {
+  return await api.post(
+    `${API_ROUTES.RECHARGE_TRANSACTION}`,
+    data,
+    await createHeaders(),
+  );
 };
 
 export const Aeps_TwoFactor_Verify = async (data: any) => {

@@ -23,10 +23,15 @@ export const BOT_ROUTE_OPTIONS: BotOption[] = [
 
   { label: "Products", path: "/products", allowedRoles: ROLES_RT_RU },
   { label: "PG", path: "/products/pgScreen", allowedRoles: ROLES_RT_RU },
-  { label: "Payout", path: "/products/payoutScreen", allowedRoles: ROLES_RT_RU },
+  {
+    label: "Payout",
+    path: "/products/payoutScreen",
+    allowedRoles: ROLES_RT_RU,
+  },
   { label: "AEPS", path: "/products/aeps", allowedRoles: ROLES_RT_RU },
   { label: "DMT", path: "/products/dmt", allowedRoles: ROLES_RT_RU },
   { label: "MPOS", path: "/products/mpos", allowedRoles: ROLES_RT_RU },
+  { label: "RECHARGE", path: "/products/recharge", allowedRoles: ROLES_RT_RU },
   { label: "Bill Pay", path: "/products/billPay", allowedRoles: ROLES_RT_RU },
   {
     label: "Create User",
@@ -59,8 +64,16 @@ export const BOT_ROUTE_OPTIONS: BotOption[] = [
     path: "/reports/txn-wallet-report",
     allowedRoles: ROLES_RT_RU,
   },
-  { label: "Account Summary", path: "/reports/accountSummary", allowedRoles: ROLES_ALL },
-  { label: "Wallet Report", path: "/reports/WalletReport", allowedRoles: ROLES_ALL },
+  {
+    label: "Account Summary",
+    path: "/reports/accountSummary",
+    allowedRoles: ROLES_ALL,
+  },
+  {
+    label: "Wallet Report",
+    path: "/reports/WalletReport",
+    allowedRoles: ROLES_ALL,
+  },
   {
     label: "Search Transaction",
     path: "/reports/searchTransaction",
@@ -71,7 +84,11 @@ export const BOT_ROUTE_OPTIONS: BotOption[] = [
     path: "/reports/downloadReport",
     allowedRoles: ROLES_ALL,
   },
-  { label: "Fund Loading", path: "/reports/fundLoading", allowedRoles: ROLES_ALL },
+  {
+    label: "Fund Loading",
+    path: "/reports/fundLoading",
+    allowedRoles: ROLES_ALL,
+  },
   {
     label: "Payment Loading",
     path: "/reports/paymentLoading",
@@ -110,15 +127,31 @@ export const BOT_ROUTE_OPTIONS: BotOption[] = [
 
   { label: "My Profile", path: "/settings/myProfile", allowedRoles: ROLES_ALL },
   { label: "Create Sub User", path: "/settings/subUser", allowedRoles: ["RT"] },
-  { label: "View Sub User", path: "/settings/ViewSubUser", allowedRoles: ["RT"] },
-  { label: "Change TPIN", path: "/settings/changeTPIN", allowedRoles: ROLES_ALL },
-  { label: "My Certificate", path: "/settings/myCertificate", allowedRoles: ROLES_ALL },
+  {
+    label: "View Sub User",
+    path: "/settings/ViewSubUser",
+    allowedRoles: ["RT"],
+  },
+  {
+    label: "Change TPIN",
+    path: "/settings/changeTPIN",
+    allowedRoles: ROLES_ALL,
+  },
+  {
+    label: "My Certificate",
+    path: "/settings/myCertificate",
+    allowedRoles: ROLES_ALL,
+  },
   {
     label: "Low Balance Alert",
     path: "/settings/lowBalanceAlert",
     allowedRoles: ROLES_RT_RU,
   },
-  { label: "ID Card", path: "/settings/idCard", allowedRoles: ROLES_WL_SD_PT_DT },
+  {
+    label: "ID Card",
+    path: "/settings/idCard",
+    allowedRoles: ROLES_WL_SD_PT_DT,
+  },
   {
     label: "Bio Metric Device",
     path: "/support/bioMetricDevice",
@@ -144,7 +177,11 @@ export const BOT_ROUTE_OPTIONS: BotOption[] = [
     path: "/support/topUpHistory",
     allowedRoles: ROLES_WL_SD_PT_DT,
   },
-  { label: "Add Money", path: "/support/addMoney", allowedRoles: ROLES_WL_SD_PT_DT },
+  {
+    label: "Add Money",
+    path: "/support/addMoney",
+    allowedRoles: ROLES_WL_SD_PT_DT,
+  },
   {
     label: "Payment Request",
     path: "/support/paymentRequest",
@@ -161,7 +198,11 @@ export const BOT_ROUTE_OPTIONS: BotOption[] = [
     allowedRoles: ROLES_WL_SD_PT_DT,
   },
 
-  { label: "Wallet to Bank", path: "/funding/walletToBank", allowedRoles: ROLES_ALL },
+  {
+    label: "Wallet to Bank",
+    path: "/funding/walletToBank",
+    allowedRoles: ROLES_ALL,
+  },
   {
     label: "Fund Request",
     path: "/funding/walletToBankFund",
@@ -172,14 +213,22 @@ export const BOT_ROUTE_OPTIONS: BotOption[] = [
     path: "/funding/walletToWallet",
     allowedRoles: ROLES_ALL,
   },
-  { label: "Fund Transfer", path: "/funding/fundTransfer", allowedRoles: ROLES_ALL },
+  {
+    label: "Fund Transfer",
+    path: "/funding/fundTransfer",
+    allowedRoles: ROLES_ALL,
+  },
   {
     label: "Fund Reversal",
     path: "/funding/fundReversal",
     allowedRoles: ROLES_WL_SD_PT_DT,
   },
 
-  { label: "Website Data", path: "/websiteSettings/websiteData", allowedRoles: ["WL"] },
+  {
+    label: "Website Data",
+    path: "/websiteSettings/websiteData",
+    allowedRoles: ["WL"],
+  },
   {
     label: "Social Media Links",
     path: "/websiteSettings/socialMediaLinks",
@@ -220,6 +269,7 @@ export const BOT_CONFIG: BotConfigItem[] = [
       "aeps",
       "dmt",
       "mpos",
+      "recharge",
       "billpay",
       "bill payment",
     ],
@@ -276,7 +326,13 @@ export const BOT_CONFIG: BotConfigItem[] = [
     options: getOptionsByPrefix("/support"),
   },
   {
-    keywords: ["manage user", "create user", "debit user", "credit user", "view user"],
+    keywords: [
+      "manage user",
+      "create user",
+      "debit user",
+      "credit user",
+      "view user",
+    ],
     reply: "Here are manage user",
     options: getOptionsByPrefix("/manageUser"),
   },
@@ -286,7 +342,14 @@ export const BOT_CONFIG: BotConfigItem[] = [
     options: getOptionsByPrefix("/websiteSettings"),
   },
   {
-    keywords: ["login", "signup", "sign up", "forgot password", "otp", "set password"],
+    keywords: [
+      "login",
+      "signup",
+      "sign up",
+      "forgot password",
+      "otp",
+      "set password",
+    ],
     reply: "Here are auth",
     options: BOT_ROUTE_OPTIONS.filter((option) =>
       ["/login", "/signUp", "/forgotPassword", "/setPassword"].includes(

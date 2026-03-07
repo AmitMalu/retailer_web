@@ -112,7 +112,12 @@ export const API_ROUTES = {
   AEPS_BANK_LIST: `${BASE_URL}/api/aeps/bank-list`,
   AEPS_2FA_CHECK_STATUS: `${BASE_URL}/aeps/2fa/check-status`,
 
-  /////////////////// VERIFICATION //////////////////////////////////
+  ////////////////////////////// RECHARGE //////////////////////////////////
+  RECHARGE_FETCH_OPERATORS: `${BASE_URL}/api/recharge/operators`,
+  RECHARGE_TRANSACTION: `${BASE_URL}/api/recharge`,
+
+
+  ///////////////////////// VERIFICATION //////////////////////////////////
   ADHAAR_VERIFICATION: `${BASE_URL}/verification/aadhaar-validate`,
   PAN_VERIFICATION: `${BASE_URL}/verification/pan-validate`,
   EMAIL_VERIFICATION: `${BASE_URL}/verification/email-validate`,

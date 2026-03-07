@@ -409,6 +409,8 @@ const InfoTable = () => {
     <>
       {isLoading && <Loader />}
       <div className="w-full 320px:mt-12 md:mt-0">
+
+        {/* Back Button & Heading */}
         <div className="mb-6 flex items-center gap-6 justify-start">
           {/* Back Button */}
           <UnstyledButton
