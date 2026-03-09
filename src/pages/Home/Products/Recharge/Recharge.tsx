@@ -69,26 +69,7 @@ const Recharge = () => {
     const [operators, setOperators] = useState<RechargeOperatorListType[]>([])
     const [mobileOperators, setMobileOperators] = useState<any[]>([]);
     const [dthOperators, setDthOperators] = useState<any[]>([]);
-    const [plans, setPlans] = useState([
-        {
-            id: 1,
-            amount: 199,
-            validity: "28 days",
-            desc: "1GB/day + Unlimited Calls"
-        },
-        {
-            id: 2,
-            amount: 239,
-            validity: "28 days",
-            desc: "1.5GB/day + Unlimited Calls"
-        },
-        {
-            id: 3,
-            amount: 299,
-            validity: "28 days",
-            desc: "2GB/day + Unlimited Calls"
-        }
-    ]);
+    const [plans, setPlans] = useState<any>([]);
 
     const { responses } = useAppSelector(state => state.apiResponse)
 
@@ -196,6 +177,25 @@ const Recharge = () => {
         }
 
         fetchOperatorList();
+        setPlans([
+            {
+                id: 1,
+                amount: 199,
+                validity: "28 days",
+                desc: "1GB/day + Unlimited Calls"
+            },
+            {
+                id: 2,
+                amount: 239,
+                validity: "28 days",
+                desc: "1.5GB/day + Unlimited Calls"
+            },
+            {
+                id: 3,
+                amount: 299,
+                validity: "28 days",
+                desc: "2GB/day + Unlimited Calls"
+            }])
 
     }, [])
 
