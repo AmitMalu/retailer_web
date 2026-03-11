@@ -52,6 +52,7 @@ const Login: React.FC = () => {
   // };
 
   const handleSubmit = async (values: LoginRequest) => {
+
     if (loading) {
       showErrorNotification("Fetching your location, please wait...");
       return;
@@ -94,8 +95,9 @@ const Login: React.FC = () => {
         }
 
         navigate("/otpInput", {
-          state: { userName: values.userName, login: true },
-        });
+          // state: { userName: values.userName, login: true },
+          state: { userName: values.userName, login: true, otp: response?.data?.data?.otp },
+        })
         showSuccessNotification(response?.data?.data?.otp);
       } else {
         showErrorNotification(response?.data?.message || "Unable to login");
@@ -146,105 +148,90 @@ const Login: React.FC = () => {
             >
               {({ handleSubmit, handleChange, errors, touched, values }) => (
                 <>
-                  <div className="mt-10 flex w-full flex-col gap-4 items-center justify-center">
-                    <TextInputComponent
-                      label="Mobile Number"
-                      allowCharacter={false}
-                      allowSpace={false}
-                      allowSpecialChar={false}
-                      value={values.userName}
-                      onChange={handleChange("userName")}
-                      error={
-                        touched.userName && errors.userName
-                          ? errors.userName
-                          : ""
-                      }
-                      withAsterisk
-                      leftSection={<UserNameSvgIcon />}
-                      maxLength={10}
-                      minLength={10}
-                      type="tel"
-                      className="w-full"
-                      isAuth={true}
-                    />
-                    <TextInputComponent
-                      label={"Password "}
-                      value={values.password}
-                      onChange={handleChange("password")}
-                      error={
-                        touched.password && errors.password
-                          ? errors.password
-                          : ""
-                      }
-                      type={showPassword ? "text" : "password"}
-                      className="w-full"
-                      isAuth={true}
-                      withAsterisk
-                      leftSection={<LockSvgIcon />}
-                      rightSection={
-                        <div
-                          onClick={() => setShowPassword(!showPassword)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          {!showPassword ? (
-                            <OpenEyeSvgIcon
-                              color={theme.palette.background.default}
-                            />
-                          ) : (
-                            <CloseEyeSvgIcon />
-                          )}
-                        </div>
-                      }
-                    />
-                  </div>
-                  <UnstyledButton
-                    className="mt-1 w-max self-end "
-                    onClick={() => navigate("/forgotPassword")}
-                  >
-                    <TextComponent
-                      fontSize={12}
-                      fontWeight={400}
-                      color={"background.default"}
-                      align="right"
+                  <form className="w-full" onSubmit={handleSubmit}>
+                    <div className="mt-10 flex w-full flex-col gap-4 items-center justify-center">
+                      <TextInputComponent
+                        autoFocus
+                        label="Mobile Number"
+                        allowCharacter={false}
+                        allowSpace={false}
+                        allowSpecialChar={false}
+                        value={values.userName}
+                        onChange={handleChange("userName")}
+                        error={
+                          touched.userName && errors.userName
+                            ? errors.userName
+                            : ""
+                        }
+                        withAsterisk
+                        leftSection={<UserNameSvgIcon />}
+                        maxLength={10}
+                        minLength={10}
+                        type="tel"
+                        className="w-full"
+                        isAuth={true}
+                      />
+                      <TextInputComponent
+                        label={"Password "}
+                        value={values.password}
+                        onChange={handleChange("password")}
+                        error={
+                          touched.password && errors.password
+                            ? errors.password
+                            : ""
+                        }
+                        type={showPassword ? "text" : "password"}
+                        className="w-full"
+                        isAuth={true}
+                        withAsterisk
+                        leftSection={<LockSvgIcon />}
+                        rightSection={
+                          <div
+                            onClick={() => setShowPassword(!showPassword)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            {!showPassword ? (
+                              <OpenEyeSvgIcon
+                                color={theme.palette.background.default}
+                              />
+                            ) : (
+                              <CloseEyeSvgIcon />
+                            )}
+                          </div>
+                        }
+                      />
+                    </div>
+                    <UnstyledButton
+                      className="mt-1 w-max self-end "
+                      onClick={() => navigate("/forgotPassword")}
                     >
-                      Forgot Password?
-                    </TextComponent>
-                  </UnstyledButton>
-                  <div className="mt-6 flex w-full items-center justify-center">
-                    <ButtonComponent
-                      title="CONTINUE"
-                      variant="filled"
-                      onClick={() => handleSubmit()}
-                      loading={isLoading}
-                      radius={28}
-                      fullWidth={true}
-                      disabled={
-                        isLoading ||
-                        loading ||                // 👈 add this
-                        !values.userName ||
-                        !values.password
-                      }
-                      isAuth={true}
-                    />
-                  </div>
-                  {/* <div className="flex items-center justify-center gap-2 mt-2 ">
-                    <TextComponent
-                      fontSize={14}
-                      fontWeight={400}
-                      color="background.default"
-                    >
-                      Don't have an account yet?
-                    </TextComponent>
-                    <TextComponent
-                      fontSize={14}
-                      fontWeight={600}
-                      color="red.DEFAULT"
-                      className="underline cursor-pointer"
-                      onClick={() => navigate("/signUp")}
-                    >
-                      Sign up
-                    </TextComponent>
-                  </div> */}
+                      <TextComponent
+                        fontSize={12}
+                        fontWeight={400}
+                        color={"background.default"}
+                        align="right"
+                      >
+                        Forgot Password?
+                      </TextComponent>
+                    </UnstyledButton>
+                    <div className="mt-6 flex w-full items-center justify-center">
+                      <ButtonComponent
+                        type="submit"
+                        title="CONTINUE"
+                        variant="filled"
+                        loading={isLoading}
+                        radius={28}
+                        fullWidth={true}
+                        disabled={
+                          isLoading ||
+                          loading ||
+                          !values.userName ||
+                          !values.password
+                        }
+                        isAuth={true}
+                      />
+                    </div>
+                  </form>
                 </>
               )}
             </Formik>

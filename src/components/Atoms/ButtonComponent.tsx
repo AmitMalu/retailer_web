@@ -8,6 +8,7 @@ import {
 import { ButtonComponentProps } from "@/Common/interface";
 
 const ButtonComponent: React.FC<ButtonComponentProps> = ({
+  type = "button",
   title,
   onClick,
   variant = "contained",
@@ -24,6 +25,7 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
   isAuth = false,
   width,
   height,
+  buttonRef,
   ...rest
 }) => {
   const getMuiVariant = (): ButtonProps["variant"] => {
@@ -89,7 +91,8 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
       onClick={onClick}
       sx={buttonSx}
       {...rest}
-      type="submit"
+      ref={buttonRef}
+      type={type}
     >
       {leftIcon && (
         <Box component="span" mr={1}>

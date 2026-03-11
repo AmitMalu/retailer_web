@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ButtonComponent from "../../../components/Atoms/ButtonComponent";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Formik } from "formik";
@@ -35,10 +35,21 @@ const OtpInputScreen = () => {
   const location = useLocation();
   const username = location.state?.userName;
   const isLogin = location.state?.login;
+  const [autoOtp, setAutoOtp] = useState<string>(location.state?.otp || "");
   const [isLoading, setIsLoading] = useState(false);
   const [timer, setTimer] = useState(30);
   const [hasStartedTimer, setHasStartedTimer] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    // If the OTP is pre-populated and complete (6 digits), focus the submit button
+    if (autoOtp && autoOtp.length === 6) {
+      setTimeout(() => {
+        submitButtonRef.current?.focus();
+      }, 100); // small delay to ensure DOM is ready and OtpInput isn't stealing focus back
+    }
+  }, [autoOtp]);
 
   useEffect(() => {
     if (username && !hasStartedTimer) {
@@ -61,44 +72,12 @@ const OtpInputScreen = () => {
     };
   }, [timer]);
 
-  // const GenerateCredentials = async (userName: string) => {
-  //   try {
-  //     let bodyRequest = {
-  //       userName: userName || "",
-  //     };
-  //     const CredentialsResponse = await Token_generation(bodyRequest);
-  //     VerifyToken(CredentialsResponse?.data);
-  //   } catch (error: any) {
-  //     showErrorNotification(error.response?.data?.message || error.message);
-  //   }
-  // };
-  // const VerifyToken = async (values: VerifyTokenRequest) => {
-  //   try {
-  //     const tokenParts = values?.token?.split("|") || [];
-  //     const tokenValue = tokenParts[1] || "";
-  //     const hierarchyType = tokenParts[0] || "RT";
-
-  //     let bodyRequest = {
-  //       token: tokenValue || "",
-  //       hierarchyType: hierarchyType,
-  //     };
-  //     const tokenResponse = await Verify_Token(bodyRequest);
-  //     document.cookie = `authToken=${encodeURIComponent(values?.token)}; expires=${new Date(Date.now() + 7 * 864e5).toUTCString()}; path=/; SameSite=Strict`;
-  //     if (tokenValue && tokenResponse?.status === 200) {
-  //       showSuccessNotification("Logged In Successfully");
-  //       navigate("/dashboard");
-  //     }
-  //   } catch (error: any) {
-  //     showErrorNotification(error.response?.data?.message || error.message);
-  //   }
-  // };
-
   const validationSchema = Yup.object({
     otp: Yup.string().required("Required"),
   });
 
   const initialValues: OtpRequestProps = {
-    otp: "",
+    otp: autoOtp,
     userName: username,
   };
 
@@ -155,6 +134,9 @@ const OtpInputScreen = () => {
       });
       setTimer(30);
       setHasStartedTimer(true);
+      if (response?.data?.data?.otp) {
+        setAutoOtp(response.data.data.otp);
+      }
       showSuccessNotification(response?.data?.data?.otp);
     } catch (error: any) {
       setIsLoading(false);
@@ -191,110 +173,97 @@ const OtpInputScreen = () => {
             </div>
             <Formik<OtpRequestProps>
               initialValues={initialValues}
+              enableReinitialize={true}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
               {({ handleSubmit, handleChange, errors, touched, values }) => (
                 <>
-                  <div className="mb-3 mt-10 flex gap-4 w-full flex-col items-center justify-center">
-                    <OtpInput
-                      value={values.otp}
-                      onChange={handleChange("otp")}
-                      renderInput={(props) => <input {...props} />}
-                      numInputs={6}
-                      inputStyle={{
-                        width: "2.5rem",
-                        height: "3rem",
-                        margin: "0 0.3rem",
-                        fontSize: "1.5rem",
-                        borderRadius: "8px",
-                        border: `1px solid  ${touched.otp && errors.otp ? theme.palette.error.main : "#ccc"}`,
-                      }}
-                    />
-                    {touched.otp && errors.otp && (
-                      <TextComponent
-                        fontSize={12}
-                        fontWeight={400}
-                        color={"background.default"}
-                        style={{ textAlign: "right" }}
-                      >
-                        {errors.otp}
-                      </TextComponent>
-                    )}
-                  </div>
-                  <div className="mt-2 flex w-full items-center justify-center">
-                    {timer > 0 ? (
-                      <TextComponent
-                        fontSize={30}
-                        fontWeight={600}
-                        color={theme.palette.error.main}
-                      >
-                        {timer}
-                      </TextComponent>
-                    ) : (
-                      <div
-                        onClick={() => handleResendOtp()}
-                        className="cursor-pointer my-2"
-                      >
-                        <TextComponent
-                          fontSize={16}
-                          fontWeight={500}
-                          color={"background.default"}
-                        >
-                          Resend OTP
-                        </TextComponent>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-6 flex h-9 w-full items-center justify-between">
-                    <div>
-                      <ButtonComponent
-                        width={80}
-                        title={"BACK"}
-                        variant="light"
-                        onClick={() => {
-                          if (isLogin) {
-                            navigate("/login")
-                          } else {
-                            navigate("/forgotPassword")
-                          }
+                  <form className="w-full" onSubmit={handleSubmit}>
+                    <div className="mb-3 mt-10 flex gap-4 w-full flex-col items-center justify-center">
+                      <OtpInput
+                        shouldAutoFocus={!autoOtp || autoOtp.length < 6}
+                        value={values.otp}
+                        onChange={handleChange("otp")}
+                        renderInput={(props) => <input {...props} />}
+                        numInputs={6}
+                        inputStyle={{
+                          width: "2.5rem",
+                          height: "3rem",
+                          margin: "0 0.3rem",
+                          fontSize: "1.5rem",
+                          borderRadius: "8px",
+                          border: `1px solid  ${touched.otp && errors.otp ? theme.palette.error.main : "#ccc"}`,
                         }}
-                        leftIcon={<ArrowLeft />}
+                      />
+                      {touched.otp && errors.otp && (
+                        <TextComponent
+                          fontSize={12}
+                          fontWeight={400}
+                          color={"background.default"}
+                          style={{ textAlign: "right" }}
+                        >
+                          {errors.otp}
+                        </TextComponent>
+                      )}
+                    </div>
+                    <div className="mt-2 flex w-full items-center justify-center">
+                      {timer > 0 ? (
+                        <TextComponent
+                          fontSize={30}
+                          fontWeight={600}
+                          color={theme.palette.error.main}
+                        >
+                          {timer}
+                        </TextComponent>
+                      ) : (
+                        <div
+                          onClick={() => handleResendOtp()}
+                          className="cursor-pointer my-2"
+                        >
+                          <TextComponent
+                            fontSize={16}
+                            fontWeight={500}
+                            color={"background.default"}
+                          >
+                            Resend OTP
+                          </TextComponent>
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-6 flex h-9 w-full items-center justify-between">
+                      <div>
+                        <ButtonComponent
+                          width={80}
+                          title={"BACK"}
+                          variant="light"
+                          onClick={() => {
+                            if (isLogin) {
+                              navigate("/login")
+                            } else {
+                              navigate("/forgotPassword")
+                            }
+                          }}
+                          leftIcon={<ArrowLeft />}
+                          radius={28}
+                        />
+                      </div>
+                      <ButtonComponent
+                        type="submit"
+                        width={120}
+                        title={"VERIFY"}
+                        variant="filled"
+                        onClick={() => handleSubmit()}
+                        loading={isLoading}
                         radius={28}
+                        fontSize={14}
+                        fullWidth
+                        disabled={isLoading || !values.otp || values.otp.length < 6}
+                        isAuth={true}
+                        buttonRef={submitButtonRef}
                       />
                     </div>
-                    <ButtonComponent
-                      width={120}
-                      title={"VERIFY"}
-                      variant="filled"
-                      onClick={() => handleSubmit()}
-                      loading={isLoading}
-                      radius={28}
-                      fontSize={14}
-                      fullWidth
-                      disabled={isLoading || !values.otp}
-                      isAuth={true}
-                    />
-                  </div>
-                  {/* <div className="flex items-center justify-center gap-2 mt-2">
-                    <TextComponent
-                      fontSize={14}
-                      fontWeight={400}
-                      color="background.default"
-                    >
-                      Don't have an account yet?
-                    </TextComponent>
-                    <TextComponent
-                      fontSize={14}
-                      fontWeight={600}
-                      color="red.DEFAULT"
-                      className="underline cursor-pointer"
-                      onClick={() => navigate("/signUp")}
-                    >
-                      Sign up
-                    </TextComponent>
-                  </div> */}
+                  </form>
                 </>
               )}
             </Formik>

@@ -13,11 +13,21 @@ const LocationGuard = () => {
     const requestLocation = () => {
         dispatch(setLocationLoading(true));
         navigator.geolocation.getCurrentPosition(
-            (position) => {
+            async (position) => {
+                let currentIp = null;
+                try {
+                    const res = await fetch("https://api.ipify.org?format=json");
+                    const data = await res.json();
+                    currentIp = data.ip;
+                } catch (error) {
+                    console.error("Failed to fetch IP address", error);
+                }
+
                 dispatch(
                     setLocation({
                         lat: position.coords.latitude,
                         lng: position.coords.longitude,
+                        ipAddress: currentIp,
                     })
                 )
                 dispatch(setLocationLoading(false));
@@ -40,11 +50,21 @@ const LocationGuard = () => {
     // 2. WATCH location continuously
     useEffect(() => {
         const watchId = navigator.geolocation.watchPosition(
-            (position) => {
+            async (position) => {
+                let currentIp = null;
+                try {
+                    const res = await fetch("https://api.ipify.org?format=json");
+                    const data = await res.json();
+                    currentIp = data.ip;
+                } catch (error) {
+                    console.error("Failed to fetch IP address", error);
+                }
+
                 dispatch(
                     setLocation({
                         lat: position.coords.latitude,
                         lng: position.coords.longitude,
+                        ipAddress: currentIp,
                     })
                 );
                 setLocationBlocked(false);

@@ -26,7 +26,8 @@ export const API_ROUTES = {
   FUND_REVERSAL_RESEND_OTP: `${BASE_URL}/api/fund-reversal/resend-otp`,
   FUND_TRANSFER: `${BASE_URL}/api/fund-transfer`,
   WALLET_BALANCE: `${BASE_URL}/api/dashboard/wallet-balance`,
-  WALLET_TO_BANK: `${BASE_URL}/api/move-to-bank/send-payout-request-VO`,
+  // WALLET_TO_BANK: `${BASE_URL}/api/move-to-bank/send-payout-request-VO`, //old url 
+  WALLET_TO_BANK: `${BASE_URL}/api/send-payout-vo`,
   FETCH_HIERARCHY_BANKS: `${BASE_URL}/api/bank-details/verified`,
 
   ///////////////// CREATE USER //////////////////////////
@@ -67,7 +68,7 @@ export const API_ROUTES = {
   SAVE_BENEFICIARY: `${BASE_URL}/api/payout/save-beneficiary`,
   // SEND_PAYOUT: `${BASE_URL}/api/send-payout`,
   // PAYOUT_SUCCESS_CALLBACK: `${BASE_URL}/api/update-callback-url`,
-  SEND_PAYOUT: `${BASE_URL}/api/send-payout-vo`,
+  SEND_PAYOUT: `${BASE_URL}/api/send-payout`,
   PAYOUT_SUCCESS_CALLBACK: `${BASE_URL}/api/update-callback-url`,
   GET_BANK_DETAILS: `${BASE_URL}/api/network-banks/details-by-ifsc`,
   GET_PAYOUT_ALL_DETAILS: `${BASE_URL}/api/payout/all`,

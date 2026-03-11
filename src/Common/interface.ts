@@ -224,6 +224,7 @@ export type CustomTextProps = {
 };
 
 export type ButtonComponentProps = {
+  type?: "submit" | "button";
   title: string;
   onClick?: () => void;
   variant?: "filled" | "outline" | "light" | "gradient";
@@ -240,6 +241,7 @@ export type ButtonComponentProps = {
   isAuth?: boolean;
   width?: string | number;
   height?: string | number;
+  buttonRef?: React.Ref<any>;
 };
 
 export type CustomDatePickerProps = {
