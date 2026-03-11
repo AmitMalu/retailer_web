@@ -1,18 +1,19 @@
-import { BackSvgIcon } from "@/assets/svg";
+import { BackSvgIcon, RefreshIcon } from "@/assets/svg";
 import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
+import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
 import { useAppSelector } from "@/Redux/hooks";
 import { RootState } from "@/Redux/Store";
-import { Aeps_TwoFactor_Verify } from "@/Services/api";
+import { Aeps_Bank_List, Aeps_TwoFactor_Verify } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { Card, Grid, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { Form, Formik, FormikValues } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Yup from 'yup'
@@ -28,7 +29,6 @@ const AepsTwoFactor = () => {
     const location = useLocation();
     const profile = location.state?.profile;
     const queryParams = new URLSearchParams(location.search);
-    const iinno = queryParams.get("iinno");  // "cashWithdrawal", "balanceInquiry", etc.
     const service = queryParams.get("service");  // "cashWithdrawal", "balanceInquiry", etc.
 
     const loginData = apiResponses?.loginData
@@ -36,11 +36,14 @@ const AepsTwoFactor = () => {
         : null;
 
     const [isLoading, setIsLoading] = useState(false);
+    const [bankList, setBankList] = useState<{ label: string, value: string }[]>([]);
+    const [loadingBanks, setLoadingBanks] = useState(false);
 
     const validationSchema = Yup.object({
         aadhaar: Yup.string()
             .required("Aadhaar required")
             .length(12, "Aadhaar must be 12 digits"),
+        bank: Yup.string().required("Please Select the Bank"),
         deviceType: Yup.string()
             .required("Please select a device"),
         pidData: Yup.object()
@@ -50,9 +53,36 @@ const AepsTwoFactor = () => {
 
     const initialValues = {
         aadhaar: "",
+        bank: "",
         deviceType: "",
         pidData: {},
     };
+
+    const fetchBanks = async () => {
+        try {
+            setLoadingBanks(true);
+            const response = await Aeps_Bank_List();
+
+            if (response?.data?.length === 0) {
+                showErrorNotification(response?.data?.message || "Failed to fetch bank list");
+                setBankList([]);
+                return;
+            }
+
+            setBankList(
+                response?.data?.data?.map((item: any) => ({
+                    value: item.iinno,   // <-- correct
+                    label: item.bankName // <-- correct
+                })) || []
+            );
+        } catch (err) {
+            handleCustomError(err);
+            setBankList([]);
+        } finally {
+            setLoadingBanks(false);
+        }
+    };
+
 
     const handleSubmit = async (values: FormikValues) => {
         try {
@@ -146,7 +176,7 @@ const AepsTwoFactor = () => {
                 cardnumberORUID: {
                     adhaarNumber: values.aadhaar,
                     indicatorforUID: 0,
-                    nationalBankIdentificationNumber: iinno || "607152"
+                    nationalBankIdentificationNumber: values.bank || ""
                 },
                 latitude: lat, // Should come from geolocation
                 longitude: lng, // Should come from geolocation
@@ -188,6 +218,10 @@ const AepsTwoFactor = () => {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (bankList?.length === 0) fetchBanks();
+    }, []);
 
     return (
         <>
@@ -232,6 +266,38 @@ const AepsTwoFactor = () => {
                                             allowSpecialChar={false}
                                             allowCharacter={false}
                                             maxLength={12}
+                                        />
+                                    </Grid.Col>
+
+                                    <Grid.Col span="auto" mb={30}>
+                                        <FormikSelectComponent
+                                            key={values.bank}
+                                            name="bank"
+                                            label="Select Bank"
+                                            placeholder="Choose Bank"
+                                            searchable
+                                            withAsterisk
+                                            data={bankList}
+                                            disabled={loadingBanks}
+                                            rightSection={
+                                                <>
+                                                    {loadingBanks && <Loader />}
+                                                    {!loadingBanks && bankList.length < 1 && (
+                                                        <div
+                                                            onClick={fetchBanks}
+                                                            className="cursor-pointer"
+                                                            style={{
+                                                                pointerEvents: "auto",
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                            }}
+                                                            title="Refresh Bank List"
+                                                        >
+                                                            <RefreshIcon />
+                                                        </div>
+                                                    )}
+                                                </>
+                                            }
                                         />
                                     </Grid.Col>
                                 </Grid>
