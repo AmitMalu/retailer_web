@@ -16,6 +16,7 @@ import * as Yup from 'yup'
 import AepsTransactionReciept from "./AepsTransactionReciept";
 import Loader from "@/components/Atoms/Loader";
 import { useAppSelector } from "@/Redux/hooks";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 interface AepsFormValues {
     mobile: string;
     aadhaar: string;
@@ -51,6 +52,8 @@ const AepsTransaction = () => {
 
     const { lat, lng } = useAppSelector(state => state.location)
     const { responses } = useAppSelector(state => state.apiResponse)
+
+    const { checkDuplicate, store } = useTransactionCooldown(service!);
 
     const loginData = responses?.loginData
         ? decryptData(responses.loginData)
@@ -149,12 +152,19 @@ const AepsTransaction = () => {
                 captureResponse: values.pidData,
                 adhaarNumber: values.aadhaar,
                 mobileNumber: values.mobile,
-
-                // Send location to backend
                 latitude: lat,
                 longitude: lng,
-                // locationCapturedAt: location.capturedAt,
             };
+
+            if (checkDuplicate(values.aadhaar, Number(values.amount))) {
+                showErrorNotification(
+                    `You cannot repeat the same transaction within 2 minutes. ${service === "cashWithdrawal"
+                        ? "Please try a different amount or try again shortly."
+                        : "Please try again shortly."
+                    }`
+                );
+                return;
+            }
 
             if (service === "balanceInquiry") {
                 res = await Aeps_Balance_Inquiry({
@@ -175,6 +185,8 @@ const AepsTransaction = () => {
 
             // If response exists → show receipt
             if (res?.data) {
+                store(values.aadhaar, Number(values.amount));
+
                 const normalized = normalizeReceiptData(res?.data, service!, values);
                 setReceiptData(normalized);
                 setReceiptDrawerOpened(true);
@@ -182,21 +194,10 @@ const AepsTransaction = () => {
                 showErrorNotification(res?.data?.data?.message || res?.data?.message || "Failed to process transaction");
             }
         } catch (err: any) {
-            // if (err.code === "PERMISSION_DENIED") {
-            //     showErrorNotification("Location permission is required to complete AEPS transaction");
-            // } else if (err.code === "TIMEOUT") {
-            //     showErrorNotification("Please allow location access to continue transaction");
-            // } else {
-            //     handleCustomError(err);
-            // }
             handleCustomError(err);
         } finally {
             setIsLoading(false);
         }
-
-        // navigate(`/products/aeps/2fa/${subProductId}?iinno=${values.bank}`, {
-        //     state: { profile }
-        // })
     }
 
     const maskAadhaar = (aadhaar?: string) =>

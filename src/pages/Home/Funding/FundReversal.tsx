@@ -19,6 +19,7 @@ import { Child_Member_List, Fund_Reversal, Resend_Otp_Fund_Reversal } from "@/Se
 import { useTheme } from "@mui/system";
 import { Modal } from "@mantine/core";
 import OTPInput from "react-otp-input";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 
 const FundReversal = () => {
   const theme = useTheme();
@@ -27,7 +28,6 @@ const FundReversal = () => {
   const [timer, setTimer] = useState(30);
   const [isOtpStage, setIsOtpStage] = useState(false);
   const [otpId, setOtpId] = useState<string | null>(null);
-
 
   const [childMemberList, setChildMemberList] = useState<
     ChildMemberListProps[]
@@ -41,6 +41,7 @@ const FundReversal = () => {
     ? decryptData(apiResponses?.loginData)
     : null;
 
+  const { checkDuplicate, store } = useTransactionCooldown("FUND-REVERSAL");
 
   const GetChildList = async () => {
     try {
@@ -158,6 +159,13 @@ const FundReversal = () => {
         bodyData.fundReversalRequestId = otpId || "";
       }
 
+      if (checkDuplicate(values.childHierarchyId, Number(values.reversalAmount))) {
+        showErrorNotification(
+          "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
+        );
+        return;
+      }
+
       const response = await Fund_Reversal(bodyData);
 
       if (response?.data?.statusCode === 200 || response?.data?.statusCode === 201) {
@@ -175,6 +183,7 @@ const FundReversal = () => {
           setTimer(30);
           setIsOtpStage(true);
         } else {
+          store(values.childHierarchyId, Number(values.reversalAmount));
           // Second call (OTP verification)
           showSuccessNotification("Fund Reversal Successful");
           setOpened(false);

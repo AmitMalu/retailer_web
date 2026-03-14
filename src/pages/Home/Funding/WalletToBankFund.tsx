@@ -20,6 +20,7 @@ import Loader from "@/components/Atoms/Loader";
 import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePicker";
 import { IconCalendar } from "@tabler/icons-react";
 import moment from "moment";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 
 const WalletToBankFund = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +33,9 @@ const WalletToBankFund = () => {
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
+
+  const { checkDuplicate, store } = useTransactionCooldown("FUND_REQUEST");
+
   const ipAddress = apiResponses?.ipAddress
     ? decryptData(apiResponses?.ipAddress)
     : null;
@@ -115,8 +119,17 @@ const WalletToBankFund = () => {
         depositDate: values.depositDate ? moment(values.depositDate).format("YYYY-MM-DD") : null,
       });
       formData.append("data", jsonData);
+
+      if (checkDuplicate(values.bankAccountNumber, Number(values.amount))) {
+        showErrorNotification(
+          "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
+        );
+        return;
+      }
+
       const response = await Prefund_Request(formData);
       if (response?.status === 200 || response?.status === 201) {
+        store(values.bankAccountNumber, Number(values.amount));
         showSuccessNotification(response?.data?.message);
         resetForm({
           values: {

@@ -495,10 +495,11 @@ const Form: React.FC<Props> = ({ serviceName, subProductId }) => {
 
                                                 <div className="mt-6 flex h-9 w-full items-center justify-end">
                                                     <ButtonComponent
+                                                        type="submit"
                                                         width={120}
                                                         title={"SUBMIT"}
                                                         variant="filled"
-                                                        onClick={() => null}
+                                                        onClick={() => null}    
                                                         disabled={isLoading}
                                                         radius={28}
                                                         fontSize={14}

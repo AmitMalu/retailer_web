@@ -16,6 +16,7 @@ import { RootState } from "@/Redux/Store";
 import { WalletToWalletProps } from "@/Common/interface";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import { Wallet_To_Wallet } from "@/Services/api";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 
 const WalletToWallet = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +27,8 @@ const WalletToWallet = () => {
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
+
+  const { checkDuplicate, store } = useTransactionCooldown("WALLET-TO-WALLET");
 
   const validationSchema = Yup.object().shape({
     // transferAmount: Yup.string()
@@ -76,8 +79,16 @@ const WalletToWallet = () => {
         walletTypeTo: values.walletTypeTo,
       };
 
+      if (checkDuplicate(values.walletTypeFrom, Number(values.transferAmount))) {
+        showErrorNotification(
+          "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
+        );
+        return;
+      }
+
       const response = await Wallet_To_Wallet(bodyData);
       if (response?.status === 200 || response?.status === 201) {
+        store(values.walletTypeFrom, Number(values.transferAmount));
         showSuccessNotification(response?.data?.message);
         resetForm();
       } else {
