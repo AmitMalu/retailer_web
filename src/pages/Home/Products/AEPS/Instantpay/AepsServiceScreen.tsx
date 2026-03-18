@@ -1,5 +1,5 @@
 import TextComponent from "@/components/Atoms/TextComponent";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTheme } from "@mui/system";
 import { UnstyledButton } from "@mantine/core";
 import {
@@ -9,7 +9,7 @@ import {
   MiniStatementSvgIcon,
 } from "@/assets/svg";
 import AepsCard from "@/components/Molecules/AepsCard";
-import { callAepsApi, Check_Aeps_2FA_Status } from "@/Services/api";
+import { callAepsApi } from "@/Services/api";
 import { decryptData } from "@/Utils/helper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
@@ -23,7 +23,6 @@ const AepsServiceScreen = ({ vendorKey }: AepsScreenProps) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { subProductId } = useParams()
-  const { state } = useLocation();
   const [loading, setLoading] = useState(false);
 
   const apiResponses = useSelector(

@@ -10,7 +10,7 @@ import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Aeps_Resend_Otp, Aeps_Send_Otp, Aeps_Verify_Otp, callAepsApi } from "@/Services/api";
+import { callAepsApi } from "@/Services/api";
 import ButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
 import { useAppSelector } from "@/Redux/hooks";

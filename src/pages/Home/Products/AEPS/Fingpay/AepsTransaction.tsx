@@ -3,7 +3,7 @@ import TextComponent from "@/components/Atoms/TextComponent";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
-import { Aeps_Bank_List, Aeps_Cash_Withdrawal, Aeps_Balance_Inquiry, Aeps_Mini_Statement, callAepsApi } from "@/Services/api";
+import { callAepsApi } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification } from "@/Utils/notifications";

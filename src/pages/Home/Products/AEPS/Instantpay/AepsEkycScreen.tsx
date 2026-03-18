@@ -10,8 +10,7 @@ import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Aeps_Resend_Otp, Aeps_Send_Otp, Aeps_Verify_Otp, callAepsApi } from "@/Services/api";
-import ButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
+import { callAepsApi } from "@/Services/api";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
 import { useAppSelector } from "@/Redux/hooks";
 import { decryptData } from "@/Utils/helper";
@@ -120,7 +119,7 @@ const AepsEkycScreen = ({ vendorKey }: AepsScreenProps) => {
                         validationSchema={validationSchema}
                         onSubmit={handleSubmit}
                     >
-                        {({ values, validateForm, handleChange, setFieldValue, setFieldError, setFieldTouched, touched, errors }) => {
+                        {({ values, validateForm, setFieldValue, setFieldError, setFieldTouched, touched, errors }) => {
 
                             return (
                                 <Form className="w-full">

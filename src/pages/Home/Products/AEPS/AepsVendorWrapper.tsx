@@ -1,4 +1,3 @@
-// AepsVendorWrapper.tsx
 
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppSelector } from "../../../../Redux/hooks";

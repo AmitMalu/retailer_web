@@ -1,4 +1,3 @@
-// AepsVendorConfig.ts
 
 import FingpayStatusScreen from "./Fingpay/AepsStatusScreen";
 import FingpayServiceScreen from "./Fingpay/AepsServiceScreen";

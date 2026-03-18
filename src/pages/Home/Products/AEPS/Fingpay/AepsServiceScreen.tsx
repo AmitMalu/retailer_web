@@ -9,7 +9,7 @@ import {
   MiniStatementSvgIcon,
 } from "@/assets/svg";
 import AepsCard from "@/components/Molecules/AepsCard";
-import { callAepsApi, Check_Aeps_2FA_Status } from "@/Services/api";
+import { callAepsApi } from "@/Services/api";
 import { decryptData } from "@/Utils/helper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";

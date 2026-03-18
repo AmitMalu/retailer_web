@@ -1,19 +1,18 @@
-import { BackSvgIcon, RefreshIcon } from "@/assets/svg";
+import { BackSvgIcon } from "@/assets/svg";
 import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
-import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
 import { useAppSelector } from "@/Redux/hooks";
 import { RootState } from "@/Redux/Store";
-import { Aeps_Bank_List, Aeps_TwoFactor_Verify, callAepsApi } from "@/Services/api";
+import { callAepsApi } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { Card, Grid, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { Form, Formik, FormikValues } from "formik";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Yup from 'yup'

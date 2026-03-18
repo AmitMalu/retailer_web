@@ -6,7 +6,7 @@ import FormikTextInputComponent from "@/components/Molecules/NewComponents/Formi
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
 import { useAppSelector } from "@/Redux/hooks";
 import { RootState } from "@/Redux/Store";
-import { Aeps_Bank_List, Aeps_TwoFactor_Verify, callAepsApi } from "@/Services/api";
+import { callAepsApi } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
@@ -28,7 +28,6 @@ const AepsTwoFactor = ({ vendorKey }: AepsScreenProps) => {
         (state: RootState) => state.apiResponse.responses
     );
     const location = useLocation();
-    const profile = location.state?.profile;
     const queryParams = new URLSearchParams(location.search);
     const service = queryParams.get("service");  // "cashWithdrawal", "balanceInquiry", etc.
 

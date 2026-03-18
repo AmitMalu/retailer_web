@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "@/components/Atoms/Loader";
-import { AepsMerchantOnboardAPI, callAepsApi, Check_Aeps_Onboard_Status } from "@/Services/api";
+import { callAepsApi } from "@/Services/api";
 import { RootState } from "@/Redux/Store";
 import { useSelector } from "react-redux";
 import { decryptData } from "@/Utils/helper";
@@ -24,7 +24,6 @@ export default function AepsStatusScreen({ vendorKey }: AepsScreenProps) {
     const { subProductId } = useParams();
     const [loading, setLoading] = useState(true);
     const [showNotOnboardModal, setShowNotOnboardModal] = useState(false);
-    const [apiData, setApiData] = useState<any>(null);
 
     useEffect(() => {
         const retailerId = loginData?.hierarchyId;
@@ -58,8 +57,6 @@ export default function AepsStatusScreen({ vendorKey }: AepsScreenProps) {
                 // SUCCESS CASE
                 const data = res?.data?.data;
                 const { onboardStatus, profile } = data;
-
-                setApiData(profile);
 
                 // CASE 1 — Onboarded + eKYC Done
                 if (onboardStatus == 2) {
@@ -128,7 +125,7 @@ export default function AepsStatusScreen({ vendorKey }: AepsScreenProps) {
             <AepsOnboardModal
                 opened={showNotOnboardModal}
                 onClose={() => navigate(`/products/aeps`)}
-                retailerName={apiData?.name}
+                retailerName={loginData?.retailerName}
                 onOnboard={handleOnboardNow}
             />
         </>
