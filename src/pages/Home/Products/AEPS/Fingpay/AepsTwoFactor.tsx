@@ -6,7 +6,7 @@ import FormikTextInputComponent from "@/components/Molecules/NewComponents/Formi
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
 import { useAppSelector } from "@/Redux/hooks";
 import { RootState } from "@/Redux/Store";
-import { Aeps_Bank_List, Aeps_TwoFactor_Verify } from "@/Services/api";
+import { Aeps_Bank_List, Aeps_TwoFactor_Verify, callAepsApi } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
@@ -17,8 +17,9 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Yup from 'yup'
+import { AepsScreenProps } from "../AepsVendorConfig";
 
-const AepsTwoFactor = () => {
+const AepsTwoFactor = ({ vendorKey }: AepsScreenProps) => {
     const theme = useTheme();
     const navigate = useNavigate();
     const { lat, lng } = useAppSelector(state => state.location)
@@ -61,8 +62,10 @@ const AepsTwoFactor = () => {
     const fetchBanks = async () => {
         try {
             setLoadingBanks(true);
-            const response = await Aeps_Bank_List();
-
+            const response = await callAepsApi(
+                vendorKey,
+                "bankList",
+            );
             if (response?.data?.length === 0) {
                 showErrorNotification(response?.data?.message || "Failed to fetch bank list");
                 setBankList([]);
@@ -71,8 +74,8 @@ const AepsTwoFactor = () => {
 
             setBankList(
                 response?.data?.data?.map((item: any) => ({
-                    value: item.iinno,   // <-- correct
-                    label: item.bankName // <-- correct
+                    value: item.iinno,
+                    label: item.bankName
                 })) || []
             );
         } catch (err) {
@@ -88,13 +91,11 @@ const AepsTwoFactor = () => {
         try {
             setIsLoading(true);
 
-            // Log the exact captureResponse payload for comparison
             console.log('=== CAPTURE RESPONSE PAYLOAD ===');
             console.log('Type:', typeof values.pidData);
             console.log('Keys:', Object.keys(values.pidData || {}));
             console.log('Full payload:', JSON.stringify(values.pidData, null, 2));
 
-            // Check biometric quality before sending
             const qScore = parseInt(values.pidData?.qScore || "0");
             const nmPoints = parseInt(values.pidData?.nmPoints || "0");
             const errCode = values.pidData?.errCode || "0";
@@ -103,21 +104,18 @@ const AepsTwoFactor = () => {
             console.log('Biometric Quality - qScore:', qScore, 'nmPoints:', nmPoints);
             console.log('RD Service Status - errCode:', errCode, 'errInfo:', errInfo);
 
-            // Validate RD Service success
             if (errCode !== "0" || errInfo.toLowerCase().includes("fail")) {
                 showErrorNotification(`RD Service failed: ${errInfo}. Please scan again.`);
                 setIsLoading(false);
                 return;
             }
 
-            // Validate biometric quality (AEPS typically requires higher quality)
             if (qScore < 50 || nmPoints < 10) {
                 showErrorNotification(`Low biometric quality detected. Quality: ${qScore}% (min 70%), Points: ${nmPoints} (min 40). Please try again with better finger placement.`);
                 setIsLoading(false);
                 return;
             }
 
-            // Validate required fields are present
             const requiredFields = ['Piddata', 'sessionKey', 'hmac', 'dpID', 'rdsID', 'rdsVer'];
             const missingFields = requiredFields.filter(field => !values.pidData?.[field]);
 
@@ -127,7 +125,6 @@ const AepsTwoFactor = () => {
                 return;
             }
 
-            // Validate PID data format
             const pidData = values.pidData?.Piddata;
             if (!pidData || pidData.length < 100) {
                 showErrorNotification('Invalid PID data format. Please scan again.');
@@ -135,7 +132,6 @@ const AepsTwoFactor = () => {
                 return;
             }
 
-            // Validate device RDS ID and version (common AEPS devices)
             const rdsID = values.pidData?.rdsID;
             const validRdsDevices = [
                 'RENESAS.MANTRA.001',
@@ -150,7 +146,6 @@ const AepsTwoFactor = () => {
                 return;
             }
 
-            // Validate device info consistency
             const deviceType = values.deviceType as keyof typeof validDevicePrefixes;
             const dpID = values.pidData?.dpID;
             const validDevicePrefixes: Record<string, string> = {
@@ -171,39 +166,36 @@ const AepsTwoFactor = () => {
 
             console.log('================================');
 
-            const res = await Aeps_TwoFactor_Verify({
-                captureResponse: values.pidData,
-                cardnumberORUID: {
-                    adhaarNumber: values.aadhaar,
-                    indicatorforUID: 0,
-                    nationalBankIdentificationNumber: values.bank || ""
-                },
-                latitude: lat, // Should come from geolocation
-                longitude: lng, // Should come from geolocation
-                requestRemarks: "TN3000CA0006530", // Should be dynamic
-                transactionType: "AUO",
-                merchantUserName: loginData?.username || "user", // Should come from login data
-                merchantPin: loginData?.pin || "81DC9BDB52D04DC20036DBD8313ED055", // Should be MD5 hashed
-                superMerchantId: "2", // Should come from config
-                merchantTranId: `TXN${Date.now()}`, // Generate unique transaction ID
-                mobileNumber: loginData?.mobileNumber || "9999999999", // Should come from login data
-                serviceType: "AEPS",
-                retailerId: loginData?.hierarchyId,
-                subProductId: subProductId, // AEPS 2FA / Aadhaar Auth
-                // isFacialTan:true
-                // isFaceTan: true
-            });
+            const res = await callAepsApi(
+                vendorKey,
+                "twoFactor",
+                {
+                    captureResponse: values.pidData,
+                    cardnumberORUID: {
+                        adhaarNumber: values.aadhaar,
+                        indicatorforUID: 0,
+                        nationalBankIdentificationNumber: values.bank || ""
+                    },
+                    latitude: lat,
+                    longitude: lng,
+                    requestRemarks: "TN3000CA0006530",
+                    transactionType: "AUO",
+                    merchantUserName: loginData?.username || "user",
+                    merchantPin: loginData?.pin || "81DC9BDB52D04DC20036DBD8313ED055",
+                    superMerchantId: "2",
+                    merchantTranId: `TXN${Date.now()}`,
+                    mobileNumber: loginData?.mobileNumber || "9999999999",
+                    serviceType: "AEPS",
+                    retailerId: loginData?.hierarchyId,
+                    subProductId: subProductId,
+                });
 
             if (res?.data?.statusCode === 200 && res?.data?.data?.status === true) {
                 showSuccessNotification(res?.data?.message || "2FA Verified Successfully");
-                // Navigate to transaction screen after successful 2FA
-                navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {
-                    state: { profile },
-                });
+                navigate(`/products/aeps/transaction/${subProductId}?service=${service}`);
             } else {
                 const errMsg = res?.data?.data?.data?.responseMessage || res?.data?.message || "2FA Failed";
 
-                // Specific handling for biometric errors
                 if (errMsg?.toLowerCase().includes("invalid biometric") ||
                     errMsg?.toLowerCase().includes("biometric") ||
                     errMsg?.toLowerCase().includes("fingerprint")) {
@@ -237,7 +229,7 @@ const AepsTwoFactor = () => {
                 </TextComponent>
 
                 <TextComponent fontSize={16} color="#444">
-                    Dear {profile?.name || "User"}, for your security, AEPS transactions require
+                    Dear {loginData?.retailerName || "User"}, for your security, AEPS transactions require
                     Two-Factor Authentication every 24 hours. Please verify to continue.
                 </TextComponent>
 
@@ -315,14 +307,10 @@ const AepsTwoFactor = () => {
                                     setFieldTouched={setFieldTouched}
                                     validateForm={validateForm}
                                     requiredFieldsBeforeScan={["aadhaar", "deviceType"]}
-                                    // When 2FA mode is true, Wadh is not sent to RD service, as per provider requirement. 
-                                    // If your provider requires Wadh for 2FA as well, set is2FA to false and provide Wadh value
-                                    // wadh={import.meta.env.VITE_AEPS_FINGPAY_LIVE_WADH} 
                                     is2FA={true}
                                     onSuccessScan={async (parsedPid: any) => {
                                         await setFieldValue("pidData", parsedPid, true);
 
-                                        // Submit automatically
                                         setTimeout(() => {
                                             handleSubmit({ ...values, pidData: parsedPid });
                                         }, 0);

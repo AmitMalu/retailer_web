@@ -71,11 +71,30 @@ const generatePidOptions = (is2FA = true, wadh = "") => {
 // Parse PID XML
 // -------------------------------
 const parsePidData = (xmlText: string) => {
+    console.log(xmlText);
     const xml = new DOMParser().parseFromString(xmlText, "text/xml");
     const resp = xml.querySelector("Resp");
     const data = xml.querySelector("Data");
     const skey = xml.querySelector("Skey");
     const deviceInfo = xml.querySelector("DeviceInfo");
+
+    // srno extraction for InstantPay KYC.
+    let srno = "";
+
+    const additionalInfoNodes = xml.getElementsByTagName("additional_info");
+
+    if (additionalInfoNodes.length > 0) {
+        const params = additionalInfoNodes[0].getElementsByTagName("Param");
+
+        for (let i = 0; i < params.length; i++) {
+            const name = params[i].getAttribute("name")?.toLowerCase();
+            if (name === "srno") {
+                srno = params[i].getAttribute("value") || "";
+                break;
+            }
+        }
+    }
+
 
     return {
         PidDatatype: data?.getAttribute("type") || "X",
@@ -83,6 +102,7 @@ const parsePidData = (xmlText: string) => {
         ci: skey?.getAttribute("ci") || "",
         dc: deviceInfo?.getAttribute("dc") || "",
         dpID: deviceInfo?.getAttribute("dpId") || "",
+        srno,
         errCode: resp?.getAttribute("errCode") || "0",
         errInfo: resp?.getAttribute("errInfo") || "",
         fCount: resp?.getAttribute("fCount") || "1",

@@ -102,9 +102,9 @@ export const API_ROUTES = {
   DMT_TRANSACTION: `${BASE_URL}/api/dmt/transaction`,
   DMT_BANK_LIST: `${BASE_URL}/api/dmt/bank-list`,
 
-  ///////////////////////////// AEPS ////////////////////////////////
-  AEPS_CHECK_STATUS: `${BASE_URL}/api/merchant/check-status`,
+  ///////////////////////////// AEPS FINGPAY ////////////////////////////////
   VERIFY_LOCATION: `${BASE_URL}/api/geo/check`,
+  AEPS_CHECK_STATUS: `${BASE_URL}/api/merchant/check-status`,
   AEPS_MERCHANT_ONBOARD: `${BASE_URL}/api/merchant/onboarding`,
   AEPS_SEND_OTP: `${BASE_URL}/aeps/ekyc/send-otp`,
   AEPS_RESEND_OTP: `${BASE_URL}/aeps/ekyc/resend-otp`,
@@ -112,6 +112,23 @@ export const API_ROUTES = {
   AEPS_TWO_FA: `${BASE_URL}/aeps/2fa/validate-aadhar`,
   AEPS_BANK_LIST: `${BASE_URL}/api/aeps/bank-list`,
   AEPS_2FA_CHECK_STATUS: `${BASE_URL}/aeps/2fa/check-status`,
+  CASH_WITHDRAWAL: `${BASE_URL}/api/aeps/cash-withdrawal`,
+  BALANCE_INQUIRY: `${BASE_URL}/api/aeps/balance-inquiry`,
+  MINI_STATEMENT: `${BASE_URL}/api/aeps/mini-statement`,
+
+  ///////////////////////////// AEPS INSTANTPAY ////////////////////////////////
+  AEPS_CHECK_STATUS_INSTANTPAY: `${BASE_URL}/instantpay/aeps/check-status`,
+  AEPS_MERCHANT_ONBOARD_INSTANTPAY: `${BASE_URL}/instantpay/aeps/onboard-merchant`,
+  AEPS_KYC_CHECK_STATUS_INSTANTPAY: `${BASE_URL}/instantpay/aeps/kyc-status`,
+  AEPS_KYC_INSTANTPAY: `${BASE_URL}/instantpay/aeps/biometric-kyc`,
+  AEPS_BANK_LIST_INSTANTPAY: `${BASE_URL}/instantpay/aeps/banks`,
+  AEPS_2FA_CHECK_STATUS_INSTANTPAY: `${BASE_URL}/instantpay/aeps/outlet-login-status`,
+  AEPS_VALIDATE_2FA_INSTANTPAY: `${BASE_URL}/instantpay/aeps/outlet-login`,
+  CASH_WITHDRAWAL_INSTANTPAY: `${BASE_URL}/api/instantpay/aeps/cash-withdrawal`,
+  BALANCE_INQUIRY_INSTANTPAY: `${BASE_URL}/api/instantpay/aeps/balance-inquiry`,
+  MINI_STATEMENT_INSTANTPAY: `${BASE_URL}/api/instantpay/aeps/mini-statement`,
+
+
 
   ////////////////////////////// RECHARGE //////////////////////////////////
   RECHARGE_FETCH_OPERATORS: `${BASE_URL}/api/recharge/operators`,
@@ -125,9 +142,6 @@ export const API_ROUTES = {
   ADHAAR_PAN_LINK: `${BASE_URL}/verification/aadhaar-pan-link`,
   VOTER_ID_VERIFICATION: `${BASE_URL}/verification/voterId-validate`,
   BANK_VERIFICATION: `${BASE_URL}/verification/bank-validate`,
-  CASH_WITHDRAWAL: `${BASE_URL}/api/aeps/cash-withdrawal`,
-  BALANCE_INQUIRY: `${BASE_URL}/api/aeps/balance-inquiry`,
-  MINI_STATEMENT: `${BASE_URL}/api/aeps/mini-statement`,
 
   /////////////////////////// bANKS ////////////////////////////////////
   ADD_BANK: `${BASE_URL}/api/bank-details`,

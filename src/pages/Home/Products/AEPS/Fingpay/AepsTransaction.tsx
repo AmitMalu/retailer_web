@@ -3,7 +3,7 @@ import TextComponent from "@/components/Atoms/TextComponent";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
-import { Aeps_Bank_List, Aeps_Cash_Withdrawal, Aeps_Balance_Inquiry, Aeps_Mini_Statement } from "@/Services/api";
+import { Aeps_Bank_List, Aeps_Cash_Withdrawal, Aeps_Balance_Inquiry, Aeps_Mini_Statement, callAepsApi } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification } from "@/Utils/notifications";
@@ -13,10 +13,12 @@ import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Yup from 'yup'
-import AepsTransactionReciept from "./AepsTransactionReciept";
+import AepsTransactionReciept from "../AepsTransactionReciept";
 import Loader from "@/components/Atoms/Loader";
 import { useAppSelector } from "@/Redux/hooks";
 import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
+import { AepsScreenProps } from "../AepsVendorConfig";
+
 interface AepsFormValues {
     mobile: string;
     aadhaar: string;
@@ -33,12 +35,11 @@ const SERVICE_TITLES: any = {
     miniStatement: "Mini Statement",
 };
 
-const AepsTransaction = () => {
+const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
     const navigate = useNavigate()
     const location = useLocation();
     const theme = useTheme()
     const { subProductId } = useParams();
-    // const profile = location.state?.profile;
     const queryParams = new URLSearchParams(location.search);
     const service = queryParams.get("service");  // "cashWithdrawal", "balanceInquiry", etc.
     const title = service ? SERVICE_TITLES[service] : "AEPS Transaction";
@@ -48,7 +49,6 @@ const AepsTransaction = () => {
 
     const [receiptDrawerOpened, setReceiptDrawerOpened] = useState(false);
     const [receiptData, setReceiptData] = useState<any>(null);
-    // const [receiptLoading, setReceiptLoading] = useState(false);
 
     const { lat, lng } = useAppSelector(state => state.location)
     const { responses } = useAppSelector(state => state.apiResponse)
@@ -60,10 +60,9 @@ const AepsTransaction = () => {
         : null;
 
     const schemeCode = loginData?.products
-        ?.flatMap((product: any) => product.subProducts) // Flatten all subProducts into a single array
-        ?.find((subProduct: any) => subProduct.subProductId === subProductId) // Find matching subProductId
-        ?.schemeCode; // Get the schemeCode
-
+        ?.flatMap((product: any) => product.subProducts)
+        ?.find((subProduct: any) => subProduct.subProductId === subProductId)
+        ?.schemeCode;
 
 
     // ---------------- VALIDATION SCHEMA -----------------
@@ -77,7 +76,6 @@ const AepsTransaction = () => {
                 ? Yup.string().required("Please enter the amount")
                 : Yup.string(),
         bank: Yup.string().required("Please Select the Bank"),
-        // ----- BIOMETRIC PART -----
         deviceType: Yup.string()
             .required("Please select a device"),
         pidData: Yup.string()
@@ -140,8 +138,6 @@ const AepsTransaction = () => {
         console.log("Final Submit Values:", values);
         try {
             setIsLoading(true);
-            // Capture fresh location here
-            // const location = await getCurrentLocation();
 
             let res;
             const commonPayload = {
@@ -167,20 +163,29 @@ const AepsTransaction = () => {
             }
 
             if (service === "balanceInquiry") {
-                res = await Aeps_Balance_Inquiry({
-                    ...commonPayload,
-                    transactionAmount: "0",
-                });
+                res = await callAepsApi(
+                    vendorKey,
+                    "balanceInquiry",
+                    {
+                        ...commonPayload,
+                        transactionAmount: "0",
+                    });
             } else if (service === "miniStatement") {
-                res = await Aeps_Mini_Statement({
-                    ...commonPayload,
-                    transactionAmount: "0",
-                });
+                res = await callAepsApi(
+                    vendorKey,
+                    "miniStatement",
+                    {
+                        ...commonPayload,
+                        transactionAmount: "0",
+                    });
             } else if (service === "cashWithdrawal") {
-                res = await Aeps_Cash_Withdrawal({
-                    ...commonPayload,
-                    transactionAmount: values.amount,
-                });
+                res = await callAepsApi(
+                    vendorKey,
+                    "cashWithdrawal",
+                    {
+                        ...commonPayload,
+                        transactionAmount: values.amount,
+                    });
             }
 
             // If response exists → show receipt
@@ -211,7 +216,10 @@ const AepsTransaction = () => {
     const fetchBanks = async () => {
         try {
             setLoadingBanks(true);
-            const response = await Aeps_Bank_List();
+            const response = await callAepsApi(
+                vendorKey,
+                "bankList",
+            );
 
             if (response?.data?.length === 0) {
                 showErrorNotification(response?.data?.message || "Failed to fetch bank list");
@@ -221,8 +229,8 @@ const AepsTransaction = () => {
 
             setBankList(
                 response?.data?.data?.map((item: any) => ({
-                    value: item.iinno,   // <-- correct
-                    label: item.bankName // <-- correct
+                    value: item.iinno,
+                    label: item.bankName
                 })) || []
             );
         } catch (err) {
@@ -377,9 +385,6 @@ const AepsTransaction = () => {
                                     setFieldError={setFieldError}
                                     setFieldTouched={setFieldTouched}
                                     validateForm={validateForm}
-                                    // When 2FA mode is true, Wadh is not sent to RD service, as per provider requirement. 
-                                    // If your provider requires Wadh for 2FA as well, set is2FA to false and provide Wadh value
-                                    // wadh={import.meta.env.VITE_AEPS_FINGPAY_LIVE_WADH} 
                                     is2FA={true}
                                     requiredFieldsBeforeScan={getRequiredFieldsBeforeScan()}
                                     onSuccessScan={async (parsedPid: any, rawXml: string) => {
@@ -410,7 +415,6 @@ const AepsTransaction = () => {
                 overlayProps={{ backgroundOpacity: 0.4, blur: 2 }}
                 transitionProps={{ transition: "slide-right", duration: 300 }}
             >
-
                 <AepsTransactionReciept data={receiptData} />
             </Drawer>
 

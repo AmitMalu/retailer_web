@@ -9,17 +9,22 @@ import {
   MiniStatementSvgIcon,
 } from "@/assets/svg";
 import AepsCard from "@/components/Molecules/AepsCard";
-import { Check_Aeps_2FA_Status } from "@/Services/api";
+import { callAepsApi, Check_Aeps_2FA_Status } from "@/Services/api";
 import { decryptData } from "@/Utils/helper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
+import { AepsScreenProps } from "../AepsVendorConfig";
+import { showErrorNotification } from "@/Utils/notifications";
+import { handleCustomError } from "@/Utils/handleCustomError";
+import { useState } from "react";
+import Loader from "@/components/Atoms/Loader";
 
-const AepsScreen = () => {
+const AepsServiceScreen = ({ vendorKey }: AepsScreenProps) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { subProductId } = useParams()
   const { state } = useLocation();
-  const profile = state?.profile;
+  const [loading, setLoading] = useState(false);
 
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
@@ -30,48 +35,53 @@ const AepsScreen = () => {
     : null;
 
   const handleServiceClick = async (service: string) => {
-
-    // navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {
-    //   state: { profile },
-    // });
-
-    // return
-
+    setLoading(true);
     try {
-      const res = await Check_Aeps_2FA_Status({ retailerId: loginData?.hierarchyId });
+      const res = await callAepsApi(
+        vendorKey,
+        "checkAeps2FaStatus",
+        {
+          retailerId: loginData?.hierarchyId,
+          subProductId
+        }
+      );
 
       console.log("2FA Status Response:", res);
 
       if (res?.data?.statusCode == 200) {
-        const twoFaStatus = res?.data?.data?.twoFaStatus;
-        console.log("Onboard Status:", twoFaStatus);
-        if (twoFaStatus === 5) {
-          // Status 5 → go to transaction
-          navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {
-            state: { profile },
-          });
-        } else if (twoFaStatus === 3 || twoFaStatus === 4) {
-          // Status 3, 4 → go to 2FA page
-          navigate(`/products/aeps/2fa/${subProductId}?iinno=&service=${service}`, {
-            state: { profile },
-          });
+        const actcode = res?.data?.data?.actcode;
+        const is2faRequired = actcode === "LOGINREQUIRED";
+        if (is2faRequired) {
+          navigate(`/products/aeps/2fa/${subProductId}?service=${service}`);
         } else {
-          // Other statuses → default to 2FA
-          navigate(`/products/aeps/2fa/${subProductId}?iinno=&service=${service}`, {
-            state: { profile },
-          });
+          navigate(`/products/aeps/transaction/${subProductId}?service=${service}`);
         }
+        //   console.log("Onboard Status:", twoFaStatus);
+        //   if (twoFaStatus === 5) {
+        //     // Status 5 → go to transaction
+        //     navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {
+        //       state: { profile },
+        //     });
+        //   } else if (twoFaStatus === 3 || twoFaStatus === 4) {
+        //     // Status 3, 4 → go to 2FA page
+        //     navigate(`/products/aeps/2fa/${subProductId}?iinno=&service=${service}`, {
+        //       state: { profile },
+        //     });
+        //   } else {
+        //     // Other statuses → default to 2FA
+        //     navigate(`/products/aeps/2fa/${subProductId}?iinno=&service=${service}`, {
+        //       state: { profile },
+        //     });
+        //   }
       } else {
-        // API error → treat as invalid 2FA
-        navigate(`/products/aeps/2fa/${subProductId}?iinno=&service=${service}`, {
-          state: { profile },
-        });
+        //   // API error → treat as invalid 2FA
+        showErrorNotification(res?.data?.message || "Failed to check 2FA status")
       }
     } catch (e) {
       // on error → treat as invalid 2FA
-      navigate(`/products/aeps/2fa/${subProductId}?iinno=&service=${service}`, {
-        state: { profile },
-      });
+      handleCustomError(e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -96,6 +106,8 @@ const AepsScreen = () => {
     },
   ];
 
+
+  if (loading) return <Loader />;
 
   return (
     <>
@@ -130,4 +142,4 @@ const AepsScreen = () => {
   );
 };
 
-export default AepsScreen;
+export default AepsServiceScreen;

@@ -41,6 +41,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { savePagination } from "@/Redux/Reducers/paginationSlice";
 import { toast } from "react-toastify";
 import { handleCustomError } from "@/Utils/handleCustomError";
+import { AEPS_API_CONFIG, resolveVendor, VendorKey, AepsApiType } from "@/pages/Home/Products/AEPS/AepsVendorConfig";
 
 export const isAuthenticated = () => {
   const authToken = document.cookie
@@ -532,10 +533,56 @@ export const Dmt_Transaction = async (data: any) => {
 };
 
 ////////////////////////////---- AEPS-----//////////////////////////////////
+export const callAepsApi = async (
+  vendorName: string,
+  type: AepsApiType,
+  data?: any,
+  config?: any
+) => {
+  const vendorKey = resolveVendor(vendorName);
+  console.log(vendorKey, "vendorKey");
+  console.log(type, "type");
+
+  if (!vendorKey) throw new Error("Unsupported Vendor");
+
+  const apiConfig = AEPS_API_CONFIG[vendorKey]?.[type];
+  console.log(apiConfig, "apiConfig");
+
+  if (!apiConfig) {
+    console.warn(`Skipping unsupported API: ${type} for ${vendorKey}`);
+    return null;
+  }
+
+  const { url, method } = apiConfig;
+
+  const requestConfig = {
+    url,
+    method,
+    ...(data !== undefined && method !== "GET" ? { data } : {}),
+    ...(data !== undefined && method === "GET" ? { params: data } : {}),
+    ...config,
+  };
+
+  return await api(requestConfig);
+};
+
 export const Check_Aeps_Onboard_Status = async (data: any) => {
   try {
     const response = await api.post(
       API_ROUTES.AEPS_CHECK_STATUS,
+      data,
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const Check_Aeps_Onboard_Status_InstantPay = async (data: any) => {
+  try {
+    const response = await api.post(
+      API_ROUTES.AEPS_CHECK_STATUS_INSTANTPAY,
       data,
     );
 
@@ -565,6 +612,13 @@ export const AepsMerchantOnboardAPI = async (data: any) => {
   );
 };
 
+export const AepsMerchantOnboardInstantPay = async (data: any) => {
+  return await api.post(
+    `${API_ROUTES.AEPS_MERCHANT_ONBOARD_INSTANTPAY}`,
+    data,
+  );
+};
+
 export const Aeps_Send_Otp = async (data: any) => {
   return await api.post(
     `${API_ROUTES.AEPS_SEND_OTP}`,
@@ -588,19 +642,6 @@ export const Aeps_Verify_Otp = async (data: any) => {
 
 export const Aeps_Bank_List = async () => {
   return await api.get(`${API_ROUTES.AEPS_BANK_LIST}`);
-};
-
-export const Recharge_Fetch_Operator = async () => {
-  return await api.get(
-    `${API_ROUTES.RECHARGE_FETCH_OPERATORS}`,
-  );
-};
-
-export const Recharge_Transaction = async (data: RechargeTransactionType) => {
-  return await api.post(
-    `${API_ROUTES.RECHARGE_TRANSACTION}`,
-    data,
-  );
 };
 
 export const Aeps_TwoFactor_Verify = async (data: any) => {
@@ -639,6 +680,20 @@ export const Check_Aeps_2FA_Status = async ({
   return await api.post(
     `${API_ROUTES.AEPS_2FA_CHECK_STATUS}`,
     { retailerId },
+  );
+};
+
+//////////////////////////////// RECHARGE ////////////////////////////////////
+export const Recharge_Fetch_Operator = async () => {
+  return await api.get(
+    `${API_ROUTES.RECHARGE_FETCH_OPERATORS}`,
+  );
+};
+
+export const Recharge_Transaction = async (data: RechargeTransactionType) => {
+  return await api.post(
+    `${API_ROUTES.RECHARGE_TRANSACTION}`,
+    data,
   );
 };
 
