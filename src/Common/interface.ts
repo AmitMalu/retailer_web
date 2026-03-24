@@ -128,6 +128,8 @@ export type ApiState = {
 
 export type UserRole = "RT" | "DT" | "SD" | "WL" | "PT" | "RU";
 
+type WalletType = "PREPAID" | "POSTPAID" | "";
+
 export type ProtectedRouteProps = {
   children: JSX.Element;
   allowedRoles?: UserRole[];
@@ -541,8 +543,10 @@ export type WalletToWalletProps = {
   hierarchyId: string;
   transferAmount: string;
   confirmAmount: string;
-  walletTypeFrom: string;
-  walletTypeTo: string;
+  walletTypeFrom: WalletType;
+  walletTypeTo: WalletType;
+  subProductId?: string;
+  schemeCode?: string;
 };
 
 export type ChildMemberListProps = Record<string, any>;
@@ -1074,6 +1078,11 @@ export type BankVerificationRequest = {
   id_number: string;
   ifsc: string;
   ifsc_details: boolean;
+};
+
+export type BankVerificationPayload = BankVerificationRequest & {
+  subProductId?: string;
+  schemeCode?: string;
 };
 
 export type ExtraParamContent = {

@@ -1224,7 +1224,7 @@ const RouterOutlet = () => {
             path="/funding/fundTransfer"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
+                allowedRoles={["WL", "SD", "PT", "DT"]}
               >
                 <Outlet />
               </ProtectedRoute>
