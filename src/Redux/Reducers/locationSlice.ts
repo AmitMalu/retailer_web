@@ -11,7 +11,7 @@ const initialState: LocationState = {
   lat: null,
   lng: null,
   ipAddress: null,
-  loading: true,
+  loading: false,
 };
 
 const locationSlice = createSlice({
@@ -24,7 +24,7 @@ const locationSlice = createSlice({
     ) => {
       state.lat = action.payload.lat;
       state.lng = action.payload.lng;
-      if (action.payload.ipAddress) {
+      if (action.payload.ipAddress !== undefined) {
         state.ipAddress = action.payload.ipAddress;
       }
       state.loading = false;
@@ -33,7 +33,10 @@ const locationSlice = createSlice({
       state.lat = null;
       state.lng = null;
       state.ipAddress = null;
-      state.loading = true;
+      state.loading = false;
+    },
+    setIpAddress: (state, action: PayloadAction<string>) => {
+      state.ipAddress = action.payload;
     },
     setLocationLoading(state, action) {
       state.loading = action.payload;
@@ -41,6 +44,6 @@ const locationSlice = createSlice({
   },
 });
 
-export const { setLocation, clearLocation, setLocationLoading } =
+export const { setLocation, clearLocation, setLocationLoading, setIpAddress } =
   locationSlice.actions;
 export default locationSlice.reducer;

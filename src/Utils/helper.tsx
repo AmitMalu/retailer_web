@@ -9,6 +9,7 @@ import { useState } from "react";
 import * as Yup from 'yup'
 import * as Papa from "papaparse";
 import moment from "moment";
+import { setIpAddress } from "@/Redux/Reducers/locationSlice";
 
 
 export const redirectTo = (path: string) => {
@@ -179,7 +180,8 @@ export const useIpAddress = () => {
   const fetchIpAddress = async () => {
     const cachedIp = localStorage.getItem("ipAddress");
     if (cachedIp) {
-      dispatch(saveApiResponse("ipAddress", cachedIp));
+      // dispatch(saveApiResponse("ipAddress", cachedIp));
+      dispatch(setIpAddress(cachedIp)); // location slice
       return;
     }
 
@@ -206,7 +208,8 @@ export const useIpAddress = () => {
         const ip = await api();
         if (ip) {
           localStorage.setItem("ipAddress", ip);
-          dispatch(saveApiResponse("ipAddress", ip));
+          // dispatch(saveApiResponse("ipAddress", ip));
+          dispatch(setIpAddress(ip));
           break;
         }
       } catch (err) {

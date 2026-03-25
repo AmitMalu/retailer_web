@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
 import {
   decryptData,
-  useIpAddress,
   useWalletBalance,
   useSubProductDropdown,
 } from "@/Utils/helper";
@@ -18,12 +17,13 @@ import moment from "moment";
 import Loader from "@/components/Atoms/Loader";
 
 export default function Dashboard() {
-  const { fetchIpAddress } = useIpAddress();
   const { WalletBalanceReq } = useWalletBalance();
   const [dashboardData, setDashboardData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const { SubProductDropdownReq } = useSubProductDropdown();
-  const isFetchingRef = useRef(false);
+
+  const isFetchingRef = useRef(false); // wallet + dropdown
+
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
@@ -31,7 +31,11 @@ export default function Dashboard() {
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  const [selectedDate, setSelectedDate] = useState<DatesRangeValue>(
+  const subproductData = apiResponses?.subProductDropdown
+    ? decryptData(apiResponses?.subProductDropdown)
+    : null;
+
+  const [selectedDate, setSelectedDate] = useState<DatesRangeValue>(() =>
     getRangeFromLabel("Last 7 Days")
   );
 
@@ -69,23 +73,24 @@ export default function Dashboard() {
     setSelectedLabel(getLabelFromRange(selectedDate));
   }, [selectedDate]);
 
-  // Initial one-time calls 
+  // Initial one-time calls (wallet + dropdown)
   useEffect(() => {
-    if (!isFetchingRef.current && loginData?.hierarchyId) {
+    if (loginData?.hierarchyId && !isFetchingRef.current) {
       isFetchingRef.current = true;
-      fetchIpAddress();
       WalletBalanceReq(loginData?.hierarchyId);
-      SubProductDropdownReq();
-      // dashboardDataReq();
     }
-  }, []);
+  }, [loginData?.hierarchyId]);
 
-  // Refetch dashboard data on date or login change
   useEffect(() => {
-    if (loginData?.hierarchyId) {
-      dashboardDataReq();
+    if (!subproductData) {
+      SubProductDropdownReq();
     }
-  }, [selectedDate]);
+  }, [subproductData]);
+
+  useEffect(() => {
+    if (!loginData?.hierarchyId) return;
+    dashboardDataReq();
+  }, [loginData?.hierarchyId, selectedDate]);
 
   const commonProps = {
     selectedDate,
