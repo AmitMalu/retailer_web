@@ -9,12 +9,13 @@ import {
   MiniStatementSvgIcon,
 } from "@/assets/svg";
 import AepsCard from "@/components/Molecules/AepsCard";
-import { Check_Aeps_2FA_Status } from "@/Services/api";
+import { callAepsApi } from "@/Services/api";
 import { decryptData } from "@/Utils/helper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
+import { AepsScreenProps } from "../AepsVendorConfig";
 
-const AepsScreen = () => {
+const AepsServiceScreen = ({ vendorKey }: AepsScreenProps) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { subProductId } = useParams()
@@ -30,15 +31,14 @@ const AepsScreen = () => {
     : null;
 
   const handleServiceClick = async (service: string) => {
-
-    // navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {
-    //   state: { profile },
-    // });
-
-    // return
-
     try {
-      const res = await Check_Aeps_2FA_Status({ retailerId: loginData?.hierarchyId });
+      const res = await callAepsApi(
+        vendorKey,
+        "checkAeps2FaStatus",
+        {
+          retailerId: loginData?.hierarchyId
+        }
+      );
 
       console.log("2FA Status Response:", res);
 
@@ -130,4 +130,4 @@ const AepsScreen = () => {
   );
 };
 
-export default AepsScreen;
+export default AepsServiceScreen;

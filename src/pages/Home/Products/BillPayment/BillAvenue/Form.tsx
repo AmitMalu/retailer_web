@@ -23,6 +23,7 @@ import ProviderDynamicFields from "./Components/ProviderDynamicFields";
 import { buildFetchBillPayload } from "./Utils/buildExtraParamPayload";
 import { buildProcessTransactionPayload, getBillFormConfig, paiseToRupee } from "./Utils/billHelpers";
 import BBPSTransactionReciept from "../BBPSTransactionReciept";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 
 interface Props {
     serviceName: string;
@@ -54,6 +55,8 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
         (state: RootState) => state.apiResponse?.responses
     );
 
+    const { checkDuplicate, store } = useTransactionCooldown("BBPS_AVENUE");
+
     const loginData = apiResponses?.loginData
         ? decryptData(apiResponses?.loginData)
         : null;
@@ -73,6 +76,35 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
         () => buildValidationSchema(selectedProviderDetails),
         [selectedProviderDetails]
     );
+
+    const regenerateRequestId = async (providerId: string) => {
+        const res = await BillAvenue_Biller_Info_Direct({
+            subProductId,
+            billerId: [providerId],
+        });
+
+        if (res?.data?.statusCode !== 200) {
+            throw new Error("Unable to regenerate requestId");
+        }
+
+        const responseData = res?.data?.data;
+        const newRequestId = responseData?.requestId;
+
+        if (!newRequestId) {
+            throw new Error("Invalid requestId");
+        }
+
+        // update requestId state
+        setRequestId(newRequestId);
+
+        // update provider details
+        setSelectedProviderDetails((prev: any) => ({
+            ...prev,
+            requestId: newRequestId,
+        }));
+
+        return newRequestId;
+    }
 
     const handleSelectProvider = async (providerId: string, formik: any) => {
         if (!providerId) {
@@ -132,15 +164,6 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
 
                 formik.setValues(nextValues);
 
-                // // optional but recommended → show errors immediately
-                // formik.setTouched(
-                //     Object.keys(nextValues).reduce((acc: any, key) => {
-                //         acc[key] = false;
-                //         return acc;
-                //     }, {}),
-                //     false
-                // );
-
                 showSuccessNotification("Provider details loaded successfully");
             } else {
                 showErrorNotification(res?.data?.message || "Unable to fetch biller configuration");
@@ -165,13 +188,16 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
             const payload = buildFetchBillPayload(values, selectedProviderDetails, subProductId);
 
             const res = await BillAvenue_Bill_Fetch_Direct(payload);
-            // Handle both response structures: { statusCode: 200, data: {...} } OR { data: { statusCode: 200, data: {...} } }
             const apiStatus = res?.statusCode;
             const responseData = res?.data;
 
             // 🔹 API-level success
             if (apiStatus !== 200) {
-                showErrorNotification(res?.data?.message || "Unable to fetch bill");
+                await regenerateRequestId(values.provider);
+                showErrorNotification(
+                    res?.data?.message ||
+                    "Unable to fetch bill. Please verify details and try again."
+                );
                 return;
             }
 
@@ -181,28 +207,61 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                 setBillDetails({ formValues: values, ...responseData });
                 setBillModalOpened(true);
                 return;
-            } else {
-                const errorMessage = (responseData?.errorInfo?.error as any[])?.[0]?.errorMessage ||
+            }
+
+            // 🔹 Special retry case: RequestId already used
+            const errorCode =
+                responseData?.errorInfo?.error?.[0]?.errorCode;
+
+            if (responseData?.responseCode === "204" && errorCode === "E204") {
+                const newRequestId = await regenerateRequestId(values.provider);
+
+                const retryPayload = buildFetchBillPayload(
+                    values,
+                    { ...selectedProviderDetails, requestId: newRequestId },
+                    subProductId
+                );
+
+                const retryRes = await BillAvenue_Bill_Fetch_Direct(retryPayload);
+                const retryData = retryRes?.data;
+
+                if (retryData?.responseCode === "000") {
+                    showSuccessNotification("Bill details fetched successfully");
+
+                    setBillDetails({ formValues: values, ...retryData });
+                    setBillModalOpened(true);
+                    return;
+                }
+
+                const retryError =
+                    retryData?.errorInfo?.error?.[0]?.errorMessage ||
                     "Unable to fetch bill details";
-                showErrorNotification(errorMessage);
+
+                showErrorNotification(retryError);
                 return;
             }
 
-            // 🔹 Business-level failure
-            // showErrorNotification(
-            //     responseData?.responseMessage || "Bill fetch failed"
-            // );
+            // Other business errors
+            await regenerateRequestId(values.provider);
+
+            const errorMessage =
+                responseData?.errorInfo?.error?.[0]?.errorMessage ||
+                "Unable to fetch bill details";
+
+            showErrorNotification(errorMessage);
+
         } catch (err) {
             handleCustomError(err);
         } finally {
             setSubmitting(false);
         }
-    }
+    };
 
     const processTransaction = async (
         values: FormikValues,
         resetForm: () => void
     ) => {
+
         try {
             setIsLoading(true);
 
@@ -220,7 +279,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                 },
                 agentContext: {
                     agentId: loginData?.hierarchyId,
-                    requestId: billDetails?.requestId || requestId,
+                    requestId: selectedProviderDetails?.requestId || requestId,
                     retailerId: loginData?.hierarchyId,
                     subProductId,
                     schemeCode: schemeCode ?? "",
@@ -238,10 +297,19 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
             });
 
             console.log("FINAL TRANSACTION PAYLOAD", paymentPayload);
+
+            if (checkDuplicate(selectedProviderDetails.billerId, Number(values.amount))) {
+                showErrorNotification(
+                    "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
+                );
+                return;
+            }
+
             const response: any = await BillAvenue_Bill_Payment(paymentPayload);
             const apiStatus = response?.data?.statusCode;
 
             if (apiStatus === 200 || apiStatus === "200") {
+                store(selectedProviderDetails.billerId, Number(values.amount))
                 const respData = response?.data?.data || {};
                 showSuccessNotification(response?.data?.message || "Transaction Successful");
                 setBillModalOpened(false);
@@ -271,10 +339,24 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                 setReceiptData(basicReceipt);
                 setReceiptDrawerOpened(true);
             } else {
+                const errorCode =
+                    response?.data?.data?.vErrorRootVO?.error?.[0]?.errorCode;
+
                 const errorMessage =
                     response?.data?.data?.vErrorRootVO?.error?.[0]?.errorMessage ||
                     response?.data?.message ||
                     "Transaction failed";
+
+                // If request/session issue → reset flow
+                if (errorCode === "E204") {  //Request id already been used
+                    setBillModalOpened(false);
+                    setBillDetails(null);
+
+                    showErrorNotification(
+                        "Session expired. Please fetch bill details again."
+                    );
+                    return;
+                }
 
                 showErrorNotification(errorMessage);
             }
@@ -482,6 +564,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
 
                                                         <div className="mt-6 flex h-9 w-full items-center justify-end">
                                                             <ButtonComponent
+                                                                type="submit"
                                                                 width={120}
                                                                 title={"SUBMIT"}
                                                                 variant="filled"
@@ -510,7 +593,11 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                         setSelectedProviderDetails(null);
                         setRequestId('');
                         setReceiptDrawerOpened(false);
-                        navigate("/products/billPay"); // redirect after closing
+                        navigate(`/products/billPay/service`, {
+                            state: {
+                                subProductId: subProductId,
+                            },
+                        }); // redirect after closing
                     }}
                     closeOnEscape={false}
                     closeOnClickOutside={false}

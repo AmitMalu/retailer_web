@@ -8,13 +8,12 @@ import SignUp from "@/pages/Auth/SignUp.tsx";
 import Loader from "@/components/Atoms/Loader";
 import ProtectedRoute from "./ProtectedRoutes";
 import AepsSubProductsScreen from "@/pages/Home/Products/AEPS/AepsSubproductsScreen";
-import AepsStatusScreen from "@/pages/Home/Products/AEPS/AepsStatusScreen";
-import AepsEkycScreen from "@/pages/Home/Products/AEPS/AepsEkycScreen";
-import AepsTransaction from "@/pages/Home/Products/AEPS/AepsTransaction";
-import AepsTwoFactor from "@/pages/Home/Products/AEPS/AepsTwoFactor";
 import WrapperFormPage from "@/pages/Home/Products/BillPayment/WrapperFormPage";
 import TransactionReport from "@/pages/Home/Reports/TransactionReport";
 import TransactionWalletReport from "@/pages/Home/Reports/TransactionWalletReport";
+import RechargeSubProducts from "@/pages/Home/Products/Recharge/RechargeSubProducts";
+import Recharge from "@/pages/Home/Products/Recharge/Recharge";
+import AepsVendorWrapper from "@/pages/Home/Products/AEPS/AepsVendorWrapper";
 const Dashboard = lazy(() => import("@/pages/Home/Dashboard"));
 const CreateUser = lazy(() => import("@/pages/Home/ManageUser/CreateUser"));
 const DebitAndCreditUser = lazy(
@@ -111,37 +110,6 @@ const PayoutScreen = lazy(() => import("@/pages/Home/Products/Payout"));
 const PayoutInfoTable = lazy(
   () => import("@/pages/Home/Products/Payout/InfoTable")
 );
-const AepsScreen = lazy(() => import("@/pages/Home/Products/AEPS"));
-const CashWithdrawal = lazy(
-  () => import("@/pages/Home/Products/AEPS/CashWithdrawal")
-);
-const SelectCashWithdrawalBank = lazy(
-  () => import("@/pages/Home/Products/AEPS/CashWithdrawal/SelectBank")
-);
-const TwoFactorCashWithdrawal = lazy(
-  () => import("@/pages/Home/Products/AEPS/CashWithdrawal/TwoFA")
-);
-const BalanceEnquiry = lazy(
-  () => import("@/pages/Home/Products/AEPS/BalanceEnquiry")
-);
-const SelectBankBalanceEnquiry = lazy(
-  () =>
-    import("@/pages/Home/Products/AEPS/BalanceEnquiry/SelectBankBalanceEnquiry")
-);
-const TwoFactorBalanceEnquiry = lazy(
-  () => import("@/pages/Home/Products/AEPS/BalanceEnquiry/TwoFABalanceEnquiry")
-);
-const MiniStatement = lazy(
-  () => import("@/pages/Home/Products/AEPS/MiniStatement")
-);
-const SelectBankMiniStatement = lazy(
-  () =>
-    import("@/pages/Home/Products/AEPS/MiniStatement/SelectBankMinistatement")
-);
-const TwoFactorMiniStatement = lazy(
-  () => import("@/pages/Home/Products/AEPS/MiniStatement/TwoFAMinistatement")
-);
-
 const DmtSubProductsScreen = lazy(() => import("@/pages/Home/Products/DMT/DmtSubProductsScreen"));
 const SearchRemitterScreen = lazy(() => import("@/pages/Home/Products/DMT/SearchRemitterScreen"))
 
@@ -364,22 +332,22 @@ const RouterOutlet = () => {
               }
             />
 
+            {/* Status Check Screen */}
+            <Route
+              path="status/:subProductId"
+              element={
+                <MainLayout>
+                  <AepsVendorWrapper type="status" />
+                </MainLayout>
+              }
+            />
+
             {/* AEPS Services */}
             <Route
               path="service/:subProductId"
               element={
                 <MainLayout>
-                  <AepsScreen />
-                </MainLayout>
-              }
-            />
-
-            {/* Status Check Screen */}
-            <Route
-              path="status"
-              element={
-                <MainLayout>
-                  <AepsStatusScreen />
+                  <AepsVendorWrapper type="service" />
                 </MainLayout>
               }
             />
@@ -389,7 +357,7 @@ const RouterOutlet = () => {
               path="ekyc/:subProductId"
               element={
                 <MainLayout>
-                  <AepsEkycScreen />
+                  <AepsVendorWrapper type="ekyc" />
                 </MainLayout>
               }
             />
@@ -399,7 +367,7 @@ const RouterOutlet = () => {
               path="2fa/:subProductId"
               element={
                 <MainLayout>
-                  <AepsTwoFactor />
+                  <AepsVendorWrapper type="twoFactor" />
                 </MainLayout>
               }
             />
@@ -409,164 +377,7 @@ const RouterOutlet = () => {
               path="transaction/:subProductId"
               element={
                 <MainLayout>
-                  <AepsTransaction />
-                </MainLayout>
-              }
-            />
-          </Route>
-
-          {/* Balance Inquiry */}
-          <Route
-            path="products/aepsScreen/balanceEnquiry/TwoFactorBalanceEnquiry"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <TwoFactorBalanceEnquiry />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/balanceEnquiry/selectBank"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <SelectBankBalanceEnquiry />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/vendors/balanceEnquiry"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <BalanceEnquiry />
-                </MainLayout>
-              }
-            />
-          </Route>
-          {/* CashWithDrawl */}
-          <Route
-            path="products/aepsScreen/cashWithdrawal/TwoFactorCashWithdrawal"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <TwoFactorCashWithdrawal />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/cashWithdrawal/aepsForm"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <SelectCashWithdrawalBank />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/vendors/cashWithdrawal"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <CashWithdrawal />
-                </MainLayout>
-              }
-            />
-          </Route>
-          {/* Mini Statement */}
-          <Route
-            path="products/aepsScreen/miniStatement/twoFAMinistatement"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <TwoFactorMiniStatement />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/miniStatement/SelectBankMiniStatement"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <SelectBankMiniStatement />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/vendors/miniStatement"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <MiniStatement />
+                  <AepsVendorWrapper type="transaction" />
                 </MainLayout>
               }
             />
@@ -658,6 +469,8 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
+          {/* MPOS */}
           <Route
             path="products/mpos"
             element={
@@ -675,6 +488,8 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
+          {/* BBPS */}
           <Route
             path="products/billPay"
             element={
@@ -726,23 +541,22 @@ const RouterOutlet = () => {
               }
             />
           </Route>
-          {/* <Route
-            path="products/billPay/service/billDetails"
+
+          {/* RECHARGE */}
+          <Route
+            path="products/recharge"
             element={
               <ProtectedRoute allowedRoles={["RT", "RU"]}>
-                <Outlet />
+                <MainLayout>
+                  <Outlet />
+                </MainLayout>
               </ProtectedRoute>
             }
           >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <FetchBillDetails />
-                </MainLayout>
-              }
-            />
-          </Route> */}
+            <Route index element={<RechargeSubProducts />} />
+            <Route path=":subProductId" element={<Recharge />} />
+          </Route>
+
           <Route
             path="/manageUser/createUser"
             element={
@@ -908,7 +722,6 @@ const RouterOutlet = () => {
               }
             />
           </Route>
-
           <Route
             path="reports/downloadReport"
             element={
@@ -1068,6 +881,7 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
           <Route
             path="settings/myProfile"
             element={
@@ -1121,7 +935,6 @@ const RouterOutlet = () => {
               }
             />
           </Route>
-
           <Route
             path="settings/changeTPIN"
             element={
@@ -1194,6 +1007,7 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
           <Route
             path="support/bioMetricDevice"
             element={
@@ -1410,7 +1224,7 @@ const RouterOutlet = () => {
             path="/funding/fundTransfer"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
+                allowedRoles={["WL", "SD", "PT", "DT"]}
               >
                 <Outlet />
               </ProtectedRoute>

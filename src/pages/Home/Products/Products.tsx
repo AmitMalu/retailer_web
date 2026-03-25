@@ -56,7 +56,7 @@ export default function Products() {
       );
       return;
     }
-    
+
     if (!status.subProducts || status.subProducts.length < 1) {
       showErrorNotification(
         "No Scheme Found For You on this Product."
@@ -94,12 +94,19 @@ export default function Products() {
   ];
 
   const row2: any = [
+    // {
+    //   id: 4,
+    //   key: "MPOS",
+    //   image: <RechargeSvgIcon color={theme.palette.background.paper} />,
+    //   title: "MPOS",
+    //   route: `/products/mpos`,
+    // },
     {
       id: 4,
-      key: "MPOS",
+      key: "RECHARGE",
       image: <RechargeSvgIcon color={theme.palette.background.paper} />,
-      title: "MPOS",
-      route: `/products/mpos`,
+      title: "Recharge",
+      route: `/products/recharge`,
     },
     {
       id: 5,

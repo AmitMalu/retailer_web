@@ -9,6 +9,7 @@ import DashboardMiniTable from "@/components/Molecules/DashboardMiniTable";
 import CustomDateRangePicker from "@/components/Atoms/NewComponents/CustomDateRangePicker";
 import { DatesRangeValue } from "@mantine/dates";
 import { IconCalendar } from "@tabler/icons-react";
+import { formatIndianNumber } from "@/Utils/helper";
 
 interface retailerDashboardProps {
     selectedDate: DatesRangeValue;
@@ -34,8 +35,8 @@ const RetailerDashboard = (props: retailerDashboardProps) => {
     const cards =
         props.dashboardData?.cards?.map((card: any, index: number) => ({
             label: card.label,       // from API
-            value: card.value,       // from API
-            prefix: card.prefix || "₹",             // always ₹
+            value: formatIndianNumber(card.value),      // from API
+            prefix: card.prefix,
             borderColor: card.color || colors[index % colors.length], // rotate colors
         })) || [];
 

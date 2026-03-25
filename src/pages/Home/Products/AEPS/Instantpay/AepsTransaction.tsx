@@ -3,7 +3,7 @@ import TextComponent from "@/components/Atoms/TextComponent";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
-import { Aeps_Bank_List, Aeps_Cash_Withdrawal, Aeps_Balance_Inquiry, Aeps_Mini_Statement } from "@/Services/api";
+import { callAepsApi } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification } from "@/Utils/notifications";
@@ -13,9 +13,21 @@ import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Yup from 'yup'
-import AepsTransactionReciept from "./AepsTransactionReciept";
+import AepsTransactionReciept from "../AepsTransactionReciept";
 import Loader from "@/components/Atoms/Loader";
 import { useAppSelector } from "@/Redux/hooks";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
+import { AepsScreenProps } from "../AepsVendorConfig";
+
+interface AepsFormValues {
+    mobile: string;
+    aadhaar: string;
+    amount: string;
+    bank: string;
+    deviceType: string;
+    csp: boolean;
+    pidData: any;
+}
 
 const SERVICE_TITLES: any = {
     cashWithdrawal: "Cash Withdrawal",
@@ -23,35 +35,34 @@ const SERVICE_TITLES: any = {
     miniStatement: "Mini Statement",
 };
 
-const AepsTransaction = () => {
+const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
     const navigate = useNavigate()
     const location = useLocation();
     const theme = useTheme()
     const { subProductId } = useParams();
-    // const profile = location.state?.profile;
     const queryParams = new URLSearchParams(location.search);
     const service = queryParams.get("service");  // "cashWithdrawal", "balanceInquiry", etc.
     const title = service ? SERVICE_TITLES[service] : "AEPS Transaction";
-    const [bankList, setBankList] = useState<{ label: string, value: string }[]>([]);
+    const [bankList, setBankList] = useState<{ label: string, value: string, iin: string }[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [loadingBanks, setLoadingBanks] = useState(false);
 
     const [receiptDrawerOpened, setReceiptDrawerOpened] = useState(false);
     const [receiptData, setReceiptData] = useState<any>(null);
-    // const [receiptLoading, setReceiptLoading] = useState(false);
 
     const { lat, lng } = useAppSelector(state => state.location)
     const { responses } = useAppSelector(state => state.apiResponse)
+
+    const { checkDuplicate, store } = useTransactionCooldown(service!);
 
     const loginData = responses?.loginData
         ? decryptData(responses.loginData)
         : null;
 
     const schemeCode = loginData?.products
-        ?.flatMap((product: any) => product.subProducts) // Flatten all subProducts into a single array
-        ?.find((subProduct: any) => subProduct.subProductId === subProductId) // Find matching subProductId
-        ?.schemeCode; // Get the schemeCode
-
+        ?.flatMap((product: any) => product.subProducts)
+        ?.find((subProduct: any) => subProduct.subProductId === subProductId)
+        ?.schemeCode;
 
 
     // ---------------- VALIDATION SCHEMA -----------------
@@ -62,10 +73,18 @@ const AepsTransaction = () => {
             .length(12, "Aadhaar must be 12 digits"),
         amount:
             service === "cashWithdrawal"
-                ? Yup.string().required("Please enter the amount")
+                ? Yup.string()
+                    .required("Please enter the amount")
+                    .test("min-amount", "Minimum amount is ₹100", (value) => {
+                        if (!value) return false;
+                        return Number(value) >= 100;
+                    })
+                    .test("multiple-of-50", "Amount must be in multiples of ₹50", (value) => {
+                        if (!value) return false;
+                        return Number(value) % 50 === 0;
+                    })
                 : Yup.string(),
         bank: Yup.string().required("Please Select the Bank"),
-        // ----- BIOMETRIC PART -----
         deviceType: Yup.string()
             .required("Please select a device"),
         pidData: Yup.string()
@@ -84,135 +103,170 @@ const AepsTransaction = () => {
     };
 
     const normalizeReceiptData = (apiResponse: any, service: string, formValues: any) => {
-        const wrapper = apiResponse?.data || {};
-        const txn = wrapper?.data || {};
+        const wrapper = apiResponse || {};
+        const vendor = wrapper?.data || {};
+        const txn = vendor?.data || {};
 
-        const isSuccess =
-            wrapper?.status === true ||
-            txn?.transactionStatus === "successful";
+        const isSuccess = vendor?.statuscode === "TXN";
 
         return {
             /* ================= STATUS ================= */
             status: isSuccess ? "SUCCESS" : "FAILED",
-            statusMessage: wrapper?.message || apiResponse?.message,
+            statusMessage: vendor?.status || wrapper?.message,
 
             /* ================= SERVICE ================= */
             serviceKey: service,
             serviceTitle: SERVICE_TITLES[service] ?? "AEPS Transaction",
 
             /* ================= DATE / IDS ================= */
-            dateTime: txn.requestTransactionTime,
+            dateTime: vendor?.timestamp,
             terminalId: txn.terminalId,
-            rrn: txn.bankRRN,
+            rrn: txn?.externalRef,
             transactionId: txn?.transactionId,
             txnType: txn.transactionType,
 
             /* ================= USER INPUT (FROM FORM) ================= */
             aadhaarNumber: maskAadhaar(formValues?.aadhaar),
             mobileNumber: formValues?.mobile,
-            bankName: getBankName(formValues?.bank),
+            bankName: txn?.bankName,
 
             /* ================= AMOUNTS ================= */
-            transactionAmount: txn?.transactionAmount,
-            balanceAmount: txn?.balanceAmount,
+            transactionAmount: txn?.transactionValue,
+            balanceAmount: txn?.bankAccountBalance,
 
             /* ================= ERROR ================= */
-            responseCode: txn.responseCode,
+            responseCode: vendor?.statuscode,
             errorCode: txn.errorCode,
-            errorMessage: txn.errorMessage,
+            errorMessage: vendor?.status,
         };
     };
 
 
-    const handleSubmit = async (values: any) => {
+    const handleSubmit = async (values: AepsFormValues) => {
         console.log("Final Submit Values:", values);
         try {
             setIsLoading(true);
-            // Capture fresh location here
-            // const location = await getCurrentLocation();
+
+            const selectedBank = bankList.find(b => b.value === values.bank);
 
             let res;
             const commonPayload = {
-                subProductId,
                 retailerId: loginData?.hierarchyId,
+                subProductId,
                 schemeCode,
-                nationalBankIdentificationNumber: values.bank,
-                captureResponse: values.pidData,
-
-                // Send location to backend
                 latitude: lat,
                 longitude: lng,
-                // locationCapturedAt: location.capturedAt,
+                mobile: values.mobile,
+                aadhaarNumber: values.aadhaar,
+                bankiin: selectedBank?.iin,
+                biometricData: values.pidData,
             };
 
+            if (checkDuplicate(values.aadhaar, Number(values.amount))) {
+                showErrorNotification(
+                    `You cannot repeat the same transaction within 2 minutes. ${service === "cashWithdrawal"
+                        ? "Please try a different amount or try again shortly."
+                        : "Please try again shortly."
+                    }`
+                );
+                return;
+            }
+
             if (service === "balanceInquiry") {
-                res = await Aeps_Balance_Inquiry({
-                    ...commonPayload,
-                    transactionAmount: "0",
-                });
+                res = await callAepsApi(
+                    vendorKey,
+                    "balanceInquiry",
+                    {
+                        ...commonPayload,
+                        amount: String(Number(values.amount))
+                    });
             } else if (service === "miniStatement") {
-                res = await Aeps_Mini_Statement({
-                    ...commonPayload,
-                    transactionAmount: "0",
-                });
+                res = await callAepsApi(
+                    vendorKey,
+                    "miniStatement",
+                    {
+                        ...commonPayload,
+                        amount: String(Number(values.amount))
+                    });
             } else if (service === "cashWithdrawal") {
-                res = await Aeps_Cash_Withdrawal({
-                    ...commonPayload,
-                    transactionAmount: values.amount,
-                });
+                res = await callAepsApi(
+                    vendorKey,
+                    "cashWithdrawal",
+                    {
+                        ...commonPayload,
+                        amount: String(Number(values.amount))
+                    });
+            }
+
+            const apiRes = res?.data;
+            const vendorRes = apiRes?.data;
+
+            // Case 1: No response OR backend failed OR vendor not hit
+            if (!apiRes || !vendorRes) {
+                showErrorNotification(
+                    apiRes?.message || "Something went wrong. Please try again."
+                );
+                return;
             }
 
             // If response exists → show receipt
-            if (res?.data) {
-                const normalized = normalizeReceiptData(res?.data, service!, values);
-                setReceiptData(normalized);
-                setReceiptDrawerOpened(true);
-            } else {
-                showErrorNotification(res?.data?.data?.message || res?.data?.message || "Failed to process transaction");
-            }
+            store(values.aadhaar, Number(values.amount));
+
+            const normalized = normalizeReceiptData(res?.data, service!, values);
+            setReceiptData(normalized);
+            setReceiptDrawerOpened(true);
+
         } catch (err: any) {
-            // if (err.code === "PERMISSION_DENIED") {
-            //     showErrorNotification("Location permission is required to complete AEPS transaction");
-            // } else if (err.code === "TIMEOUT") {
-            //     showErrorNotification("Please allow location access to continue transaction");
-            // } else {
-            //     handleCustomError(err);
-            // }
             handleCustomError(err);
         } finally {
             setIsLoading(false);
         }
-
-        // navigate(`/products/aeps/2fa/${subProductId}?iinno=${values.bank}`, {
-        //     state: { profile }
-        // })
     }
 
     const maskAadhaar = (aadhaar?: string) =>
         aadhaar ? `XXXXXXXX${aadhaar.slice(-4)}` : "—";
 
-    const getBankName = (bankCode: string) => {
-        return bankList.find((b) => b.value === bankCode)?.label || "—";
-    };
-
     // Fetch banks
     const fetchBanks = async () => {
         try {
             setLoadingBanks(true);
-            const response = await Aeps_Bank_List();
+            const response = await callAepsApi(
+                vendorKey,
+                "bankList",
+                {
+                    retailerId: loginData?.hierarchyId,
+                    subProductId: subProductId,
+                }
+            );
 
-            if (response?.data?.length === 0) {
-                showErrorNotification(response?.data?.message || "Failed to fetch bank list");
-                setBankList([]);
-                return;
+            const res = response?.data;
+            const txnData = res?.data;
+
+            // Step 1: Basic validation
+            if (!res || res.statusCode !== 200) {
+                throw new Error(res?.message || "Failed to fetch bank list");
             }
 
-            setBankList(
-                response?.data?.data?.map((item: any) => ({
-                    value: item.iinno,   // <-- correct
-                    label: item.bankName // <-- correct
-                })) || []
-            );
+            // Step 2: Transaction validation
+            if (txnData?.statuscode !== "TXN") {
+                throw new Error(txnData?.message || "Transaction failed");
+            }
+
+            const bankData = txnData?.data;
+
+            // Step 3: Empty check
+            if (!Array.isArray(bankData) || bankData.length === 0) {
+                throw new Error("No banks found");
+            }
+
+            // Success
+            const formattedBanks = bankData.map((item: any) => ({
+                value: String(item.bankId),
+                label: item.name,
+                iin: item.iin
+            }));
+
+            setBankList(formattedBanks);
         } catch (err) {
             handleCustomError(err);
             setBankList([]);
@@ -365,9 +419,6 @@ const AepsTransaction = () => {
                                     setFieldError={setFieldError}
                                     setFieldTouched={setFieldTouched}
                                     validateForm={validateForm}
-                                    // When 2FA mode is true, Wadh is not sent to RD service, as per provider requirement. 
-                                    // If your provider requires Wadh for 2FA as well, set is2FA to false and provide Wadh value
-                                    // wadh={import.meta.env.VITE_AEPS_FINGPAY_LIVE_WADH} 
                                     is2FA={true}
                                     requiredFieldsBeforeScan={getRequiredFieldsBeforeScan()}
                                     onSuccessScan={async (parsedPid: any, rawXml: string) => {
@@ -398,7 +449,6 @@ const AepsTransaction = () => {
                 overlayProps={{ backgroundOpacity: 0.4, blur: 2 }}
                 transitionProps={{ transition: "slide-right", duration: 300 }}
             >
-
                 <AepsTransactionReciept data={receiptData} />
             </Drawer>
 

@@ -128,6 +128,8 @@ export type ApiState = {
 
 export type UserRole = "RT" | "DT" | "SD" | "WL" | "PT" | "RU";
 
+type WalletType = "PREPAID" | "POSTPAID" | "";
+
 export type ProtectedRouteProps = {
   children: JSX.Element;
   allowedRoles?: UserRole[];
@@ -224,6 +226,7 @@ export type CustomTextProps = {
 };
 
 export type ButtonComponentProps = {
+  type?: "submit" | "button";
   title: string;
   onClick?: () => void;
   variant?: "filled" | "outline" | "light" | "gradient";
@@ -240,6 +243,7 @@ export type ButtonComponentProps = {
   isAuth?: boolean;
   width?: string | number;
   height?: string | number;
+  buttonRef?: React.Ref<any>;
 };
 
 export type CustomDatePickerProps = {
@@ -539,8 +543,10 @@ export type WalletToWalletProps = {
   hierarchyId: string;
   transferAmount: string;
   confirmAmount: string;
-  walletTypeFrom: string;
-  walletTypeTo: string;
+  walletTypeFrom: WalletType;
+  walletTypeTo: WalletType;
+  subProductId?: string;
+  schemeCode?: string;
 };
 
 export type ChildMemberListProps = Record<string, any>;
@@ -1074,6 +1080,11 @@ export type BankVerificationRequest = {
   ifsc_details: boolean;
 };
 
+export type BankVerificationPayload = BankVerificationRequest & {
+  subProductId?: string;
+  schemeCode?: string;
+};
+
 export type ExtraParamContent = {
   name: string;
   value?: string;
@@ -1258,4 +1269,21 @@ export interface DownlineBalanceTableType {
   postpaidBalance: string | number;
   createdOn: string;
   narration: string;
+}
+
+export interface RechargeTransactionType {
+  operatorCode: string;
+  operatorName: string;
+  customerNumber: string;
+  amount: number;
+  subProductId: string;
+  schemeCode: string;
+}
+
+export interface RechargeOperatorListType {
+  id: number;
+  name: string;
+  code: string;
+  type: "MOBILE" | "DTH";
+  [key: string]: any;
 }

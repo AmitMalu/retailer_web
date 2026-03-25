@@ -26,6 +26,7 @@ import { buildExtraParamPayload } from "./Utils/buildExtraParamPayload";
 import BillPaymentDetails from "./Components/BillPaymentDetails";
 import AmountInput from "./Components/AmountInput";
 import BBPSTransactionReciept from "../BBPSTransactionReciept";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 
 interface Props {
     serviceName: string;
@@ -57,6 +58,8 @@ const Form: React.FC<Props> = ({ serviceName, subProductId }) => {
     const apiResponses = useSelector(
         (state: RootState) => state.apiResponse?.responses
     );
+
+    const { checkDuplicate, store } = useTransactionCooldown("BBPS_ATOZ");
 
     const loginData = apiResponses?.loginData
         ? decryptData(apiResponses?.loginData)
@@ -234,12 +237,21 @@ const Form: React.FC<Props> = ({ serviceName, subProductId }) => {
                 }
             });
 
+            // check duplicate 
+            if (checkDuplicate(selectedProviderDetails.provider_id, Number(values.amount))) {
+                showErrorNotification(
+                    "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
+                );
+                return;
+            }
+
             // 🔹 Step 4: Call transaction API
             const response = await Transaction(
                 payload as TransactionProps
             );
 
             if (response?.data?.statusCode === 200 || response?.data?.statusCode === "200") {
+                store(selectedProviderDetails.provider_id, Number(values.amount))
                 showSuccessNotification(response?.data?.message);
                 setAmountEditable(false);
                 setBillModalOpened(false);
@@ -483,10 +495,11 @@ const Form: React.FC<Props> = ({ serviceName, subProductId }) => {
 
                                                 <div className="mt-6 flex h-9 w-full items-center justify-end">
                                                     <ButtonComponent
+                                                        type="submit"
                                                         width={120}
                                                         title={"SUBMIT"}
                                                         variant="filled"
-                                                        onClick={() => null}
+                                                        onClick={() => null}    
                                                         disabled={isLoading}
                                                         radius={28}
                                                         fontSize={14}

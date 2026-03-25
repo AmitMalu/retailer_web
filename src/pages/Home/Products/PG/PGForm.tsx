@@ -24,6 +24,7 @@ import {
 import theme from "@/theme/ThemeConfig";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 
 const PGFormModal = ({
   opened,
@@ -40,6 +41,8 @@ const PGFormModal = ({
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
+
+  const { checkDuplicate, store } = useTransactionCooldown("PG");
 
   const productOptions =
     loginData?.products?.map((product: any) => ({
@@ -148,28 +151,26 @@ const PGFormModal = ({
         initiatedBy: loginData?.hierarchyId
       };
 
+      if (checkDuplicate(values.cardHolderMobileNumber, Number(values.amount))) {
+        showErrorNotification(
+          "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
+        );
+        return;
+      }
+
       const response = await Create_Order(payload);
       // Outer success check (HTTP or API-level)
-      if (response?.data?.statusCode === 200 || response?.status === 200) {
+      if (response?.data?.statusCode == 200) {
         // Parse the inner JSON (which might be stringified)
-        let orderData;
-        try {
-          orderData =
-            typeof response.data.data === "string"
-              ? JSON.parse(response.data.data)
-              : response.data.data;
-        } catch {
-          orderData = {};
-        }
+        const orderData = response?.data?.data || {};
 
         // Inner (business logic) success check
-        if (orderData.status === "SUCCESS") {
-          // showSuccessNotification(orderData.message || "Order created successfully");
+        if (orderData?.paymentLink) {
 
-          if (orderData.paymentLink) {
-            // ✅ Open payment link in a new tab
-            window.open(orderData.paymentLink, "_blank");
-          }
+          store(values.cardHolderMobileNumber, Number(values.amount));
+
+          // Open payment link in a new tab
+          window.open(orderData?.paymentLink, "_blank");
 
           // Close modal and reset UI
           setIsBinDetails(false);

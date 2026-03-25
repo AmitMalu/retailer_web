@@ -16,6 +16,7 @@ import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import { Child_Member_List, Fund_Transfer } from "@/Services/api";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 const FundTransfer = () => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -25,6 +26,8 @@ const FundTransfer = () => {
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
+
+  const { checkDuplicate, store } = useTransactionCooldown("FUND-TRANSFER");
 
   const [childMemberList, setChildMemberList] = useState<
     ChildMemberListProps[]
@@ -104,8 +107,17 @@ const FundTransfer = () => {
         toWalletType: values.toWalletType,
         narration: values.narration,
       };
+
+      if (checkDuplicate(values.toHierarchyId, Number(values.amount))) {
+        showErrorNotification(
+          "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
+        );
+        return;
+      }
+
       const response = await Fund_Transfer(bodyData);
       if (response?.status === 200 || response?.status === 201) {
+        store(values.toHierarchyId, Number(values.amount));
         showSuccessNotification(response?.data?.message);
         resetForm();
       } else {

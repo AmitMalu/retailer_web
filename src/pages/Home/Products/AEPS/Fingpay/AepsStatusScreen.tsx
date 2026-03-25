@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Loader from "@/components/Atoms/Loader";
-import { AepsMerchantOnboardAPI, Check_Aeps_Onboard_Status } from "@/Services/api";
+import { callAepsApi } from "@/Services/api";
 import { RootState } from "@/Redux/Store";
 import { useSelector } from "react-redux";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import AepsOnboardModal from "@/components/Organism/AEPS/AepsOnboardModal";
+import { AepsScreenProps } from "../AepsVendorConfig";
 
-export default function AepsStatusScreen() {
-    const { state } = useLocation();
+export default function AepsStatusScreen({ vendorKey }: AepsScreenProps) {
     const navigate = useNavigate();
 
     const apiResponses = useSelector(
@@ -21,20 +21,22 @@ export default function AepsStatusScreen() {
         ? decryptData(apiResponses?.loginData)
         : null;
 
-    const subProduct = state?.subProduct;
+    const { subProductId } = useParams();
     const [loading, setLoading] = useState(true);
     const [showNotOnboardModal, setShowNotOnboardModal] = useState(false);
-    const [apiData, setApiData] = useState<any>(null);
 
     useEffect(() => {
         const retailerId = loginData?.hierarchyId;
 
         async function checkStatus() {
             try {
-                const res = await Check_Aeps_Onboard_Status({
-                    retailerId,
-                    subProductId: subProduct?.subProductId,
-                });
+                const res = await callAepsApi(
+                    vendorKey,
+                    "checkStatus",
+                    {
+                        retailerId,
+                        subProductId,
+                    });
 
                 // If API response is invalid
                 if (!res?.data) {
@@ -56,19 +58,15 @@ export default function AepsStatusScreen() {
                 const data = res?.data?.data;
                 const { onboardStatus, profile } = data;
 
-                setApiData(profile);
-
                 // CASE 1 — Onboarded + eKYC Done
                 if (onboardStatus == 2) {
-                    navigate(`/products/aeps/service/${subProduct?.subProductId}`, { state: { subProduct, profile } });
+                    navigate(`/products/aeps/service/${subProductId}`);
                     return;
                 }
 
                 // CASE 2 — Onboarded + eKYC Pending
                 if (onboardStatus == 1 && profile) {
-                    navigate(`/products/aeps/ekyc/${subProduct?.subProductId}`, {
-                        state: { subProduct, profile },
-                    });
+                    navigate(`/products/aeps/ekyc/${subProductId}`);
                     return;
                 }
 
@@ -88,10 +86,14 @@ export default function AepsStatusScreen() {
     const handleOnboardNow = async () => {
         setLoading(true);
         try {
-            const res = await AepsMerchantOnboardAPI({
-                retailerId: loginData?.hierarchyId,
-                subProductId: subProduct?.subProductId
-            });
+            const res = await callAepsApi(
+                vendorKey,
+                "onboard",
+                {
+                    retailerId: loginData?.hierarchyId,
+                    subProductId
+                }
+            );
 
             if (!res?.data) {
                 showErrorNotification("No response from server");
@@ -106,9 +108,7 @@ export default function AepsStatusScreen() {
             }
 
             // SUCCESS — go to EKYC screen
-            navigate(`/products/aeps/ekyc/${subProduct?.subProductId}`, {
-                state: { subProduct, profile: apiData },
-            });
+            navigate(`/products/aeps/ekyc/${subProductId}`);
 
         } catch (error) {
             handleCustomError(error);
@@ -125,7 +125,7 @@ export default function AepsStatusScreen() {
             <AepsOnboardModal
                 opened={showNotOnboardModal}
                 onClose={() => navigate(`/products/aeps`)}
-                retailerName={apiData?.name}
+                retailerName={loginData?.retailerName}
                 onOnboard={handleOnboardNow}
             />
         </>

@@ -8,29 +8,25 @@ import { UnstyledButton, Grid } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Aeps_Resend_Otp, Aeps_Send_Otp, Aeps_Verify_Otp } from "@/Services/api";
+import { callAepsApi } from "@/Services/api";
 import ButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
+import { useAppSelector } from "@/Redux/hooks";
+import { decryptData } from "@/Utils/helper";
+import { AepsScreenProps } from "../AepsVendorConfig";
 
-// const AEPS_RD_ENDPOINTS: any = {
-//     Mantra: "http://127.0.0.1:11100/rd/capture",
-//     Morpho: "http://127.0.0.1:8005/capture",
-//     Startek: "http://127.0.0.1:11102/capture",
-//     SecuGen: "http://127.0.0.1:8443/rd/capture",
-//     Tatvik: "http://127.0.0.1:8001/rd/capture",
-//     Precision: "http://127.0.0.1:11103/capture",
-//     Cogent: "http://127.0.0.1:8004/rd/capture",
-// };
-
-const AepsEkycScreen = () => {
+const AepsEkycScreen = ({ vendorKey }: AepsScreenProps) => {
     const theme = useTheme();
     const navigate = useNavigate();
-    const { state } = useLocation();
     const { subProductId } = useParams()
-    const profile = state?.profile;
-    const subProduct = state?.subProduct;
+
+    const { responses } = useAppSelector(state => state.apiResponse);
+
+    const loginData = responses?.loginData
+        ? decryptData(responses?.loginData)
+        : null;
 
     const [isLoading, setIsLoading] = useState(false);
     const [primaryKeyId, setPrimaryKeyId] = useState("");
@@ -47,13 +43,8 @@ const AepsEkycScreen = () => {
         return () => clearTimeout(timer);
     }, [resendCountdown]);
 
-    if (!profile) {
-        navigate("/products/aeps");
-        return null;
-    }
-
     const maskedAadhaar =
-        "********" + profile?.aadhaarNumber?.slice(-4);
+        "********" + loginData?.aadhaarNumber?.slice(-4);
 
     const validationSchema = Yup.object({
         otp: Yup.string().when("otpSent", {
@@ -85,13 +76,18 @@ const AepsEkycScreen = () => {
     };
 
     const handleSendOtp = async (setFieldValue: any) => {
+
         try {
             setIsLoading(true);
 
-            const res = await Aeps_Send_Otp({
-                retailerId: profile?.retailerId,
-                subProductId: subProductId
-            });
+            const res = await callAepsApi(
+                vendorKey,
+                "sendOtp",
+                {
+                    retailerId: loginData?.hierarchyId,
+                    subProductId
+                }
+            );
 
             if (res?.data?.statusCode === 200 && res.data?.data?.statusCode == "10000") {
                 showSuccessNotification("OTP sent successfully");
@@ -100,16 +96,14 @@ const AepsEkycScreen = () => {
                 setResendCountdown(30); // start 30s countdown
                 setOtpSent(true);
                 setFieldValue("otpSent", true);
+            } else if (res?.data?.data?.statusCode == "10016") {
+                showSuccessNotification(res.data?.data?.message || "Your KYC Already Completed"); // Already Kyc Done
+                navigate(`/products/aeps/service/${subProductId}`);
             } else {
-                showErrorNotification(res.data?.data?.message || "Unable to send OTP");
+                showErrorNotification(res?.data?.data?.message || "Unable to send OTP");
             }
         } catch (err) {
             handleCustomError(err);
-            // setPrimaryKeyId("40");
-            // setEncodeFPTxnId("EKYKF1564176120321131641652A");
-            // setResendCountdown(30); // start 30s countdown
-            // setOtpSent(true);
-            // setFieldValue("otpSent", true);
         } finally {
             setIsLoading(false);
         }
@@ -119,12 +113,15 @@ const AepsEkycScreen = () => {
         try {
             setIsLoading(true);
 
-            const res = await Aeps_Resend_Otp({
-                retailerId: profile?.retailerId,
-                primaryKeyId,
-                encodeFPTxnId,
-                subProductId: subProductId
-            });
+            const res = await callAepsApi(
+                vendorKey,
+                "resendOtp",
+                {
+                    retailerId: loginData?.retailerId,
+                    primaryKeyId,
+                    encodeFPTxnId,
+                    subProductId: subProductId
+                });
 
             if (res?.data?.statusCode === 200 && res.data?.data?.statusCode == "10000") {
                 showSuccessNotification("OTP sent successfully");
@@ -134,7 +131,7 @@ const AepsEkycScreen = () => {
                 setEncodeFPTxnId(res.data?.data?.data?.encodeFPTxnId);
                 setResendCountdown(30); // start 30s countdown
             } else {
-                showErrorNotification(res.data?.data?.message || "Unable to send OTP");
+                showErrorNotification(res?.data?.data?.message || "Unable to send OTP");
             }
         } catch (err) {
             handleCustomError(err);
@@ -147,32 +144,28 @@ const AepsEkycScreen = () => {
         try {
             setIsLoading(true);
 
-            const res = await Aeps_Verify_Otp({
-                retailerId: profile?.retailerId,
-                aadhaar: profile?.aadhaarNumber,
-                otp: values.otp,
-                primaryKeyId,
-                encodeFPTxnId,
-                deviceType: values.deviceType,
-                captureResponse: values.pidData,
-                subProductId: subProductId
-            });
+            const res = await callAepsApi(
+                vendorKey,
+                "verifyOtp",
+                {
+                    retailerId: loginData?.retailerId,
+                    aadhaar: loginData?.aadhaarNumber,
+                    otp: values.otp,
+                    primaryKeyId,
+                    encodeFPTxnId,
+                    deviceType: values.deviceType,
+                    captureResponse: values.pidData,
+                    subProductId: subProductId
+                });
 
             if (res?.data?.statusCode === 200 && res?.data?.data?.status === true) {
                 showSuccessNotification("eKYC Completed");
-                navigate(`/products/aeps/service/${subProductId}`, {
-                    state: { subProduct, profile },
-                });
+                navigate(`/products/aeps/service/${subProductId}`);
             } else {
-                showErrorNotification(res.data?.data?.message || "Failed to verify OTP");
+                showErrorNotification(res?.data?.data?.message || "Failed to verify OTP");
             }
         } catch (err) {
             handleCustomError(err);
-            // navigate("/products/aeps");
-            // showSuccessNotification("eKYC Completed");
-            // navigate(`/products/aeps/service/${subProductId}`, {
-            //     state: { subProduct, profile },
-            // });
         } finally {
             setIsLoading(false);
         }
@@ -188,7 +181,7 @@ const AepsEkycScreen = () => {
 
                 <div className="w-full mb-6 flex flex-col items-center gap-4 justify-center">
                     <TextComponent fontSize={26} fontWeight={600} color={theme.palette.red.DEFAULT}>
-                        Dear {profile?.name}
+                        Dear {loginData?.retailerName}
                     </TextComponent>
 
                     <TextComponent fontSize={16} color="#444">
@@ -218,7 +211,7 @@ const AepsEkycScreen = () => {
                                             <Grid.Col span={{ base: 12, md: 6 }}>
                                                 <TextInputComponent
                                                     label="Mobile Number"
-                                                    value={profile?.mobileNumber}
+                                                    value={loginData?.mobileNumber}
                                                     disabled
                                                     rightSection={
                                                         otpSent ? (
@@ -295,7 +288,7 @@ const AepsEkycScreen = () => {
                                                 setFieldError={setFieldError}
                                                 setFieldTouched={setFieldTouched}
                                                 validateForm={validateForm}
-                                                requiredFieldsBeforeScan={["deviceType", "otp"]}   // HERE WE DECIDE
+                                                requiredFieldsBeforeScan={["deviceType", "otp"]}
                                                 onSuccessScan={async (parsedPid: any, rawXml: string) => {
                                                     await setFieldValue("pidData", rawXml, true);
 
@@ -303,10 +296,6 @@ const AepsEkycScreen = () => {
                                                         handleSubmit({ ...values, pidData: parsedPid });
                                                     }, 0);
                                                 }}
-                                                // When 2FA mode is false, Provided Wadh is sent to RD service, 
-                                                // as per provider requirement. 
-                                                // If your provider does not require Wadh,
-                                                // set is2FA to true and do not provide Wadh value
                                                 is2FA={false}
                                                 wadh={import.meta.env.VITE_AEPS_FINGPAY_LIVE_WADH}
                                             />}
