@@ -1,35 +1,37 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Modal, Button, Text } from "@mantine/core";
-import { useAppDispatch } from "@/Redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/Redux/hooks";
 import { clearLocation, setLocation, setLocationLoading } from "@/Redux/Reducers/locationSlice";
+import { useIpAddress } from "@/Utils/helper";
 
 const LocationGuard = () => {
     const dispatch = useAppDispatch();
+    const { fetchIpAddress } = useIpAddress();
+
+    const ipAddress = useAppSelector(
+        (state) => state.location.ipAddress
+    );
+
     const [locationBlocked, setLocationBlocked] = useState(false);
     const [permissionState, setPermissionState] = useState<
         PermissionState | null
     >(null);
 
+    const prevCoords = useRef<{ lat: number; lng: number } | null>(null);
+
     const requestLocation = () => {
         dispatch(setLocationLoading(true));
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                let currentIp = null;
-                try {
-                    const res = await fetch("https://api.ipify.org?format=json");
-                    const data = await res.json();
-                    currentIp = data.ip;
-                } catch (error) {
-                    console.error("Failed to fetch IP address", error);
-                }
 
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
                 dispatch(
                     setLocation({
                         lat: position.coords.latitude,
                         lng: position.coords.longitude,
-                        ipAddress: currentIp,
+                        ipAddress: ipAddress ?? undefined
                     })
-                )
+                );
+
                 dispatch(setLocationLoading(false));
                 setLocationBlocked(false);
             },
@@ -42,31 +44,33 @@ const LocationGuard = () => {
         );
     };
 
-    // 1. Ask location on first load
     useEffect(() => {
-        requestLocation();
+        fetchIpAddress();   
+        requestLocation();  // async
     }, []);
 
     // 2. WATCH location continuously
     useEffect(() => {
         const watchId = navigator.geolocation.watchPosition(
-            async (position) => {
-                let currentIp = null;
-                try {
-                    const res = await fetch("https://api.ipify.org?format=json");
-                    const data = await res.json();
-                    currentIp = data.ip;
-                } catch (error) {
-                    console.error("Failed to fetch IP address", error);
-                }
+            (position) => {
 
-                dispatch(
-                    setLocation({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                        ipAddress: currentIp,
-                    })
-                );
+                const newLat = position.coords.latitude;
+                const newLng = position.coords.longitude;
+
+                if (
+                    !prevCoords.current ||
+                    prevCoords.current.lat !== newLat ||
+                    prevCoords.current.lng !== newLng
+                ) {
+                    prevCoords.current = { lat: newLat, lng: newLng };
+                    dispatch(
+                        setLocation({
+                            lat: newLat,
+                            lng: newLng,
+                            ipAddress: ipAddress ?? undefined
+                        })
+                    );
+                }
                 setLocationBlocked(false);
             },
             () => {

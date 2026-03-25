@@ -31,7 +31,7 @@ const Login: React.FC = () => {
   const { lat, lng, loading } = useAppSelector(state => state.location)
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
+  
   const validationSchema = Yup.object({
     userName: Yup.string()
       .max(10, "Please enter valid number")
@@ -219,12 +219,10 @@ const Login: React.FC = () => {
                         type="submit"
                         title="CONTINUE"
                         variant="filled"
-                        loading={isLoading}
                         radius={28}
                         fullWidth={true}
                         disabled={
                           isLoading ||
-                          loading ||
                           !values.userName ||
                           !values.password
                         }
