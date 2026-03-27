@@ -21,6 +21,8 @@ import {
   PayoutSaveBeneficiaryProps,
   PayoutSendBeneficiaryProps,
   RaisedTicketParams,
+  RechargeFetchPlanPayloadType,
+  RechargeMobileLookupPayloadType,
   RechargeTransactionType,
   ResendOtpRequestProps,
   SetPasswordRequestProps,
@@ -498,10 +500,23 @@ export const Recharge_Fetch_Operator = async () => {
   return await api.get(`${API_ROUTES.RECHARGE_FETCH_OPERATORS}`);
 };
 
+export const Recharge_Mobile_Lookup = async (
+  data: RechargeMobileLookupPayloadType,
+) => {
+  return await api.post(`${API_ROUTES.RECHARGE_MOBILE_LOOKUP}`, data);
+};
+
+export const Recharge_Fetch_Plans = async (
+  data: RechargeFetchPlanPayloadType,
+) => {
+  return await api.post(`${API_ROUTES.RECHARGE_PLANS}`, data);
+};
+
 export const Recharge_Transaction = async (data: RechargeTransactionType) => {
   return await api.post(`${API_ROUTES.RECHARGE_TRANSACTION}`, data);
 };
 
+////////////////////////////// VERIFICATIONS /////////////////////////////////
 export const Adhaar_Verification = async (aadhaarNumber: number) =>
   await api.post(
     `${API_ROUTES.ADHAAR_VERIFICATION}?aadhaarNumber=${aadhaarNumber}`,

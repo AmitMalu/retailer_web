@@ -132,6 +132,8 @@ export const API_ROUTES = {
 
   ////////////////////////////// RECHARGE //////////////////////////////////
   RECHARGE_FETCH_OPERATORS: `${BASE_URL}/api/recharge/operators`,
+  RECHARGE_MOBILE_LOOKUP: `${BASE_URL}/api/recharge/mobile-lookup`,
+  RECHARGE_PLANS : `${BASE_URL}/api/recharge/plans`,
   RECHARGE_TRANSACTION: `${BASE_URL}/api/recharge`,
 
 
