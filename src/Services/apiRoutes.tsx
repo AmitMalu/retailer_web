@@ -125,13 +125,15 @@ export const API_ROUTES = {
   AEPS_2FA_CHECK_STATUS_INSTANTPAY: `${BASE_URL}/instantpay/aeps/outlet-login-status`,
   AEPS_VALIDATE_2FA_INSTANTPAY: `${BASE_URL}/instantpay/aeps/outlet-login`,
   CASH_WITHDRAWAL_INSTANTPAY: `${BASE_URL}/api/instantpay/aeps/cash-withdrawal`,
-  BALANCE_INQUIRY_INSTANTPAY: `${BASE_URL}/api/instantpay/aeps/balance-inquiry`,
+  BALANCE_INQUIRY_INSTANTPAY: `${BASE_URL}/api/instantpay/aeps/balance-enquiry`,
   MINI_STATEMENT_INSTANTPAY: `${BASE_URL}/api/instantpay/aeps/mini-statement`,
 
 
 
   ////////////////////////////// RECHARGE //////////////////////////////////
   RECHARGE_FETCH_OPERATORS: `${BASE_URL}/api/recharge/operators`,
+  RECHARGE_MOBILE_LOOKUP: `${BASE_URL}/api/recharge/mobile-lookup`,
+  RECHARGE_PLANS : `${BASE_URL}/api/recharge/plans`,
   RECHARGE_TRANSACTION: `${BASE_URL}/api/recharge`,
 
 

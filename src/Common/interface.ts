@@ -1287,3 +1287,14 @@ export interface RechargeOperatorListType {
   type: "MOBILE" | "DTH";
   [key: string]: any;
 }
+
+export interface RechargeMobileLookupPayloadType {
+  mobileNumber: string;
+  subProductId: string;
+}
+
+export interface RechargeFetchPlanPayloadType {
+  spkey: string;
+  circleId: string;
+  subProductId: string;
+}

@@ -5,13 +5,19 @@ export default function PlanDrawer({
   opened,
   onClose,
   plans,
+  planTypes,
   setFieldValue
 }: {
   opened: boolean;
   onClose: () => void;
   plans: any[];
+  planTypes: string[];
   setFieldValue: (field: string, value: any) => void;
 }) {
+
+  const getPlansByType = (type: string) =>
+    plans?.filter((p) => p.type === type);
+
   return (
     <Drawer
       opened={opened}
@@ -20,30 +26,36 @@ export default function PlanDrawer({
       position="right"
       size="md"
     >
-      <Tabs defaultValue="popular">
+      <Tabs defaultValue={planTypes?.[0] || ""}>
 
+        {/* Dynamic Tabs */}
         <Tabs.List>
-          <Tabs.Tab value="popular">Popular</Tabs.Tab>
-          <Tabs.Tab value="data">Data</Tabs.Tab>
-          <Tabs.Tab value="unlimited">Unlimited</Tabs.Tab>
+          {planTypes.map((type) => (
+            <Tabs.Tab key={type} value={type}>
+              {type}
+            </Tabs.Tab>
+          ))}
         </Tabs.List>
 
-        <Tabs.Panel value="popular" pt="sm">
-          <ScrollArea h={400}>
-            <Stack>
-              {plans.map((plan) => (
-                <PlanCard
-                  key={plan.id}
-                  plan={plan}
-                  onSelect={(amount) => {
-                    setFieldValue("amount", amount)
-                    onClose()
-                  }}
-                />
-              ))}
-            </Stack>
-          </ScrollArea>
-        </Tabs.Panel>
+        {/* Dynamic Panels */}
+        {planTypes.map((type) => (
+          <Tabs.Panel key={type} value={type} pt="sm">
+            <ScrollArea h={400}>
+              <Stack>
+                {getPlansByType(type)?.map((plan) => (
+                  <PlanCard
+                    key={plan.amount + plan.desc}
+                    plan={plan}
+                    onSelect={(amount) => {
+                      setFieldValue("amount", amount);
+                      onClose();
+                    }}
+                  />
+                ))}
+              </Stack>
+            </ScrollArea>
+          </Tabs.Panel>
+        ))}
 
       </Tabs>
     </Drawer>

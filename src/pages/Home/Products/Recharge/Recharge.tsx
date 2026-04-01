@@ -13,7 +13,7 @@ import { Card, Grid, Stack, Group, Center, Box } from "@mantine/core";
 import { useEffect, useState } from "react";
 import PlanDrawer from "./components/PlanDrawer";
 import SubscriberCard from "./components/SubscriberCard";
-import { Recharge_Fetch_Operator, Recharge_Transaction } from "@/Services/api";
+import { Recharge_Fetch_Operator, Recharge_Fetch_Plans, Recharge_Mobile_Lookup, Recharge_Transaction } from "@/Services/api";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { RechargeOperatorListType, RechargeTransactionType } from "@/Common/interface";
@@ -70,6 +70,8 @@ const Recharge = () => {
     const [mobileOperators, setMobileOperators] = useState<any[]>([]);
     const [dthOperators, setDthOperators] = useState<any[]>([]);
     const [plans, setPlans] = useState<any>([]);
+    const [lookupInfo, setLookupInfo] = useState<any>(null);
+    const [planTypes, setPlanTypes] = useState<string[]>([]);
 
     const { responses } = useAppSelector(state => state.apiResponse)
 
@@ -128,78 +130,200 @@ const Recharge = () => {
         }),
     });
 
-    const handleCheck = () => {
+    const handleCheck = (values: RechargeFormValues) => {
         if (subscriber) {
             setSubscriber(null)
         } else {
-            setSubscriber({
-                name: "Rahul Sharma",
-                balance: 20,
-                status: "Active",
-                lastRecharge: 299
-            });
+            console.log(values);
         }
     };
 
-    useEffect(() => {
-        const fetchOperatorList = async () => {
-            try {
-                setIsLoading(true)
-                const response = await Recharge_Fetch_Operator()
-                if (response?.data && response?.data?.statusCode == 200) {
-                    const list = response?.data?.data || []
-                    setOperators(list)
-                    const mobile = list
-                        .filter((op: any) => op.type === "MOBILE" && op.active)
-                        .map((op: any) => ({
-                            value: String(op.id),
-                            label: op.name.trim(),
-                            data: op
-                        }))
-                    const dth = list
-                        .filter((op: any) => op.type === "DTH" && op.active)
-                        .map((op: any) => ({
-                            value: String(op.id),
-                            label: op.name.trim(),
-                            data: op
-                        }))
-
-                    setMobileOperators(mobile)
-                    setDthOperators(dth)
-                } else {
-                    showErrorNotification(response?.data?.message);
-                }
-            } catch (err) {
-                await handleCustomError(err);
-            } finally {
-                setIsLoading(false);
+    const fetchPlanWithOperator = async (spKey: string, circleId: string) => {
+        try {
+            setIsLoading(true);
+            if (!circleId) {
+                showErrorNotification("Unable to fetch plans");
+                setPlans([]);
+                return;
             }
+
+            const response = await Recharge_Fetch_Plans({
+                circleId: circleId || "",
+                subProductId: subProductId || "",
+                spkey: spKey
+            });
+
+            // Outer API failed
+            if (response?.data?.statusCode !== 200) {
+                showErrorNotification(response?.data?.message || "Failed to fetch plans");
+                setPlans([]);
+                return;
+            }
+
+            const outerData = response?.data?.data;
+
+            // Wrapper level failed
+            if (!outerData || outerData.statusCode !== 1) {
+                showErrorNotification(outerData?.msg || "Failed to fetch plans");
+                setPlans([]);
+                return;
+            }
+
+            const innerData = outerData?.data;
+
+            // Actual API failed (MOST IMPORTANT)
+            if (!innerData || innerData.statusCode !== 1) {
+                showErrorNotification(innerData?.msg || "Failed to fetch plans");
+                setPlans([]);
+                return;
+            }
+
+            const rawTypes = innerData?.data?.types || [];
+
+            // No plans
+            if (!rawTypes.length) {
+                showErrorNotification("No plans available");
+                setPlans([]);
+                setPlanTypes([]);
+                return;
+            }
+
+            // Extract tab names dynamically
+            const typesList = rawTypes.map((t: any) => t.pType);
+            setPlanTypes(typesList);
+
+            // Flatten plans
+            const flatPlans = rawTypes.flatMap((type: any) =>
+                (type.pDetails || []).map((plan: any) => ({
+                    amount: Number(plan.rs),
+                    desc: plan.desc,
+                    validity: plan.validity,
+                    type: type.pType
+                }))
+            );
+
+            setPlans(flatPlans);
+
+            // optional auto open
+            if (flatPlans.length) {
+                setPlansDrawer(true);
+            }
+
+        } catch (err) {
+            await handleCustomError(err);
+            setPlans([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const fetchMobileLookup = async (
+        mobileNumber: string,
+        setFieldValue: (field: string, value: any) => void
+    ) => {
+        setIsLoading(true)
+        try {
+            const response = await Recharge_Mobile_Lookup({
+                subProductId: subProductId || "",
+                mobileNumber
+            })
+
+            if (response?.data?.statusCode == 200) {
+                const lookupData = response?.data?.data;
+
+                if (!lookupData || lookupData.statusCode !== 1) {
+                    showErrorNotification("Unable to Fetch details");
+                    return;
+                }
+
+                // store full lookup data
+                setLookupInfo(lookupData);
+
+                // pass setFieldValue forward
+                handleOperatorMatch(
+                    lookupData.operator,
+                    lookupData.circleCode,
+                    setFieldValue
+                );
+
+            } else {
+                showErrorNotification(response?.data?.message);
+            }
+        } catch (err) {
+            await handleCustomError(err);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    const normalize = (str: string) =>
+        str.toLowerCase().replace(/\s+/g, "");
+
+    const handleOperatorMatch = (
+        operatorNameFromLookup: string,
+        circleCode: string,
+        setFieldValue: (field: string, value: any) => void
+    ) => {
+        if (!operatorNameFromLookup || !operators.length) return;
+
+        const matchedOperator = operators?.find((op: any) => {
+            return (
+                op?.type?.toLowerCase() === "mobile" &&
+                normalize(op.name) === normalize(operatorNameFromLookup)
+            );
+        });
+
+        if (!matchedOperator) {
+            showErrorNotification("Operator not supported");
+            return;
         }
 
-        fetchOperatorList();
-        setPlans([
-            {
-                id: 1,
-                amount: 199,
-                validity: "28 days",
-                desc: "1GB/day + Unlimited Calls"
-            },
-            {
-                id: 2,
-                amount: 239,
-                validity: "28 days",
-                desc: "1.5GB/day + Unlimited Calls"
-            },
-            {
-                id: 3,
-                amount: 299,
-                validity: "28 days",
-                desc: "2GB/day + Unlimited Calls"
-            }])
+        // Set operator in form
+        setFieldValue("mobileOperator", String(matchedOperator.spKey));
 
+        // Auto fetch plans with correct data
+        fetchPlanWithOperator(matchedOperator.spKey, circleCode);
+    };
+
+    const fetchOperatorList = async () => {
+        try {
+            setIsLoading(true)
+            const response = await Recharge_Fetch_Operator()
+            if (response?.data && response?.data?.statusCode == 200) {
+                const list = response?.data?.data || []
+
+                setOperators(list)
+                const mobile = list
+                    ?.filter((op: any) => op?.type?.toLowerCase() === "mobile")
+                    ?.map((op: any) => ({
+                        value: String(op.spKey),
+                        label: op.name.trim(),
+                        data: op
+                    }))
+                const dth = list
+                    ?.filter((op: any) => op?.type?.toLowerCase() === "dth")
+                    ?.map((op: any) => ({
+                        value: String(op.spKey),
+                        label: op.name.trim(),
+                        data: op
+                    }))
+                setMobileOperators(mobile)
+                setDthOperators(dth)
+            } else {
+                showErrorNotification(response?.data?.message);
+            }
+        } catch (err) {
+            await handleCustomError(err);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchOperatorList();
     }, [])
 
-    const handleSubmit = async (values: RechargeFormValues) => {
+    const handleSubmit = async (values: RechargeFormValues, resetForm: any) => {
         try {
             setIsLoading(true)
 
@@ -210,7 +334,7 @@ const Recharge = () => {
                 : values.dthOperator
 
             const selectedOperator = operators.find(
-                (op: RechargeOperatorListType) => String(op.id) === operatorId
+                (op) => String(op.spKey) === operatorId
             )
 
             if (!selectedOperator) {
@@ -228,9 +352,17 @@ const Recharge = () => {
             }
 
             const response = await Recharge_Transaction(payload)
+            const outerData = response?.data
 
-            if (response?.data?.statusCode === 200) {
-                showSuccessNotification(response?.data?.message || "Recharge Processed")
+            if (outerData?.statusCode === 200) {
+                const innerData = outerData?.data
+                if (innerData?.status == "FAILED") {
+                    showErrorNotification(innerData?.message || "Failed to Process Recharge")
+                } else {
+                    showSuccessNotification("Recharge Processed")
+                    setSubscriber(null)
+                    resetForm();
+                }
             } else {
                 showErrorNotification(response?.data?.message || "Failed to Process Recharge")
             }
@@ -241,6 +373,11 @@ const Recharge = () => {
             setIsLoading(false)
         }
     }
+
+    const getSelectedOperatorName = (spKey: string) => {
+        const op = mobileOperators.find(o => o.value === spKey);
+        return op?.label || "";
+    };
 
     return (
         <>
@@ -267,14 +404,16 @@ const Recharge = () => {
                 <Formik<RechargeFormValues>
                     initialValues={initialValues}
                     validationSchema={validationSchema}
-                    onSubmit={(values) => {
-                        handleSubmit(values)
+                    onSubmit={(values, { resetForm }) => {
+                        handleSubmit(values, resetForm)
                     }}
                 >
                     {({ values, setFieldValue, resetForm }) => {
                         const isMobile = values.rechargeType === "mobile";
                         const canViewPlans =
-                            isMobile && values.mobileOperator;
+                            isMobile &&
+                            values.mobileNumber?.length === 10
+                            && values.mobileOperator;
                         const canCheckSubscriber =
                             !isMobile && values.dthOperator && values.subscriberNumber;
                         const canRecharge = isMobile
@@ -341,6 +480,26 @@ const Recharge = () => {
                                                                         strictSpecialCharBlock
                                                                         withAsterisk
                                                                         size="sm"
+                                                                        onChange={(e: any) => {
+                                                                            const value = e.target.value;
+
+                                                                            if (value !== values.mobileNumber) {
+
+                                                                                setFieldValue("mobileNumber", value);
+
+                                                                                // If user edits (less than 10 digits) → reset everything
+                                                                                if (value.length < 10) {
+                                                                                    setFieldValue("mobileOperator", null); // IMPORTANT
+                                                                                    setPlans([]);
+                                                                                    setLookupInfo(null);
+                                                                                }
+
+                                                                                // Call lookup only at 10 digits
+                                                                                if (value.length === 10) {
+                                                                                    fetchMobileLookup(value, setFieldValue);
+                                                                                }
+                                                                            }
+                                                                        }}
                                                                     />
                                                                 </Grid.Col>
 
@@ -353,9 +512,21 @@ const Recharge = () => {
                                                                         searchable
                                                                         withAsterisk
                                                                         size="sm"
+                                                                        onChange={(value: any) => {
+                                                                            setFieldValue("mobileOperator", value);
+
+                                                                            // Reset old plans (VERY IMPORTANT)
+                                                                            setPlans([]);
+                                                                        }}
                                                                     />
                                                                 </Grid.Col>
-
+                                                                {lookupInfo && values.mobileNumber?.length === 10 && (
+                                                                    <Grid.Col span={12}>
+                                                                        <div style={{ fontSize: "12px", color: "#6b7280", marginTop: "-12px" }}>
+                                                                            {getSelectedOperatorName(String(values.mobileOperator))}, {lookupInfo.circle}
+                                                                        </div>
+                                                                    </Grid.Col>
+                                                                )}
                                                                 <Grid.Col span={12}>
                                                                     <FormikTextInputComponent
                                                                         name="amount"
@@ -439,9 +610,35 @@ const Recharge = () => {
                                                             disabled={isMobile ? !canViewPlans : !canCheckSubscriber}
                                                             onClick={() => {
                                                                 if (isMobile) {
-                                                                    setPlansDrawer(true)
+
+                                                                    // If plans already exist → open
+                                                                    if (plans.length) {
+                                                                        setPlansDrawer(true);
+                                                                        return;
+                                                                    }
+
+                                                                    // Validate mobile number first
+                                                                    if (!values.mobileNumber || values.mobileNumber.length !== 10) {
+                                                                        showErrorNotification("Enter valid mobile number");
+                                                                        return;
+                                                                    }
+
+                                                                    // Validate operator
+                                                                    if (!values.mobileOperator) {
+                                                                        showErrorNotification("Select operator");
+                                                                        return;
+                                                                    }
+
+                                                                    // Use circle from lookup OR fallback
+                                                                    const circleId = lookupInfo?.circleCode || "";
+
+                                                                    fetchPlanWithOperator(
+                                                                        values.mobileOperator,
+                                                                        circleId
+                                                                    );
+
                                                                 } else {
-                                                                    handleCheck()
+                                                                    handleCheck(values);
                                                                 }
                                                             }}
                                                         >
@@ -466,6 +663,7 @@ const Recharge = () => {
                                                     opened={plansDrawer}
                                                     onClose={() => setPlansDrawer(false)}
                                                     plans={plans}
+                                                    planTypes={planTypes}
                                                     setFieldValue={setFieldValue}
                                                 />
                                             </Form>
