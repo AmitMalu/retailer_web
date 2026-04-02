@@ -42,7 +42,7 @@ export default function Dashboard() {
   const [selectedLabel, setSelectedLabel] =
     useState<DateRangeLabel>("Last 7 Days");
 
-  // 📡 API call
+  // API call
   const dashboardDataReq = async () => {
     if (!loginData?.hierarchyId || !selectedDate) return;
     const [fromDate, toDate] = selectedDate;

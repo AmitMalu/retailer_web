@@ -51,7 +51,7 @@ const ViewUser = () => {
       render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-center">
           <TextComponent
-            color={theme.palette.greenColor.DEFAULT}
+            color={theme.palette.primary.dark}
             fontSize={12}
             fontWeight={400}
           >
@@ -68,7 +68,7 @@ const ViewUser = () => {
       render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-center">
           <TextComponent
-            color={theme.palette.background.default}
+            color={theme.palette.primary.dark}
             fontSize={12}
             fontWeight={400}
           >
@@ -94,7 +94,7 @@ const ViewUser = () => {
       render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-center">
           <TextComponent
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.dark}
             fontSize={12}
             fontWeight={400}
           >
@@ -129,7 +129,7 @@ const ViewUser = () => {
       render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-self-center w-max bg-GreenColor-light px-1 py-1 rounded text-center justify-center">
           <TextComponent
-            color={theme.palette.greenColor.DEFAULT}
+            color={theme.palette.primary.dark}
             fontSize={12}
             fontWeight={400}
           >
@@ -158,13 +158,13 @@ const ViewUser = () => {
       render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-center">
           <TextComponent
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.dark}
             fontSize={12}
             fontWeight={400}
           >
             {String(row.isBlocked)}
             {/* {row?.isBlocked === true ? (
-              <NotBlockedSvgIcon color={theme.palette.red.DEFAULT} />
+              <NotBlockedSvgIcon color={theme.palette.primary.dark} />
             ) : (
               <BlockedSvgIcon color={theme.palette.greenColor.DEFAULT} />
             )} */}
@@ -287,10 +287,10 @@ const ViewUser = () => {
       <div className="mb-4">
         <div className="flex w-full items-center justify-between gap-2">
           <div className="flex w-full items-center justify-start gap-2">
-            <div className="flex w-max items-center justify-center rounded-lg border gap-2 bg-red-light p-2 shadow-lg">
-              <ViewUserSvgIcon color={theme.palette.red.DEFAULT} />
+            <div className="flex w-max items-center justify-center rounded-lg border gap-2 bg-primary-light p-2 shadow-lg">
+              <ViewUserSvgIcon color={theme.palette.primary.dark} />
               <TextComponent
-                color={theme.palette.red.DEFAULT}
+                color={theme.palette.primary.dark}
                 fontSize={14}
                 fontWeight={600}
               >
@@ -299,16 +299,16 @@ const ViewUser = () => {
             </div>
           </div>
           <div className="flex w-full items-center justify-end gap-2">
-            <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px] ">
+            <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-divider bg-background-paper px-2 py-[6px] ">
               <UnstyledButton
                 onClick={() => setIsSeacrh(!isSeacrh)}
                 className="flex w-max items-center justify-center gap-2 "
               >
-                <FilterSvgIcon color={theme.palette.red.DEFAULT} />
+                <FilterSvgIcon color={theme.palette.primary.dark} />
                 <TextComponent
                   fontSize={16}
                   fontWeight={400}
-                  color={theme.palette.red.DEFAULT}
+                  color={theme.palette.primary.dark}
                   align="center"
                 >
                   Filter
@@ -318,24 +318,24 @@ const ViewUser = () => {
 
             <div
               onClick={() => setShowColumnModal(true)}
-              className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px]"
+              className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-background-paper px-2 py-[6px]"
             >
-              <ColsSvgIcon color={theme.palette.red.DEFAULT} />
+              <ColsSvgIcon color={theme.palette.primary.dark} />
               <TextComponent
-                color={theme.palette.red.DEFAULT}
+                color={theme.palette.primary.dark}
                 fontSize={16}
                 fontWeight={400}
               >
                 Cols
               </TextComponent>
             </div>
-            <div className="flex w-max items-center justify-center rounded-lg border bg-red-light p-2 shadow-lg">
+            <div className="flex w-max items-center justify-center rounded-lg border bg-primary-light p-2 shadow-lg">
               <Menu shadow="md" width={140}>
                 <Menu.Target>
                   <div className="flex items-center gap-2">
-                    <ExportSvgIcon color={theme.palette.red.DEFAULT} />
+                    <ExportSvgIcon color={theme.palette.primary.dark} />
                     <TextComponent
-                      color={theme.palette.red.DEFAULT}
+                      color={theme.palette.primary.dark}
                       fontSize={14}
                       fontWeight={600}
                     >

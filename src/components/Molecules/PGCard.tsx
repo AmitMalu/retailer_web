@@ -1,6 +1,6 @@
 import React from "react";
 import TextComponent from "../Atoms/TextComponent";
-import { useTheme } from "@mui/system";
+import { useTheme } from "@mui/material";
 
 const PGCard = ({
   image,
@@ -19,10 +19,10 @@ const PGCard = ({
 }) => {
   const theme = useTheme();
 
-  // If it's a placeholder, show a gray/faded box
+  // If it's a placeholder, show a themed box
   if (placeholder) {
     return (
-      <div className="w-32 h-32 rounded-3xl border-2 border-gray-300 bg-gray-100 shadow-inner" />
+      <div className="w-32 h-32 rounded-3xl border-2 border-divider bg-background-default shadow-inner" />
     );
   }
 
@@ -32,32 +32,35 @@ const PGCard = ({
         }`}    >
       <div
         onClick={!disabled ? onClick : undefined}
-        className={`relative w-32 h-32 rounded-3xl border-2 shadow-md z-10 transition-all duration-300 ease-in-out 
-          ${disabled ? "bg-gray-200 border-gray-300" : "bg-red-light group-hover:scale-105 group-hover:shadow-lg"}`}
+        className={`relative w-32 h-32 rounded-3xl border-2 shadow-md z-10 transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-lg`}
+        style={{
+          backgroundColor: disabled ? theme.palette.divider : theme.palette.background.paper,
+          borderColor: disabled ? theme.palette.divider : theme.palette.primary.main,
+        }}
       >
         <div className="absolute inset-0 flex flex-col items-center justify-center p-2 gap-2">
           <div className="transition-transform duration-300 group-hover:scale-110">
             {React.isValidElement(image)
-              ? React.cloneElement(image as React.ReactElement, {
-                className: `${(image as React.ReactElement).props.className || ""} transition-transform duration-300 group-hover:scale-110`,
+              ? React.cloneElement(image as React.ReactElement<any>, {
+                color: theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.main
               })
               : image}
           </div>
           <div className="transition-colors duration-300 text-center">
             <TextComponent
               fontSize={12}
-              fontWeight={500}
-              color={disabled ? theme.palette.text.disabled : theme.palette.red.dark}
-              className="transition-colors duration-300 "
+              fontWeight={600}
+              color={disabled ? theme.palette.text.disabled : theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.main}
+              className="transition-colors duration-300"
             >
               {title}
             </TextComponent>
             {Subtitle && (
               <TextComponent
-                fontSize={14}
+                fontSize={10}
                 fontWeight={500}
-                color={theme.palette.red.dark}
-                className="transition-colors duration-300 "
+                color={theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.main}
+                className="opacity-80 transition-colors duration-300"
               >
                 {Subtitle}
               </TextComponent>

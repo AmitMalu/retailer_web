@@ -1,8 +1,59 @@
 export const colorTokens = {
   primary: {
-    DEFAULT: "#2B9E91",
-    light: "#5CB3A9",
-    dark: "#1E6F65",
+    dark: "#151a4d",
+    hover: "#1e2480",
+    DEFAULT: "#2f3691", // Organization Blue
+    accent: "#4c54d9",
+    highlight: "#8088f8",
+    light: "#96addf",
+  },
+  corporate: {
+    primary: "#004a99",
+    hover: "#003d7a",
+    accent: "#005cc2",
+    highlight: "#3385e0",
+    dark: "#002b5c",
+    light: "#66a3ff",
+  },
+  creative: {
+    primary: "#8b5cf6", // Purple
+    hover: "#7c3aed",
+    accent: "#a78bfa",
+    highlight: "#c4b5fd",
+    dark: "#5b21b6",
+    light: "#ddd6fe",
+  },
+  elegant: {
+    primary: "#1e293b", // Slate
+    hover: "#0f172a",
+    accent: "#334155",
+    highlight: "#475569",
+    dark: "#020617",
+    light: "#94a3b8",
+  },
+  playful: {
+    primary: "#ec4899", // Pink
+    hover: "#db2777",
+    accent: "#f472b6",
+    highlight: "#f9a8d4",
+    dark: "#9d174d",
+    light: "#fce7f3",
+  },
+  minimal: {
+    primary: "#262626", // Neutral
+    hover: "#171717",
+    accent: "#404040",
+    highlight: "#737373",
+    dark: "#0a0a0a",
+    light: "#d4d4d4",
+  },
+  mutedTeal: {
+    primary: "#14b8a6", // Teal
+    hover: "#0d9488",
+    accent: "#2dd4bf",
+    highlight: "#5eead4",
+    dark: "#0f766e",
+    light: "#99f6e4",
   },
   secondary: {
     DEFAULT: "#F59E0B",
@@ -30,13 +81,17 @@ export const colorTokens = {
     dark: "#2563EB",
   },
   background: {
-    default: "#000000",
+    light: "#ffffff",
     paper: "#ffffff",
-    light: "#000000",
+    default: "#f8fafc",
+    dark: "#0f172a",
+    darkPaper: "#1e293b",
   },
   text: {
     primary: "#171717",
     secondary: "#404040",
+    darkPrimary: "#f1f5f9",
+    darkSecondary: "#94a3b8",
   },
   headLine: "#2B3241",
   placeholder: "#AAB3C3",

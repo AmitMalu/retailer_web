@@ -259,12 +259,12 @@ const SubuserCreation = () => {
               navigate(`/settings/ViewSubUser`);
             }}
           >
-            <BackSvgIcon color={theme.palette.red.DEFAULT} />
+            <BackSvgIcon color={theme.palette.primary.main} />
           </UnstyledButton>
           <TextComponent
             fontSize={22}
             fontWeight={600}
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.main}
           >
             Sub User Creation
           </TextComponent>
@@ -395,11 +395,9 @@ const SubuserCreation = () => {
                               style={{ cursor: "pointer" }}
                             >
                               {showPassword ? (
-                                <OpenEyeSvgIcon
-                                  color={theme.palette.background.default}
-                                />
+                                <OpenEyeSvgIcon color={theme.palette.text.secondary} />
                               ) : (
-                                <CloseEyeSvgIcon />
+                                <CloseEyeSvgIcon color={theme.palette.text.secondary} />
                               )}
                             </div>
                           }
@@ -558,7 +556,7 @@ const SubuserCreation = () => {
                         <TextComponent
                           fontSize={18}
                           fontWeight={500}
-                          color={theme.palette.background.default}
+                          color="text.primary"
                           className="self-start"
                         >
                           Menu
@@ -573,35 +571,35 @@ const SubuserCreation = () => {
                       >
                         <Group justify="center" mt="md">
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="1"
                             size="md"
                           >
                             Products
                           </Chip>
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="2"
                             size="md"
                           >
                             Funding
                           </Chip>
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="3"
                             size="md"
                           >
                             Settings
                           </Chip>
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="4"
                             size="md"
                           >
                             Support
                           </Chip>
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="5"
                             size="md"
                           >
@@ -615,7 +613,7 @@ const SubuserCreation = () => {
                           <TextComponent
                             fontSize={12}
                             fontWeight={400}
-                            color={theme.palette.red.Default}
+                            color={theme.palette.primary.dark}
                           >
                             {errors.role_id}
                           </TextComponent>
@@ -629,10 +627,10 @@ const SubuserCreation = () => {
                             <TextComponent
                               fontSize={18}
                               fontWeight={500}
-                              color={theme.palette.background.default}
+                              color="text.primary"
                               className="self-start"
                             >
-                              sub Menus
+                              Sub Menus
                               <span className="ml-1 text-light-primaryColor">
                                 *
                               </span>
@@ -647,7 +645,7 @@ const SubuserCreation = () => {
                             <Group justify="center" mt="md">
                               {getVisibleSubChips().map((chip) => (
                                 <Chip
-                                  color={theme.palette.red.DEFAULT}
+                                  color={theme.palette.primary.main}
                                   key={chip}
                                   value={chip}
                                   size="md"
@@ -663,7 +661,7 @@ const SubuserCreation = () => {
                               <TextComponent
                                 fontSize={12}
                                 fontWeight={400}
-                                color={theme.palette.red.Default}
+                                color={theme.palette.primary.dark}
                               >
                                 {errors.subRoleId}
                               </TextComponent>
@@ -672,7 +670,7 @@ const SubuserCreation = () => {
                         </>
                       )}
                     </div>
-                  </div>
+                  </div >
 
                   <div className="mt-8 flex w-full items-center justify-end ">
                     <ButtonComponent
@@ -688,7 +686,7 @@ const SubuserCreation = () => {
             }}
           </Formik>
         </div>
-      </div>
+      </div >
     </>
   );
 };

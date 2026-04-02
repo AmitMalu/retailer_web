@@ -8,6 +8,7 @@ import { decryptData } from "@/Utils/helper";
 import type { BotOption } from "@/Config/botConfig";
 import Suggestions from "./Suggestions";
 import { IconMicrophone, IconMicrophoneOff } from "@tabler/icons-react";
+import theme from "@/theme/ThemeConfig";
 
 declare global {
   interface Window {
@@ -135,10 +136,10 @@ export default function ChatInput() {
       />
 
       <Group grow>
-        <Button color="#BF2024" onClick={handleSend}>Send</Button>
+        <Button color={theme.palette.primary.dark} onClick={handleSend}>Send</Button>
         <Button
           variant={isListening ? "filled" : "outline"}
-          color={isListening ? "red" : "gray"}
+          color={isListening ? theme.palette.primary.main : "gray"}
           onClick={toggleVoiceInput}
           leftSection={
             isListening ? <IconMicrophoneOff size={16} /> : <IconMicrophone size={16} />

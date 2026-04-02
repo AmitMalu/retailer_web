@@ -33,10 +33,10 @@ function TypeCard({ active, icon, title, subtitle, onClick }: CardType) {
         <Box
             onClick={onClick}
             className={`border rounded-xl p-2 cursor-pointer transition-all
-        ${active ? "border-red-500 bg-red-50" : "border-gray-200 bg-white"}`}
+        ${active ? "border-primary-dark bg-background-paper" : "border-gray-200 bg-background-paper"}`}
         >
             <Group>
-                <Center className="w-[42px] h-[42px] rounded-full bg-red-100 text-xl">
+                <Center className="w-[42px] h-[42px] rounded-full bg-info-light text-xl">
                     {icon}
                 </Center>
 
@@ -389,13 +389,13 @@ const Recharge = () => {
                             navigate("/products/recharge");
                         }}
                     >
-                        <BackSvgIcon color={theme.palette.red.DEFAULT} />
+                        <BackSvgIcon color={theme.palette.primary.main} />
                     </UnstyledButton>
 
                     <TextComponent
                         fontSize={28}
                         fontWeight={600}
-                        color={theme.palette.red.DEFAULT}
+                        color={theme.palette.primary.main}
                     >
                         Recharge
                     </TextComponent>
@@ -602,8 +602,8 @@ const Recharge = () => {
                                                         <NewButtonComponent
                                                             type="button"
                                                             variant="outline"
-                                                            borderColor={theme.palette.red.DEFAULT}
-                                                            textColor={theme.palette.red.DEFAULT}
+                                                            borderColor={theme.palette.primary.main}
+                                                            textColor={theme.palette.primary.main}
                                                             radius={8}
                                                             fontSize="14"
                                                             fw="500"
@@ -647,7 +647,7 @@ const Recharge = () => {
 
                                                         <NewButtonComponent
                                                             type="submit"
-                                                            bgColor={theme.palette.red.DEFAULT}
+                                                            bgColor={theme.palette.primary.main}
                                                             textColor="white"
                                                             radius={8}
                                                             fontSize="16"

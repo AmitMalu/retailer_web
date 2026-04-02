@@ -109,8 +109,15 @@ const MultiSelectComponent: React.FC<MultiSelectComponentProps> = ({
                         scrollbarWidth: "none"
                     },
                     input: {
-                        color: "#282828",
+                        color: "inherit",
                         fontWeight: 500,
+                        // High contrast focus & hover
+                        "&:focus": {
+                            borderColor: "var(--primary-main) !important",
+                        },
+                        "&:hover": {
+                            borderColor: "var(--primary-main)",
+                        }
                     },
                 }}
             />

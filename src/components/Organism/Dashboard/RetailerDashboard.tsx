@@ -1,6 +1,6 @@
 import { Grid } from "@mantine/core";
 import DashboardCard from "../../Molecules/DashboardCard";
-import { useTheme } from "@mui/system";
+import { useTheme } from "@mui/material";
 import DashboardProfileCard from "@/components/Molecules/DashboardProfileCard";
 import DashboardLineGraph from "@/components/Molecules/DashboardLineGraph";
 import TextComponent from "@/components/Atoms/NewComponents/TextComponent";
@@ -25,12 +25,19 @@ const RetailerDashboard = (props: retailerDashboardProps) => {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(today.getMonth() - 6);
 
-    const colors = [
-        theme.palette.red.DEFAULT,
-        theme.palette.primary.dark,
-        theme.palette.secondary.dark,
-        theme.palette.warning.dark,
-    ];
+    const colors = theme.palette.mode === 'dark'
+        ? [
+            theme.palette.primary.light,
+            theme.palette.secondary.main,
+            theme.palette.success.main,
+            theme.palette.info.main,
+        ]
+        : [
+            theme.palette.primary.main,
+            theme.palette.primaryExtra.highlight,
+            theme.palette.primary.light,
+            theme.palette.primaryExtra.accent,
+        ];
 
     const cards =
         props.dashboardData?.cards?.map((card: any, index: number) => ({

@@ -57,7 +57,7 @@ export default function AepsOnboardModal({
 
                 <div className="flex justify-center gap-3 mt-8">
                     <NewButtonComponent
-                        bgColor="#B0B0B0"
+                        bgColor={theme.palette.grey[500]}
                         textColor="white"
                         onClick={onClose}
                     >
@@ -65,7 +65,7 @@ export default function AepsOnboardModal({
                     </NewButtonComponent>
 
                     <NewButtonComponent
-                        bgColor="#D32F2F"
+                        bgColor={theme.palette.primaryExtra.hover}
                         textColor="white"
                         onClick={onOnboard}
                     >

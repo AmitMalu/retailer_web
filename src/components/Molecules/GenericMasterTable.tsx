@@ -4,22 +4,7 @@ import { GenericTableHeader } from "@/Common/interface";
 import TableFilterRow from "./TableFilterRow";
 import TableBody from "./TableBody";
 import TableFooter from "./TableFooter";
-
-const thStyle = {
-  backgroundColor: "#BF0204",
-  color: "white",
-  textAlign: "center" as const,
-  padding: "6px 12px",
-  fontWeight: 600,
-  fontSize: 14,
-  minWidth: "100px",
-  whiteSpace: "nowrap", // prevent wrapping
-};
-const tdStyle = {
-  textAlign: "center" as const,
-  fontSize: 14,
-  padding: "4px",
-};
+import { useTheme } from "@mui/material";
 
 type GenericMasterTableProps<T> = {
   data: T[];
@@ -79,6 +64,25 @@ const GenericMasterTable = <T,>({
   onAddRow,
 }: GenericMasterTableProps<T>) => {
 
+  const theme = useTheme();
+
+  const thStyle = {
+    backgroundColor: theme.palette.primary.main,
+    color: "white",
+    textAlign: "center" as const,
+    padding: "6px 12px",
+    fontWeight: 600,
+    fontSize: 14,
+    minWidth: "100px",
+    whiteSpace: "nowrap", // prevent wrapping
+  };
+  const tdStyle = {
+    textAlign: "center" as const,
+    fontSize: 14,
+    padding: "4px",
+    borderColor: theme.palette.divider,
+  };
+
   return (
     <Table.ScrollContainer minWidth={600} className={`mt-${mt}`}>
       <Table
@@ -87,8 +91,17 @@ const GenericMasterTable = <T,>({
         highlightOnHover
         style={{ borderRadius: 8, overflow: "hidden" }}
         styles={{
-          th: thStyle,
-          td: tdStyle,
+          th: {
+            ...thStyle,
+            borderColor: theme.palette.divider,
+          },
+          td: {
+            ...tdStyle,
+            borderColor: theme.palette.divider,
+          },
+          table: {
+            borderColor: theme.palette.divider,
+          }
         }}
       >
         <Table.Thead>

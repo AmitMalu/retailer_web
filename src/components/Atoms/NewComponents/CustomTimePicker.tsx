@@ -5,8 +5,8 @@ const defaultClassNames = {
     wrapper: "w-full",
     label: "text-[14px] font-[500] mb-1",
     input: `
-    border border-gray-300 rounded-md text-[14px] font-[500] 
-    focus:border-[#C30305] focus:ring-0
+    border border-divider rounded-md text-[14px] font-[500] 
+    focus:border-primary focus:ring-0
   `,
 };
 

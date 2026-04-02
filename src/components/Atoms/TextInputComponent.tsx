@@ -163,7 +163,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
             fontSize: "16px",
             fontWeight: 400,
             "&.Mui-focused": {
-              color: theme.palette.background.default,
+              color: theme.palette.primary.main,
             },
             "&.Mui-error": {
               color: theme.palette.error.main,
@@ -171,7 +171,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
           },
           "& .MuiInputBase-input.Mui-disabled": {
             WebkitTextFillColor:
-              disabled && value ? theme.palette.background.default : undefined,
+              disabled && value ? theme.palette.text.secondary : undefined,
           },
           "& .MuiOutlinedInput-root": {
             borderColor: theme.palette.gray.DEFAULT,
@@ -183,14 +183,14 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
               borderColor: error
                 ? theme.palette.error.main
-                : theme.palette.background.blackColor,
-              borderWidth: "1px",
+                : theme.palette.primary.main,
+              borderWidth: "1.5px",
               borderRadius: `${isAuth ? 28 : 6}px !important`,
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
               borderColor: error
                 ? theme.palette.error.main
-                : theme.palette.background.blackColor,
+                : theme.palette.primary.main,
             },
             "& fieldset": {
               borderColor: isAuth
@@ -201,7 +201,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
             "&:hover fieldset": {
               borderColor: error
                 ? theme.palette.error.main
-                : theme.palette.background.blackColor,
+                : theme.palette.primary.main,
               borderRadius: `${isAuth ? 28 : 6}px !important`,
             },
           },

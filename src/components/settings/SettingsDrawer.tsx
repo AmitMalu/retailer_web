@@ -109,15 +109,15 @@ export default function SettingsDrawer() {
           width: 360,
           p: 3,
           boxShadow: (theme) =>
-            `0 8px 10px -5px ${theme.palette.mode === "dark" ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 0.2)"},
-             0 16px 24px 2px ${theme.palette.mode === "dark" ? "rgba(0, 0, 0, 0.25)" : "rgba(0, 0, 0, 0.14)"},
-             0 6px 30px 5px ${theme.palette.mode === "dark" ? "rgba(0, 0, 0, 0.2)" : "rgba(0, 0, 0, 0.12)"}`,
+            `0 8px 10px -5px ${theme.palette.mode === "dark" ? theme.palette.common.black + "4D" : theme.palette.common.black + "33"},
+             0 16px 24px 2px ${theme.palette.mode === "dark" ? theme.palette.common.black + "40" : theme.palette.common.black + "24"},
+             0 6px 30px 5px ${theme.palette.mode === "dark" ? theme.palette.common.black + "33" : theme.palette.common.black + "1F"}`,
         },
       }}
       sx={{
         zIndex: (theme) => theme.zIndex.drawer + 2,
         "& .MuiBackdrop-root": {
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          backgroundColor: (theme) => theme.palette.common.black + "80",
         },
       }}
     >
@@ -144,7 +144,7 @@ export default function SettingsDrawer() {
           sx={{ mb: 3 }}
         >
           <Tab label="Themes" />
-          <Tab label="Layout" />
+          {/* <Tab label="Layout" /> */}
         </Tabs>
 
         {/* Theme Settings Tab */}

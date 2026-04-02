@@ -78,19 +78,19 @@ const AepsServiceScreen = ({ vendorKey }: AepsScreenProps) => {
   const row1 = [
     {
       id: 1,
-      image: <CashWithdrawalSvgIcon color={theme.palette.red.DEFAULT} />,
+      image: <CashWithdrawalSvgIcon color={theme.palette.primary.main} />,
       title: "Cash Withdrawal",
       onClick: () => handleServiceClick('cashWithdrawal'),
     },
     {
       id: 2,
-      image: <BalanceEnquirySvgIcon color={theme.palette.red.DEFAULT} />,
+      image: <BalanceEnquirySvgIcon color={theme.palette.primary.main} />,
       title: "Balance Enquiry",
       onClick: () => handleServiceClick('balanceInquiry'),
     },
     {
       id: 3,
-      image: <MiniStatementSvgIcon color={theme.palette.red.DEFAULT} />,
+      image: <MiniStatementSvgIcon color={theme.palette.primary.main} />,
       title: "Mini Statement",
       onClick: () => handleServiceClick('miniStatement'),
     },
@@ -104,13 +104,13 @@ const AepsServiceScreen = ({ vendorKey }: AepsScreenProps) => {
           navigate(`/products/aeps`);
         }}
       >
-        <BackSvgIcon color={theme.palette.red.DEFAULT} />
+        <BackSvgIcon color={theme.palette.primary.main} />
       </UnstyledButton>
       <div className="mx-auto py-10 px-4 text-center relative">
         <TextComponent
           fontSize={28}
           fontWeight={600}
-          color={"background.default"}
+          color={theme.palette.primary.dark}
         >
           AEPS Services
         </TextComponent>

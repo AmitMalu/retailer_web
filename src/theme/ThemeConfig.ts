@@ -1,6 +1,7 @@
 import { createTheme } from "@mui/material";
 import type { PaletteColor, ThemeOptions } from "@mui/material";
 import { themeColors } from "./themeColors";
+import { colorTokens } from "./color";
 import { ThemeColors, ThemeOption } from "@/Common/interface";
 
 // Extend MUI theme types
@@ -10,6 +11,11 @@ declare module "@mui/material/styles" {
     blackColor?: string;
   }
   interface Palette {
+    primaryExtra: {
+      hover: string;
+      accent: string;
+      highlight: string;
+    };
     lightGray: {
       main: string;
     };
@@ -23,20 +29,26 @@ declare module "@mui/material/styles" {
     };
     gray: {
       DEFAULT: string;
+      BASIC: string;
+      main: string;
       light: string;
       dark: string;
     };
-    greenColor: {
+    GreenColor: {
       DEFAULT: string;
       light: string;
     };
-
     authButtonBg: PaletteColor;
     headLine?: string;
     placeholder?: string;
   }
 
   interface PaletteOptions {
+    primaryExtra?: {
+      hover: string;
+      accent: string;
+      highlight: string;
+    };
     lightGray?: {
       main: string;
     };
@@ -50,10 +62,12 @@ declare module "@mui/material/styles" {
     };
     gray?: {
       DEFAULT: string;
+      BASIC: string;
+      main: string;
       light: string;
       dark: string;
     };
-    greenColor?: {
+    GreenColor?: {
       DEFAULT: string;
       light: string;
     };
@@ -77,19 +91,32 @@ export const createThemeOptions = (
   const adjustedColors: ThemeColors =
     darkMode && themeKey !== "dark"
       ? {
-          ...colors,
-          background: "#0f172a",
-          paper: "#1e293b",
-          textPrimary: "#f1f5f9",
-          textSecondary: "#cbd5e1",
-        }
+        ...colors,
+        background: colorTokens.background.dark,
+        paper: colorTokens.background.darkPaper,
+        textPrimary: colorTokens.text.darkPrimary,
+        textSecondary: colorTokens.text.darkSecondary,
+        navBackground: colorTokens.background.darkPaper,
+        blackColor: colorTokens.background.dark,
+        headLine: colorTokens.text.darkPrimary,
+        placeholder: colorTokens.text.darkSecondary,
+        lightGray: colorTokens.gray.dark,
+      }
       : colors;
 
   return {
     palette: {
       mode: darkMode ? "dark" : "light",
+      divider: darkMode ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.2)", // Slightly darker in light mode for visibility
       primary: {
         main: adjustedColors.primary,
+        dark: adjustedColors.primaryDark,
+        light: adjustedColors.primaryLight,
+      },
+      primaryExtra: {
+        hover: adjustedColors.primaryHover,
+        accent: adjustedColors.primaryAccent,
+        highlight: adjustedColors.primaryHighlight,
       },
       secondary: {
         main: adjustedColors.secondary,
@@ -137,16 +164,57 @@ export const createThemeOptions = (
       },
       gray: {
         DEFAULT: adjustedColors.grayDefault,
+        BASIC: adjustedColors.grayBasic,
+        main: adjustedColors.grayMain,
         light: adjustedColors.grayLight,
         dark: adjustedColors.grayDark,
       },
-      greenColor: {
+      GreenColor: {
         DEFAULT: adjustedColors.greenDefault,
         light: adjustedColors.greenLight,
       },
     },
     typography: {
       fontFamily: '"Poppins", sans-serif',
+      h1: {
+        color: adjustedColors.textPrimary,
+      },
+      h2: {
+        color: adjustedColors.textPrimary,
+      },
+      h3: {
+        color: adjustedColors.textPrimary,
+      },
+      h4: {
+        color: adjustedColors.textPrimary,
+      },
+      h5: {
+        color: adjustedColors.textPrimary,
+      },
+      h6: {
+        color: adjustedColors.textPrimary,
+      },
+      subtitle1: {
+        color: adjustedColors.textPrimary,
+      },
+      subtitle2: {
+        color: adjustedColors.textPrimary,
+      },
+      body1: {
+        color: adjustedColors.textPrimary,
+      },
+      body2: {
+        color: adjustedColors.textSecondary,
+      },
+      button: {
+        color: adjustedColors.textPrimary,
+      },
+      caption: {
+        color: adjustedColors.textSecondary,
+      },
+      overline: {
+        color: adjustedColors.textSecondary,
+      },
     },
     components: {},
   };

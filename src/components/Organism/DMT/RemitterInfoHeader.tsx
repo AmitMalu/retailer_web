@@ -14,7 +14,7 @@ const RemitterInfoHeader = ({ remitter, onEdit }: any) => {
             mb={18}
             radius="md"
             style={{
-                backgroundColor: "white",
+                backgroundColor: "var(--background-paper)",
                 borderColor: theme.palette.grey.light,
                 padding: "12px 18px",
             }}
@@ -23,7 +23,7 @@ const RemitterInfoHeader = ({ remitter, onEdit }: any) => {
                 <TextComponent
                     fontSize={18}
                     fontWeight={600}
-                    color={theme.palette.red.DEFAULT}
+                    color={theme.palette.primary.main}
                 >
                     Remitter Details
                 </TextComponent>

@@ -8,6 +8,7 @@ const defaultClassNames = {
     levelsGroup: "w-full",
     calendarHeader: "flex items-center justify-between gap-3",
     calendarHeaderLevel: "font-[600] text-[16px]",
+    calendarHeaderControl: "text-primary-dark",
     month: "flex items-center justify-center flex-col gap-2 w-full",
     monthThead: "flex items-center justify-center w-full",
     monthTbody: "flex items-center justify-center w-full flex-col gap-2",
@@ -24,10 +25,10 @@ const defaultClassNames = {
   font-[500] text-[14px] text-center 
   w-8 h-8 rounded-md 
   flex items-center justify-center 
-  data-[selected]:!text-[#BF0204] 
-   data-[in-range]:bg-red-100 data-[in-range]:text-red-800
-  data-[today]:border data-[today]:border-dashed data-[today]:border-blue-400
-  data-[outside]:text-gray-400
+  data-[selected]:!text-primary-dark 
+  data-[in-range]:bg-primary-highlight data-[in-range]:text-primary-dark
+  data-[today]:bg-primary-accent data-[today]:text-background-paper data-[today]:border data-[today]:border-dashed data-[today]:border-primary-dark
+  data-[outside]:text-text-secondary
 `,
 };
 

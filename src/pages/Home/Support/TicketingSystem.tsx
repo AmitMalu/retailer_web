@@ -202,7 +202,7 @@ const Ticketing = () => {
         return (
           <div className="flex items-center justify-center w-[200]" title={row}>
             <TextComponent
-              color={theme.palette.background.default}
+              color="text.primary"
               fontSize={12}
               fontWeight={400}
               truncate
@@ -228,7 +228,7 @@ const Ticketing = () => {
       render: (row: any) => (
         <div className="flex items-center justify-center w-[200]" title={row}>
           <TextComponent
-            color={theme.palette.background.default}
+            color="text.primary"
             fontSize={12}
             fontWeight={400}
             truncate
@@ -297,7 +297,7 @@ const Ticketing = () => {
       render: (row: any) => (
         <div className="flex items-center justify-center">
           <TextComponent
-            color={theme.palette.background.default}
+            color="text.primary"
             fontSize={12}
             fontWeight={400}
           >
@@ -317,7 +317,7 @@ const Ticketing = () => {
       render: (row: any) => (
         <div className="flex items-center justify-center">
           <TextComponent
-            color={theme.palette.background.default}
+            color="text.primary"
             fontSize={12}
             fontWeight={400}
           >
@@ -363,7 +363,7 @@ const Ticketing = () => {
       render: (row: any) => (
         <div className="flex items-center justify-center">
           <TextComponent
-            color={theme.palette.background.default}
+            color="text.primary"
             fontSize={12}
             fontWeight={400}
           >
@@ -466,7 +466,7 @@ const Ticketing = () => {
                 <TextComponent
                   fontSize={30}
                   fontWeight={500}
-                  color={theme.palette.red.DEFAULT}
+                  color={theme.palette.primary.main}
                 >
                   Latest Ticket
                 </TextComponent>
@@ -482,25 +482,25 @@ const Ticketing = () => {
               {/* Search Bar and Create New Ticket button */}
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center justify-end gap-2">
-                  <div className="flex w-max items-center mt-6 justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px] ">
+                  <div className="flex w-max items-center mt-6 justify-center gap-2 rounded-lg border-2 border-divider bg-background-paper px-2 py-[6px] ">
                     <UnstyledButton
                       onClick={handleRefresh}
                       className="flex w-max items-center justify-center gap-2 "
                     >
-                      <Refresh color="error" />
+                      <Refresh color="primary" />
                     </UnstyledButton>
                   </div>
 
-                  <div className="flex w-max items-center mt-6 justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px] ">
+                  <div className="flex w-max items-center mt-6 justify-center gap-2 rounded-lg border-2 border-divider bg-background-paper px-2 py-[6px] ">
                     <UnstyledButton
                       onClick={() => setIsSeacrh(!isSeacrh)}
                       className="flex w-max items-center justify-center gap-2 "
                     >
-                      <FilterSvgIcon color={theme.palette.red.DEFAULT} />
+                      <FilterSvgIcon color={theme.palette.primary.main} />
                       <TextComponent
                         fontSize={16}
                         fontWeight={400}
-                        color={theme.palette.red.DEFAULT}
+                        color={theme.palette.primary.main}
                         align="center"
                       >
                         Filter
@@ -569,7 +569,7 @@ const Ticketing = () => {
               }}
               className="mb-4"
             >
-              <BackSvgIcon color={theme.palette.red.DEFAULT} />
+              <BackSvgIcon color={theme.palette.primary.main} />
             </UnstyledButton>
 
             {/* Heading & Sub Heading */}
@@ -577,7 +577,7 @@ const Ticketing = () => {
               <TextComponent
                 fontSize={30}
                 fontWeight={500}
-                color={theme.palette.red.DEFAULT}
+                color={theme.palette.primary.main}
               >
                 Support Ticket
               </TextComponent>

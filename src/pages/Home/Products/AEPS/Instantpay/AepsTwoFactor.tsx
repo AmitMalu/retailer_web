@@ -173,15 +173,15 @@ const AepsTwoFactor = ({ vendorKey }: AepsScreenProps) => {
             {isLoading && <Loader />}
 
             <UnstyledButton onClick={() => navigate(`/products/aeps/service/${subProductId}`)}>
-                <BackSvgIcon color={theme.palette.red.DEFAULT} />
+                <BackSvgIcon color={theme.palette.primary.main} />
             </UnstyledButton>
 
             <div className="w-full mb-6 flex flex-col items-center gap-4 justify-center">
-                <TextComponent fontSize={26} fontWeight={600} color={theme.palette.red.DEFAULT}>
+                <TextComponent fontSize={26} fontWeight={600} color={theme.palette.primaryExtra.hover}>
                     Two Factor Authentication
                 </TextComponent>
 
-                <TextComponent fontSize={16} color="#444">
+                <TextComponent fontSize={16} >
                     Dear {loginData?.retailerName || "User"}, for your security, AEPS transactions require
                     Two-Factor Authentication every 24 hours. Please verify to continue.
                 </TextComponent>

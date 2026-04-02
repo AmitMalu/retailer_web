@@ -171,12 +171,12 @@ const MposScreen = () => {
             navigate(`/products`);
           }}
         >
-          <BackSvgIcon color={theme.palette.red.DEFAULT} />
+          <BackSvgIcon color={theme.palette.primary.main} />
         </UnstyledButton>
         <TextComponent
           fontSize={28}
           fontWeight={600}
-          color={"background.default"}
+          color={theme.palette.primary.dark}
         >
           MPOS
         </TextComponent>
@@ -210,7 +210,7 @@ const MposScreen = () => {
               })) || [];
 
             return (
-              <div className="w-[calc(40%-24px)] flex flex-col items-center justify-center border-2 border-red-light p-5 rounded-lg">
+              <div className="w-[calc(40%-24px)] flex flex-col items-center justify-center border-2 border-primary-ligh p-5 rounded-lg">
                 <div className="w-full flex flex-col items-center justify-center gap-3">
                   {/* <div className="w-full ">
                     <DropdownComponent

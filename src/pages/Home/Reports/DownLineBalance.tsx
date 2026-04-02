@@ -15,7 +15,7 @@ import { useThrottledFormSubmit } from "@/Utils/CustomHooks/useThrottleFormSubmi
 import { dateRangeValidationSchema, decryptData, exportToCsv, formatYMDdate } from "@/Utils/helper";
 import { Grid } from "@mantine/core";
 import { DatesRangeValue } from "@mantine/dates";
-import { useTheme } from "@mui/system";
+import { useTheme } from "@mui/material";
 import { IconCalendar } from "@tabler/icons-react";
 import { Form, Formik } from "formik";
 import moment from "moment";
@@ -149,7 +149,7 @@ const DownLineBalance = () => {
 
   return (
     <div className="w-full">
-      <NewTextComponent fontSize={22} color={theme.palette.red.DEFAULT} fontFamily="Inter" fontWeight={600}>
+      <NewTextComponent fontSize={22} color={theme.palette.primary.main} fontFamily="Inter" fontWeight={600}>
         DOWNLINE BALANCE REPORT
       </NewTextComponent>
 
@@ -192,11 +192,10 @@ const DownLineBalance = () => {
                       fullWidth={false}
                       radius={6}
                       size="sm"
-                      borderColor="#fff"
                       variant="filled"
                       type="submit"
-                      bgColor="#C30305"
-                      textColor="#FFFFFF"
+                      bgColor={theme.palette.primary.main}
+                      textColor="white"
                     >
                       VIEW
                     </ButtonComponent>

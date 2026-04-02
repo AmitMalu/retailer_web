@@ -151,7 +151,7 @@ const EditRemitterModal = ({
             >
                 {({ values, setFieldValue, setFieldTouched }) => (
                     <Form className=" mt-3 flex h-full flex-col justify-between">
-                        <div className="w-full overflow-auto scrollbar-hide pt-1 pb-1 px-2 bg-white rounded-2xl">
+                        <div className="w-full overflow-auto scrollbar-hide pt-1 pb-1 px-2 bg-background-paper rounded-2xl">
                             <Grid gutter="sm">
                                 {/* Mobile Number */}
                                 <Grid.Col span={{ base: 12, md: 6 }}>
@@ -235,7 +235,7 @@ const EditRemitterModal = ({
 
                                 <NewButtonComponent
                                     fw="500"
-                                    bgColor={theme.palette.red.DEFAULT}
+                                    bgColor={theme.palette.primary.main}
                                     textColor="white"
                                     fontSize="14"
                                     type="submit"

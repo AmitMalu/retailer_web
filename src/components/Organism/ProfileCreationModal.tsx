@@ -588,7 +588,7 @@ const ProfileRegistrationForm = ({
                     },
                     stepIcon: {
                       color: theme.palette.background.paper,
-                      backgroundColor: theme.palette.red.dark,
+                      backgroundColor: theme.palette.primaryExtra.accent,
                       width: 35,
                       height: 35,
                     },
@@ -597,7 +597,6 @@ const ProfileRegistrationForm = ({
                   onStepClick={setActive}
                   allowNextStepsSelect={false}
                   size="sm"
-                  color="oklch(63.7% 0.237 25.331)"
                   iconSize={25}
                 >
                   <Stepper.Step

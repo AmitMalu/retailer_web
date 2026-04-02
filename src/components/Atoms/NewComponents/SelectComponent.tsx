@@ -86,11 +86,18 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
                 rightSection={rightSection}
                 styles={{
                     input: {
-                        color: "#282828",
+                        color: "inherit",
                         fontWeight: 500,
                         whiteSpace: "nowrap",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
+                        // High contrast focus & hover
+                        "&:focus": {
+                            borderColor: "var(--primary-main) !important",
+                        },
+                        "&:hover": {
+                            borderColor: "var(--primary-main)",
+                        }
                     },
                     option: {
                         whiteSpace: "nowrap",

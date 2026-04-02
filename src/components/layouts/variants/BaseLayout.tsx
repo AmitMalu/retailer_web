@@ -16,7 +16,7 @@ export default function BaseLayout({
 
   return (
     <div
-      className="flex h-screen w-screen overflow-hidden bg-background-paper"
+      className="flex h-screen w-screen overflow-hidden bg-background-default text-text-primary"
       style={{
         scrollbarWidth: "none",
       }}
@@ -57,7 +57,7 @@ export default function BaseLayout({
 
         {/* Main Content */}
         <div
-          className="flex flex-col flex-1 overflow-auto"
+          className="flex flex-col flex-1 overflow-auto bg-background-default"
           style={{
             marginLeft: `${sidebarWidth + 100}px`,
             scrollbarWidth: "none",

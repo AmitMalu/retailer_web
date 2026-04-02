@@ -63,7 +63,7 @@ const CreateUser = () => {
       <div className="relative w-full max-w-3xl h-auto">
         <Box className="relative w-full h-[500px] flex items-center justify-center">
           {/* Center Red Circle */}
-          <Box className="w-[300px] h-[300px] bg-red-600 rounded-full flex items-center justify-center shadow-lg relative">
+          <Box className="w-[300px] h-[300px] bg-primary-hover rounded-full flex items-center justify-center shadow-lg relative">
             <div className=" w-[70%] h-[70%] ">
               <CentralIconSvg color="white" />
             </div>
@@ -98,7 +98,7 @@ const CreateUser = () => {
             <path
               d="M145,60 C40,150 40,250 50,300"
               fill="none"
-              stroke="#e11d48"
+              stroke={theme.palette.primary.dark}
               strokeWidth="3"
               strokeDasharray="6,6"
             />
@@ -111,8 +111,8 @@ const CreateUser = () => {
                   cx="110"
                   cy="100"
                   r="30"
-                  fill={theme.palette.red.DEFAULT}
-                  stroke={theme.palette.red.DEFAULT}
+                  fill={theme.palette.primaryExtra.accent}
+                  stroke={theme.palette.primary.dark}
                   strokeWidth="2"
                   className="cursor-pointer"
                 />
@@ -140,8 +140,8 @@ const CreateUser = () => {
                   cx="50"
                   cy="215"
                   r="30"
-                  fill={theme.palette.red.DEFAULT}
-                  stroke={theme.palette.red.DEFAULT}
+                  fill={theme.palette.primaryExtra.accent}
+                  stroke={theme.palette.primary.dark}
                   strokeWidth="2"
                   className="cursor-pointer"
                 />
@@ -162,7 +162,7 @@ const CreateUser = () => {
             <path
               d="M355,60 C460,150 460,250 450,300"
               fill="none"
-              stroke="#e11d48"
+              stroke={theme.palette.primary.dark}
               strokeWidth="3"
               strokeDasharray="6,6"
             />
@@ -177,8 +177,8 @@ const CreateUser = () => {
                     cx="390"
                     cy="98"
                     r="30"
-                    fill={theme.palette.red.DEFAULT}
-                    stroke={theme.palette.red.DEFAULT}
+                    fill={theme.palette.primaryExtra.accent}
+                    stroke={theme.palette.primary.dark}
                     strokeWidth="2"
                     className="cursor-pointer"
                   />
@@ -209,8 +209,8 @@ const CreateUser = () => {
                     cx="450"
                     cy="216"
                     r="30"
-                    fill={theme.palette.red.DEFAULT}
-                    stroke={theme.palette.red.DEFAULT}
+                    fill={theme.palette.primaryExtra.accent}
+                    stroke={theme.palette.primary.dark}
                     strokeWidth="2"
                     className="cursor-pointer"
                   />

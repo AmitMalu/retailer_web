@@ -59,13 +59,13 @@ export default function PayoutScreen() {
           navigate(`/products`);
         }}
       >
-        <BackSvgIcon color={theme.palette.red.DEFAULT} />
+        <BackSvgIcon color={theme.palette.primary.main} />
       </UnstyledButton>
       <div className="mx-auto py-10 px-4 text-center relative">
         <TextComponent
           fontSize={28}
           fontWeight={600}
-          color={"background.default"}
+          color={theme.palette.primary.dark}
         >
           Payout
         </TextComponent>
@@ -105,7 +105,7 @@ export default function PayoutScreen() {
                   <PayoutCard
                     key={card.id}
                     image={
-                      <PGTezMasterSvgIcon color={theme.palette.red.DEFAULT} />
+                      <PGTezMasterSvgIcon color={theme.palette.primary.dark} />
                     }
                     title={card.title}
                     onClick={handleClick}

@@ -81,15 +81,15 @@ const SetPasswordScreen: React.FC = () => {
             <div className="flex flex-col items-center justify-center gap-3 ">
               <TextComponent
                 fontSize={30}
-                fontWeight={500}
-                color={"background.default"}
+                fontWeight={600}
+                color={theme.palette.text.primary}
               >
                 Set Password
               </TextComponent>
               <TextComponent
-                fontSize={12}
+                fontSize={14}
                 fontWeight={500}
-                color={"background.default"}
+                color={theme.palette.text.secondary}
               >
                 Please enter new password
               </TextComponent>
@@ -123,10 +123,10 @@ const SetPasswordScreen: React.FC = () => {
                         >
                           {showNewPassword ? (
                             <OpenEyeSvgIcon
-                              color={theme.palette.background.default}
+                              color={theme.palette.text.secondary}
                             />
                           ) : (
-                            <CloseEyeSvgIcon />
+                            <CloseEyeSvgIcon color={theme.palette.text.secondary} />
                           )}
                         </div>
                       }
@@ -152,10 +152,10 @@ const SetPasswordScreen: React.FC = () => {
                         >
                           {showPassword ? (
                             <OpenEyeSvgIcon
-                              color={theme.palette.background.default}
+                              color={theme.palette.text.secondary}
                             />
                           ) : (
-                            <CloseEyeSvgIcon />
+                            <CloseEyeSvgIcon color={theme.palette.text.secondary} />
                           )}
                         </div>
                       }
@@ -194,14 +194,14 @@ const SetPasswordScreen: React.FC = () => {
                     <TextComponent
                       fontSize={14}
                       fontWeight={400}
-                      color="background.default"
+                      color="text.secondary"
                     >
                       Don't have an account yet?
                     </TextComponent>
                     <TextComponent
                       fontSize={14}
                       fontWeight={600}
-                      color="red.DEFAULT"
+                      color="primary.dark"
                       className="underline cursor-pointer"
                       onClick={() => navigate("/signUp")}
                     >

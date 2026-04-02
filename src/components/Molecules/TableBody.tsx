@@ -188,7 +188,7 @@ const TableBody = <T,>({
             colSpan={headers.length + (renderExtraRowCell ? 1 : 0)}
           >
             <div
-              className="flex items-center justify-center p-2  hover:bg-gray-200 transition-transform duration-200 hover:scale-110 active:scale-95 hover:text-green-600"
+              className="flex items-center justify-center p-2  hover:bg-divider transition-transform duration-200 hover:scale-110 active:scale-95 hover:text-green-600"
               onClick={onAddRow}
               title="Add Row"
             >

@@ -210,7 +210,7 @@ const FundReversal = () => {
           <div className="absolute inset-0 bg-gray-200 rounded-[20px] blur-[1px] h-full"></div>
 
           <div className="relative py-1 flex items-center justify-center">
-            <TextComponent fontSize={30} fontWeight={500} color="red.DEFAULT">
+            <TextComponent fontSize={30} fontWeight={500} color="primary.main">
               Fund Reversal
             </TextComponent>
           </div>
@@ -365,7 +365,7 @@ const FundReversal = () => {
                     <TextComponent
                       fontSize={28}
                       fontWeight={500}
-                      color={"background.default"}
+                      color="primary.main"
                     >
                       Enter OTP
                     </TextComponent>
@@ -383,14 +383,14 @@ const FundReversal = () => {
                         margin: "0 0.3rem",
                         fontSize: "1.5rem",
                         borderRadius: "8px",
-                        border: `1px solid  ${touched.otp && errors.otp ? theme.palette.error.main : "#ccc"}`,
+                        border: `1px solid  ${touched.otp && errors.otp ? theme.palette.error.main : theme.palette.primary.light}`,
                       }}
                     />
                     {touched.otp && errors.otp && (
                       <TextComponent
                         fontSize={12}
                         fontWeight={400}
-                        color={"background.default"}
+                        color="error.main"
                         style={{ textAlign: "right" }}
                       >
                         {errors.otp}
@@ -402,7 +402,7 @@ const FundReversal = () => {
                       <TextComponent
                         fontSize={30}
                         fontWeight={600}
-                        color={theme.palette.error.main}
+                        color={theme.palette.primary.main}
                       >
                         {timer}
                       </TextComponent>
@@ -414,7 +414,7 @@ const FundReversal = () => {
                         <TextComponent
                           fontSize={16}
                           fontWeight={500}
-                          color={"background.default"}
+                          color={theme.palette.primary.main}
                         >
                           Resend OTP
                         </TextComponent>

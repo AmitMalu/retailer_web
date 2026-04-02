@@ -22,10 +22,10 @@ const defaultClassNames = {
   font-[500] text-[14px] text-center 
   w-8 h-8 rounded-md 
   flex items-center justify-center 
-  data-[selected]:!text-[#BF0204] 
-   data-[in-range]:bg-red-100 data-[in-range]:text-red-800
-  data-[today]:border data-[today]:border-dashed data-[today]:border-blue-400
-  data-[outside]:text-gray-400
+  data-[selected]:!text-primary-dark data-[selected]:bg-primary-light
+  data-[in-range]:bg-primary-highlight data-[in-range]:text-primary-dark
+  data-[today]:border data-[today]:border-dashed data-[today]:border-primary-dark
+  data-[outside]:text-text-secondary
 `,
 };
 

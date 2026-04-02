@@ -21,7 +21,7 @@ export default function ErrorFallback({
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="bg-white border border-red-200 shadow-md rounded-xl p-6 max-w-md w-full text-center">
+      <div className="bg-background-paper border border-red-200 shadow-md rounded-xl p-6 max-w-md w-full text-center">
         <div className="flex justify-center text-red-500 mb-4">
           <IconAlertTriangle className="h-10 w-10" />
         </div>

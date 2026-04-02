@@ -19,7 +19,7 @@ import { showErrorNotification, showSuccessNotification } from "@/Utils/notifica
 import { useBankVerification } from "@/Utils/Verification";
 import { Drawer, UnstyledButton } from "@mantine/core";
 import { Refresh } from "@mui/icons-material";
-import { useTheme } from "@mui/system";
+import { useTheme } from "@mui/material";
 import { Formik } from "formik";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -578,12 +578,12 @@ const RemitterInfo = () => {
               navigate(`/products/dmt/${subProductId}`);
             }}
           >
-            <BackSvgIcon color={theme.palette.red.DEFAULT} />
+            <BackSvgIcon color={theme.palette.primary.main} />
           </UnstyledButton>
           <TextComponent
             fontSize={28}
             fontWeight={600}
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.main}
           >
             Mudra Remit
           </TextComponent>
@@ -600,26 +600,26 @@ const RemitterInfo = () => {
 
         <div className="flex items-center justify-end gap-3">
           {/* Refresh */}
-          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px]">
+          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-divider bg-background-paper px-2 py-[6px]">
             <UnstyledButton
               onClick={handleReset}
               className="flex items-center justify-center gap-2"
             >
-              <Refresh color="error" />
+              <Refresh color="primary" />
             </UnstyledButton>
           </div>
 
           {/* Filter */}
-          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px]">
+          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-divider bg-background-paper px-2 py-[6px]">
             <UnstyledButton
               onClick={() => setIsSeacrh(!isSeacrh)}
               className="flex items-center justify-center gap-2"
             >
-              <FilterSvgIcon color={theme.palette.red.DEFAULT} />
+              <FilterSvgIcon color={theme.palette.primary.main} />
               <TextComponent
                 fontSize={16}
                 fontWeight={400}
-                color={theme.palette.red.DEFAULT}
+                color={theme.palette.primary.main}
                 align="center"
               >
                 Filter

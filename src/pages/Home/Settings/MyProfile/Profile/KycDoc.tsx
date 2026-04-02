@@ -96,7 +96,7 @@ const KycDoc = () => {
                   window.open(fileUrl, "_blank");
                 }}
               >
-                <OpenEyeSvgIcon color={theme.palette.red.DEFAULT} />
+                <OpenEyeSvgIcon color={theme.palette.primary.main} />
               </UnstyledButton>
             ) : (
               <span className="text-gray-400 text-xs">Invalid or Unreachable URL</span>

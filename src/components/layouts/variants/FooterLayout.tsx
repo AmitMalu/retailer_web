@@ -89,9 +89,10 @@ export default function FooterLayout({ children }: FooterLayoutProps) {
   const SimpleNavbar = () => (
     <AppBar
       position={navbarPosition}
-      color="primary"
+      color="inherit"
       elevation={0}
       sx={{
+        backgroundColor: theme.palette.background.paper,
         borderBottom: `1px solid ${theme.palette.divider}`,
       }}
     >
@@ -118,7 +119,7 @@ export default function FooterLayout({ children }: FooterLayoutProps) {
               flexGrow: 1,
               display: { xs: "none", md: "flex" },
               "& .MuiTabs-indicator": {
-                backgroundColor: "#fff",
+                backgroundColor: theme.palette.primary.main,
               },
             }}
           >
@@ -126,13 +127,13 @@ export default function FooterLayout({ children }: FooterLayoutProps) {
               label="Dashboard"
               icon={<DashboardIcon />}
               iconPosition="start"
-              sx={{ color: "#fff", minHeight: 64 }}
+              sx={{ minHeight: 64 }}
             />
             <Tab
               label="Products"
               icon={<InventoryIcon />}
               iconPosition="start"
-              sx={{ color: "#fff", minHeight: 64 }}
+              sx={{ minHeight: 64 }}
             />
           </Tabs>
 
@@ -160,10 +161,7 @@ export default function FooterLayout({ children }: FooterLayoutProps) {
       component="footer"
       sx={{
         mt: "auto",
-        backgroundColor: (theme) =>
-          theme.palette.mode === "dark"
-            ? "rgba(0,0,0,0.2)"
-            : "rgba(0,0,0,0.05)",
+        backgroundColor: theme.palette.background.paper,
         borderTop: `1px solid ${theme.palette.divider}`,
       }}
     >
@@ -255,16 +253,12 @@ export default function FooterLayout({ children }: FooterLayoutProps) {
                   Mumbai, Maharashtra 400705
                 </Typography>
               </Box>
-              {/* <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <EmailIcon fontSize="small" color="action" />
-                <Typography variant="body2">info@retailerweb.com</Typography>
-              </Box> */}
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <PhoneIcon fontSize="small" color="action" />
                 <Typography variant="body2">085913 82393</Typography>
               </Box>
 
-              <Card variant="outlined" sx={{ mt: 2 }}>
+              <Card variant="outlined" sx={{ mt: 2, backgroundColor: theme.palette.background.default }}>
                 <CardContent sx={{ pb: 1 }}>
                   <Typography variant="subtitle2" gutterBottom>
                     Subscribe to our newsletter
@@ -281,6 +275,7 @@ export default function FooterLayout({ children }: FooterLayoutProps) {
                       border: `1px solid ${theme.palette.divider}`,
                       borderRadius: 1,
                       backgroundColor: "transparent",
+                      color: theme.palette.text.primary,
                     }}
                   />
                 </CardContent>
@@ -334,6 +329,7 @@ export default function FooterLayout({ children }: FooterLayoutProps) {
   return (
     <BaseLayout navbar={<SimpleNavbar />} sidebar={null} footer={<Footer />}>
       <Box
+        className="bg-background-default text-text-primary transition-colors duration-300"
         sx={{
           width: "100%",
           display: "flex",
@@ -353,6 +349,7 @@ export default function FooterLayout({ children }: FooterLayoutProps) {
             sx={{
               p: layout === "compact" ? 2 : 3,
               borderRadius: 2,
+              backgroundColor: theme.palette.background.paper,
             }}
           >
             {children}

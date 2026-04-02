@@ -14,20 +14,20 @@ const MyProfile = () => {
     <Tabs
       value={activeTab}
       onChange={setActiveTab}
-      color={theme.palette.red.DEFAULT}
+      color={theme.palette.primary.main}
     >
       <Tabs.List>
         <Tabs.Tab value="profile">
           <div className="flex items-center justify-center gap-2 ">
             <div
               className={` p-1 rounded-full ${
-                activeTab === "profile" ? "bg-red-dark" : "bg-white"
+                activeTab === "profile" ? "bg-primary-dark" : "bg-background-paper"
               }`}
             >
               <ProfileSvgIcon
                 color={
                   activeTab === "profile"
-                    ? theme.palette.red.light
+                    ? theme.palette.primary.light
                     : theme.palette.gray.DEFAULT
                 }
               />
@@ -37,7 +37,7 @@ const MyProfile = () => {
               fontWeight={500}
               color={
                 activeTab === "profile"
-                  ? theme.palette.red.DEFAULT
+                  ? theme.palette.primary.main
                   : theme.palette.gray.DEFAULT
               }
             >
@@ -50,7 +50,7 @@ const MyProfile = () => {
             <PasswordSvgIcon
               color={
                 activeTab === "password"
-                  ? theme.palette.red.DEFAULT
+                  ? theme.palette.primary.main
                   : theme.palette.gray.DEFAULT
               }
             />
@@ -59,7 +59,7 @@ const MyProfile = () => {
               fontWeight={500}
               color={
                 activeTab === "password"
-                  ? theme.palette.red.DEFAULT
+                  ? theme.palette.primary.main
                   : theme.palette.gray.DEFAULT
               }
             >

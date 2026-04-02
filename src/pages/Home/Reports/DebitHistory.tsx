@@ -148,7 +148,7 @@ const DebitHistory = () => {
 
   return (
     <div className="w-full">
-      <NewTextComponent fontSize={22} color={theme.palette.red.DEFAULT} fontFamily="Inter" fontWeight={600}>
+      <NewTextComponent fontSize={22} color={theme.palette.primary.main} fontFamily="Inter" fontWeight={600}>
         DEBIT HISTORY REPORT
       </NewTextComponent>
 
@@ -195,11 +195,10 @@ const DebitHistory = () => {
                       fullWidth={false}
                       radius={6}
                       size="sm"
-                      borderColor="#fff"
                       variant="filled"
                       type="submit"
-                      bgColor="#C30305"
-                      textColor="#FFFFFF"
+                      bgColor={theme.palette.primary.main}
+                      textColor="white"
                     >
                       VIEW
                     </ButtonComponent>}

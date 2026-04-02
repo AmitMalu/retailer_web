@@ -264,11 +264,11 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
                     navigate(`/products/aeps/service/${subProductId}`);
                 }}
             >
-                <BackSvgIcon color={theme.palette.red.DEFAULT} />
+                <BackSvgIcon color={theme.palette.primary.main} />
             </UnstyledButton>
 
             <div className="flex justify-center mb-4 mt-[-12px]">
-                <TextComponent fontSize={26} fontWeight={600} color={theme.palette.red.DEFAULT}>
+                <TextComponent fontSize={26} fontWeight={600} color={theme.palette.primary.main}>
                     {title}
                 </TextComponent>
             </div>

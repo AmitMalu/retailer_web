@@ -149,14 +149,14 @@ const WalletToBank = () => {
             <TextComponent
               fontSize={30}
               fontWeight={500}
-              color="red.DEFAULT"
+              color="primary.main"
             >
               Move to bank
             </TextComponent>
           </div>
         </div>
         <div className="flex flex-col h-[calc(100vh-200px)]">
-          {/* <TextComponent fontSize={30} fontWeight={500} color="error.main">
+          {/* <TextComponent fontSize={30} fontWeight={500} color="primary.dark">
             Coming Soon!
           </TextComponent> */}
           <Formik<WalletToBankProps>

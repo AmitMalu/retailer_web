@@ -31,7 +31,7 @@ const Login: React.FC = () => {
   const { lat, lng, loading } = useAppSelector(state => state.location)
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const validationSchema = Yup.object({
     userName: Yup.string()
       .max(10, "Please enter valid number")
@@ -128,15 +128,15 @@ const Login: React.FC = () => {
             <div className="flex flex-col items-center justify-items-center gap-2 ">
               <TextComponent
                 fontSize={28}
-                fontWeight={500}
-                color="background.default"
+                fontWeight={600}
+                color={theme.palette.text.primary}
               >
-                Welcome
+                Welcome!
               </TextComponent>
               <TextComponent
-                fontSize={12}
+                fontSize={14}
                 fontWeight={400}
-                color="background.default"
+                color={theme.palette.text.secondary}
               >
                 Login and manage everything in one place.
               </TextComponent>
@@ -192,10 +192,10 @@ const Login: React.FC = () => {
                           >
                             {!showPassword ? (
                               <OpenEyeSvgIcon
-                                color={theme.palette.background.default}
+                                color={theme.palette.text.secondary}
                               />
                             ) : (
-                              <CloseEyeSvgIcon />
+                              <CloseEyeSvgIcon color={theme.palette.text.secondary} />
                             )}
                           </div>
                         }
@@ -208,7 +208,7 @@ const Login: React.FC = () => {
                       <TextComponent
                         fontSize={12}
                         fontWeight={400}
-                        color={"background.default"}
+                        color="primary.main"
                         align="right"
                       >
                         Forgot Password?
@@ -226,7 +226,6 @@ const Login: React.FC = () => {
                           !values.userName ||
                           !values.password
                         }
-                        isAuth={true}
                       />
                     </div>
                   </form>

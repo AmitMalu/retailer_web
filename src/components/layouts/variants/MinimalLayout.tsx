@@ -104,14 +104,13 @@ export default function MinimalLayout({ children }: MinimalLayoutProps) {
   const MinimalNavbar = () => (
     <AppBar
       position={navbarPosition}
-      color="primary"
+      color="inherit"
       elevation={0}
       sx={{
         borderBottom: `1px solid ${theme.palette.divider}`,
         backdropFilter: "blur(8px)",
-        backgroundColor: darkMode
-          ? "rgba(18, 18, 18, 0.8)"
-          : "rgba(255, 255, 255, 0.8)",
+        backgroundColor: theme.palette.background.paper,
+        opacity: 0.95,
       }}
     >
       <Toolbar sx={{ minHeight: "56px" }}>
@@ -301,6 +300,7 @@ export default function MinimalLayout({ children }: MinimalLayoutProps) {
   return (
     <BaseLayout navbar={<MinimalNavbar />} sidebar={null} footer={null}>
       <Box
+        className="bg-background-default text-text-primary transition-colors duration-300"
         sx={{
           p: layout === "compact" ? 2 : 3,
           mt: navbarPosition === "fixed" ? "56px" : 0,
@@ -313,6 +313,7 @@ export default function MinimalLayout({ children }: MinimalLayoutProps) {
                 : "1200px",
           mx: "auto",
           position: "relative",
+          minHeight: "calc(100vh - 56px)",
         }}
       >
         <Paper
@@ -321,6 +322,7 @@ export default function MinimalLayout({ children }: MinimalLayoutProps) {
             p: layout === "compact" ? 2 : 3,
             borderRadius: 2,
             minHeight: "80vh",
+            backgroundColor: theme.palette.background.paper,
           }}
         >
           {children}

@@ -206,7 +206,7 @@ const CommissionAndCharges = () => {
 
   return (
     <div className="w-full">
-      <NewTextComponent fontSize={22} color={theme.palette.red.DEFAULT} fontFamily="Inter" fontWeight={600}>
+      <NewTextComponent fontSize={22} color={theme.palette.primary.main} fontFamily="Inter" fontWeight={600}>
         Commission & Charges Report
       </NewTextComponent>
 
@@ -389,11 +389,10 @@ const CommissionAndCharges = () => {
                       radius={6}
                       style={{ marginTop: "10px" }}
                       size="sm"
-                      borderColor="#fff"
                       variant="filled"
                       type="submit"
-                      bgColor="#C30305"
-                      textColor="#FFFFFF"
+                      bgColor={theme.palette.primary.main}
+                      textColor="white"
                     >
                       VIEW
                     </ButtonComponent>

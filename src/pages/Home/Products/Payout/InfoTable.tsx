@@ -418,14 +418,14 @@ const InfoTable = () => {
               navigate(`/products/payoutScreen`);
             }}
           >
-            <BackSvgIcon color={theme.palette.red.DEFAULT} />
+            <BackSvgIcon color={theme.palette.primary.main} />
           </UnstyledButton>
 
           {/* Heading*/}
           <TextComponent
             fontSize={28}
             fontWeight={600}
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.main}
           >
             Payout
           </TextComponent>
@@ -433,26 +433,26 @@ const InfoTable = () => {
 
         <div className="flex items-center justify-end gap-3">
           {/* Refresh */}
-          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px]">
+          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-divider bg-background-paper px-2 py-[6px]">
             <UnstyledButton
               onClick={handleRefresh}
               className="flex items-center justify-center gap-2"
             >
-              <Refresh color="error" />
+              <Refresh color="primary" />
             </UnstyledButton>
           </div>
 
           {/* Filter */}
-          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px]">
+          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-divider bg-background-paper px-2 py-[6px]">
             <UnstyledButton
               onClick={() => setIsSeacrh(!isSeacrh)}
               className="flex items-center justify-center gap-2"
             >
-              <FilterSvgIcon color={theme.palette.red.DEFAULT} />
+              <FilterSvgIcon color={theme.palette.primary.main} />
               <TextComponent
                 fontSize={16}
                 fontWeight={400}
-                color={theme.palette.red.DEFAULT}
+                color={theme.palette.primary.main}
                 align="center"
               >
                 Filter

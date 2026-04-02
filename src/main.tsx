@@ -9,6 +9,7 @@ import "@mantine/core/styles.css";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "./components/Organism/ErrorFallback";
 import { redirectTo } from "./Utils/helper";
+import ReduxProvider from "./components/providers/ReduxProvider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -16,12 +17,14 @@ createRoot(document.getElementById("root")!).render(
       FallbackComponent={ErrorFallback}
       onReset={() => redirectTo("/login")}
     >
-      <BrowserRouter
-        basename={import.meta.env.VITE_APP_BASE_PATH}
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
-        <App />
-      </BrowserRouter>
+      <ReduxProvider>
+        <BrowserRouter
+          basename={import.meta.env.VITE_APP_BASE_PATH}
+          future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+        >
+          <App />
+        </BrowserRouter>
+      </ReduxProvider>
       <ToastContainer />
     </ErrorBoundary>
   </StrictMode>

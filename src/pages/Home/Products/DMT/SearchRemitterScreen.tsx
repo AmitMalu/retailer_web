@@ -213,14 +213,14 @@ const SearchRemitterScreen = () => {
             navigate(`/products/dmt`);
           }}
         >
-          <BackSvgIcon color={theme.palette.red.DEFAULT} />
+          <BackSvgIcon color={theme.palette.primary.main} />
         </UnstyledButton>
 
         <div className="mb-6 flex flex-col items-start gap-2 justify-start">
           <TextComponent
             fontSize={28}
             fontWeight={600}
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.dark}
           >
             Mudra Remit
           </TextComponent>
@@ -246,11 +246,11 @@ const SearchRemitterScreen = () => {
             {(formik) => {
               return (
                 <Form className="w-full flex justify-center items-center">
-                  <div className="w-full lg:w-1/2 p-2 items-center justify-center flex flex-col gap-4  rounded-xl border-2 border-red-light ">
+                  <div className="w-full lg:w-1/2 p-2 items-center justify-center flex flex-col gap-4  rounded-xl border-2 border-primary-light ">
                     <TextComponent
                       fontSize={28}
                       fontWeight={600}
-                      color={theme.palette.red.DEFAULT}
+                      color={theme.palette.primary.dark}
                     >
                       Find Remitter
                     </TextComponent>
@@ -272,7 +272,7 @@ const SearchRemitterScreen = () => {
                     <div className="mt-2 flex w-full items-center justify-end ">
                       <NewButtonComponent
                         fw="500"
-                        bgColor={theme.palette.red.DEFAULT}
+                        bgColor={theme.palette.primary.main}
                         textColor="white"
                         type="submit"
                         style={{

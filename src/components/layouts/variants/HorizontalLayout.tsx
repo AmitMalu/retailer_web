@@ -17,6 +17,7 @@ import {
   Chip,
   Tooltip,
   Stack,
+  useTheme,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../Redux/Store";
@@ -33,11 +34,13 @@ import { HorizontalLayoutProps } from "@/Common/interface";
 import { toggleDarkMode } from "@/Redux/Actions/uiAction";
 import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
 
+
 export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
   const { layout, navbarPosition } = useSelector(
     (state: RootState) => state.settings
   );
   const darkMode = useSelector((state: RootState) => state.ui.darkMode);
+  const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -107,22 +110,22 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
         border: "1px solid",
         borderColor: (theme) =>
           theme.palette.mode === "dark"
-            ? "rgba(99, 102, 241, 0.5)"
-            : "rgba(99, 102, 241, 0.2)",
+            ? "rgba(var(--primary-main-rgb), 0.5)"
+            : "rgba(var(--primary-main-rgb), 0.2)",
         background: (theme) =>
           theme.palette.mode === "dark"
-            ? "rgba(30, 41, 59, 0.5)"
-            : "rgba(241, 245, 249, 0.5)",
+            ? "var(--background-paper)"
+            : "var(--background-default)",
         "&:hover": {
           transform: "translateY(-1px)",
           boxShadow: (theme) =>
             theme.palette.mode === "dark"
-              ? "0 2px 12px rgba(99, 102, 241, 0.15)"
-              : "0 2px 12px rgba(99, 102, 241, 0.1)",
+              ? "0 2px 12px rgba(var(--primary-main-rgb), 0.15)"
+              : "0 2px 12px rgba(var(--primary-main-rgb), 0.1)",
           background: (theme) =>
             theme.palette.mode === "dark"
-              ? "rgba(30, 41, 59, 0.7)"
-              : "rgba(241, 245, 249, 0.7)",
+              ? "var(--background-paper)"
+              : "var(--background-default)",
         },
         "&:active": {
           transform: "translateY(0)",
@@ -142,7 +145,15 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
 
   const HorizontalNavbar = () => (
     <>
-      <AppBar position={navbarPosition} color="primary" elevation={0}>
+      <AppBar
+        position={navbarPosition}
+        color="inherit"
+        elevation={0}
+        sx={{
+          backgroundColor: theme.palette.background.paper,
+          borderBottom: `1px solid ${theme.palette.divider}`,
+        }}
+      >
         <Toolbar>
           <Typography
             variant="h6"
@@ -176,8 +187,8 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
               mr: 1,
               bgcolor: (theme) =>
                 theme.palette.mode === "dark"
-                  ? "rgba(30, 41, 59, 0.5)"
-                  : "rgba(241, 245, 249, 0.5)",
+                  ? "var(--background-paper)"
+                  : "var(--background-default)",
             }}
           >
             <RefreshIcon fontSize="small" />
@@ -317,7 +328,7 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
                 sx={{
                   p: 0.5,
                   border: "2px solid",
-                  borderColor: "rgba(255,255,255,0.5)",
+                  borderColor: (theme) => theme.palette.background.paper + "80",
                 }}
               >
                 <Avatar sx={{ bgcolor: "primary.dark" }}>
@@ -360,12 +371,10 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
           value={tabValue}
           onChange={handleTabChange}
           sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === "dark"
-                ? "rgba(30, 41, 59, 0.5)"
-                : "rgba(241, 245, 249, 0.5)",
+            backgroundColor: theme.palette.background.paper,
+            opacity: 0.9,
             "& .MuiTabs-indicator": {
-              backgroundColor: (theme) => theme.palette.primary.main,
+              backgroundColor: theme.palette.primary.main,
               height: 3,
             },
           }}
@@ -374,10 +383,9 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
             label="Dashboard"
             iconPosition="start"
             sx={{
-              color: (theme) =>
-                tabValue === 0
-                  ? theme.palette.primary.main
-                  : theme.palette.text.secondary,
+              color: tabValue === 0
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
               minHeight: 48,
               fontWeight: tabValue === 0 ? 600 : 400,
             }}
@@ -386,10 +394,9 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
             label="Products"
             iconPosition="start"
             sx={{
-              color: (theme) =>
-                tabValue === 1
-                  ? theme.palette.primary.main
-                  : theme.palette.text.secondary,
+              color: tabValue === 1
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
               minHeight: 48,
               fontWeight: tabValue === 1 ? 600 : 400,
             }}
@@ -398,10 +405,9 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
             label="PG"
             iconPosition="start"
             sx={{
-              color: (theme: any) =>
-                tabValue === 1
-                  ? theme.palette.primary.main
-                  : theme.palette.text.secondary,
+              color: tabValue === 1
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
               minHeight: 48,
               fontWeight: tabValue === 1 ? 600 : 400,
             }}
@@ -410,10 +416,9 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
             label="DMT"
             iconPosition="start"
             sx={{
-              color: (theme: any) =>
-                tabValue === 1
-                  ? theme.palette.primary.main
-                  : theme.palette.text.secondary,
+              color: tabValue === 1
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
               minHeight: 48,
               fontWeight: tabValue === 1 ? 600 : 400,
             }}
@@ -422,10 +427,9 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
             label="BBPS"
             iconPosition="start"
             sx={{
-              color: (theme: any) =>
-                tabValue === 1
-                  ? theme.palette.primary.main
-                  : theme.palette.text.secondary,
+              color: tabValue === 1
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
               minHeight: 48,
               fontWeight: tabValue === 1 ? 600 : 400,
             }}
@@ -434,10 +438,9 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
             label="RECHARGE"
             iconPosition="start"
             sx={{
-              color: (theme: any) =>
-                tabValue === 1
-                  ? theme.palette.primary.main
-                  : theme.palette.text.secondary,
+              color: tabValue === 1
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
               minHeight: 48,
               fontWeight: tabValue === 1 ? 600 : 400,
             }}
@@ -446,10 +449,9 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
             label="PAYOUT"
             iconPosition="start"
             sx={{
-              color: (theme: any) =>
-                tabValue === 1
-                  ? theme.palette.primary.main
-                  : theme.palette.text.secondary,
+              color: tabValue === 1
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
               minHeight: 48,
               fontWeight: tabValue === 1 ? 600 : 400,
             }}
@@ -458,10 +460,9 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
             label="REPORT"
             iconPosition="start"
             sx={{
-              color: (theme: any) =>
-                tabValue === 1
-                  ? theme.palette.primary.main
-                  : theme.palette.text.secondary,
+              color: tabValue === 1
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
               minHeight: 48,
               fontWeight: tabValue === 1 ? 600 : 400,
             }}
@@ -476,6 +477,7 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
   return (
     <BaseLayout navbar={<HorizontalNavbar />} sidebar={null} footer={null}>
       <Box
+        className="bg-background-default text-text-primary transition-colors duration-300"
         sx={{
           p: layout === "compact" ? 2 : 3,
           mt: navbarPosition === "fixed" ? "64px" : 0,
@@ -487,6 +489,7 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
                 ? "960px"
                 : "1200px",
           mx: "auto",
+          minHeight: "calc(100vh - 64px)",
         }}
       >
         <Paper
@@ -495,6 +498,7 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
             p: layout === "compact" ? 2 : 3,
             borderRadius: 2,
             minHeight: "80vh",
+            backgroundColor: theme.palette.background.paper,
           }}
         >
           {children}

@@ -146,7 +146,7 @@ const WalletToWallet = () => {
             <TextComponent
               fontSize={30}
               fontWeight={500}
-              color="red.DEFAULT"
+              color="primary.main"
             >
               Wallet To Wallet
             </TextComponent>

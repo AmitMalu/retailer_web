@@ -147,8 +147,16 @@ const TextInputComponent = forwardRef<HTMLInputElement, TextInputComponentProps>
         length,
         styles: {
             input: {
-                color: "#282828",
+                color: "inherit",
                 fontWeight: 500,
+                // High contrast focus & hover
+                "&:focus": {
+                    borderColor: "var(--primary-main) !important",
+                    borderWidth: "1.5px",
+                },
+                "&:hover": {
+                    borderColor: "var(--primary-main)",
+                }
             },
         },
         ref

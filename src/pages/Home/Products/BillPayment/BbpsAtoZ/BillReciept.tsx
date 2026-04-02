@@ -3,7 +3,6 @@ import { decryptData } from "@/Utils/helper";
 import { Card, Table, Text, Group, Divider, Button } from "@mantine/core";
 import { useSelector } from "react-redux";
 import moment from "moment";
-import ImLogo from '@/assets/svg/ImFullLogo'
 import { useTheme } from "@mui/system";
 import "./BillReciept.css";
 
@@ -28,16 +27,15 @@ const BillReceipt = ({ data }: { data: any }) => {
             {/* --- Header Section --- */}
             <Group justify="space-between" align="center" mb="md">
                 <Group gap={2}>
-                    {/* <Image src={ImLogo} alt="Company Logo" width={70} /> */}
-                    <ImLogo />
-                    <div>
-                        {/* <Text fw={700} size="xl" c="orange.8">
-                            Instant Mudra
-                        </Text> */}
-                        {/* <Text size="xs" c="dimmed">
-                            Smart Pay Solutions
-                        </Text> */}
-                    </div>
+                    {/* <ImLogo /> */}
+                    <img
+                        style={{
+                            width: 120,
+                            height: 120,
+                            objectFit: "contain",
+                        }}
+                        src={loginData?.logoUrl ?? ""} alt="img"
+                    />
                 </Group>
                 <Text fw={600} size="sm" ta="right">
                     {loginData
@@ -85,7 +83,7 @@ const BillReceipt = ({ data }: { data: any }) => {
                     <Table.Tr>
                         <Table.Td fw={500}>Customer Name</Table.Td>
                         <Table.Td>{data?.customerName ?? "-"}</Table.Td>
-                        
+
                         <Table.Td fw={500}>Consumer Number</Table.Td>
                         <Table.Td>{data?.consumerNumber ?? "-"}</Table.Td>
                     </Table.Tr>
@@ -112,7 +110,7 @@ const BillReceipt = ({ data }: { data: any }) => {
 
             {/* Print Button */}
             <Group justify="center" mt="lg" className="no-print">
-                <Button onClick={handlePrint} color={theme.palette.red.DEFAULT}>
+                <Button onClick={handlePrint} color={theme.palette.primary.dark}>
                     🖨️ Print Receipt
                 </Button>
             </Group>

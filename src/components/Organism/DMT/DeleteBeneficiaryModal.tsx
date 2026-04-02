@@ -53,13 +53,13 @@ const DeleteBeneficiaryModal = ({
             }}
         >
             <div className=" mt-3 flex h-full flex-col justify-center items-center">
-                <DeleteSvgIcon height="60" color={theme.palette.red.DEFAULT} />
+                <DeleteSvgIcon height="60" color={theme.palette.primary.main} />
                 <TextComponent fontSize={14} fontWeight={500} style={{ margin: "20px" }}>
                     Are you sure you want to delete this beneficiary?
                     {selectedRow?.accno && (
                         <>
                             <br />
-                            <span style={{ fontWeight: 600, color: theme.palette.red.DEFAULT }}>
+                            <span style={{ fontWeight: 600, color: theme.palette.primary.main }}>
                                 Account No: {selectedRow.accno}
                             </span>
                         </>

@@ -59,13 +59,13 @@ const SubProductScreen = () => {
           navigate(`/products`);
         }}
       >
-        <BackSvgIcon color={theme.palette.red.DEFAULT} />
+        <BackSvgIcon color={theme.palette.primary.main} />
       </UnstyledButton>
       <div className="mx-auto py-10 px-4 text-center relative">
         <TextComponent
           fontSize={28}
           fontWeight={600}
-          color={"background.default"}
+          color={theme.palette.primary.dark}
         >
           Bharat Bill Payment System
         </TextComponent>
@@ -107,7 +107,7 @@ const SubProductScreen = () => {
                     key={card.id}
                     image={
                       <BillPaymentSvgIcon
-                        color={theme.palette.red.DEFAULT}
+                        color={theme.palette.primary.dark}
                       />
                     }
                     title={card.title}

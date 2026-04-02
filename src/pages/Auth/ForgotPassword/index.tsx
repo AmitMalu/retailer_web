@@ -17,9 +17,11 @@ import {
   showSuccessNotification,
 } from "@/Utils/notifications";
 import { ArrowLeft } from "@mui/icons-material";
+import { useTheme } from "@mui/system";
 
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
 
   const validationSchema = Yup.object({
@@ -69,15 +71,15 @@ const ForgotPassword: React.FC = () => {
             <div className="flex flex-col items-center justify-center gap-3">
               <TextComponent
                 fontSize={30}
-                fontWeight={500}
-                color={"background.default"}
+                fontWeight={600}
+                color={theme.palette.text.primary}
               >
                 Forgot Password
               </TextComponent>
               <TextComponent
-                fontSize={12}
+                fontSize={14}
                 fontWeight={500}
-                color={"background.default"}
+                color={theme.palette.text.secondary}
               >
                 Please enter your registered mobile number.
               </TextComponent>

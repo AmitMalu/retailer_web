@@ -1,6 +1,7 @@
 import { ProductCardProps } from "@/Common/interface";
 import TextComponent from "../Atoms/TextComponent";
-import { useMediaQuery, useTheme } from "@mui/system";
+import { useMediaQuery, useTheme } from "@mui/material";
+import React from "react";
 
 export function ProductCard({
   image,
@@ -40,34 +41,46 @@ export function ProductCard({
   if (placeholder) {
     return (
       <div className="relative flex flex-col items-center scale-90 pointer-events-none">
-        <div className={`relative ${box} rotate-45 ${rounded} border-2 border-red-500`} />
+        <div className={`relative ${box} rotate-45 ${rounded} border-2 border-primary-500`} />
       </div>
     );
   }
 
   return (
     <div className="relative flex flex-col items-center group">
-      <div className={`absolute top-0 h-10 w-px ${disabled ? "bg-transparent" : "bg-black"}`} />
+      <div className={`absolute top-0 h-10 w-px ${disabled ? "bg-transparent" : "bg-text-primary"}`} />
 
       <div
         onClick={!disabled ? onClick : undefined}
-        className={`relative ${box} rotate-45 ${rounded} border-2 cursor-pointer border-red-dark shadow-md z-1 transition-all duration-300 ease-in-out 
-        ${disabled
-            ? "opacity-50 cursor-not-allowed bg-gray-200"
+        className={`relative ${box} rotate-45 ${rounded} border-2 cursor-pointer shadow-md z-1 transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-lg`}
+        style={{
+          backgroundColor: disabled
+            ? theme.palette.divider
             : fill
-              ? "bg-red-dark"
-              : "bg-white hover:bg-red-light group-hover:scale-105 group-hover:shadow-lg"
-          }`}
+              ? theme.palette.primary.main
+              : theme.palette.background.paper,
+          borderColor: disabled
+            ? theme.palette.divider
+            : theme.palette.primary.main,
+        }}
       >
         <div className={`absolute inset-0 -rotate-45 flex flex-col items-center justify-center ${padding} ${gap}`}>
           {image && <div className="transition-transform duration-300 group-hover:scale-110">
-            {image}
+            {React.isValidElement(image)
+              ? React.cloneElement(image as React.ReactElement<any>, {
+                color: fill 
+                  ? "#ffffff" 
+                  : (theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.main)
+              })
+              : image}
           </div>}
           {title && <TextComponent
             fontSize={font}
-            fontWeight={500}
-            color={fill ? "white" : theme.palette.red.dark}
-            className="transition-colors duration-300"
+            fontWeight={600}
+            color={fill 
+              ? "white" 
+              : (theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.main)}
+            className="transition-colors duration-300 text-center"
           >
             {title}
           </TextComponent>}

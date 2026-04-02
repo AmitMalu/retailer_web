@@ -132,7 +132,7 @@ const SearchTransactionReport = () => {
   return (
     <div className="p-2 w-full h-[calc(100vh-90px)] flex flex-col">
       {/* Heading */}
-      <TextComponent fontFamily="Inter" color={theme.palette.red.MAIN} fontWeight={600} fontSize={24}>
+      <TextComponent fontFamily="Inter" color={theme.palette.primaryExtra.hover} fontWeight={600} fontSize={24}>
         Search Transaction Report
       </TextComponent>
 
@@ -177,12 +177,11 @@ const SearchTransactionReport = () => {
                       radius={6}
                       style={{ height: 34 }}
                       size="sm"
-                      borderColor="#fff"
                       variant="filled"
                       type="submit"
                       disabled={loading}
-                      bgColor="#C30305"
-                      textColor="#FFFFFF"
+                      bgColor={theme.palette.primary.main}
+                      textColor="white"
                     >
                       VIEW
                     </ButtonComponent>
@@ -204,9 +203,7 @@ const SearchTransactionReport = () => {
           }
         }}
         grow={true}
-        borderColor="#ccc"
-        activeBg="#fff"
-        activeColor="#CA4343"
+        activeColor={theme.palette.primary.main}
       />
 
       {

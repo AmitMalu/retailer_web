@@ -37,7 +37,7 @@ const ColumsSelectionModal: React.FC<ColumsSelectionModalProps> = ({
       title="Select Columns"
       centered
       closeButtonProps={{
-        icon: <CrossSvgIcon color={theme.palette.red.DEFAULT} />,
+        icon: <CrossSvgIcon color={theme.palette.primary.main} />,
         className: "border-none",
       }}
       classNames={{
@@ -46,14 +46,14 @@ const ColumsSelectionModal: React.FC<ColumsSelectionModalProps> = ({
       }}
       styles={{
         title: {
-          color: theme.palette.red.DEFAULT,
+          color: theme.palette.primary.main,
           fontWeight: 600,
           fontSize: "20px",
         },
         content: {
           height: "45%",
           borderRadius: 30,
-          borderColor: theme.palette.red.light,
+          borderColor: theme.palette.primary.light,
           scrollbarWidth: "none",
         },
       }}
@@ -63,7 +63,7 @@ const ColumsSelectionModal: React.FC<ColumsSelectionModalProps> = ({
           label="Select All"
           checked={allSelected}
           onChange={toggleAll}
-          color={theme.palette.red.DEFAULT}
+          color={theme.palette.primary.main}
         />
         {data
           .filter((col) => col.key !== "action")
@@ -73,7 +73,7 @@ const ColumsSelectionModal: React.FC<ColumsSelectionModalProps> = ({
               label={col.label || col.key}
               checked={visibleColumns.includes(col.key)}
               onChange={() => toggleColumn(col.key)}
-              color={theme.palette.red.DEFAULT}
+              color={theme.palette.primary.main}
             />
           ))}
       </div>
