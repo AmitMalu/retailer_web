@@ -75,7 +75,7 @@ const PayoutBankDeleteModal = ({
       }}
     >
       <div className=" mt-3 flex h-full flex-col justify-center items-center">
-        <DeleteSvgIcon color={theme.palette.red.DEFAULT} />
+        <DeleteSvgIcon color={theme.palette.primary.main} />
         <Group justify="center" mt="xl" className="flex h-full items-center">
           <div className="flex w-max self-center">
             <ButtonComponent

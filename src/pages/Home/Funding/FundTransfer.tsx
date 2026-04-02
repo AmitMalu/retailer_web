@@ -141,7 +141,7 @@ const FundTransfer = () => {
             <TextComponent
               fontSize={30}
               fontWeight={500}
-              color="red.DEFAULT"
+              color="primary.main"
             >
               Fund Transfer
             </TextComponent>

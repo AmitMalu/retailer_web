@@ -564,14 +564,14 @@ const FetchBillDetails: React.FC<Props> = ({ serviceName, subProductId }) => {
               });
             }}
           >
-            <BackSvgIcon color={theme.palette.red.DEFAULT} />
+            <BackSvgIcon color={theme.palette.primary.main} />
           </UnstyledButton>
 
           {/* Title */}
           <TextComponent
             fontSize={28}
             fontWeight={600}
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.main}
           >
             {serviceName}
           </TextComponent>

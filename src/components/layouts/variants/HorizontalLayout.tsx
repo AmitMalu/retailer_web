@@ -107,22 +107,22 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
         border: "1px solid",
         borderColor: (theme) =>
           theme.palette.mode === "dark"
-            ? "rgba(99, 102, 241, 0.5)"
-            : "rgba(99, 102, 241, 0.2)",
+            ? theme.palette.primary.main + "80"
+            : theme.palette.primary.main + "33",
         background: (theme) =>
           theme.palette.mode === "dark"
-            ? "rgba(30, 41, 59, 0.5)"
-            : "rgba(241, 245, 249, 0.5)",
+            ? theme.palette.background.paper + "80"
+            : theme.palette.grey[100] + "80",
         "&:hover": {
           transform: "translateY(-1px)",
           boxShadow: (theme) =>
             theme.palette.mode === "dark"
-              ? "0 2px 12px rgba(99, 102, 241, 0.15)"
-              : "0 2px 12px rgba(99, 102, 241, 0.1)",
+              ? `0 2px 12px ${theme.palette.primary.main}26`
+              : `0 2px 12px ${theme.palette.primary.main}1A`,
           background: (theme) =>
             theme.palette.mode === "dark"
-              ? "rgba(30, 41, 59, 0.7)"
-              : "rgba(241, 245, 249, 0.7)",
+              ? theme.palette.background.paper + "B3"
+              : theme.palette.grey[100] + "B3",
         },
         "&:active": {
           transform: "translateY(0)",
@@ -176,8 +176,8 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
               mr: 1,
               bgcolor: (theme) =>
                 theme.palette.mode === "dark"
-                  ? "rgba(30, 41, 59, 0.5)"
-                  : "rgba(241, 245, 249, 0.5)",
+                  ? theme.palette.background.paper + "80"
+                  : theme.palette.grey[100] + "80",
             }}
           >
             <RefreshIcon fontSize="small" />
@@ -317,7 +317,7 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
                 sx={{
                   p: 0.5,
                   border: "2px solid",
-                  borderColor: "rgba(255,255,255,0.5)",
+                  borderColor: (theme) => theme.palette.background.paper + "80",
                 }}
               >
                 <Avatar sx={{ bgcolor: "primary.dark" }}>
@@ -362,8 +362,8 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
           sx={{
             backgroundColor: (theme) =>
               theme.palette.mode === "dark"
-                ? "rgba(30, 41, 59, 0.5)"
-                : "rgba(241, 245, 249, 0.5)",
+                ? theme.palette.background.paper + "80"
+                : theme.palette.grey[100] + "80",
             "& .MuiTabs-indicator": {
               backgroundColor: (theme) => theme.palette.primary.main,
               height: 3,

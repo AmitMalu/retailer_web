@@ -1,12 +1,13 @@
-import ReduxProvider from "@/components/providers/ReduxProvider";
 import { NotificationProvider } from "@/components/notifications";
 import { MantineProvider } from "@mantine/core";
 import RouterOutlet from "./Routes";
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import theme from "@/theme/ThemeConfig";
+import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import RouteChangeHandler from "@/components/RouteChangeHandler";
 import LocationGuard from "@/components/LocationGuard";
 import ChatBot from "@/pages/Home/chatbot/ChatBot";
+import { useAppSelector } from "@/Redux/hooks";
+import { getThemeOptions } from "@/theme/ThemeConfig";
+import { useMemo } from "react";
 
 const AppContent = () => {
   return (
@@ -19,8 +20,16 @@ const AppContent = () => {
 };
 
 function App() {
+
+  const { themeOption } = useAppSelector((state: any) => state.settings);
+  const { darkMode } = useAppSelector((state: any) => state.ui);
+
+  const theme = useMemo(() => {
+    return createTheme(getThemeOptions(themeOption, darkMode));
+  }, [themeOption, darkMode]);
+
   return (
-    <ReduxProvider>
+    <>
       <RouteChangeHandler />
       <NotificationProvider>
         <ThemeProvider theme={theme}>
@@ -28,7 +37,7 @@ function App() {
           <AppContent />
         </ThemeProvider>
       </NotificationProvider>
-    </ReduxProvider>
+    </>
   );
 }
 

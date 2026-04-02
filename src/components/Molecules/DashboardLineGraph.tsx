@@ -37,7 +37,7 @@ const DashboardLineGraph = ({ graphData }: any) => {
                         type="monotone"
                         dataKey="value"
                         name="Revenue"
-                        stroke={theme.palette.red.dark}
+                        stroke={theme.palette.primary.dark}
                         strokeWidth={3}
                         dot={{ r: 3 }}
                         activeDot={{ r: 6 }}

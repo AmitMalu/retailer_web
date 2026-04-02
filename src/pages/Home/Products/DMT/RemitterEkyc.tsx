@@ -72,12 +72,12 @@ const RemitterEkyc = () => {
               navigate(`/products/dmt`);
             }}
           >
-            <BackSvgIcon color={theme.palette.red.DEFAULT} />
+            <BackSvgIcon color={theme.palette.primary.main} />
           </UnstyledButton>
           <TextComponent
             fontSize={28}
             fontWeight={600}
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.dark}
           >
             Remitter eKYC
           </TextComponent>
@@ -92,12 +92,12 @@ const RemitterEkyc = () => {
             {({ values, setFieldValue }) => {
               return (
                 <div className="w-full flex-col flex items-start justify-start gap-3">
-                  <div className="flex w-full gap-2 items-center justify-between mt-6 rounded-xl border-2 border-red-light p-4">
+                  <div className="flex w-full gap-2 items-center justify-between mt-6 rounded-xl border-2 border-primary-light p-4">
                     <div>
                       <TextComponent
                         fontSize={16}
                         fontWeight={400}
-                        color={theme.palette.red.DEFAULT}
+                        color={theme.palette.primary.dark}
                       >
                         Please select a Device
                       </TextComponent>
@@ -111,7 +111,7 @@ const RemitterEkyc = () => {
                             <Radio
                               value="Mantra"
                               label="Mantra"
-                              color={theme.palette.red.DEFAULT}
+                              color={theme.palette.primary.dark}
                               variant="outline"
                               checked={values.device === "Mantra"}
                               classNames={{
@@ -123,42 +123,42 @@ const RemitterEkyc = () => {
                             <Radio
                               value="Morpho"
                               label="Morpho"
-                              color={theme.palette.red.DEFAULT}
+                              color={theme.palette.primary.dark}
                               variant="outline"
                               checked={values.device === "Morpho"}
                             />
                             <Radio
                               value="Precision"
                               label="Precision"
-                              color={theme.palette.red.DEFAULT}
+                              color={theme.palette.primary.dark}
                               variant="outline"
                               checked={values.device === "Precision"}
                             />
                             <Radio
                               value="Startek"
                               label="Startek"
-                              color={theme.palette.red.DEFAULT}
+                              color={theme.palette.primary.dark}
                               variant="outline"
                               checked={values.device === "Startek"}
                             />
                             <Radio
                               value="Tatvik"
                               label="Tatvik"
-                              color={theme.palette.red.DEFAULT}
+                              color={theme.palette.primary.dark}
                               variant="outline"
                               checked={values.device === "Tatvik"}
                             />
                             <Radio
                               value="SecuGen"
                               label="SecuGen"
-                              color={theme.palette.red.DEFAULT}
+                              color={theme.palette.primary.dark}
                               variant="outline"
                               checked={values.device === "SecuGen"}
                             />
                             <Radio
                               value="Cogent"
                               label="Cogent"
-                              color={theme.palette.red.DEFAULT}
+                              color={theme.palette.primary.dark}
                               variant="outline"
                               checked={values.device === "Cogent"}
                             />
@@ -171,13 +171,13 @@ const RemitterEkyc = () => {
                               setFieldValue("csp", e.currentTarget.checked)
                             }
                             label="C.S.P"
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.dark}
                           />
                         </div>
                       </div>
                     </div>
                     <div className="w-[90px] h-[90px] mx-6">
-                      <FingerprintSvgIcon color={theme.palette.red.DEFAULT} />
+                      <FingerprintSvgIcon color={theme.palette.primary.main} />
                     </div>
                   </div>
                   <div className="mt-3 self-start">
@@ -187,7 +187,7 @@ const RemitterEkyc = () => {
                         setFieldValue("alert", e.currentTarget.checked)
                       }
                       label="Alert!"
-                      color={theme.palette.red.DEFAULT}
+                      color={theme.palette.primary.dark}
                     />
                   </div>
                 </div>

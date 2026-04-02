@@ -26,10 +26,10 @@ const RetailerDashboard = (props: retailerDashboardProps) => {
     sixMonthsAgo.setMonth(today.getMonth() - 6);
 
     const colors = [
-        theme.palette.red.DEFAULT,
-        theme.palette.primary.dark,
-        theme.palette.secondary.dark,
-        theme.palette.warning.dark,
+        theme.palette.primary.main,
+        theme.palette.primaryExtra.highlight,
+        theme.palette.primary.light,
+        theme.palette.primaryExtra.accent,
     ];
 
     const cards =

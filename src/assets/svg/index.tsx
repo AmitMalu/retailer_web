@@ -18,7 +18,7 @@ export const CloseEyeSvgIcon = () => (
 export const AddIconButton: React.FC<IconProps> = ({
   width = 20,
   height = 20,
-  color = "#BF0204",
+  color = "#2f3691",
 }) => (
   <svg
     width={width}
@@ -160,7 +160,7 @@ export const DownloadIcon: React.FC<React.SVGProps<SVGSVGElement>> = ({
 export const paginationBackIcon: React.FC<IconProps> = ({
   width = 20,
   height = 20,
-  color = "#BF0204",
+  color = "#2f3691",
 }) => {
   return (
     <svg
@@ -193,7 +193,7 @@ export const paginationBackIcon: React.FC<IconProps> = ({
 export const paginationFrontIcon: React.FC<IconProps> = ({
   width = 20,
   height = 20,
-  color = "#BF0204",
+  color = "#2f3691",
 }) => {
   return (
     <svg
@@ -223,92 +223,100 @@ export const paginationFrontIcon: React.FC<IconProps> = ({
   );
 };
 
-export const LeftDateArrowSvgIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    xmlnsXlink="http://www.w3.org/1999/xlink"
-    fill="none"
-    width={19.800884246826172}
-    height={19.800884246826172}
-    viewBox="0 0 19.800884246826172 19.800884246826172"
-  >
-    <defs>
-      <clipPath id="master_svg0_0_10807">
+export const LeftDateArrowSvgIcon: React.FC<IconProps> = ({
+  color = "#2f3691",
+}) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      fill="none"
+      width={19.800884246826172}
+      height={19.800884246826172}
+      viewBox="0 0 19.800884246826172 19.800884246826172"
+    >
+      <defs>
+        <clipPath id="master_svg0_0_10807">
+          <rect
+            x={0}
+            y={0}
+            width={19.800884246826172}
+            height={19.800884246826172}
+            rx={9.900442123413086}
+          />
+        </clipPath>
+      </defs>
+      <g clipPath="url(#master_svg0_0_10807)">
         <rect
           x={0}
           y={0}
           width={19.800884246826172}
           height={19.800884246826172}
           rx={9.900442123413086}
-        />
-      </clipPath>
-    </defs>
-    <g clipPath="url(#master_svg0_0_10807)">
-      <rect
-        x={0}
-        y={0}
-        width={19.800884246826172}
-        height={19.800884246826172}
-        rx={9.900442123413086}
-        fill="#BF0204"
-        fillOpacity={1}
-      />
-      <g>
-        <path
-          d="M5.223785256652832,9.900433214111327L12.265065256652832,14.426963214111328L13.311465256652832,12.79922321411133L8.802225256652832,9.900433214111327L13.311465256652832,7.001631214111328L12.265065256652832,5.373895214111328L5.223785256652832,9.900433214111327Z"
-          fillRule="evenodd"
-          fill="#FFFFFF"
+          fill={color}
           fillOpacity={1}
         />
+        <g>
+          <path
+            d="M5.223785256652832,9.900433214111327L12.265065256652832,14.426963214111328L13.311465256652832,12.79922321411133L8.802225256652832,9.900433214111327L13.311465256652832,7.001631214111328L12.265065256652832,5.373895214111328L5.223785256652832,9.900433214111327Z"
+            fillRule="evenodd"
+            fill="#FFFFFF"
+            fillOpacity={1}
+          />
+        </g>
       </g>
-    </g>
-  </svg>
-);
+    </svg>
+  )
+}
 
-export const RightDateArrowSvgIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    xmlnsXlink="http://www.w3.org/1999/xlink"
-    fill="none"
-    width={19.800884246826172}
-    height={19.800884246826175}
-    viewBox="0 0 19.800884246826172 19.800884246826175"
-  >
-    <defs>
-      <clipPath id="master_svg0_0_10812">
+export const RightDateArrowSvgIcon: React.FC<IconProps> = ({
+  color = "#2f3691",
+}) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      fill="none"
+      width={19.800884246826172}
+      height={19.800884246826175}
+      viewBox="0 0 19.800884246826172 19.800884246826175"
+    >
+      <defs>
+        <clipPath id="master_svg0_0_10812">
+          <rect
+            x={19.800884246826172}
+            y={19.800884246826175}
+            width={19.800884246826172}
+            height={19.800884246826172}
+            rx={9.900442123413086}
+          />
+        </clipPath>
+      </defs>
+      <g
+        transform="matrix(-1,-1.2246468525851679e-16,1.2246468525851679e-16,-1,39.601768493652344,39.60176849365236)"
+        clipPath="url(#master_svg0_0_10812)"
+      >
         <rect
           x={19.800884246826172}
           y={19.800884246826175}
           width={19.800884246826172}
           height={19.800884246826172}
           rx={9.900442123413086}
-        />
-      </clipPath>
-    </defs>
-    <g
-      transform="matrix(-1,-1.2246468525851679e-16,1.2246468525851679e-16,-1,39.601768493652344,39.60176849365236)"
-      clipPath="url(#master_svg0_0_10812)"
-    >
-      <rect
-        x={19.800884246826172}
-        y={19.800884246826175}
-        width={19.800884246826172}
-        height={19.800884246826172}
-        rx={9.900442123413086}
-        fill="#BF0204"
-        fillOpacity={1}
-      />
-      <g>
-        <path
-          d="M25.024329995422363,29.701322706146243L32.06560999542236,34.227852706146244L33.11200999542236,32.60011270614624L28.602769995422364,29.701322706146243L33.11200999542236,26.802520706146243L32.06560999542236,25.174784706146244L25.024329995422363,29.701322706146243Z"
-          fillRule="evenodd"
-          fill="#FFFFFF"
+          fill={color}
           fillOpacity={1}
         />
+        <g>
+          <path
+            d="M25.024329995422363,29.701322706146243L32.06560999542236,34.227852706146244L33.11200999542236,32.60011270614624L28.602769995422364,29.701322706146243L33.11200999542236,26.802520706146243L32.06560999542236,25.174784706146244L25.024329995422363,29.701322706146243Z"
+            fillRule="evenodd"
+            fill="#FFFFFF"
+            fillOpacity={1}
+          />
+        </g>
       </g>
-    </g>
-  </svg>
-);
+    </svg>
+  )
+}
 
 export const LockSvgIcon = () => (
   <svg fill="none" width={18} height={18} viewBox="0 0 24 24">

@@ -9,23 +9,24 @@ import {
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../Redux/Store";
-import ImLogo from "@/assets/svg/imLogo";
+import NFTLogo from "@/assets/Images/NFT_Logo.png";
 import { NavbarProps } from "@/Common/interface";
 import TextComponent from "../Atoms/TextComponent";
 import {
   ProfileSvgIcon,
   RefreshSvgIcon,
-  // ThemeSettingSvgIcon,
+  ThemeSettingSvgIcon,
 } from "@/assets/svg";
 import { decryptData, formatIndianNumber, useWalletBalance } from "@/Utils/helper";
 import { NavLink } from "react-router-dom";
-// import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
+import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
+import { useDispatch } from "react-redux";
 
 export default function Navbar({
   onMenuClick,
   isMobile: isMobileProp,
 }: NavbarProps) {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const { navbarPosition } = useSelector((state: RootState) => state.settings);
   const theme = useTheme();
   const isMobileView = useMediaQuery(theme.breakpoints.down("md"));
@@ -39,9 +40,9 @@ export default function Navbar({
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
-  // const handleSettingsClick = () => {
-  //   dispatch(toggleSettingsDrawer());
-  // };
+  const handleSettingsClick = () => {
+    dispatch(toggleSettingsDrawer());
+  };
   const { WalletBalanceReq, isLoading } = useWalletBalance();
   const WalletDisplay = ({
     title,
@@ -64,8 +65,8 @@ export default function Navbar({
           transition: "all 0.2s ease-in-out",
           background: (theme) =>
             theme.palette.mode === "dark"
-              ? "rgba(30, 41, 59, 0.7)"
-              : theme.palette.red.light,
+              ? theme.palette.background.paper + "B3"
+              : theme.palette.primary.light + "40",
         }}
         onMouseEnter={(e) =>
           (e.currentTarget.style.transform = "translateY(-1px)")
@@ -73,11 +74,11 @@ export default function Navbar({
         onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
       >
         <Box display="flex" alignItems="center">
-          <TextComponent fontSize={14} fontWeight={500} color="red.DEFAULT">
+          <TextComponent fontSize={14} fontWeight={500} color="primary.main">
             {title}
           </TextComponent>
-          {amount != null && numericAmount >= 0 && <TextComponent color="red.DEFAULT"> - </TextComponent>}
-          <TextComponent fontSize={16} fontWeight={700} color="red.DEFAULT">
+          {amount != null && numericAmount >= 0 && <TextComponent color="primary.main"> - </TextComponent>}
+          <TextComponent fontSize={16} fontWeight={700} color="primary.main">
             {formattedAmount}
           </TextComponent>
         </Box>
@@ -89,11 +90,17 @@ export default function Navbar({
     <>
       <AppBar
         position={navbarPosition}
-        className="flex flex-row items-center h-[60px] justify-between w-screen px-[3%] rounded-b-[50px] "
+        className="flex flex-row items-center justify-between w-screen px-[3%] rounded-b-[50px] "
         sx={{
           ...(navbarPosition === "fixed" && {
             position: "fixed",
             top: 0,
+            height: "60px", // FIXED HEIGHT
+            minHeight: "60px",
+            maxHeight: "60px",
+            overflow: "hidden", // prevent stretch
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+            backgroundColor: theme.palette.background.navBackground,
           }),
           paddingY: 1,
           zIndex: (theme) => theme.zIndex.drawer + 1,
@@ -103,12 +110,21 @@ export default function Navbar({
         <div className="flex flex-row items-center justify-between h-auto w-screen px-[3%] rounded-b-[50px] ">
           <div>
             {isMobile ? (
-              <IconButton color="error" edge="start" onClick={onMenuClick}>
+              <IconButton color="primary" edge="start" onClick={onMenuClick}>
                 ☰
               </IconButton>
             ) : (
-              <div className="flex items-center">
-                <ImLogo />
+              <div className="flex items-center gap-2.5">
+                <img src={NFTLogo} alt="logo" className="h-10 w-10" />
+
+                <div className="flex flex-col leading-tight">
+                  <span className="font-semibold text-sm text-[#2f3e9e] whitespace-nowrap">
+                    NFT Network Technologies
+                  </span>
+                  <span className="text-[10px] text-[#2f3e9e]">
+                    Private Limited
+                  </span>
+                </div>
               </div>
             )}
           </div>
@@ -130,32 +146,33 @@ export default function Navbar({
                   </Stack>
                   {isLoading ? (
                     <div className="animate-spin mr-2">
-                      <RefreshSvgIcon color={theme.palette.grey[400]} />
+                      <RefreshSvgIcon color={theme.palette.primary.main} />
                     </div>
                   ) : (
                     <div
-                      className="cursor-pointer bg-red-light rounded-md p-2"
+                      className="cursor-pointer rounded-md p-2"
+                      style={{ backgroundColor: theme.palette.primary.light + "40" }}
                       onClick={(e) => {
                         e.stopPropagation(); // prevent bubbling
                         WalletBalanceReq(loginData?.hierarchyId);
                       }}
                     >
-                      <RefreshSvgIcon color={theme.palette.red.DEFAULT} />
+                      <RefreshSvgIcon color={theme.palette.primary.main} />
                     </div>
                   )}
                 </>
               )}
               <NavLink to="/settings/myProfile">
-                <div className="cursor-pointer bg-red-light rounded-md p-2">
-                  <ProfileSvgIcon color={theme.palette.red.DEFAULT} />
+                <div className="cursor-pointer rounded-md p-2" style={{ backgroundColor: theme.palette.primary.light + "40" }}>
+                  <ProfileSvgIcon color={theme.palette.primary.main} />
                 </div>
               </NavLink>
-              {/* <div
-                // onClick={handleSettingsClick}
-                className="cursor-pointer bg-red-light rounded-md p-2"
+              <div
+                onClick={handleSettingsClick}
+                className="cursor-pointer bg-primary-ligh rounded-md p-2"
               >
-                <ThemeSettingSvgIcon color={theme.palette.red.DEFAULT} />
-              </div> */}
+                <ThemeSettingSvgIcon color={theme.palette.primary.dark} />
+              </div>
             </div>
           </div>
         </div>

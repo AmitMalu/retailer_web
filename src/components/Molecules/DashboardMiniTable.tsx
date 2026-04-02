@@ -16,8 +16,8 @@ const DashboardMiniTable = ({ title, headers, data, theme }: MiniTableProps) => 
                 <thead>
                     <tr
                         style={{
-                            background: theme?.palette.red.light,
-                            color: theme?.palette.red.dark,
+                            background: theme?.palette.primary.light + "40",
+                            color: theme?.palette.primary.dark,
                         }}
                         className="text-center"
                     >

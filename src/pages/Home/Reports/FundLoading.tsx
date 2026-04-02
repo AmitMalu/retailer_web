@@ -197,7 +197,7 @@ const FundLoading = () => {
 
   return (
     <div className="w-full">
-      <NewTextComponent fontSize={22} color={theme.palette.red.DEFAULT} fontFamily="Inter" fontWeight={600}>
+      <NewTextComponent fontSize={22} color={theme.palette.primary.main} fontFamily="Inter" fontWeight={600}>
         FUND LOADING REPORT
       </NewTextComponent>
 
@@ -234,7 +234,7 @@ const FundLoading = () => {
                       borderColor="#fff"
                       variant="filled"
                       type="submit"
-                      bgColor="#C30305"
+                      bgColor={theme.palette.primary.main}
                       textColor="#FFFFFF"
                     >
                       VIEW

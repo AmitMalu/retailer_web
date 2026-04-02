@@ -265,7 +265,7 @@ const TableComponent: React.FC<TableProps> = ({
                         </TextComponent>
                         {column.sortable && (
                           <span>
-                            <SortSvgIcon color={theme.palette.red.DEFAULT} />
+                            <SortSvgIcon color={theme.palette.primary.main} />
                           </span>
                         )}
                       </div>
@@ -429,7 +429,7 @@ const TableComponent: React.FC<TableProps> = ({
           ) : showNoDataFound ? (
             <Table.Caption>
               <TextComponent
-                color={theme.palette.red.DEFAULT}
+                color={theme.palette.primary.main}
                 fontSize={20}
                 fontWeight={500}
               >
@@ -445,7 +445,7 @@ const TableComponent: React.FC<TableProps> = ({
                 <Table.Td colSpan={columns.length} className="text-center">
                   <button
                     onClick={onAddRow}
-                    className="flex items-center justify-center gap-2 px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 mx-auto"
+                    className="flex items-center justify-center gap-2 px-3 py-1 rounded bg-primary-500 text-white hover:bg-primary-600 mx-auto"
                   >
                     {addRowIcon || <span className="text-white font-bold text-lg">+</span>}
                     {addRowLabel || "Add Row"}
@@ -458,7 +458,7 @@ const TableComponent: React.FC<TableProps> = ({
           {caption && (
             <Table.Caption>
               <TextComponent
-                color={theme.palette.red.DEFAULT}
+                color={theme.palette.primary.main}
                 fontSize={16}
                 fontWeight={500}
               >
@@ -505,7 +505,7 @@ const TableComponent: React.FC<TableProps> = ({
                   ? Math.ceil((totalRecords || 0) / size)
                   : Math.ceil(data.length / size)
               }
-              color={theme.palette.red.DEFAULT}
+              color={theme.palette.primary.main}
               size="sm"
             />
           </div>

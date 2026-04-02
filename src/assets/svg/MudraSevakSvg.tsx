@@ -1,4 +1,4 @@
-import MudraSevakAsset from "./MudraSevak.svg";
+import NFTLogoAsset from "../Images/NFT_Logo.png";
 
 type MudraSevakSvgProps = {
   width?: number | string;
@@ -17,8 +17,8 @@ const MudraSevakSvg = ({ width = 86, height = 82 }: MudraSevakSvgProps) => {
       }}
     >
       <img
-        src={MudraSevakAsset}
-        alt="Mudra Sevak"
+        src={NFTLogoAsset}
+        alt="NFT Logo"
         style={{ width: "100%", height: "100%", objectFit: "contain" }}
       />
     </div>

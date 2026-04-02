@@ -177,7 +177,7 @@ const DMTTransactionReceipt = ({
 
             {/* Print Button */}
             <Group justify="center" mt="lg" className="no-print">
-                <Button onClick={handlePrint} color={theme.palette.red.DEFAULT}>
+                <Button onClick={handlePrint} color={theme.palette.primary.dark}>
                     🖨️ Print Receipt
                 </Button>
             </Group>

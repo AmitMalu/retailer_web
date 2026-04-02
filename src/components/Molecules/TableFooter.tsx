@@ -57,17 +57,17 @@ const TableFooter = ({
               />
               <Pagination
                 total={totalPages || 0}
-                value={currentPage}
+                value={currentPage || 1}
                 onChange={onPageChange}
-                styles={{ control: { borderColor: "#fff" } }}
-                color="#BF0204"
                 size="sm"
                 radius="md"
+                styles={{ control: { borderColor: theme.palette.primary.dark } }}
+                color={theme.palette.primary.dark}
                 previousIcon={(props) =>
-                  paginationBackIcon({ ...props, color: theme.palette.red.MAIN })
+                  paginationBackIcon({ ...props, color: theme.palette.primary.dark })
                 }
                 nextIcon={(props) =>
-                  paginationFrontIcon({ ...props, color: theme.palette.red.MAIN })
+                  paginationFrontIcon({ ...props, color: theme.palette.primary.dark })
                 }
               />
             </div>

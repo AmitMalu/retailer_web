@@ -212,7 +212,7 @@ const OtpInputScreen = () => {
                         <TextComponent
                           fontSize={30}
                           fontWeight={600}
-                          color={theme.palette.error.main}
+                          color={theme.palette.primary.main}
                         >
                           {timer}
                         </TextComponent>

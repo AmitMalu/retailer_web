@@ -76,7 +76,7 @@ const BillPayOneScreen = () => {
           navigate(`/products/billPay`);
         }}
       >
-        <BackSvgIcon color={theme.palette.red.DEFAULT} />
+        <BackSvgIcon color={theme.palette.primary.main} />
       </UnstyledButton>
       <div className="mx-auto px-4 text-center relative">
         <TextComponent
@@ -95,7 +95,7 @@ const BillPayOneScreen = () => {
             : cardsData.map((card: any) => (
               <BbpsCard
                 key={card.id}
-                image={<BillPaymentSvgIcon color={theme.palette.red.DEFAULT} />}
+                image={<BillPaymentSvgIcon color={theme.palette.primary.dark} />}
                 title={card.title}
                 onClick={() => handleIconClick({ serviceName: card.title })}
               />

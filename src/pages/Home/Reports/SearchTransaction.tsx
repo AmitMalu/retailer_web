@@ -132,7 +132,7 @@ const SearchTransactionReport = () => {
   return (
     <div className="p-2 w-full h-[calc(100vh-90px)] flex flex-col">
       {/* Heading */}
-      <TextComponent fontFamily="Inter" color={theme.palette.red.MAIN} fontWeight={600} fontSize={24}>
+      <TextComponent fontFamily="Inter" color={theme.palette.primaryExtra.hover} fontWeight={600} fontSize={24}>
         Search Transaction Report
       </TextComponent>
 
@@ -181,7 +181,7 @@ const SearchTransactionReport = () => {
                       variant="filled"
                       type="submit"
                       disabled={loading}
-                      bgColor="#C30305"
+                      bgColor={theme.palette.primary.main}
                       textColor="#FFFFFF"
                     >
                       VIEW
@@ -206,7 +206,7 @@ const SearchTransactionReport = () => {
         grow={true}
         borderColor="#ccc"
         activeBg="#fff"
-        activeColor="#CA4343"
+        activeColor={theme.palette.primaryExtra.hover}
       />
 
       {

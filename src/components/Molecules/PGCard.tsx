@@ -33,7 +33,7 @@ const PGCard = ({
       <div
         onClick={!disabled ? onClick : undefined}
         className={`relative w-32 h-32 rounded-3xl border-2 shadow-md z-10 transition-all duration-300 ease-in-out 
-          ${disabled ? "bg-gray-200 border-gray-300" : "bg-red-light group-hover:scale-105 group-hover:shadow-lg"}`}
+          ${disabled ? "bg-gray-200 border-gray-300" : "border-primary-dark group-hover:scale-105 group-hover:shadow-lg"}`}
       >
         <div className="absolute inset-0 flex flex-col items-center justify-center p-2 gap-2">
           <div className="transition-transform duration-300 group-hover:scale-110">
@@ -47,7 +47,7 @@ const PGCard = ({
             <TextComponent
               fontSize={12}
               fontWeight={500}
-              color={disabled ? theme.palette.text.disabled : theme.palette.red.dark}
+              color={disabled ? theme.palette.text.disabled : theme.palette.primary.dark}
               className="transition-colors duration-300 "
             >
               {title}

@@ -73,21 +73,21 @@ export default function Products() {
     {
       id: 1,
       key: "PAYMENT GATEWAY",
-      image: <PGSvgIcon color={theme.palette.red.DEFAULT} />,
+      image: <PGSvgIcon color={theme.palette.primary.main} />,
       title: "Payment Gateway",
       route: "/products/pgScreen"
     },
     {
       id: 2,
       key: "PAYOUT",
-      image: <PayoutSvgIcon color={theme.palette.red.DEFAULT} />,
+      image: <PayoutSvgIcon color={theme.palette.primary.main} />,
       title: "Payout",
       route: `/products/payoutScreen`,
     },
     {
       id: 3,
       key: "DMT",
-      image: <DMTSvgIcon color={theme.palette.red.DEFAULT} />,
+      image: <DMTSvgIcon color={theme.palette.primary.main} />,
       title: "DMT",
       route: `/products/dmt`,
     },
@@ -121,7 +121,7 @@ export default function Products() {
     {
       id: 6,
       key: "BBPS",
-      image: <BillPaymenstSvgIcon color={theme.palette.red.DEFAULT} />,
+      image: <BillPaymenstSvgIcon color={theme.palette.primary.main} />,
       title: "Bill Payment",
       route: "/products/billPay"
     },
@@ -138,7 +138,7 @@ export default function Products() {
         <TextComponent
           fontSize={24}
           fontWeight={600}
-          color={"background.default"}
+          color={theme.palette.primary.main}
         >
           Products
         </TextComponent>

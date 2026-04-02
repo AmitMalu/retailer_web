@@ -23,9 +23,9 @@ const ReceiptContent = React.forwardRef<
         fontSize: isThermal ? "12px" : "14px",
       }}
     >
-      <div className="flex w-full flex-col border-2 border-red-light rounded-xl">
-        <div className="flex items-center justify-between border-b-2 border-b-red-light">
-          <div className="flex items-center justify-center border-r-2 p-4 border-r-red-light w-[calc(35%-10px)]">
+      <div className="flex w-full flex-col border-2 border-primary-light rounded-xl">
+        <div className="flex items-center justify-between border-b-2 border-b-primary-light">
+          <div className="flex items-center justify-center border-r-2 p-4 border-r-primary-light w-[calc(35%-10px)]">
             <ImFullLogo />
           </div>
           <div className="flex p-4 w-[calc(65%-10px)]">
@@ -39,7 +39,7 @@ const ReceiptContent = React.forwardRef<
             </TextComponent>
           </div>
         </div>
-        <div className="flex items-center justify-between pl-4 py-2 border-b-2 border-b-red-light">
+        <div className="flex items-center justify-between pl-4 py-2 border-b-2 border-b-primary-light">
           <TextComponent
             fontSize={16}
             fontWeight={500}
@@ -48,8 +48,8 @@ const ReceiptContent = React.forwardRef<
             Transactions Receipts
           </TextComponent>
         </div>
-        <div className="flex w-full items-center justify-between border-b-2 border-b-red-light">
-          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-red-light w-[calc(45%-10px)]">
+        <div className="flex w-full items-center justify-between border-b-2 border-b-primary-light">
+          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-primary-light w-[calc(45%-10px)]">
             <TextComponent
               fontSize={16}
               fontWeight={500}
@@ -68,8 +68,8 @@ const ReceiptContent = React.forwardRef<
             </TextComponent>
           </div>
         </div>
-        <div className="flex w-full items-center justify-between border-b-2 border-b-red-light">
-          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-red-light w-[calc(20%-10px)]">
+        <div className="flex w-full items-center justify-between border-b-2 border-b-primary-light">
+          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-primary-light w-[calc(20%-10px)]">
             <TextComponent
               fontSize={16}
               fontWeight={500}
@@ -78,7 +78,7 @@ const ReceiptContent = React.forwardRef<
               Date
             </TextComponent>
           </div>
-          <div className="flex px-4 py-2 w-[calc(40%-10px)] border-r-2 border-r-red-light">
+          <div className="flex px-4 py-2 w-[calc(40%-10px)] border-r-2 border-r-primary-light">
             <TextComponent
               fontSize={16}
               fontWeight={400}
@@ -87,7 +87,7 @@ const ReceiptContent = React.forwardRef<
               29-07-2025 05:40 pm
             </TextComponent>
           </div>
-          <div className="flex px-4 py-2 w-[calc(30%-10px)] border-r-2 border-r-red-light">
+          <div className="flex px-4 py-2 w-[calc(30%-10px)] border-r-2 border-r-primary-light">
             <TextComponent
               fontSize={16}
               fontWeight={500}
@@ -106,8 +106,8 @@ const ReceiptContent = React.forwardRef<
             </TextComponent>
           </div>
         </div>
-        <div className="flex w-full items-center justify-between border-b-2 border-b-red-light">
-          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-red-light w-[calc(20%-10px)]">
+        <div className="flex w-full items-center justify-between border-b-2 border-b-primary-light">
+          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-primary-light w-[calc(20%-10px)]">
             <TextComponent
               fontSize={16}
               fontWeight={500}
@@ -116,7 +116,7 @@ const ReceiptContent = React.forwardRef<
               Sender Name
             </TextComponent>
           </div>
-          <div className="flex px-4 py-2 w-[calc(25%-10px)] border-r-2 border-r-red-light">
+          <div className="flex px-4 py-2 w-[calc(25%-10px)] border-r-2 border-r-primary-light">
             <TextComponent
               fontSize={16}
               fontWeight={400}
@@ -125,7 +125,7 @@ const ReceiptContent = React.forwardRef<
               Umair
             </TextComponent>
           </div>
-          <div className="flex px-4 py-2 w-[calc(25%-10px)] border-r-2 border-r-red-light">
+          <div className="flex px-4 py-2 w-[calc(25%-10px)] border-r-2 border-r-primary-light">
             <TextComponent
               fontSize={16}
               fontWeight={500}
@@ -144,8 +144,8 @@ const ReceiptContent = React.forwardRef<
             </TextComponent>
           </div>
         </div>
-        <div className="flex w-full items-center justify-between border-b-2 border-b-red-light">
-          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-red-light w-[calc(20%-10px)]">
+        <div className="flex w-full items-center justify-between border-b-2 border-b-primary-light">
+          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-primary-light w-[calc(20%-10px)]">
             <TextComponent
               fontSize={16}
               fontWeight={500}
@@ -164,8 +164,8 @@ const ReceiptContent = React.forwardRef<
             </TextComponent>
           </div>
         </div>
-        <div className="flex w-full items-center justify-between border-b-2 border-b-red-light">
-          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-red-light w-[calc(20%-10px)]">
+        <div className="flex w-full items-center justify-between border-b-2 border-b-primary-light">
+          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-primary-light w-[calc(20%-10px)]">
             <TextComponent
               fontSize={16}
               fontWeight={500}
@@ -174,7 +174,7 @@ const ReceiptContent = React.forwardRef<
               Txn | UTR/RRN
             </TextComponent>
           </div>
-          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-red-light w-[calc(15%-10px)]">
+          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-primary-light w-[calc(15%-10px)]">
             <TextComponent
               fontSize={16}
               fontWeight={400}
@@ -183,7 +183,7 @@ const ReceiptContent = React.forwardRef<
               NA
             </TextComponent>
           </div>
-          <div className="flex px-4 py-2 w-[calc(30%-10px)] border-r-2 border-r-red-light">
+          <div className="flex px-4 py-2 w-[calc(30%-10px)] border-r-2 border-r-primary-light">
             <TextComponent
               fontSize={16}
               fontWeight={500}
@@ -199,7 +199,7 @@ const ReceiptContent = React.forwardRef<
               300
             </TextComponent>
           </div>
-          <div className="flex px-4 py-2 w-[calc(25%-10px)] border-r-2 border-r-red-light">
+          <div className="flex px-4 py-2 w-[calc(25%-10px)] border-r-2 border-r-primary-light">
             <TextComponent
               fontSize={16}
               fontWeight={500}

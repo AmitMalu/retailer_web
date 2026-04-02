@@ -226,7 +226,6 @@ const Login: React.FC = () => {
                           !values.userName ||
                           !values.password
                         }
-                        isAuth={true}
                       />
                     </div>
                   </form>

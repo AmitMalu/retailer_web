@@ -181,7 +181,7 @@ const RemitterModal = ({
 
                         <NewButtonComponent
                             fw="500"
-                            bgColor={theme.palette.red.DEFAULT}
+                            bgColor={theme.palette.primary.main}
                             textColor="white"
                             fontSize="14"
                             onClick={async () => {

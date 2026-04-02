@@ -259,12 +259,12 @@ const SubuserCreation = () => {
               navigate(`/settings/ViewSubUser`);
             }}
           >
-            <BackSvgIcon color={theme.palette.red.DEFAULT} />
+            <BackSvgIcon color={theme.palette.primary.main} />
           </UnstyledButton>
           <TextComponent
             fontSize={22}
             fontWeight={600}
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.main}
           >
             Sub User Creation
           </TextComponent>
@@ -573,35 +573,35 @@ const SubuserCreation = () => {
                       >
                         <Group justify="center" mt="md">
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="1"
                             size="md"
                           >
                             Products
                           </Chip>
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="2"
                             size="md"
                           >
                             Funding
                           </Chip>
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="3"
                             size="md"
                           >
                             Settings
                           </Chip>
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="4"
                             size="md"
                           >
                             Support
                           </Chip>
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="5"
                             size="md"
                           >
@@ -615,7 +615,7 @@ const SubuserCreation = () => {
                           <TextComponent
                             fontSize={12}
                             fontWeight={400}
-                            color={theme.palette.red.Default}
+                            color={theme.palette.primary.dark}
                           >
                             {errors.role_id}
                           </TextComponent>
@@ -647,7 +647,7 @@ const SubuserCreation = () => {
                             <Group justify="center" mt="md">
                               {getVisibleSubChips().map((chip) => (
                                 <Chip
-                                  color={theme.palette.red.DEFAULT}
+                                  color={theme.palette.primary.main}
                                   key={chip}
                                   value={chip}
                                   size="md"
@@ -663,7 +663,7 @@ const SubuserCreation = () => {
                               <TextComponent
                                 fontSize={12}
                                 fontWeight={400}
-                                color={theme.palette.red.Default}
+                                color={theme.palette.primary.dark}
                               >
                                 {errors.subRoleId}
                               </TextComponent>

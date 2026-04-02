@@ -2,7 +2,7 @@ import { Card } from "@mantine/core";
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from "recharts";
 import TextComponent from "../Atoms/NewComponents/TextComponent";
 
-const COLORS = ["#FF6B6B", "#5F6FFF", "#FFA534", "#2AC769", "#20C997", "#845EF7"];
+const COLORS = ["#2f3691", "#5F6FFF", "#FFA534", "#2AC769", "#20C997", "#845EF7"];
 
 const DashboardPieChart = ({ data }: any) => {
 

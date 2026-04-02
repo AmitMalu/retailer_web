@@ -295,7 +295,7 @@ const BiometricCapture = ({
                     onClick={onScan}
                     className="w-[120px] h-full flex justify-center items-center rounded-xl"
                 >
-                    <FingerprintSvgIcon color={theme.palette.red.DEFAULT} />
+                    <FingerprintSvgIcon color={theme.palette.primary.main} />
                 </UnstyledButton>
 
                 {touched.pidData && errors.pidData && (

@@ -102,15 +102,15 @@ const AepsEkycScreen = ({ vendorKey }: AepsScreenProps) => {
             {isLoading && <Loader />}
             <div className="w-full">
                 <UnstyledButton onClick={() => navigate("/products/aeps")}>
-                    <BackSvgIcon color={theme.palette.red.DEFAULT} />
+                    <BackSvgIcon color={theme.palette.primaryExtra.hover} />
                 </UnstyledButton>
 
                 <div className="w-full mb-6 flex flex-col items-center gap-4 justify-center">
-                    <TextComponent fontSize={26} fontWeight={600} color={theme.palette.red.DEFAULT}>
+                    <TextComponent fontSize={26} fontWeight={600} color={theme.palette.primaryExtra.hover}>
                         Dear {loginData?.retailerName}
                     </TextComponent>
 
-                    <TextComponent fontSize={16} color="#444">
+                    <TextComponent fontSize={16} color={theme.palette.primaryExtra.hover}>
                         Please complete your eKYC to continue using AEPS services
                     </TextComponent>
 

@@ -1,7 +1,8 @@
 import React from "react";
 import { AuthLayoutProps } from "@/Common/interface";
-import { useNavigate } from "react-router-dom";
-import ImShortLogo from "@/assets/svg/ImShortLogo";
+// import { useNavigate } from "react-router-dom";
+// import ImShortLogo from "@/assets/svg/ImShortLogo";
+import orgLogo from "@/assets/Images/orgLogo.png"
 import TextComponent from "../Atoms/TextComponent";
 import { BUILD_INFO } from '@/buildInfo';
 
@@ -10,18 +11,29 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
   authImage,
   authText,
 }) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   return (
     <div className="flex flex-col h-screen w-full gap-2 bg-cover bg-center bg-authBackground ">
       <div className="flex h-[90%] w-full">
         <div className="flex h-full w-1/2 flex-col items-center justify-center p-3 sm:hidden md:flex">
-          <div
+          {/* <div
             onClick={() => navigate("/login")}
-            className="mb-6 -mt-12 flex h-auto w-full items-start justify-start"
+            className="mb-6 -mt-22 flex h-auto w-full items-start justify-start"
             title={`${BUILD_INFO.version} (${BUILD_INFO.builtAt})`}
           >
             <ImShortLogo />
+          </div> */}
+
+          {/* Logo */}
+          <div className="absolute top-0 left-3"
+            title={`${BUILD_INFO.version} (${BUILD_INFO.builtAt})`}
+          >
+            <img
+              src={orgLogo}
+              alt="Logo"
+              className="w-24 md:w-40 max-w-none"
+            />
           </div>
 
           <div className="flex h-3/4 w-3/4 items-center justify-center">

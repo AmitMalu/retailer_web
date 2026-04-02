@@ -405,14 +405,14 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                             });
                         }}
                     >
-                        <BackSvgIcon color={theme.palette.red.DEFAULT} />
+                        <BackSvgIcon color={theme.palette.primary.main} />
                     </UnstyledButton>
 
                     {/* Title */}
                     <TextComponent
                         fontSize={28}
                         fontWeight={600}
-                        color={theme.palette.red.DEFAULT}
+                        color={theme.palette.primary.main}
                     >
                         {serviceName}
                     </TextComponent>

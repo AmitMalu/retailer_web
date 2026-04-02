@@ -117,11 +117,11 @@ const ChangePassowrd: React.FC = () => {
       {isLoading && <Loader />}
       <div className="flex w-1/3 mt-16 items-center justify-center flex-col gap-5 justify-self-center">
         <div className="flex items-center justify-center gap-3">
-          <ProfileSvgIcon color={theme.palette.red.DEFAULT} />
+          <ProfileSvgIcon color={theme.palette.primary.main} />
           <TextComponent
             fontSize={24}
             fontWeight={400}
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.main}
           >
             {UserProfileData?.info?.name}
           </TextComponent>
@@ -156,7 +156,7 @@ const ChangePassowrd: React.FC = () => {
                         <TextComponent
                           fontSize={12}
                           fontWeight={400}
-                          color={theme.palette.red.DEFAULT}
+                          color={theme.palette.primary.main}
                           style={{ textAlign: "right" }}
                         >
                           {errors.otp}

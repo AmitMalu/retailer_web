@@ -42,7 +42,7 @@ const TicketComponent = ({
       <div className=" flex items-center justify-center w-1/3">
         <CommentSvgIcon
           color={theme.palette.gray.DEFAULT}
-          tickColor={theme.palette.greenColor.DEFAULT}
+          tickColor={theme.palette.primary.dark}
         />
         <div>
           <TextComponent

@@ -578,12 +578,12 @@ const RemitterInfo = () => {
               navigate(`/products/dmt/${subProductId}`);
             }}
           >
-            <BackSvgIcon color={theme.palette.red.DEFAULT} />
+            <BackSvgIcon color={theme.palette.primary.main} />
           </UnstyledButton>
           <TextComponent
             fontSize={28}
             fontWeight={600}
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.main}
           >
             Mudra Remit
           </TextComponent>
@@ -605,7 +605,7 @@ const RemitterInfo = () => {
               onClick={handleReset}
               className="flex items-center justify-center gap-2"
             >
-              <Refresh color="error" />
+              <Refresh color="primary" />
             </UnstyledButton>
           </div>
 
@@ -615,11 +615,11 @@ const RemitterInfo = () => {
               onClick={() => setIsSeacrh(!isSeacrh)}
               className="flex items-center justify-center gap-2"
             >
-              <FilterSvgIcon color={theme.palette.red.DEFAULT} />
+              <FilterSvgIcon color={theme.palette.primary.main} />
               <TextComponent
                 fontSize={16}
                 fontWeight={400}
-                color={theme.palette.red.DEFAULT}
+                color={theme.palette.primary.main}
                 align="center"
               >
                 Filter

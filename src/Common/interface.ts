@@ -39,6 +39,8 @@ export type ThemeColors = {
   red: string;
   redLight: string;
   redDark: string;
+  grayMain?: string;
+  grayBasic?: string;
   grayDefault: string;
   grayLight: string;
   grayDark: string;

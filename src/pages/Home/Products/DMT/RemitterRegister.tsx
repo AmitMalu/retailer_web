@@ -79,12 +79,12 @@ const RemitterRegister = () => {
               navigate(`/products/dmt`);
             }}
           >
-            <BackSvgIcon color={theme.palette.red.DEFAULT} />
+            <BackSvgIcon color={theme.palette.primary.main} />
           </UnstyledButton>
           <TextComponent
             fontSize={28}
             fontWeight={600}
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.dark}
           >
             Register Remitter
           </TextComponent>
@@ -101,7 +101,7 @@ const RemitterRegister = () => {
               const { handleChange, errors, touched, values } = formik;
               return (
                 <>
-                  <div className="mt-3 flex flex-col items-start justify-center gap-3 border-2 border-red-light p-4 rounded-lg w-[calc(40%-12px)]">
+                  <div className="mt-3 flex flex-col items-start justify-center gap-3 border-2 border-primary-light p-4 rounded-lg w-[calc(40%-12px)]">
                     <div className="w-full ">
                       <TextInputComponent
                         label={"Aadhaar Number"}
@@ -147,7 +147,7 @@ const RemitterRegister = () => {
                         <TextComponent
                           fontSize={20}
                           fontWeight={500}
-                          color={theme.palette.red.DEFAULT}
+                          color={theme.palette.primary.dark}
                         >
                           Send OTP
                         </TextComponent>

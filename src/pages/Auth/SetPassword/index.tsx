@@ -201,7 +201,7 @@ const SetPasswordScreen: React.FC = () => {
                     <TextComponent
                       fontSize={14}
                       fontWeight={600}
-                      color="red.DEFAULT"
+                      color="primary.dark"
                       className="underline cursor-pointer"
                       onClick={() => navigate("/signUp")}
                     >

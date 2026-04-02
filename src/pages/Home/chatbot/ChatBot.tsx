@@ -105,7 +105,7 @@ export default function ChatBot() {
       {/* Floating Button */}
       <div ref={buttonRef}>
         <ActionIcon
-          size={64}
+          size={54}
           radius="xl"
           variant="filled"
           style={{
@@ -114,9 +114,8 @@ export default function ChatBot() {
             right: 20,
             zIndex: 9999,
             animation: isShaking ? "mudra-sevak-shake 0.7s ease-in-out" : "none",
-            background: "#ffffff",
-            border: "1px solid #e9ecef",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            border: "#FFFFFF",
+            boxShadow: "0 4px 12px rgba(47, 54, 145, 0.3)",
           }}
           onClick={() => dispatch(toggleChat())}
         >
@@ -153,7 +152,7 @@ export default function ChatBot() {
           >
             <MudraSevakSvg width={44} height={44} />
             <Text fw={700} size="sm">
-              Mudra Sevak
+              NFT Sevak
             </Text>
             <Text
               size="xs"

@@ -102,8 +102,8 @@ export default function Sidebar({ onClose }: SidebarProps) {
           "&:hover": {
             backgroundColor:
               theme.palette.mode === "dark"
-                ? theme.palette.red.light
-                : theme.palette.red.light,
+                ? theme.palette.primary.light + "40"
+                : theme.palette.primary.light + "20",
           },
           gap: 10,
           display: "flex",
@@ -122,15 +122,15 @@ export default function Sidebar({ onClose }: SidebarProps) {
           root: {
             backgroundColor:
               theme.palette.mode === "dark"
-                ? theme.palette.red.light
-                : theme.palette.red.light,
-            color: theme.palette.red.DEFAULT,
+                ? theme.palette.primary.light + "40"
+                : theme.palette.primary.light + "20",
+            color: theme.palette.primary.main,
             borderRadius: 15,
             "&:hover": {
               backgroundColor:
                 theme.palette.mode === "dark"
-                  ? theme.palette.red.light
-                  : theme.palette.red.light,
+                  ? theme.palette.primary.light + "60"
+                  : theme.palette.primary.light + "40",
             },
           },
         }),
@@ -171,7 +171,7 @@ export default function Sidebar({ onClose }: SidebarProps) {
                     }}
                     style={{
                       color: isActive(subItem.path)
-                        ? theme.palette.red.DEFAULT
+                        ? theme.palette.primary.main
                         : "inherit",
                       fontWeight: isActive(subItem.path) ? 600 : "normal",
                     }}
@@ -253,7 +253,7 @@ export default function Sidebar({ onClose }: SidebarProps) {
           size="lg"
           radius="md"
           variant="light"
-          color="red"
+          color="primary"
           style={{ width: "100%", height: "40px" }}
         >
           <IconLogout size={20} />

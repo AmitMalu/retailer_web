@@ -61,7 +61,7 @@ const PGScreen = () => {
           navigate(`/products`);
         }}
       >
-        <BackSvgIcon color={theme.palette.red.DEFAULT} />
+        <BackSvgIcon color={theme.palette.primary.main} />
       </UnstyledButton>
       <div className="mx-auto py-10 px-4 text-center relative">
         <TextComponent
@@ -103,7 +103,7 @@ const PGScreen = () => {
                 return (
                   <PGCard
                     key={card.id}
-                    image={<PgPrepaidSvgIcon color={theme.palette.red.DEFAULT} />}
+                    image={<PgPrepaidSvgIcon color={theme.palette.primary.dark} />}
                     title={card.title}
                     onClick={handleClick}
                     disabled={status?.blocked}

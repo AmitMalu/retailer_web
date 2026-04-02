@@ -11,7 +11,7 @@ const DashboardProfileCard = ({ profile }: any) => {
             shadow="lg"
             padding="lg"
             radius="md"
-            style={{ background: theme.palette.red.light, color: theme.palette.red.dark }}
+            style={{ background: theme.palette.primary.light + "20", color: theme.palette.primary.dark }}
         >
             <div className="flex flex-col items-center">
                 <Avatar

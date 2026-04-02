@@ -4,7 +4,7 @@ const MyCertificate = () => {
   return (
     <div>
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
-        <TextComponent fontSize={30} fontWeight={500} color="error.main">
+        <TextComponent fontSize={30} fontWeight={500} color="primary.dark">
           Coming Soon!
         </TextComponent>
       </div>

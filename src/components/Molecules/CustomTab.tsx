@@ -39,7 +39,7 @@ export function CustomTab({
     listClassName = "",
     tabClassName = "",
     activeBg = "#ffffff",
-    activeColor = "#CA4343",
+    activeColor = "#2f3691",
     inactiveBg = "",
     inactiveColor = "",
     ...rest

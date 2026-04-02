@@ -77,7 +77,7 @@ const ProductSubProductsScreen = ({
     <>
       {loader}
       <UnstyledButton onClick={() => navigate("/products")}>
-        <BackSvgIcon color={theme.palette.red.DEFAULT} />
+        <BackSvgIcon color={theme.palette.primary.main} />
       </UnstyledButton>
 
       <div className="mx-auto py-10 px-4 text-center relative">
@@ -121,7 +121,7 @@ const ProductSubProductsScreen = ({
                 return (
                   <SubProductCards
                     key={card.id}
-                    image={<Icon color={theme.palette.red.DEFAULT} />}
+                    image={<Icon color={theme.palette.primary.dark} />}
                     title={card.title}
                     onClick={handleClick}
                     disabled={status.blocked}

@@ -33,10 +33,10 @@ const CommonDashboard = (props: commonDashboardProps) => {
     : null;
 
   const colors = [
-    theme.palette.red.DEFAULT,
+    theme.palette.primary.main,
     theme.palette.primary.dark,
+    theme.palette.primary.light,
     theme.palette.secondary.dark,
-    theme.palette.warning.dark,
   ];
 
   // Dynamic Cards

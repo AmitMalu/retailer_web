@@ -6,7 +6,7 @@ import TableBody from "./TableBody";
 import TableFooter from "./TableFooter";
 
 const thStyle = {
-  backgroundColor: "#BF0204",
+  backgroundColor: "#2f3691",
   color: "white",
   textAlign: "center" as const,
   padding: "6px 12px",

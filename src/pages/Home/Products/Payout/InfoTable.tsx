@@ -418,14 +418,14 @@ const InfoTable = () => {
               navigate(`/products/payoutScreen`);
             }}
           >
-            <BackSvgIcon color={theme.palette.red.DEFAULT} />
+            <BackSvgIcon color={theme.palette.primary.main} />
           </UnstyledButton>
 
           {/* Heading*/}
           <TextComponent
             fontSize={28}
             fontWeight={600}
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.main}
           >
             Payout
           </TextComponent>
@@ -438,7 +438,7 @@ const InfoTable = () => {
               onClick={handleRefresh}
               className="flex items-center justify-center gap-2"
             >
-              <Refresh color="error" />
+              <Refresh color="primary" />
             </UnstyledButton>
           </div>
 
@@ -448,11 +448,11 @@ const InfoTable = () => {
               onClick={() => setIsSeacrh(!isSeacrh)}
               className="flex items-center justify-center gap-2"
             >
-              <FilterSvgIcon color={theme.palette.red.DEFAULT} />
+              <FilterSvgIcon color={theme.palette.primary.main} />
               <TextComponent
                 fontSize={16}
                 fontWeight={400}
-                color={theme.palette.red.DEFAULT}
+                color={theme.palette.primary.main}
                 align="center"
               >
                 Filter

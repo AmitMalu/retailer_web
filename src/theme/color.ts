@@ -1,8 +1,16 @@
 export const colorTokens = {
+  // primary: {
+  //   DEFAULT: "#bf2024",
+  //   light: "#5CB3A9",
+  //   dark: "#1E6F65",
+  // },
   primary: {
-    DEFAULT: "#2B9E91",
-    light: "#5CB3A9",
-    dark: "#1E6F65",
+    dark: "#151a4d",
+    hover: "#1e2480",
+    DEFAULT: "#2f3691",
+    accent: "#4c54d9",
+    highlight: "#8088f8",
+    light: "#96addf",
   },
   secondary: {
     DEFAULT: "#F59E0B",

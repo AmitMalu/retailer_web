@@ -40,7 +40,7 @@ export function ProductCard({
   if (placeholder) {
     return (
       <div className="relative flex flex-col items-center scale-90 pointer-events-none">
-        <div className={`relative ${box} rotate-45 ${rounded} border-2 border-red-500`} />
+        <div className={`relative ${box} rotate-45 ${rounded} border-2 border-primary-500`} />
       </div>
     );
   }
@@ -51,12 +51,12 @@ export function ProductCard({
 
       <div
         onClick={!disabled ? onClick : undefined}
-        className={`relative ${box} rotate-45 ${rounded} border-2 cursor-pointer border-red-dark shadow-md z-1 transition-all duration-300 ease-in-out 
+        className={`relative ${box} rotate-45 ${rounded} border-2 cursor-pointer border-primary-dark shadow-md z-1 transition-all duration-300 ease-in-out 
         ${disabled
             ? "opacity-50 cursor-not-allowed bg-gray-200"
             : fill
-              ? "bg-red-dark"
-              : "bg-white hover:bg-red-light group-hover:scale-105 group-hover:shadow-lg"
+              ? "bg-primary-hover"
+              : "bg-white hover:bg-primary-light group-hover:scale-105 group-hover:shadow-lg"
           }`}
       >
         <div className={`absolute inset-0 -rotate-45 flex flex-col items-center justify-center ${padding} ${gap}`}>
@@ -66,7 +66,7 @@ export function ProductCard({
           {title && <TextComponent
             fontSize={font}
             fontWeight={500}
-            color={fill ? "white" : theme.palette.red.dark}
+            color={fill ? "white" : theme.palette.primary.dark}
             className="transition-colors duration-300"
           >
             {title}

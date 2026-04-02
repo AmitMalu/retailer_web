@@ -256,7 +256,7 @@ const ViewSubUser = () => {
                             <TextComponent
                                 fontSize={30}
                                 fontWeight={500}
-                                color={theme.palette.red.DEFAULT}
+                                color={theme.palette.primary.main}
                             >
                                 Sub Users
                             </TextComponent>
@@ -279,7 +279,7 @@ const ViewSubUser = () => {
                                         onClick={handleRefresh}
                                         className="flex w-max items-center justify-center gap-2 "
                                     >
-                                        <Refresh color="error" />
+                                        <Refresh color="primary" />
                                     </UnstyledButton>
                                 </div>
 
@@ -289,11 +289,11 @@ const ViewSubUser = () => {
                                         onClick={() => setIsSeacrh(!isSeacrh)}
                                         className="flex w-max items-center justify-center gap-2 "
                                     >
-                                        <FilterSvgIcon color={theme.palette.red.DEFAULT} />
+                                        <FilterSvgIcon color={theme.palette.primary.main} />
                                         <TextComponent
                                             fontSize={16}
                                             fontWeight={400}
-                                            color={theme.palette.red.DEFAULT}
+                                            color={theme.palette.primary.main}
                                             align="center"
                                         >
                                             Filter

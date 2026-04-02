@@ -80,7 +80,7 @@ const ServicesScreen = () => {
             className="relative flex flex-col items-center min-h-[120px]"
         >
             <div
-                className="relative w-36 h-36 rounded-3xl border-2 border-red-dark bg-white shadow-md flex flex-col items-center justify-center gap-3"
+                className="relative w-36 h-36 rounded-3xl border-2 border-primary-dark bg-white shadow-md flex flex-col items-center justify-center gap-3"
             >
                 <Skeleton height={45} width="30%" mb="sm" />
                 <Skeleton height={14} width="70%" radius="xl" />
@@ -95,7 +95,7 @@ const ServicesScreen = () => {
                     navigate(`/products/billPay`);
                 }}
             >
-                <BackSvgIcon color={theme.palette.red.DEFAULT} />
+                <BackSvgIcon color={theme.palette.primary.main} />
             </UnstyledButton>
             <div className="mx-auto px-4 text-center relative">
                 <TextComponent
@@ -114,7 +114,9 @@ const ServicesScreen = () => {
                         : cardsData.map((card: any) => (
                             <BbpsCard
                                 key={card.id}
-                                image={<BillPaymentSvgIcon color={theme.palette.red.DEFAULT} />}
+                                image={<BillPaymentSvgIcon
+                                    color={theme.palette.primary.dark}
+                                />}
                                 title={card.title}
                                 onClick={() => handleIconClick({ serviceName: card.title })}
                             />

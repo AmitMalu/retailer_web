@@ -466,7 +466,7 @@ const Ticketing = () => {
                 <TextComponent
                   fontSize={30}
                   fontWeight={500}
-                  color={theme.palette.red.DEFAULT}
+                  color={theme.palette.primary.main}
                 >
                   Latest Ticket
                 </TextComponent>
@@ -487,7 +487,7 @@ const Ticketing = () => {
                       onClick={handleRefresh}
                       className="flex w-max items-center justify-center gap-2 "
                     >
-                      <Refresh color="error" />
+                      <Refresh color="primary" />
                     </UnstyledButton>
                   </div>
 
@@ -496,11 +496,11 @@ const Ticketing = () => {
                       onClick={() => setIsSeacrh(!isSeacrh)}
                       className="flex w-max items-center justify-center gap-2 "
                     >
-                      <FilterSvgIcon color={theme.palette.red.DEFAULT} />
+                      <FilterSvgIcon color={theme.palette.primary.main} />
                       <TextComponent
                         fontSize={16}
                         fontWeight={400}
-                        color={theme.palette.red.DEFAULT}
+                        color={theme.palette.primary.main}
                         align="center"
                       >
                         Filter
@@ -569,7 +569,7 @@ const Ticketing = () => {
               }}
               className="mb-4"
             >
-              <BackSvgIcon color={theme.palette.red.DEFAULT} />
+              <BackSvgIcon color={theme.palette.primary.main} />
             </UnstyledButton>
 
             {/* Heading & Sub Heading */}
@@ -577,7 +577,7 @@ const Ticketing = () => {
               <TextComponent
                 fontSize={30}
                 fontWeight={500}
-                color={theme.palette.red.DEFAULT}
+                color={theme.palette.primary.main}
               >
                 Support Ticket
               </TextComponent>

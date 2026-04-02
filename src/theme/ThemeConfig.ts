@@ -1,6 +1,7 @@
 import { createTheme } from "@mui/material";
 import type { PaletteColor, ThemeOptions } from "@mui/material";
 import { themeColors } from "./themeColors";
+import { colorTokens } from "./color";
 import { ThemeColors, ThemeOption } from "@/Common/interface";
 
 // Extend MUI theme types
@@ -10,6 +11,11 @@ declare module "@mui/material/styles" {
     blackColor?: string;
   }
   interface Palette {
+    primaryExtra: {
+      hover: string;
+      accent: string;
+      highlight: string;
+    };
     lightGray: {
       main: string;
     };
@@ -23,20 +29,26 @@ declare module "@mui/material/styles" {
     };
     gray: {
       DEFAULT: string;
+      BASIC: string;
+      main: string;
       light: string;
       dark: string;
     };
-    greenColor: {
+    GreenColor: {
       DEFAULT: string;
       light: string;
     };
-
     authButtonBg: PaletteColor;
     headLine?: string;
     placeholder?: string;
   }
 
   interface PaletteOptions {
+    primaryExtra?: {
+      hover: string;
+      accent: string;
+      highlight: string;
+    };
     lightGray?: {
       main: string;
     };
@@ -50,10 +62,12 @@ declare module "@mui/material/styles" {
     };
     gray?: {
       DEFAULT: string;
+      BASIC: string;
+      main: string;
       light: string;
       dark: string;
     };
-    greenColor?: {
+    GreenColor?: {
       DEFAULT: string;
       light: string;
     };
@@ -77,12 +91,12 @@ export const createThemeOptions = (
   const adjustedColors: ThemeColors =
     darkMode && themeKey !== "dark"
       ? {
-          ...colors,
-          background: "#0f172a",
-          paper: "#1e293b",
-          textPrimary: "#f1f5f9",
-          textSecondary: "#cbd5e1",
-        }
+        ...colors,
+        background: "#0f172a",
+        paper: "#1e293b",
+        textPrimary: "#f1f5f9",
+        textSecondary: "#cbd5e1",
+      }
       : colors;
 
   return {
@@ -90,6 +104,13 @@ export const createThemeOptions = (
       mode: darkMode ? "dark" : "light",
       primary: {
         main: adjustedColors.primary,
+        dark: colorTokens.primary.dark,
+        light: colorTokens.primary.light,
+      },
+      primaryExtra: {
+        hover: colorTokens.primary.hover,
+        accent: colorTokens.primary.accent,
+        highlight: colorTokens.primary.highlight,
       },
       secondary: {
         main: adjustedColors.secondary,
@@ -137,16 +158,57 @@ export const createThemeOptions = (
       },
       gray: {
         DEFAULT: adjustedColors.grayDefault,
+        BASIC: adjustedColors.grayBasic || colorTokens.gray.BASIC,
+        main: adjustedColors.grayMain || colorTokens.gray.main,
         light: adjustedColors.grayLight,
         dark: adjustedColors.grayDark,
       },
-      greenColor: {
+      GreenColor: {
         DEFAULT: adjustedColors.greenDefault,
         light: adjustedColors.greenLight,
       },
     },
     typography: {
       fontFamily: '"Poppins", sans-serif',
+      h1: {
+        color: adjustedColors.textPrimary,
+      },
+      h2: {
+        color: adjustedColors.textPrimary,
+      },
+      h3: {
+        color: adjustedColors.textPrimary,
+      },
+      h4: {
+        color: adjustedColors.textPrimary,
+      },
+      h5: {
+        color: adjustedColors.textPrimary,
+      },
+      h6: {
+        color: adjustedColors.textPrimary,
+      },
+      subtitle1: {
+        color: adjustedColors.textPrimary,
+      },
+      subtitle2: {
+        color: adjustedColors.textPrimary,
+      },
+      body1: {
+        color: adjustedColors.textPrimary,
+      },
+      body2: {
+        color: adjustedColors.textSecondary,
+      },
+      button: {
+        color: adjustedColors.textPrimary,
+      },
+      caption: {
+        color: adjustedColors.textSecondary,
+      },
+      overline: {
+        color: adjustedColors.textSecondary,
+      },
     },
     components: {},
   };
