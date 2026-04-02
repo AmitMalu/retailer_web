@@ -441,11 +441,10 @@ const NetworkTransaction = () => {
                       fullWidth={false}
                       radius={6}
                       size="sm"
-                      borderColor="#fff"
                       variant="filled"
                       type="submit"
                       bgColor={theme.palette.primary.main}
-                      textColor="#FFFFFF"
+                      textColor="white"
                     >
                       VIEW
                     </ButtonComponent>

@@ -1,12 +1,12 @@
 const statusColorMap: Record<string, string> = {
-    PENDING: "bg-yellow-200 text-yellow-900",
-    SUCCESS: "bg-green-200 text-green-900",
-    FAILED: "bg-red-200 text-red-900",
-    REJECTED: "bg-red-200 text-red-900",
+    SUCCESS: "bg-green-500/20 text-green-600 dark:text-green-400 border border-green-500/30",
+    PENDING: "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border border-yellow-500/30",
+    FAILED: "bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30",
+    REJECTED: "bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30",
 };
 
 const TableStatusBadge = ({ status }: { status: string }) => {
-    const classes = statusColorMap[status.toUpperCase()] || "bg-gray-200 text-gray-900";
+    const classes = statusColorMap[status.toUpperCase()] || "bg-gray-500/20 text-gray-600 dark:text-gray-400 border border-gray-500/30";
 
     return (
         <span

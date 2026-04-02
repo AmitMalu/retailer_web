@@ -23,9 +23,9 @@ const defaultClassNames = {
   w-8 h-8 rounded-md 
   flex items-center justify-center 
   data-[selected]:!text-primary-dark data-[selected]:bg-primary-light
-   data-[in-range]:bg-blue-100 data-[in-range]:text-blue-800
-  data-[today]:border data-[today]:border-dashed data-[today]:border-blue-400
-  data-[outside]:text-gray-400
+  data-[in-range]:bg-primary-highlight data-[in-range]:text-primary-dark
+  data-[today]:border data-[today]:border-dashed data-[today]:border-primary-dark
+  data-[outside]:text-text-secondary
 `,
 };
 

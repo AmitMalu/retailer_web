@@ -73,7 +73,7 @@ const DmtTranOtpModal = ({
             >
                 {() => (
                     <Form className=" mt-3 flex h-full flex-col justify-between">
-                        <div className="w-full overflow-auto scrollbar-hide px-2 bg-white rounded-2xl">
+                        <div className="w-full overflow-auto scrollbar-hide px-2 bg-background-paper rounded-2xl">
                             <Grid gutter="sm">
                                 {/* Mobile Number */}
                                 <Grid.Col className='flex justify-center' span={{ base: 12, md: 12 }}>

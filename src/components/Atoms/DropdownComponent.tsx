@@ -93,14 +93,14 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
       >
         <InputLabel
           sx={{
-            color: "background.blackColor",
+            color: "text.primary",
             fontSize: "16px",
             fontWeight: 400,
             transform: "translate(14px, 16px) scale(1)",
             backgroundColor: theme.palette.background.paper,
             zIndex: 1,
             "&.Mui-focused, &.MuiFormLabel-filled": {
-              borderColor: error ? "error.main" : "background.blackColor",
+              color: error ? "error.main" : "primary.main",
               transform: "translate(14px, -9px) scale(0.75)",
               zIndex: 1,
             },
@@ -124,20 +124,20 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
             width: "100%",
             height: "100%",
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: error ? "error.main" : "#000 !important",
+              borderColor: error ? "error.main" : "primary.main",
               borderWidth: "1px !important",
             },
             "& .MuiInputBase-input.Mui-disabled": {
               WebkitTextFillColor:
                 disabled && value
-                  ? theme.palette.background.default
+                  ? theme.palette.text.secondary
                   : undefined,
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: error ? "error.main" : "#000 !important",
+              borderColor: error ? "error.main" : "primary.main",
             },
             "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: error ? "error.main" : "rgba(0, 0, 0, 0.23)",
+              borderColor: error ? "error.main" : theme.palette.divider,
               borderRadius: "6px",
             },
             "&.Mui-error .MuiOutlinedInput-notchedOutline": {

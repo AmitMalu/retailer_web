@@ -5,7 +5,7 @@ import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { UnstyledButton, Grid } from "@mantine/core";
-import { useTheme } from "@mui/system";
+import { useTheme } from "@mui/material";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";

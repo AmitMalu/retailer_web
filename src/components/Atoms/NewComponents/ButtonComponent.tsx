@@ -25,6 +25,7 @@ interface ButtonComponentProps {
   fw?: string;
 }
 
+
 const ButtonComponent = forwardRef<HTMLButtonElement, ButtonComponentProps>(
   (
     {
@@ -39,31 +40,27 @@ const ButtonComponent = forwardRef<HTMLButtonElement, ButtonComponentProps>(
       size = "sm",
       fullWidth = false,
       radius,
-      borderColor = "",
-      bgColor = "transparent",
-      textColor = "#000000",
+      borderColor,
+      bgColor,
+      textColor,
       type = "button",
       font = "",
       fw = "500",
       fontSize = "",
-      throttleMs = 1000, // default 1 second throttle
-      style = {}, // Default empty object for custom inline styles
+      throttleMs = 1000,
+      style = {},
     },
     ref
   ) => {
     const isStringChild = typeof children === "string";
 
+    // ... (throttledOnClick logic same as before)
     const throttledOnClick = useMemo(() => {
       if (!onClick) return undefined;
-
-      // Create a throttled wrapper only once per component lifetime
       const throttled = throttle(() => {
         onClick();
       }, throttleMs, { trailing: false });
-
-      // Cleanup on unmount
       return throttled;
-      // Note: DO NOT include `onClick` in dependencies
     }, [onClick, throttleMs]);
 
     useEffect(() => {
@@ -74,7 +71,7 @@ const ButtonComponent = forwardRef<HTMLButtonElement, ButtonComponentProps>(
 
     return (
       <Button
-        ref={ref} // ← critical for positioning
+        ref={ref}
         type={type}
         onClick={throttledOnClick}
         variant={variant}
@@ -88,17 +85,13 @@ const ButtonComponent = forwardRef<HTMLButtonElement, ButtonComponentProps>(
         className={className || ""}
         styles={{
           root: {
-            backgroundColor: variant === "filled" ? bgColor : "transparent",
-            borderColor: borderColor ? borderColor : bgColor,
+            backgroundColor: bgColor || (variant === "filled" ? "var(--primary-main)" : undefined),
+            borderColor: borderColor || undefined,
             margin: "3px",
-            "&:hover": {
-              backgroundColor: variant === "filled" ? "#A30002" : "transparent",
-              opacity: 0.8,
-            },
-            color: textColor,
+            color: textColor || (variant === "filled" ? "#ffffff" : undefined),
             opacity: disabled ? 0.6 : 1,
             width: fullWidth ? "100%" : "fit-content",
-            ...style, // Apply custom styles passed from the parent component
+            ...style,
           },
         }}
       >
@@ -107,10 +100,9 @@ const ButtonComponent = forwardRef<HTMLButtonElement, ButtonComponentProps>(
             style={{
               color: textColor,
               fontFamily: font,
-              fontSize: `${fontSize}px`,
+              fontSize: fontSize ? `${fontSize}px` : undefined,
               fontWeight: fw,
             }}
-            className="font-open text-sm xl:text-lg 2xl:text-xl 3xl:text-2xl font-semibold text-white"
           >
             {children}
           </span>

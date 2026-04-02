@@ -6,7 +6,7 @@ import NewTextComponent from "@/components/Atoms/NewComponents/TextComponent";
 import { useThrottledFormSubmit } from "@/Utils/CustomHooks/useThrottleFormSubmit";
 import { dateRangeValidationSchema, exportToCsv, formatYMDdate } from "@/Utils/helper";
 import { DatesRangeValue } from "@mantine/dates";
-import { useTheme } from "@mui/system";
+import { useTheme } from "@mui/material";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -288,11 +288,10 @@ const PendingTransaction = () => {
                       fullWidth={false}
                       radius={6}
                       size="sm"
-                      borderColor="#fff"
                       variant="filled"
                       type="submit"
                       bgColor={theme.palette.primary.main}
-                      textColor="#FFFFFF"
+                      textColor="white"
                     >
                       VIEW
                     </ButtonComponent>}

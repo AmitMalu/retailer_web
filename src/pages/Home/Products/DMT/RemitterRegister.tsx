@@ -173,7 +173,7 @@ const RemitterRegister = () => {
                       <TextComponent
                         fontSize={16}
                         fontWeight={400}
-                        color={theme.palette.background.default}
+                        color="text.secondary"
                       >
                         Note: Please note that in accordance with bank
                         guidelines, a one-time eKYC is required for remitter

@@ -33,7 +33,7 @@ function TypeCard({ active, icon, title, subtitle, onClick }: CardType) {
         <Box
             onClick={onClick}
             className={`border rounded-xl p-2 cursor-pointer transition-all
-        ${active ? "border-primary-dark bg-background-paper" : "border-gray-200 bg-white"}`}
+        ${active ? "border-primary-dark bg-background-paper" : "border-gray-200 bg-background-paper"}`}
         >
             <Group>
                 <Center className="w-[42px] h-[42px] rounded-full bg-info-light text-xl">

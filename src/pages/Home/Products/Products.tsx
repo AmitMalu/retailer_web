@@ -73,21 +73,21 @@ export default function Products() {
     {
       id: 1,
       key: "PAYMENT GATEWAY",
-      image: <PGSvgIcon color={theme.palette.primary.main} />,
+      image: <PGSvgIcon />,
       title: "Payment Gateway",
       route: "/products/pgScreen"
     },
     {
       id: 2,
       key: "PAYOUT",
-      image: <PayoutSvgIcon color={theme.palette.primary.main} />,
+      image: <PayoutSvgIcon />,
       title: "Payout",
       route: `/products/payoutScreen`,
     },
     {
       id: 3,
       key: "DMT",
-      image: <DMTSvgIcon color={theme.palette.primary.main} />,
+      image: <DMTSvgIcon />,
       title: "DMT",
       route: `/products/dmt`,
     },
@@ -104,14 +104,14 @@ export default function Products() {
     {
       id: 4,
       key: "RECHARGE",
-      image: <RechargeSvgIcon color={theme.palette.background.paper} />,
+      image: <RechargeSvgIcon />,
       title: "Recharge",
       route: `/products/recharge`,
     },
     {
       id: 5,
       key: "AEPS",
-      image: <AepsCardSvgIcon color={theme.palette.background.paper} />,
+      image: <AepsCardSvgIcon />,
       title: "AEPS",
       route: "/products/aeps"
     },
@@ -121,7 +121,7 @@ export default function Products() {
     {
       id: 6,
       key: "BBPS",
-      image: <BillPaymenstSvgIcon color={theme.palette.primary.main} />,
+      image: <BillPaymenstSvgIcon />,
       title: "Bill Payment",
       route: "/products/billPay"
     },
@@ -138,7 +138,7 @@ export default function Products() {
         <TextComponent
           fontSize={24}
           fontWeight={600}
-          color={theme.palette.primary.main}
+          color={theme.palette.text.primary}
         >
           Products
         </TextComponent>

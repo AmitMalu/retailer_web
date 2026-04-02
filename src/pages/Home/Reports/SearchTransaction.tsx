@@ -177,12 +177,11 @@ const SearchTransactionReport = () => {
                       radius={6}
                       style={{ height: 34 }}
                       size="sm"
-                      borderColor="#fff"
                       variant="filled"
                       type="submit"
                       disabled={loading}
                       bgColor={theme.palette.primary.main}
-                      textColor="#FFFFFF"
+                      textColor="white"
                     >
                       VIEW
                     </ButtonComponent>
@@ -204,9 +203,7 @@ const SearchTransactionReport = () => {
           }
         }}
         grow={true}
-        borderColor="#ccc"
-        activeBg="#fff"
-        activeColor={theme.palette.primaryExtra.hover}
+        activeColor={theme.palette.primary.main}
       />
 
       {

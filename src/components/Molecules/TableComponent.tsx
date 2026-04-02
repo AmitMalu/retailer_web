@@ -161,9 +161,9 @@ const TableComponent: React.FC<TableProps> = ({
             return (
               <Table.Td
                 key={cellKey}
-                className={`w-max items-center justify-center text-center bg-${isActionColumn
-                  ? theme.palette.background.paperColor
-                  : "transparent"
+                className={`w-max items-center justify-center text-center ${isActionColumn
+                  ? `bg-${theme.palette.background.paperColor}`
+                  : "bg-transparent"
                   } `}
                 style={{
                   position: isActionColumn ? "sticky" : "relative",
@@ -176,7 +176,7 @@ const TableComponent: React.FC<TableProps> = ({
                   column.render(item[column.key], index, item)
                 ) : (
                   <TextComponent
-                    color={theme.palette.background.default}
+                    color={theme.palette.text.primary}
                     fontSize={14}
                     fontWeight={400}
                     className="w-max justify-self-center"
@@ -200,33 +200,43 @@ const TableComponent: React.FC<TableProps> = ({
   return (
     <>
       <div
-        className="my-6 overflow-auto rounded-lg border border-gray-light shadow-xl"
-        style={{ position: "relative", scrollbarWidth: "none" }}
+        className="my-6 overflow-auto rounded-lg border shadow-xl"
+        style={{ 
+          position: "relative", 
+          scrollbarWidth: "none",
+          borderColor: theme.palette.divider 
+        }}
       >
         <Table
           striped
           stickyHeader
           highlightOnHover
-          withRowBorders={false}
+          withRowBorders={true}
           withColumnBorders={false}
           verticalSpacing="sm"
           horizontalSpacing="md"
           captionSide="bottom"
-          style={{ minWidth: "100%", width: "100%" }}
+          style={{ 
+            minWidth: "100%", 
+            width: "100%",
+            borderColor: theme.palette.divider
+          }}
           styles={{
             th: {
               position: "sticky",
               top: 0,
               zIndex: 3,
-              backgroundColor: theme.palette.gray.light,
+              backgroundColor: theme.palette.mode === "light" ? theme.palette.background.default : theme.palette.secondary.dark,
+              borderBottom: `2px solid ${theme.palette.divider}`,
             },
             td: {
               backgroundColor: theme.palette.background.paper,
+              borderBottom: `1px solid ${theme.palette.divider}`,
             },
           }}
         >
           <Table.Thead>
-            <Table.Tr style={{ backgroundColor: theme.palette.gray.dark }}>
+            <Table.Tr style={{ backgroundColor: theme.palette.mode === "light" ? theme.palette.background.default : theme.palette.secondary.dark }}>
               {columns
                 .filter(
                   (column) =>
@@ -240,7 +250,7 @@ const TableComponent: React.FC<TableProps> = ({
                     <Table.Th
                       key={column.key}
                       style={{
-                        backgroundColor: theme.palette.gray.dark,
+                        backgroundColor: theme.palette.mode === "light" ? theme.palette.background.default : theme.palette.secondary.dark,
                         position: isActionColumn ? "sticky" : "relative",
                         right: isActionColumn ? 0 : "auto",
                         zIndex: isActionColumn ? 3 : 2,
@@ -255,7 +265,7 @@ const TableComponent: React.FC<TableProps> = ({
                         }
                       >
                         <TextComponent
-                          color={theme.palette.background.default}
+                          color={theme.palette.text.primary}
                           fontSize={14}
                           fontWeight={500}
                           className="w-max justify-self-center"
@@ -469,7 +479,7 @@ const TableComponent: React.FC<TableProps> = ({
         </Table>
       </div>
 
-      <div className="flex justify-between items-center mt-4 bg-white shadow-lg">
+      <div className="flex justify-between items-center mt-4 bg-background-paper shadow-lg">
         {enablePagination && sortedData.length > 0 && (
           <div className="flex items-center justify-between gap-4 w-full m-2">
             <div className="flex items-center w-1/4 gap-3">

@@ -34,7 +34,7 @@ const TableFooter = ({
         <Table.Td colSpan={headersLength + (renderExtraRowCell ? 1 : 0)}>
           <Group justify="space-between" px="md">
             {message && (
-              <TextComponent color="#667085" fontFamily="Inter" fontSize={14}>
+              <TextComponent color="text.secondary" fontFamily="Inter" fontSize={14}>
                 {message}
               </TextComponent>
             )}

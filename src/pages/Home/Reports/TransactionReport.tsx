@@ -6,7 +6,7 @@ import NewTextComponent from "@/components/Atoms/NewComponents/TextComponent";
 import { useThrottledFormSubmit } from "@/Utils/CustomHooks/useThrottleFormSubmit";
 import { dateRangeValidationSchema, deserializeFormValues, exportToCsv, formatYMDdate, serializeFormValues } from "@/Utils/helper";
 import { DatesRangeValue } from "@mantine/dates";
-import { useTheme } from "@mui/system";
+import { useTheme } from "@mui/material";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -399,11 +399,10 @@ const TransactionReport = () => {
                                                 fullWidth={false}
                                                 radius={6}
                                                 size="sm"
-                                                borderColor="#fff"
                                                 variant="filled"
                                                 type="submit"
                                                 bgColor={theme.palette.primary.main}
-                                                textColor="#FFFFFF"
+                                                textColor="white"
                                             >
                                                 VIEW
                                             </ButtonComponent>}
@@ -455,7 +454,7 @@ const TransactionReport = () => {
                                 <button
                                     onClick={() => navigate(`/support/ticketingSystem?txId=${item.txId}`)}
                                     title="Raise Ticket"
-                                    className="flex items-center justify-center w-8 h-8 rounded-md text-gray-500 hover:bg-gray-100 hover:text-[#BF2024] transition-all duration-200"
+                                    className="flex items-center justify-center w-8 h-8 rounded-md text-text-secondary hover:bg-background-paper hover:text-primary transition-all duration-200"
                                 >
                                     <i className="fa-solid fa-ticket text-lg"></i>
                                 </button>
@@ -466,7 +465,7 @@ const TransactionReport = () => {
                                         fetchProductReceipt(item.txId, item.walletType, item.productName)
                                     }
                                     title="View Receipt"
-                                    className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 hover:border-gray-400 transition-all duration-200"
+                                    className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-text-secondary border border-divider rounded-md hover:bg-background-paper transition-all duration-200"
                                 >
                                     Receipt
                                     <ReceiptLongIcon fontSize="small" />

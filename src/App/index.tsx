@@ -9,9 +9,20 @@ import { useAppSelector } from "@/Redux/hooks";
 import { getThemeOptions } from "@/theme/ThemeConfig";
 import { useMemo } from "react";
 
-const AppContent = () => {
+import { useLayoutEffect } from "react";
+
+const AppContent = ({ darkMode }: { darkMode: boolean }) => {
+  // Sync dark mode class for Tailwind
+  useLayoutEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
   return (
-    <MantineProvider>
+    <MantineProvider forceColorScheme={darkMode ? "dark" : "light"}>
       <LocationGuard />
       <RouterOutlet />
       <ChatBot />
@@ -20,7 +31,6 @@ const AppContent = () => {
 };
 
 function App() {
-
   const { themeOption } = useAppSelector((state: any) => state.settings);
   const { darkMode } = useAppSelector((state: any) => state.ui);
 
@@ -34,7 +44,7 @@ function App() {
       <NotificationProvider>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <AppContent />
+          <AppContent darkMode={darkMode} />
         </ThemeProvider>
       </NotificationProvider>
     </>

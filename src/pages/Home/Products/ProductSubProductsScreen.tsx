@@ -5,7 +5,7 @@ import { RootState } from "@/Redux/Store";
 import { createTriangularLayout, decryptData } from "@/Utils/helper";
 import { showErrorNotification } from "@/Utils/notifications";
 import { UnstyledButton } from "@mantine/core";
-import { useTheme } from "@mui/system";
+import { useTheme } from "@mui/material";
 import React from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -81,7 +81,7 @@ const ProductSubProductsScreen = ({
       </UnstyledButton>
 
       <div className="mx-auto py-10 px-4 text-center relative">
-        <TextComponent fontSize={28} fontWeight={600} color={"background.default"}>
+        <TextComponent fontSize={28} fontWeight={600} color={theme.palette.primary.main}>
           {title}
         </TextComponent>
 
@@ -121,7 +121,7 @@ const ProductSubProductsScreen = ({
                 return (
                   <SubProductCards
                     key={card.id}
-                    image={<Icon color={theme.palette.primary.dark} />}
+                    image={<Icon color={theme.palette.primary.main} />}
                     title={card.title}
                     onClick={handleClick}
                     disabled={status.blocked}

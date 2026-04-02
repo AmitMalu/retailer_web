@@ -19,11 +19,7 @@ interface FileInputComponentProps {
     radius?: "xs" | "sm" | "md" | "lg" | "xl";
     size?: "xs" | "sm" | "md" | "lg" | "xl";
     showPreviewIcon?: boolean; // ✅ new prop
-    styles?: Partial<{
-        input: React.CSSProperties;
-        wrapper: React.CSSProperties;
-        placeholder: React.CSSProperties;
-    }>; // ✅ custom styles from outside
+    styles?: any; // Allow for Mantine's nested selectors and theme overrides
 }
 
 const FileInputComponent: React.FC<FileInputComponentProps> = ({
@@ -94,8 +90,15 @@ const FileInputComponent: React.FC<FileInputComponentProps> = ({
 
     const defaultStyles: FileInputComponentProps["styles"] = {
         input: {
-            color: "#282828",
+            color: "inherit",
             fontWeight: 500,
+            // High contrast focus & hover
+            "&:focus": {
+                borderColor: "var(--primary-main) !important",
+            },
+            "&:hover": {
+                borderColor: "var(--primary-main)",
+            }
         },
     };
 
@@ -129,7 +132,7 @@ const FileInputComponent: React.FC<FileInputComponentProps> = ({
                 {/* Custom filename overlay only when URL (string) */}
                 {typeof value === "string" && (
                     <div
-                        className="absolute left-3 top-[70%] -translate-y-1/2 text-gray-700 text-sm truncate pointer-events-none w-[calc(100%-40px)]"
+                        className="absolute left-3 top-[70%] -translate-y-1/2 text-text-secondary text-sm truncate pointer-events-none w-[calc(100%-40px)]"
                         title={value.split("/").pop()?.slice(-20)}
                     >
                         {value.split("/").pop()?.slice(-30)}

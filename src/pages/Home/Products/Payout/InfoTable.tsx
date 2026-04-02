@@ -433,7 +433,7 @@ const InfoTable = () => {
 
         <div className="flex items-center justify-end gap-3">
           {/* Refresh */}
-          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px]">
+          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-divider bg-background-paper px-2 py-[6px]">
             <UnstyledButton
               onClick={handleRefresh}
               className="flex items-center justify-center gap-2"
@@ -443,7 +443,7 @@ const InfoTable = () => {
           </div>
 
           {/* Filter */}
-          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px]">
+          <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-divider bg-background-paper px-2 py-[6px]">
             <UnstyledButton
               onClick={() => setIsSeacrh(!isSeacrh)}
               className="flex items-center justify-center gap-2"

@@ -41,7 +41,7 @@ const RemitterModal = ({
             size="lg"
         >
 
-            <Form className="w-full overflow-auto scrollbar-hide pt-2 pb-3 px-2 bg-white rounded-2xl">
+            <Form className="w-full overflow-auto scrollbar-hide pt-2 pb-3 px-2 bg-background-paper rounded-2xl">
                 <Grid gutter="sm">
                     {/* Mobile Number */}
                     <Grid.Col span={{ base: 12, sm: modelMode === "ekyc" ? 6 : 12 }}>

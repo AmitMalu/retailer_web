@@ -149,7 +149,7 @@ const ChangePassowrd: React.FC = () => {
                           margin: "0 0.3rem",
                           fontSize: "1.5rem",
                           borderRadius: "8px",
-                          border: `1px solid  ${touched.otp && errors.otp ? theme.palette.error.main : "#ccc"}`,
+                          border: `1px solid  ${touched.otp && errors.otp ? theme.palette.error.main : theme.palette.divider}`,
                         }}
                       />
                       {touched.otp && errors.otp && (
@@ -185,10 +185,10 @@ const ChangePassowrd: React.FC = () => {
                         >
                           {showOldPassword ? (
                             <OpenEyeSvgIcon
-                              color={theme.palette.background.default}
+                              color={theme.palette.text.secondary}
                             />
                           ) : (
-                            <CloseEyeSvgIcon />
+                            <CloseEyeSvgIcon color={theme.palette.text.secondary} />
                           )}
                         </div>
                       }
@@ -215,10 +215,10 @@ const ChangePassowrd: React.FC = () => {
                         >
                           {showNewPassword ? (
                             <OpenEyeSvgIcon
-                              color={theme.palette.background.default}
+                              color={theme.palette.text.secondary}
                             />
                           ) : (
-                            <CloseEyeSvgIcon />
+                            <CloseEyeSvgIcon color={theme.palette.text.secondary} />
                           )}
                         </div>
                       }
@@ -245,10 +245,10 @@ const ChangePassowrd: React.FC = () => {
                         >
                           {showPassword ? (
                             <OpenEyeSvgIcon
-                              color={theme.palette.background.default}
+                              color={theme.palette.text.secondary}
                             />
                           ) : (
-                            <CloseEyeSvgIcon />
+                            <CloseEyeSvgIcon color={theme.palette.text.secondary} />
                           )}
                         </div>
                       }

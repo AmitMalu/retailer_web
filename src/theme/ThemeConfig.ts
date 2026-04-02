@@ -92,25 +92,31 @@ export const createThemeOptions = (
     darkMode && themeKey !== "dark"
       ? {
         ...colors,
-        background: "#0f172a",
-        paper: "#1e293b",
-        textPrimary: "#f1f5f9",
-        textSecondary: "#cbd5e1",
+        background: colorTokens.background.dark,
+        paper: colorTokens.background.darkPaper,
+        textPrimary: colorTokens.text.darkPrimary,
+        textSecondary: colorTokens.text.darkSecondary,
+        navBackground: colorTokens.background.darkPaper,
+        blackColor: colorTokens.background.dark,
+        headLine: colorTokens.text.darkPrimary,
+        placeholder: colorTokens.text.darkSecondary,
+        lightGray: colorTokens.gray.dark,
       }
       : colors;
 
   return {
     palette: {
       mode: darkMode ? "dark" : "light",
+      divider: darkMode ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.2)", // Slightly darker in light mode for visibility
       primary: {
         main: adjustedColors.primary,
-        dark: colorTokens.primary.dark,
-        light: colorTokens.primary.light,
+        dark: adjustedColors.primaryDark,
+        light: adjustedColors.primaryLight,
       },
       primaryExtra: {
-        hover: colorTokens.primary.hover,
-        accent: colorTokens.primary.accent,
-        highlight: colorTokens.primary.highlight,
+        hover: adjustedColors.primaryHover,
+        accent: adjustedColors.primaryAccent,
+        highlight: adjustedColors.primaryHighlight,
       },
       secondary: {
         main: adjustedColors.secondary,
@@ -158,8 +164,8 @@ export const createThemeOptions = (
       },
       gray: {
         DEFAULT: adjustedColors.grayDefault,
-        BASIC: adjustedColors.grayBasic || colorTokens.gray.BASIC,
-        main: adjustedColors.grayMain || colorTokens.gray.main,
+        BASIC: adjustedColors.grayBasic,
+        main: adjustedColors.grayMain,
         light: adjustedColors.grayLight,
         dark: adjustedColors.grayDark,
       },

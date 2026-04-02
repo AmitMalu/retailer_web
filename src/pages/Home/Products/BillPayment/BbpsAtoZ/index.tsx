@@ -61,7 +61,7 @@ const BillPayOneScreen = () => {
       className="relative flex flex-col items-center min-h-[120px]"
     >
       <div
-        className="relative w-36 h-36 rounded-3xl border-2 border-red-dark bg-white shadow-md flex flex-col items-center justify-center gap-3"
+        className="relative w-36 h-36 rounded-3xl border-2 border-red-dark bg-background-paper shadow-md flex flex-col items-center justify-center gap-3"
       >
         <Skeleton height={45} width="30%" mb="sm" />
         <Skeleton height={14} width="70%" radius="xl" />
@@ -82,7 +82,7 @@ const BillPayOneScreen = () => {
         <TextComponent
           fontSize={28}
           fontWeight={600}
-          color={"background.default"}
+          color={theme.palette.primary.dark}
         >
           Bharat Bill Payment System
         </TextComponent>

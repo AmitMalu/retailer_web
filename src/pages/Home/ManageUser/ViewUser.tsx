@@ -299,7 +299,7 @@ const ViewUser = () => {
             </div>
           </div>
           <div className="flex w-full items-center justify-end gap-2">
-            <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px] ">
+            <div className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-divider bg-background-paper px-2 py-[6px] ">
               <UnstyledButton
                 onClick={() => setIsSeacrh(!isSeacrh)}
                 className="flex w-max items-center justify-center gap-2 "
@@ -318,7 +318,7 @@ const ViewUser = () => {
 
             <div
               onClick={() => setShowColumnModal(true)}
-              className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px]"
+              className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-background-paper px-2 py-[6px]"
             >
               <ColsSvgIcon color={theme.palette.primary.dark} />
               <TextComponent

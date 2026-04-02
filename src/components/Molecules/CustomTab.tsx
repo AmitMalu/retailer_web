@@ -35,13 +35,13 @@ export function CustomTab({
     orientation = "horizontal",
     grow = false,
     justify = "flex-start",
-    borderColor = "#DCDCDC",
+    borderColor = "var(--divider)",
     listClassName = "",
     tabClassName = "",
-    activeBg = "#ffffff",
-    activeColor = "#2f3691",
-    inactiveBg = "",
-    inactiveColor = "",
+    activeBg = "var(--background-paper)",
+    activeColor = "var(--primary-main)",
+    inactiveBg = "transparent",
+    inactiveColor = "var(--text-secondary)",
     ...rest
 }: CustomTabProps) {
     return (

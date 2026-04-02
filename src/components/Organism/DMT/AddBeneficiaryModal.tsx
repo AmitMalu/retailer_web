@@ -188,7 +188,7 @@ const AddBeneficiaryModal = ({
           {({ setFieldValue, resetForm }) => {
 
             return (
-              <Form className="w-full overflow-auto scrollbar-hide pt-1 pb-1 px-2 bg-white rounded-2xl">
+              <Form className="w-full overflow-auto scrollbar-hide pt-1 pb-1 px-2 bg-background-paper rounded-2xl">
                 <Grid gutter="sm">
                   <Grid.Col span={{ base: 12, md: 12 }}>
                     <FormikSelectComponent

@@ -8,6 +8,20 @@ module.exports = {
     extend: {
       colors: {
         ...color.colorTokens,
+        primary: {
+          ...color.colorTokens.primary,
+          main: "var(--primary-main)",
+        },
+        background: {
+          ...color.colorTokens.background,
+          default: "var(--background-default)",
+          paper: "var(--background-paper)",
+        },
+        text: {
+          ...color.colorTokens.text,
+          primary: "var(--text-primary)",
+          secondary: "var(--text-secondary)",
+        },
       },
       fontFamily: {
         "belle-aurore": ['"La Belle Aurore"', "cursive"],

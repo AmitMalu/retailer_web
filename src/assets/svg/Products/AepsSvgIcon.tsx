@@ -1,4 +1,4 @@
-export const AepsCardSvgIcon = ({ color }: { color: string }) => (
+export const AepsCardSvgIcon = ({ color }: { color?: string }) => (
   <svg fill="none" width={55} height={40} viewBox="0 0 82 55">
     <g>
       <g>

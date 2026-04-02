@@ -176,7 +176,7 @@ const MposScreen = () => {
         <TextComponent
           fontSize={28}
           fontWeight={600}
-          color={"background.default"}
+          color={theme.palette.primary.dark}
         >
           MPOS
         </TextComponent>

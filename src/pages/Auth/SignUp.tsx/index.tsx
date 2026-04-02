@@ -70,14 +70,14 @@ const SignUp: React.FC = () => {
               <TextComponent
                 fontSize={28}
                 fontWeight={500}
-                color="background.default"
+                color="text.primary"
               >
                 Get Started Today
               </TextComponent>
               <TextComponent
                 fontSize={12}
                 fontWeight={400}
-                color="background.default"
+                color="text.secondary"
               >
                 Become a member and enjoy exclusive promotions.
               </TextComponent>
@@ -125,7 +125,7 @@ const SignUp: React.FC = () => {
                     <TextComponent
                       fontSize={12}
                       fontWeight={400}
-                      color={"background.default"}
+                      color="primary.main"
                       align="right"
                     >
                       Forgot Password?
@@ -147,7 +147,7 @@ const SignUp: React.FC = () => {
                     <TextComponent
                       fontSize={14}
                       fontWeight={400}
-                      color="background.default"
+                      color="text.secondary"
                     >
                       Already have an account?
                     </TextComponent>

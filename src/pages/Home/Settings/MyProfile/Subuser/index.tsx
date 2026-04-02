@@ -395,11 +395,9 @@ const SubuserCreation = () => {
                               style={{ cursor: "pointer" }}
                             >
                               {showPassword ? (
-                                <OpenEyeSvgIcon
-                                  color={theme.palette.background.default}
-                                />
+                                <OpenEyeSvgIcon color={theme.palette.text.secondary} />
                               ) : (
-                                <CloseEyeSvgIcon />
+                                <CloseEyeSvgIcon color={theme.palette.text.secondary} />
                               )}
                             </div>
                           }
@@ -558,7 +556,7 @@ const SubuserCreation = () => {
                         <TextComponent
                           fontSize={18}
                           fontWeight={500}
-                          color={theme.palette.background.default}
+                          color="text.primary"
                           className="self-start"
                         >
                           Menu
@@ -629,10 +627,10 @@ const SubuserCreation = () => {
                             <TextComponent
                               fontSize={18}
                               fontWeight={500}
-                              color={theme.palette.background.default}
+                              color="text.primary"
                               className="self-start"
                             >
-                              sub Menus
+                              Sub Menus
                               <span className="ml-1 text-light-primaryColor">
                                 *
                               </span>
@@ -672,7 +670,7 @@ const SubuserCreation = () => {
                         </>
                       )}
                     </div>
-                  </div>
+                  </div >
 
                   <div className="mt-8 flex w-full items-center justify-end ">
                     <ButtonComponent
@@ -688,7 +686,7 @@ const SubuserCreation = () => {
             }}
           </Formik>
         </div>
-      </div>
+      </div >
     </>
   );
 };

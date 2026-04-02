@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import ButtonComponent from "../Atoms/NewComponents/ButtonComponent";
 import { AddIconSvg, DownloadIcon, FilterSvgIcon, RefreshIcon } from "@/assets/svg";
 import TextInputComponent from "../Atoms/NewComponents/TextInputComponent";
-import { useTheme } from "@mui/system";
+import { useTheme } from "@mui/material";
 import ColumnVisibilityMenu from "./ColumnVisibilityMenu";
 
 type GenericMasterToolbarProps = {

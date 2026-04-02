@@ -158,15 +158,15 @@ const OtpInputScreen = () => {
             <div className="flex flex-col items-center justify-center gap-3 ">
               <TextComponent
                 fontSize={28}
-                fontWeight={500}
-                color={"background.default"}
+                fontWeight={600}
+                color={theme.palette.text.primary}
               >
-                Enter OTP
+                Verification
               </TextComponent>
               <TextComponent
-                fontSize={12}
+                fontSize={14}
                 fontWeight={400}
-                color={"background.default"}
+                color={theme.palette.text.secondary}
               >
                 Please enter your OTP {username}
               </TextComponent>
@@ -193,14 +193,14 @@ const OtpInputScreen = () => {
                           margin: "0 0.3rem",
                           fontSize: "1.5rem",
                           borderRadius: "8px",
-                          border: `1px solid  ${touched.otp && errors.otp ? theme.palette.error.main : "#ccc"}`,
+                          border: `1px solid  ${touched.otp && errors.otp ? theme.palette.error.main : theme.palette.divider}`,
                         }}
                       />
                       {touched.otp && errors.otp && (
                         <TextComponent
                           fontSize={12}
                           fontWeight={400}
-                          color={"background.default"}
+                          color="error.main"
                           style={{ textAlign: "right" }}
                         >
                           {errors.otp}
@@ -224,7 +224,7 @@ const OtpInputScreen = () => {
                           <TextComponent
                             fontSize={16}
                             fontWeight={500}
-                            color={"background.default"}
+                            color="primary.main"
                           >
                             Resend OTP
                           </TextComponent>

@@ -67,7 +67,7 @@ const PGScreen = () => {
         <TextComponent
           fontSize={24}
           fontWeight={600}
-          color={"background.default"}
+          color={theme.palette.primary.dark}
         >
           Payment Gateway
         </TextComponent>

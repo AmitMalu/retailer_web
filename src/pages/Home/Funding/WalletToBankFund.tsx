@@ -154,7 +154,7 @@ const WalletToBankFund = () => {
       {isLoading && <Loader />}
       <div className=" flex w-full flex-col flex-wrap items-center justify-start gap-1">
         <div className="relative w-[80%]">
-          <div className="absolute inset-0 bg-gray-200 rounded-[20px] blur-[1px] h-full"></div>
+          <div className="absolute inset-0 bg-divider rounded-[20px] blur-[1px] h-full"></div>
 
           <div className="relative py-1 flex items-center justify-center">
             <TextComponent

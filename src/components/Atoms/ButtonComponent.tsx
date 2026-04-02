@@ -74,13 +74,13 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
       color: color || "primary.main",
       "&:hover": {
         borderColor: color || "primary.main",
-        backgroundColor: theme.palette.background.default + "040",
+        backgroundColor: (color || theme.palette.primary.main) + "15",
       },
     },
     "&.MuiButton-text": {
       color: color || "primary.main",
       "&:hover": {
-        backgroundColor: theme.palette.background.default + "040",
+        backgroundColor: (color || theme.palette.primary.main) + "15",
       },
     },
   };

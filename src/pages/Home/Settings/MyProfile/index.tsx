@@ -21,7 +21,7 @@ const MyProfile = () => {
           <div className="flex items-center justify-center gap-2 ">
             <div
               className={` p-1 rounded-full ${
-                activeTab === "profile" ? "bg-primary-dark" : "bg-white"
+                activeTab === "profile" ? "bg-primary-dark" : "bg-background-paper"
               }`}
             >
               <ProfileSvgIcon

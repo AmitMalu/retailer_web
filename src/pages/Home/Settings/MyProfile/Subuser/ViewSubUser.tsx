@@ -107,7 +107,7 @@ const ViewSubUser = () => {
             label: "Date of Birth",
             render: (row: any) => (
                 <TextComponent
-                    color={theme.palette.background.default}
+                    color="text.primary"
                     fontSize={12}
                     fontWeight={400}
                 >
@@ -138,7 +138,7 @@ const ViewSubUser = () => {
             label: "Created On",
             render: (row: any) => (
                 <TextComponent
-                    color={theme.palette.background.default}
+                    color="text.primary"
                     fontSize={12}
                     fontWeight={400}
                 >
@@ -160,7 +160,7 @@ const ViewSubUser = () => {
             label: "Edited On",
             render: (row: any) => (
                 <TextComponent
-                    color={theme.palette.background.default}
+                    color="text.primary"
                     fontSize={12}
                     fontWeight={400}
                 >
@@ -274,7 +274,7 @@ const ViewSubUser = () => {
 
                             <div className="flex items-center justify-end gap-2">
                                 {/* Refresh Button */}
-                                <div className="flex w-max items-center mt-6 justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px] ">
+                                <div className="flex w-max items-center mt-6 justify-center gap-2 rounded-lg border-2 border-divider bg-background-paper px-2 py-[6px] ">
                                     <UnstyledButton
                                         onClick={handleRefresh}
                                         className="flex w-max items-center justify-center gap-2 "
@@ -284,7 +284,7 @@ const ViewSubUser = () => {
                                 </div>
 
                                 {/* Filter Button */}
-                                <div className="flex w-max items-center mt-6 justify-center gap-2 rounded-lg border-2 border-midNeutral bg-whiteColor px-2 py-[6px] ">
+                                <div className="flex w-max items-center mt-6 justify-center gap-2 rounded-lg border-2 border-divider bg-background-paper px-2 py-[6px] ">
                                     <UnstyledButton
                                         onClick={() => setIsSeacrh(!isSeacrh)}
                                         className="flex w-max items-center justify-center gap-2 "

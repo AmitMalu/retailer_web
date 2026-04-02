@@ -57,7 +57,7 @@ const RemitterEkycModal = ({
             <TextComponent
               fontSize={16}
               fontWeight={500}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               eKYC
             </TextComponent>
