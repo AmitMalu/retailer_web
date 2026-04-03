@@ -59,10 +59,16 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
         ? decryptData(responses.loginData)
         : null;
 
-    const schemeCode = loginData?.products
+    // const schemeCode = loginData?.products
+    //     ?.flatMap((product: any) => product.subProducts)
+    //     ?.find((subProduct: any) => subProduct.subProductId === subProductId)
+    //     ?.schemeCode;
+
+    const selectedSubProduct = loginData?.products
         ?.flatMap((product: any) => product.subProducts)
-        ?.find((subProduct: any) => subProduct.subProductId === subProductId)
-        ?.schemeCode;
+        ?.find(
+            (subProduct: any) => subProduct.subProductId === subProductId
+        );
 
 
     // ---------------- VALIDATION SCHEMA -----------------
@@ -83,6 +89,16 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
                         if (!value) return false;
                         return Number(value) % 50 === 0;
                     })
+                    .test(
+                        "max-amount",
+                        selectedSubProduct?.maxAmount
+                            ? `Amount Exceed Allowed Limit ₹${selectedSubProduct.maxAmount}`
+                            : "",
+                        function (value) {
+                            if (!value || !selectedSubProduct?.maxAmount) return true;
+                            return Number(value) <= selectedSubProduct.maxAmount;
+                        }
+                    )
                 : Yup.string(),
         bank: Yup.string().required("Please Select the Bank"),
         deviceType: Yup.string()
@@ -153,7 +169,7 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
             const commonPayload = {
                 retailerId: loginData?.hierarchyId,
                 subProductId,
-                schemeCode,
+                schemeCode: selectedSubProduct?.schemeCode,
                 latitude: lat,
                 longitude: lng,
                 mobile: values.mobile,

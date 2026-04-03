@@ -169,9 +169,10 @@ export default function Navbar({
               </NavLink>
               {/* <div
                 onClick={handleSettingsClick}
-                className="cursor-pointer bg-primary-ligh rounded-md p-2"
+                className="cursor-pointer rounded-md p-2"
+                style={{ backgroundColor: theme.palette.primary.light + "40" }}
               >
-                <ThemeSettingSvgIcon color={theme.palette.primary.dark} />
+                <ThemeSettingSvgIcon color={theme.palette.primary.main} />
               </div> */}
             </div>
           </div>

@@ -59,10 +59,16 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
         ? decryptData(responses.loginData)
         : null;
 
-    const schemeCode = loginData?.products
+    // const schemeCode = loginData?.products
+    //     ?.flatMap((product: any) => product.subProducts)
+    //     ?.find((subProduct: any) => subProduct.subProductId === subProductId)
+    //     ?.schemeCode;
+
+    const selectedSubProduct = loginData?.products
         ?.flatMap((product: any) => product.subProducts)
-        ?.find((subProduct: any) => subProduct.subProductId === subProductId)
-        ?.schemeCode;
+        ?.find(
+            (subProduct: any) => subProduct.subProductId === subProductId
+        );
 
 
     // ---------------- VALIDATION SCHEMA -----------------
@@ -74,6 +80,16 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
         amount:
             service === "cashWithdrawal"
                 ? Yup.string().required("Please enter the amount")
+                    .test(
+                        "max-amount",
+                        selectedSubProduct?.maxAmount
+                            ? `Amount Exceed Allowed Limit ₹${selectedSubProduct.maxAmount}`
+                            : "",
+                        function (value) {
+                            if (!value || !selectedSubProduct?.maxAmount) return true;
+                            return Number(value) <= selectedSubProduct.maxAmount;
+                        }
+                    )
                 : Yup.string(),
         bank: Yup.string().required("Please Select the Bank"),
         deviceType: Yup.string()
@@ -135,7 +151,6 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
 
 
     const handleSubmit = async (values: AepsFormValues) => {
-        console.log("Final Submit Values:", values);
         try {
             setIsLoading(true);
 
@@ -143,7 +158,7 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
             const commonPayload = {
                 subProductId,
                 retailerId: loginData?.hierarchyId,
-                schemeCode,
+                schemeCode: selectedSubProduct.schemeCode,
                 nationalBankIdentificationNumber: values.bank,
                 captureResponse: values.pidData,
                 adhaarNumber: values.aadhaar,

@@ -21,6 +21,9 @@ import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePic
 import { IconCalendar } from "@tabler/icons-react";
 import moment from "moment";
 import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
+import { useProductEngine } from "@/Utils/CustomHooks/useProductEngine";
+import { SUB_PRODUCT_MAP } from "@/Utils/subProductMap";
+import { PRODUCT_KEYS } from "@/Utils/productKeys";
 
 const WalletToBankFund = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +36,11 @@ const WalletToBankFund = () => {
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
+
+  const isRetailer = loginData?.role === "RT";
+  const { getSubProduct } = useProductEngine(
+    isRetailer ? loginData : null
+  );
 
   const { checkDuplicate, store } = useTransactionCooldown("FUND_REQUEST");
 
@@ -99,6 +107,27 @@ const WalletToBankFund = () => {
     try {
       setIsLoading(true);
 
+      let subProductId: string | undefined;
+      let schemeCode: string | undefined;
+
+      if (isRetailer) {
+        const subProductName =
+          SUB_PRODUCT_MAP.FUND_REQUEST.CADD;
+
+        const config = getSubProduct(
+          PRODUCT_KEYS.FUND_REQUEST,
+          subProductName
+        );
+
+        if (config?.error) {
+          showErrorNotification(config.error);
+          return;
+        }
+
+        subProductId = config?.subProduct?.subProductId;
+        schemeCode = config?.subProduct?.schemeCode;
+      }
+
       const formData = new FormData();
       if (isfile instanceof File) {
         formData.append("imageFile", isfile);
@@ -117,6 +146,10 @@ const WalletToBankFund = () => {
         paymentMode: values.paymentMode,
         ipAddress: ipAddress,
         depositDate: values.depositDate ? moment(values.depositDate).format("YYYY-MM-DD") : null,
+        ...(isRetailer && {
+          subProductId,
+          schemeCode,
+        }),
       });
       formData.append("data", jsonData);
 

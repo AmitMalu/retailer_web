@@ -71,10 +71,16 @@ const RemitterInfo = () => {
     ? decryptData(apiResponses.loginData)
     : null;
 
-  const schemeCode = loginData?.products
-    ?.flatMap((product: any) => product.subProducts) // Flatten all subProducts into a single array
-    ?.find((subProduct: any) => subProduct.subProductId === subProductId) // Find matching subProductId
-    ?.schemeCode; // Get the schemeCode
+  // const schemeCode = loginData?.products
+  //   ?.flatMap((product: any) => product.subProducts) // Flatten all subProducts into a single array
+  //   ?.find((subProduct: any) => subProduct.subProductId === subProductId) // Find matching subProductId
+  //   ?.schemeCode; // Get the schemeCode
+
+  const selectedSubProduct = loginData?.products
+    ?.flatMap((product: any) => product.subProducts)
+    ?.find(
+      (subProduct: any) => subProduct.subProductId === subProductId
+    );
 
   const [receiptDrawerOpened, setReceiptDrawerOpened] = useState(false);
   const [receiptData, setReceiptData] = useState<any>(null);
@@ -121,7 +127,16 @@ const RemitterInfo = () => {
             .required("Required")
             .positive("Amount must be positive")
             .min(100, "Min amount is 100")
-            .max(5000, "Max amount is 5000"),
+            .test(
+              "max-amount",
+              selectedSubProduct?.maxAmount
+                ? `Max Limit ${selectedSubProduct.maxAmount}`
+                : "",
+              function (value) {
+                if (!value || !selectedSubProduct?.maxAmount) return true;
+                return value <= selectedSubProduct.maxAmount;
+              }
+            )
         });
 
         const initialValues = {
@@ -134,7 +149,7 @@ const RemitterInfo = () => {
         };
         const handleSubmit = async (values: any, { resetForm }: any) => {
           if (!values.beneId) return
-          
+
           try {
             setIsLoading(true);
             const payload = {
@@ -489,7 +504,7 @@ const RemitterInfo = () => {
 
       const payload = {
         otp: values.otp,
-        schemeCode,
+        schemeCode: selectedSubProduct?.schemeCode,
         ...tranxData
       };
 

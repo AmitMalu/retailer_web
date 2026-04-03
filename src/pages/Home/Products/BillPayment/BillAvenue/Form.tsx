@@ -597,7 +597,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                             state: {
                                 subProductId: subProductId,
                             },
-                        }); // redirect after closing
+                        });
                     }}
                     closeOnEscape={false}
                     closeOnClickOutside={false}

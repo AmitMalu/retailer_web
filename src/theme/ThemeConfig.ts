@@ -107,7 +107,7 @@ export const createThemeOptions = (
   return {
     palette: {
       mode: darkMode ? "dark" : "light",
-      divider: darkMode ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.2)", // Slightly darker in light mode for visibility
+      divider: darkMode ? "rgba(238, 64, 64, 0.12)" : "rgba(0, 0, 0, 0.2)", // Slightly darker in light mode for visibility
       primary: {
         main: adjustedColors.primary,
         dark: adjustedColors.primaryDark,

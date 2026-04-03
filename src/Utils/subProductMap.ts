@@ -7,7 +7,7 @@ export const SUB_PRODUCT_MAP = {
     DEFAULT: "IMPS",
   },
   FUND_REQUEST: {
-    DEFAULT: "DEFAULT",
+    "CADD": "CADD",
   },
   VERIFICATION: {
     BANK: "BANK ACCOUNT",

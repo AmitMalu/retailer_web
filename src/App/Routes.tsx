@@ -14,6 +14,7 @@ import TransactionWalletReport from "@/pages/Home/Reports/TransactionWalletRepor
 import RechargeSubProducts from "@/pages/Home/Products/Recharge/RechargeSubProducts";
 import Recharge from "@/pages/Home/Products/Recharge/Recharge";
 import AepsVendorWrapper from "@/pages/Home/Products/AEPS/AepsVendorWrapper";
+import CreditCardScreen from "@/pages/Home/Products/CreditCard/CreditCardScreen";
 const Dashboard = lazy(() => import("@/pages/Home/Dashboard"));
 const CreateUser = lazy(() => import("@/pages/Home/ManageUser/CreateUser"));
 const DebitAndCreditUser = lazy(
@@ -244,6 +245,7 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
           <Route
             path="products"
             element={
@@ -540,6 +542,20 @@ const RouterOutlet = () => {
                 </MainLayout>
               }
             />
+          </Route>
+
+          {/* CREDIT CARD */}
+          <Route
+            path="products/credit-card"
+            element={
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
+                <MainLayout>
+                  <Outlet />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<CreditCardScreen />} />
           </Route>
 
           {/* RECHARGE */}
