@@ -919,15 +919,19 @@ export type FindRemitterProps = {
   deviceType: string;
   csp: boolean;
   pidData: string;
+  pidParsed?: any; // Parsed biometric data from device
   otp?: string;
+  referenceKey?: string; // For InstantPay flow
 };
 
 export interface RemitterModalProps {
   isOpen: boolean;
   onClose: () => void;
-  modelMode: "ekyc" | "register" | null;
+  modalStep: "profile" | "ekyc" | "otp" | "register" | null;
+  vendorFlow: "paysprint dmt" | "instantpay dmt" | null;
   handleRemitterKyc: (values: any) => void;
-  handleRegisterRemitterSubmit: (values: any) => void;
+  handleRemitterProfile?: (values: any) => void;
+  handleOtpSubmit?: (values: any) => void;
 }
 
 export type RemitterData = Record<string, any>;

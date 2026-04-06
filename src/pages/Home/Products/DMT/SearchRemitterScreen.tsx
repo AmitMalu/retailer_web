@@ -14,8 +14,9 @@ import NewButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent
 import RemitterReceiptModal from "@/components/Organism/DMT/RemitterReceipt";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
-import { Find_Remitter, Register_Remitter, Remitter_Kyc } from "@/Services/api";
+import { Find_Remitter, Register_Remitter, Remitter_Kyc, Remitter_Profile, Validate_Otp } from "@/Services/api";
 import RemitterModal from "@/components/Organism/DMT/RemitterModal";
+import { useMemo } from "react";
 
 const SearchRemitterScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,21 +27,23 @@ const SearchRemitterScreen = () => {
   const { subProductId } = useParams();
 
   const [isModelOpen, setIsModelOpen] = useState(false);
-  const [modelMode, setModelMode] = useState<"ekyc" | "register" | null>(null);
+  const [modalStep, setModalStep] = useState<null | "profile" | "ekyc" | "otp" | "register">(null);
+  const [vendorFlow, setVendorFlow] = useState<"paysprint dmt" | "instantpay dmt" | null>(null);
 
   // Local KYC values
   const [ekycId, setEkycId] = useState("");
   const [stateResp, setStateResp] = useState("");
+  const [referenceKey, setReferenceKey] = useState(""); // For InstantPay flow
 
   const [isNewRemitter, setIsNewRemitter] = useState(false);
   const [isRemitterReceipt, setIsRemitterReceipt] = useState(false);
 
-  const validationSchema = Yup.object({
+  const validationSchema = useMemo(() => Yup.object({
     mobileNumber: Yup.string()
       .max(10, "Enter valid Number")
       .matches(MobileNoRegex, "Please enter valid number")
       .required("Mobile Number is Required"),
-    ...(modelMode === "ekyc" && {
+    ...(modalStep === "ekyc" && {
       // name: Yup.string().required("Name is Required"),
       firstName: Yup.string().required("First Name is Required"),
       lastName: Yup.string().required("Last Name is Required"),
@@ -51,12 +54,17 @@ const SearchRemitterScreen = () => {
         .required("Please select a device"),
       pidData: Yup.string().required("Fingerprint required"),
     }),
-    ...(modelMode === "register" && {
+    ...(modalStep === "profile" && {
+      aadhaarNumber: Yup.string()
+        .max(12, "Enter valid Aadhaar Number")
+        .required("Aadhaar Number is Required"),
+    }),
+    ...(modalStep === "otp" && {
       otp: Yup.string().max(6, "Enter valid OTP").required("OTP is Required"),
     })
-  });
+  }), [modalStep]);
 
-  const initialValues: FindRemitterProps = {
+  const initialValues = useMemo((): FindRemitterProps => ({
     mobileNumber: "",
     firstName: "",
     lastName: "",
@@ -64,12 +72,15 @@ const SearchRemitterScreen = () => {
     deviceType: "",
     csp: false,
     pidData: "",
+    pidParsed: undefined, // Parsed biometric data from device
     otp: "",
-  };
+    referenceKey: "", // For InstantPay flow
+  }), []);
 
   const handleModelClose = () => {
     setIsModelOpen(false);
-    setModelMode(null);
+    setModalStep(null);
+    setVendorFlow(null);
     setIsNewRemitter(false);
   }
 
@@ -79,15 +90,16 @@ const SearchRemitterScreen = () => {
       setIsLoading(true);
       const payload = {
         mobile: values.mobileNumber,
+        retailerId: "BZT-RT-058",
         subProductId,
       };
 
       const response = await Find_Remitter(payload);
       if (response?.data?.statusCode == "200") {
         const code = response?.data?.data?.response_code;
-        showSuccessNotification(response?.data?.message);
         if (code === 1) {
           // Remitter already registered → Navigate
+          showSuccessNotification(response?.data?.message || "Remitter found");
           navigate(`/products/dmt/RemitterInfo/${subProductId}`, {
             state: {
               mobileNumber: values.mobileNumber,
@@ -95,16 +107,32 @@ const SearchRemitterScreen = () => {
             },
           });
         } else if (code === 2) {
-          // Not registered → Need eKYC
+          // Not registered → Check vendor flow
           setIsNewRemitter(true);
-          setModelMode("ekyc");
+          setVendorFlow(response?.data?.data?.vendor_flow || "paysprint dmt");
+
+          if (response?.data?.data?.vendor_flow.toLowerCase() === "instantpay dmt") {
+            setModalStep("profile");   // InstantPay: show aadhaar + name form first
+          } else {
+            setModalStep("ekyc");      // PaySprint: go straight to biometric
+          }
           setIsModelOpen(true);
         } else if (code === 3) {
           // KYC done but registration pending
           const data = response?.data?.data?.data || {};
-          setEkycId(data.ekyc_id);
-          setStateResp(data.stateresp);
-          setModelMode("register");
+
+          if (response?.data?.data?.vendor_flow?.toLowerCase() === "instantpay dmt") {
+            // InstantPay: Not registered, need to complete profile first
+            setReferenceKey(data.referenceKey || "");
+            setModalStep("profile");
+          } else {
+            // PaySprint: KYC done, show OTP for registration
+            setEkycId(data.ekyc_id);
+            setStateResp(data.stateresp);
+            setModalStep("otp");
+          }
+
+          setVendorFlow(response?.data?.data?.vendor_flow || "paysprint dmt");
           setIsModelOpen(true);
         } else {
           showErrorNotification("Unexpected response. Please try again.");
@@ -114,6 +142,31 @@ const SearchRemitterScreen = () => {
       }
     } catch (error) {
       handleCustomError(error || "Error in Search Remitter.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ---------- REMITTER REGISTER----------
+  const handleRemitterRegister = async (values: FindRemitterProps) => {
+    try {
+      setIsLoading(true);
+      const payload = {
+        mobile: values.mobileNumber,
+        aadhaarNumber: values.aadhaarNumber,
+        subProductId,
+        referenceKey
+      };
+      const response = await Register_Remitter(payload);
+      if (response?.data?.statusCode == "200") {
+        // Backend calls InstantPay profile API → sends OTP to mobile
+        showSuccessNotification(response?.data?.message || "OTP sent to mobile number.");
+        setModalStep("otp");  // Now show OTP entry
+      } else {
+        showErrorNotification(response?.data?.message || "Profile creation failed.");
+      }
+    } catch (error: any) {
+      handleCustomError(error || "Error in Profile creation.");
     } finally {
       setIsLoading(false);
     }
@@ -130,36 +183,75 @@ const SearchRemitterScreen = () => {
 
       // 1. PID data from biometric SDK
       const pidDataRaw = values.pidData; // XML string
+      const pidParsed = values.pidParsed; // Parsed data from device
 
       if (!pidDataRaw) {
         showErrorNotification("Fingerprint required");
         return;
       }
 
-      // 2. Encrypt PID data
-      const encryptedPidData = encryptPidData(
-        pidDataRaw,
-        import.meta.env.VITE_DMT_PAYSPRINT_LIVE_ENC_KEY,
-        import.meta.env.VITE_DMT_PAYSPRINT_LIVE_ENC_IV
-      );
+      let payload;
 
-      const payload = {
-        mobile: values.mobileNumber,
-        aadhaar_number: values.aadhaarNumber,
-        name: `${values.firstName} ${values.lastName}`,
-        // data: "encryptedPidData",
-        data: encryptedPidData,
-        is_iris: 2, // 1 for iris, 2 for Finger print // 4 for Face
-        subProductId: subProductId
-      };
+      if (vendorFlow?.toLowerCase() === "instantpay dmt") {
+        // InstantPay: Use parsed biometric data directly from device
+        // The device provides parsed data (hmac, cid, etc.) in pidParsed
+        const biometricData = pidParsed; // Use parsed data from device
+
+        payload = {
+          mobile: values.mobileNumber,
+          aadhaarNumber: values.aadhaarNumber,
+          biometricData: biometricData, // Parsed biometric data from device
+          subProductId: subProductId,
+          referenceKey
+        };
+      } else {
+        // PaySprint: Encrypt PID data as before
+        const encryptedPidData = encryptPidData(
+          pidDataRaw,
+          import.meta.env.VITE_DMT_PAYSPRINT_LIVE_ENC_KEY,
+          import.meta.env.VITE_DMT_PAYSPRINT_LIVE_ENC_IV
+        );
+
+        payload = {
+          mobile: values.mobileNumber,
+          aadhaar_number: values.aadhaarNumber,
+          name: `${values.firstName} ${values.lastName}`,
+          data: encryptedPidData, // Encrypted data for PaySprint
+          is_iris: 2, // 1 for iris, 2 for Finger print // 4 for Face
+          subProductId: subProductId
+        };
+      }
+
       const response = await Remitter_Kyc(payload);
       if (response?.data?.statusCode == "200") {
-        const data = response?.data?.data?.data || {};
-        setEkycId(data.ekyc_id);
-        setStateResp(data.stateresp);
-        setModelMode("register"); // Switch to OTP mode
-        showSuccessNotification(response?.data?.message || "KYC completed. OTP sent to mobile.");
+        const responseData = response?.data?.data;
+
+        if (vendorFlow?.toLowerCase() === "instantpay dmt") {
+          // InstantPay: Check for TXN statuscode for actual success
+          if (responseData?.statuscode === "TXN") {
+            // InstantPay: After eKYC success, navigate directly to beneficiary page
+            showSuccessNotification(response?.data?.message || "KYC completed successfully.");
+            setIsModelOpen(false);
+            navigate(`/products/dmt/RemitterInfo/${subProductId}`, {
+              state: {
+                mobileNumber: values.mobileNumber,
+                subProduct: subProduct,
+              },
+            });
+          } else {
+            // InstantPay: Show error message from status field
+            showErrorNotification(responseData?.status || "KYC failed.");
+          }
+        } else {
+          // PaySprint: Store ekyc_id and stateresp, then show OTP modal
+          const data = responseData?.data || {};
+          setEkycId(data.ekyc_id);
+          setStateResp(data.stateresp);
+          setModalStep("otp"); // Switch to OTP mode
+          showSuccessNotification(response?.data?.message || "KYC completed. OTP sent to mobile.");
+        }
       } else {
+        // Handle outer level error (non-200 status)
         showErrorNotification(response?.data?.message || "KYC failed.");
       }
       // Handle response, like navigation to KYC or success message
@@ -170,34 +262,53 @@ const SearchRemitterScreen = () => {
     }
   };
 
-  // ---------- REGISTER REMITTER ----------
-  const handleRegisterRemitterSubmit = async (values: FindRemitterProps) => {
+  // ---------- OTP HANDLER (Unified for both vendors) ----------
+  const handleOtpSubmit = async (values: FindRemitterProps) => {
     try {
       setIsLoading(true);
-      const payload = {
-        mobile: values.mobileNumber,
-        otp: values.otp,
-        stateresp: stateResp,
-        ekyc_id: ekycId,
-        subProductId,
-      }
 
-      const response = await Register_Remitter(payload);
-      if (response?.data?.statusCode == "200") {
-        const data = response?.data?.data || {};
-        showSuccessNotification(data?.message || "Remitter Registered Successfully!");
-        setIsModelOpen(false);
-        navigate(`/products/dmt/RemitterInfo/${subProductId}`, {
-          state: {
-            mobileNumber: values.mobileNumber,
-            subProduct: subProduct,
-          },
-        });
+      if (vendorFlow?.toLocaleLowerCase() === "instantpay dmt" && modalStep === "otp" && !ekycId) {
+
+        // This is the OTP validate step (before KYC) - InstantPay only
+        const payload = {
+          mobile: values.mobileNumber,
+          otp: values.otp,
+          subProductId,
+          referenceKey
+        };
+        const response = await Validate_Otp(payload);
+        if (response?.data?.statusCode == "200") {
+          showSuccessNotification(response?.data?.message || "OTP validated successfully.");
+          setModalStep("ekyc");  // Now do biometric
+        } else {
+          showErrorNotification(response?.data?.message || "OTP validation failed.");
+        }
       } else {
-        showErrorNotification(response?.data?.message || "Registration failed.");
+        // This is the register OTP step (after KYC, both vendors)
+        const payload = {
+          mobile: values.mobileNumber,
+          otp: values.otp,
+          // stateresp: stateResp,
+          // ekyc_id: ekycId,
+          subProductId,
+        };
+        const response = await Register_Remitter(payload);
+        if (response?.data?.statusCode == "200") {
+          const data = response?.data?.data || {};
+          showSuccessNotification(data?.message || "Remitter Registered Successfully!");
+          setIsModelOpen(false);
+          navigate(`/products/dmt/RemitterInfo/${subProductId}`, {
+            state: {
+              mobileNumber: values.mobileNumber,
+              subProduct: subProduct,
+            },
+          });
+        } else {
+          showErrorNotification(response?.data?.message || "Registration failed.");
+        }
       }
     } catch (error: any) {
-      handleCustomError(error || "Error in Registration.");
+      handleCustomError(error || "Error in OTP processing.");
     } finally {
       setIsLoading(false);
     }
@@ -291,9 +402,11 @@ const SearchRemitterScreen = () => {
                   <RemitterModal
                     isOpen={isModelOpen}
                     onClose={handleModelClose}
-                    modelMode={modelMode} // "ekyc" or "register"
+                    modalStep={modalStep}
+                    vendorFlow={vendorFlow}
+                    handleRemitterRegister={handleRemitterRegister}
                     handleRemitterKyc={handleRemitterKyc}
-                    handleRegisterRemitterSubmit={handleRegisterRemitterSubmit}
+                    handleOtpSubmit={handleOtpSubmit}
                     formik={formik}
                   />
                 </Form>

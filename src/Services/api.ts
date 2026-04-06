@@ -391,6 +391,14 @@ export const Remitter_Kyc = async (data: any) => {
   return await api.post(`${API_ROUTES.REMITTER_KYC}`, data);
 };
 
+export const Remitter_Profile = async (data: any) => {
+  return await api.post(`${API_ROUTES.REMITTER_PROFILE}`, data);
+};
+
+export const Validate_Otp = async (data: any) => {
+  return await api.post(`${API_ROUTES.VALIDATE_OTP}`, data);
+};
+
 export const Remitter_details = async (mobile: string) => {
   return await api.get(`${API_ROUTES.FETCH_REMITTER_DETAILS}/${mobile}`);
 };

@@ -93,6 +93,8 @@ export const API_ROUTES = {
   UPDATE_REMITTER: `${BASE_URL}/api/remitter/update`,
   REMITTER_KYC: `${BASE_URL}/api/remitter/ekyc`,
   FETCH_REMITTER_DETAILS: `${BASE_URL}/api/remitter/fetch-details`,
+  REMITTER_PROFILE: `${BASE_URL}/api/remitter/profile`,
+  VALIDATE_OTP: `${BASE_URL}/api/remitter/validate-otp`,
   REGISTER_BENEFICIARY: `${BASE_URL}/api/beneficiary/register`,
   FETCH_BENEFICIARY: `${BASE_URL}/api/beneficiary/fetchBeneficiary`,
   EDIT_BENEFICIARY: `${BASE_URL}/api/beneficiary/update`,
