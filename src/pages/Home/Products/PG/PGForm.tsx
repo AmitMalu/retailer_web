@@ -42,6 +42,12 @@ const PGFormModal = ({
     ? decryptData(apiResponses?.loginData)
     : null;
 
+  const selectedSubProduct = loginData?.products
+    ?.flatMap((product: any) => product.subProducts)
+    ?.find(
+      (subProduct: any) => subProduct.subProductId === subProductId
+    );
+
   const { checkDuplicate, store } = useTransactionCooldown("PG");
 
   const productOptions =
@@ -70,7 +76,19 @@ const PGFormModal = ({
         .required("Required"),
       productId: Yup.string().required("Required"),
       subProductId: Yup.string().required("Required"),
-      amount: Yup.number().required("Required"),
+      // amount: Yup.number().required("Required"),
+      amount: Yup.number()
+        .required("Required")
+        .test(
+          "max-amount",
+          selectedSubProduct?.maxAmount
+            ? `Amount should not exceed ₹${selectedSubProduct.maxAmount}`
+            : "",
+          function (value) {
+            if (!value || !selectedSubProduct?.maxAmount) return true;
+            return value <= selectedSubProduct.maxAmount;
+          }
+        ),
       confirmAmount: Yup.number()
         .required("Required")
         .oneOf([Yup.ref("amount")], "Amounts must match"),
@@ -144,6 +162,8 @@ const PGFormModal = ({
       setIsLoading(true);
       const payload = {
         amount: values.amount,
+        cardHolderMobile: values.cardHolderMobileNumber,
+        cardHolderName: values.cardHolderName,
         // callbackUrl:
         //   "https://uat.decipay.in/enterprises/api/pg/payment/callback",
         productId: values.productId,
@@ -499,7 +519,6 @@ const PGFormModal = ({
                     </>
                   )}
                 </div>
-
                 <div className="flex w-max self-end mt-5">
                   <ButtonComponent
                     title={isBinDetails ? "Submit" : "Fetch Details"}

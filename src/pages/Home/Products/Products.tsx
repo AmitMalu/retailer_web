@@ -28,6 +28,19 @@ export default function Products() {
 
   console.log(loginData, "loginData");
 
+  const bbpsBillAvenueSubProduct = React.useMemo(() => {
+    const bbps = loginData?.products?.find(
+      (p: any) => p.productName?.toUpperCase() === "BBPS"
+    );
+
+    if (!bbps) return null;
+
+    return bbps.subProducts?.find((sp: any) =>
+      sp.vendorName?.toLowerCase().includes("avenue") ||
+      sp.vendorName?.toLowerCase().includes("bill")
+    );
+  }, [loginData]);
+
   const productStatusMap = React.useMemo(() => {
     const map: Record<string, any> = {};
 
@@ -122,9 +135,23 @@ export default function Products() {
       id: 6,
       key: "BBPS",
       image: <BillPaymenstSvgIcon />,
+      title: "Credit Card",
+      route: "/products/credit-card"
+    },
+    {
+      id: 7,
+      key: "BBPS",
+      image: <BillPaymenstSvgIcon />,
       title: "Bill Payment",
       route: "/products/billPay"
     },
+    {
+      id: 8,
+      key: "CMS",
+      image: <PGSvgIcon />,
+      title: "CMS",
+      route: ""
+    }
   ];
 
   return (
@@ -209,6 +236,10 @@ export default function Products() {
           {row3.map((product: any) => {
 
             const status = productStatusMap[product.key];
+            const isCreditCard = product.title === "Credit Card";
+
+            // Sub-product (Bill Avenue) for Credit Card
+            const subProduct = bbpsBillAvenueSubProduct;
 
             if (!status?.isVisible)
               return (
@@ -219,6 +250,22 @@ export default function Products() {
                 />
               );
 
+            // Hide Credit Card if sub-product not visible
+            if (isCreditCard && !subProduct?.isVisible) {
+              return (
+                <ProductCard
+                  key={product.id}
+                  size={{ base: 24, md: 24, lg: 32 }}
+                  placeholder
+                />
+              );
+            }
+
+            // DISABLED LOGIC for Credit Card and Common
+            const isDisabled =
+              status?.blocked ||
+              (isCreditCard && subProduct?.blocked);
+
             return (
               <div key={product.id} className="scale-90">
                 <ProductCard
@@ -226,15 +273,17 @@ export default function Products() {
                   image={product?.image}
                   title={product?.title}
                   fill={false}
-                  onClick={() => handleProductClick(product?.key, product?.route)}
+                  onClick={() => {
+                    if (isDisabled) return;
+                    handleProductClick(product?.key, product?.route)
+                  }}
                   size={{ base: 24, md: 24, lg: 32 }}
-                  disabled={status.blocked}
+                  disabled={isDisabled}
                 />
               </div>
             )
           })}
         </div>
-
       </div>
     </div>
   );

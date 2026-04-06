@@ -70,6 +70,12 @@ const InfoTable = () => {
     ? decryptData(apiResponses?.loginData)
     : null;
 
+  const selectedSubProduct = loginData?.products
+    ?.flatMap((product: any) => product.subProducts)
+    ?.find(
+      (subProduct: any) => subProduct.subProductId === payoutType?.subProductId
+    );
+
   const GetPayoutDataSubmit = async (pageNum = 1, pageSize = 10, filters: Record<string, any> = {}) => {
     const reqParams: PayoutBankDetailsParams = {
       page: pageNum - 1, // API is 0-indexed
@@ -193,7 +199,17 @@ const InfoTable = () => {
           amount: Yup.number()
             .required("Required")
             .positive("Amount must be positive")
-            .min(1, "Minimum amount is 1"),
+            .min(1, "Minimum amount is 1")
+            .test(
+              "max-amount",
+              selectedSubProduct?.maxAmount
+                ? `Max Limit ${selectedSubProduct.maxAmount}`
+                : "",
+              function (value) {
+                if (!value || !selectedSubProduct?.maxAmount) return true;
+                return value <= selectedSubProduct.maxAmount;
+              }
+            ),
         });
 
         const initialValues: PayoutSendBeneficiaryProps = {

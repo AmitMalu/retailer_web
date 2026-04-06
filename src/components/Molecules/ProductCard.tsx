@@ -9,7 +9,7 @@ export function ProductCard({
   fill = false,
   onClick,
   size = 32, // default fallback,
-  disabled = false,
+  disabled = true,
   placeholder = false,
 }: ProductCardProps) {
   const theme = useTheme();
@@ -41,14 +41,14 @@ export function ProductCard({
   if (placeholder) {
     return (
       <div className="relative flex flex-col items-center scale-90 pointer-events-none">
-        <div className={`relative ${box} rotate-45 ${rounded} border-2 border-primary-500`} />
+        <div style={{ border: `2px solid ${theme.palette.primary.main}` }} className={`relative ${box} rotate-45 ${rounded}`} />
       </div>
     );
   }
 
   return (
     <div className="relative flex flex-col items-center group">
-      <div className={`absolute top-0 h-10 w-px ${disabled ? "bg-transparent" : "bg-text-primary"}`} />
+      <div style={{ backgroundColor: disabled ? "transparent" : theme.palette.primary.main }} className={`absolute top-0 h-10 w-px`} />
 
       <div
         onClick={!disabled ? onClick : undefined}
@@ -68,8 +68,8 @@ export function ProductCard({
           {image && <div className="transition-transform duration-300 group-hover:scale-110">
             {React.isValidElement(image)
               ? React.cloneElement(image as React.ReactElement<any>, {
-                color: fill 
-                  ? "#ffffff" 
+                color: fill
+                  ? "#ffffff"
                   : (theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.main)
               })
               : image}
@@ -77,8 +77,8 @@ export function ProductCard({
           {title && <TextComponent
             fontSize={font}
             fontWeight={600}
-            color={fill 
-              ? "white" 
+            color={fill
+              ? "white"
               : (theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.main)}
             className="transition-colors duration-300 text-center"
           >

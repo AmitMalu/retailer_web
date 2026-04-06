@@ -69,7 +69,7 @@ export const AEPS_API_CONFIG = {
         kyc: null,
         bankList: { url: API_ROUTES.AEPS_BANK_LIST, method: "GET" },
         checkAeps2FaStatus: { url: API_ROUTES.AEPS_2FA_CHECK_STATUS, method: "POST" },
-        twoFactor: { url: API_ROUTES.AEPS_2FA_CHECK_STATUS, method: "POST" },
+        twoFactor: { url: API_ROUTES.AEPS_TWO_FA, method: "POST" },
         cashWithdrawal: { url: API_ROUTES.CASH_WITHDRAWAL, method: "POST" },
         balanceInquiry: { url: API_ROUTES.BALANCE_INQUIRY, method: "POST" },
         miniStatement: { url: API_ROUTES.MINI_STATEMENT, method: "POST" },
