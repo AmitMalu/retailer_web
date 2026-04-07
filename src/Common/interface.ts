@@ -945,13 +945,14 @@ export type EditRemitterProps = {
 };
 
 export type AddBeneficiaryFormProps = {
-  // mobileNumber: string;
+  beneMobile: string;
   beneficiaryName: string;
   bankId: string;
   accountNumber: string;
   confirmAccountNumber: string;
   ifscCode: string;
   verified: string | undefined;
+  otp?: string;
   // gstState: string;
   // dob: Date | null;
   // address: string;
@@ -960,6 +961,7 @@ export type AddBeneficiaryFormProps = {
 
 export type AddBeneficiaryPayload = {
   mobile: string;
+  benemobile: string;
   benename: string;
   bankid: string;
   bankName: string;
@@ -971,6 +973,20 @@ export type AddBeneficiaryPayload = {
   // address: string;
   // pincode: string;
   subProductId: string;
+};
+
+export type VerifyBeneficiaryOtpPayload = {
+  remitterMobile: string;
+  beneId: string;
+  otp: string;
+  referenceKey: string;
+};
+
+export type VerifyDeleteBeneficiaryOtpPayload = {
+  mobile: string;
+  bene_id: string;
+  otp: string;
+  referenceKey: string;
 };
 
 export type RegisterRemitterFormProps = {

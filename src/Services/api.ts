@@ -407,8 +407,16 @@ export const Register_Beneficiary = async (data: any) => {
   return await api.post(`${API_ROUTES.REGISTER_BENEFICIARY}`, data);
 };
 
-export const Dmt_Bank_List = async () => {
-  return await api.get(`${API_ROUTES.DMT_BANK_LIST}`);
+export const Verify_Beneficiary_Otp = async (data: any) => {
+  return await api.post(`${API_ROUTES.VERIFY_BENEFICIARY_OTP}`, data);
+};
+
+export const Verify_Delete_Beneficiary_Otp = async (data: any) => {
+  return await api.post(`${API_ROUTES.DELETE_VERIFY_BENEFICIARY_OTP}`, data);
+};
+
+export const Dmt_Bank_List = async (data: any) => {
+  return await api.post(`${API_ROUTES.DMT_BANK_LIST}`, data);
 };
 
 export const Network_Bank_Master_List_Dropdown = async () => {

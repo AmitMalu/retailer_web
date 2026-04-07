@@ -100,6 +100,8 @@ export const API_ROUTES = {
   EDIT_BENEFICIARY: `${BASE_URL}/api/beneficiary/update`,
   FETCH_BENEFICIARY_BY_ID: `${BASE_URL}/api/beneficiary/fetchBeneficiaryByBeneId`,
   DELETE_BENEFICIARY: `${BASE_URL}/api/beneficiary/delete`,
+  DELETE_VERIFY_BENEFICIARY_OTP: `${BASE_URL}/api/beneficiary/delete-verify`,
+  VERIFY_BENEFICIARY_OTP: `${BASE_URL}/api/beneficiary/verify-otp`,
   DMT_TRANX_SEND_OTP: `${BASE_URL}/api/dmt/send-otp`,
   DMT_TRANSACTION: `${BASE_URL}/api/dmt/transaction`,
   DMT_BANK_LIST: `${BASE_URL}/api/dmt/bank-list`,

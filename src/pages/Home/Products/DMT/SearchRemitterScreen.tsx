@@ -14,7 +14,7 @@ import NewButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent
 import RemitterReceiptModal from "@/components/Organism/DMT/RemitterReceipt";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
-import { Find_Remitter, Register_Remitter, Remitter_Kyc, Remitter_Profile, Validate_Otp } from "@/Services/api";
+import { Find_Remitter, Register_Remitter, Remitter_Kyc, Validate_Otp } from "@/Services/api";
 import RemitterModal from "@/components/Organism/DMT/RemitterModal";
 import { useMemo } from "react";
 
@@ -90,7 +90,6 @@ const SearchRemitterScreen = () => {
       setIsLoading(true);
       const payload = {
         mobile: values.mobileNumber,
-        retailerId: "BZT-RT-058",
         subProductId,
       };
 
@@ -288,8 +287,8 @@ const SearchRemitterScreen = () => {
         const payload = {
           mobile: values.mobileNumber,
           otp: values.otp,
-          // stateresp: stateResp,
-          // ekyc_id: ekycId,
+          stateresp: stateResp,
+          ekyc_id: ekycId,
           subProductId,
         };
         const response = await Register_Remitter(payload);
