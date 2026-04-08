@@ -97,12 +97,15 @@ const SearchRemitterScreen = () => {
       if (response?.data?.statusCode == "200") {
         const code = response?.data?.data?.response_code;
         if (code === 1) {
+          const data = response?.data?.data?.data || {};
+          const refKey = response?.data?.data?.referenceKey || data?.referenceKey || "";
           // Remitter already registered → Navigate
           showSuccessNotification(response?.data?.message || "Remitter found");
           navigate(`/products/dmt/RemitterInfo/${subProductId}`, {
             state: {
               mobileNumber: values.mobileNumber,
               subProduct: subProduct,
+              remitterReferenceKey: refKey,
             },
           });
         } else if (code === 2) {
@@ -235,6 +238,7 @@ const SearchRemitterScreen = () => {
               state: {
                 mobileNumber: values.mobileNumber,
                 subProduct: subProduct,
+                remitterReferenceKey: referenceKey,
               },
             });
           } else {
@@ -268,7 +272,7 @@ const SearchRemitterScreen = () => {
 
       if (vendorFlow?.toLocaleLowerCase() === "instantpay dmt" && modalStep === "otp" && !ekycId) {
 
-        // This is the OTP validate step (before KYC) - InstantPay only
+        // OTP validate step (before KYC) - InstantPay only
         const payload = {
           mobile: values.mobileNumber,
           otp: values.otp,
@@ -283,7 +287,7 @@ const SearchRemitterScreen = () => {
           showErrorNotification(response?.data?.message || "OTP validation failed.");
         }
       } else {
-        // This is the register OTP step (after KYC, both vendors)
+        // OTP Validation step (After KYC) - Paysprint Only
         const payload = {
           mobile: values.mobileNumber,
           otp: values.otp,
@@ -300,6 +304,7 @@ const SearchRemitterScreen = () => {
             state: {
               mobileNumber: values.mobileNumber,
               subProduct: subProduct,
+              // remitterReferenceKey: referenceKey || data?.referenceKey || "",
             },
           });
         } else {

@@ -1,10 +1,10 @@
-import { Group, Modal } from "@mantine/core";
+import { Modal } from "@mantine/core";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import { useTheme } from "@mui/system";
 import { DeleteSvgIcon } from "@/assets/svg";
 import TextComponent from "@/components/Atoms/NewComponents/TextComponent";
 import OtpInput from "react-otp-input";
-import { Form, Formik } from "formik";
+import { Formik } from "formik";
 import * as Yup from "yup";
 
 interface DeleteBeneficiaryModalProps {
@@ -124,13 +124,13 @@ const DeleteBeneficiaryModal = ({
                                         </TextComponent>
                                     </div>
                                 ) : (
-                                    <div className="flex flex-col items-center justify-center gap-6 py-8">
+                                    <div className="flex flex-col items-center justify-center gap-6 py-4">
                                         <div className="text-center">
                                             {/* <TextComponent fontSize={20} fontWeight={600} color={theme.palette.text.primary} className="mb-2">
                                                 OTP Verification
                                             </TextComponent> */}
                                             <TextComponent fontSize={14} color={theme.palette.text.secondary} className="text-center">
-                                                Enter the 6-digit OTP sent to <span className="font-semibold">{mobileNumber || "your mobile number"}</span>
+                                                Enter the 6-digit OTP sent to <span className="font-semibold">{mobileNumber || "Remitter mobile number"}</span>
                                             </TextComponent>
                                         </div>
 

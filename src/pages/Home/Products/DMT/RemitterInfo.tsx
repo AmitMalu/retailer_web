@@ -1,7 +1,7 @@
 import { BackSvgIcon, FilterSvgIcon, PlusSvgIcon, TrashSvgIcon } from "@/assets/svg";
-import { 
-  TableColumn, 
-  VerifyDeleteBeneficiaryOtpPayload 
+import {
+  TableColumn,
+  VerifyDeleteBeneficiaryOtpPayload
 } from "@/Common/interface";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
@@ -38,7 +38,7 @@ const RemitterInfo = () => {
   const theme = useTheme();
   const { subProductId } = useParams();
   const location = useLocation();
-  const { mobileNumber } = location.state || {};
+  const { mobileNumber, remitterReferenceKey } = location.state || {};
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
@@ -49,6 +49,7 @@ const RemitterInfo = () => {
   const [showAddBeneficiaryForm, setShowAddBeneficiaryForm] = useState(false);
   const [showEditRemitterForm, setShowEditRemitterForm] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otpLength, setOtpLength] = useState<4 | 6>(4);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState<Record<string, any> | null>(null);
   const [deleteOtpData, setDeleteOtpData] = useState<any>(null);
@@ -64,6 +65,7 @@ const RemitterInfo = () => {
     amount?: string;
     stateresp?: string;
     referenceId?: string;
+    referenceKey?: string;
   }>({});
 
   const apiResponses = useSelector(
@@ -164,6 +166,7 @@ const RemitterInfo = () => {
               beneId: values.beneId,
               txnType: values.paymentMode,
               amount: String(values.amount),
+              referenceKey: remitterReferenceKey
             };
             if (checkDuplicate(values.beneId, Number(values.amount))) {
               showErrorNotification(
@@ -174,14 +177,32 @@ const RemitterInfo = () => {
             const response = await Dmt_Tranx_Send_Otp(payload)
             const data = response?.data
             if (data?.statusCode == 200) {
-              setTranxData({
-                ...payload,
-                stateresp: data?.data?.stateresp,
-                referenceId: data?.data?.referenceId,
-              })
-              showSuccessNotification(data.message || "OTP Send Successfully")
-              resetForm()
-              setShowOtpModal(true)
+              const responseCode = data?.data?.response_code;
+
+              if (responseCode === 1) {
+                // Paysprint: 4-digit OTP, referenceId and stateresp
+                setTranxData({
+                  ...payload,
+                  stateresp: data?.data?.stateresp,
+                  referenceId: data?.data?.referenceId,
+                })
+                setOtpLength(4);
+                showSuccessNotification(data.message || "OTP Send Successfully")
+                resetForm()
+                setShowOtpModal(true)
+              } else if (responseCode === 2) {
+                // Instantpay: 6-digit OTP, referenceKey
+                setTranxData({
+                  ...payload,
+                  referenceKey: data?.data?.referenceKey, // Store proper vendor key
+                })
+                setOtpLength(6);
+                showSuccessNotification(data.message || "OTP Send Successfully")
+                resetForm()
+                setShowOtpModal(true)
+              } else {
+                showErrorNotification(data?.data?.message || data?.message || "Failed to Send OTP")
+              }
             } else {
               showErrorNotification(data?.message || "Failed to Send OTP")
             }
@@ -358,11 +379,11 @@ const RemitterInfo = () => {
         // Step 3: Build payload for DB
         const payload = {
           beneId: row?.bene_id,
+          mobileNumber: remitterDetails.mobile,
           bankname: verifiedData?.ifsc_details?.bank_name || row.bankname,
           name: verifiedData?.full_name || row.name,
           verified: "1",
           subProductId: subProductId
-          // createdBy: loginData?.mobileNumber,
         };
 
         // Step 4: Call DB API to persist changes
@@ -433,10 +454,10 @@ const RemitterInfo = () => {
       };
 
       const response = await delete_beneficiary(payload);
-      
+
       if (response?.data?.statusCode == "200") {
         const responseCode = response?.data?.data?.response_code;
-        
+
         if (responseCode === 1) {
           // Vendor 1: Direct delete success
           showSuccessNotification(response?.data?.message || "Beneficiary deleted successfully");
@@ -626,7 +647,18 @@ const RemitterInfo = () => {
         // Open drawer
         setReceiptDrawerOpened(true);
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.isAxiosError && error.response?.data?.data) {
+        const errorData = error.response.data;
+        const apiData = errorData.data;
+
+        // Store receipt data from error response
+        setReceiptData(apiData);
+        setReceiptTxnType(tranxData?.txnType || "");
+
+        // Open drawer for failure
+        setReceiptDrawerOpened(true);
+      }
       handleCustomError(error);
     } finally {
       setIsLoading(false);
@@ -775,6 +807,8 @@ const RemitterInfo = () => {
         opened={showOtpModal}
         onClose={() => setShowOtpModal(false)}
         onSubmit={handleOtpSubmit}
+        otpLength={otpLength}
+        mobile={mobileNumber}
       />
 
       <Drawer

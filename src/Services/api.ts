@@ -1,5 +1,6 @@
 import {
   AddBankFormType,
+  AddBeneficiaryPayload,
   BankVerificationPayload,
   ChangePasswordRequestProps,
   CommissionAndChargesRequest,
@@ -403,7 +404,7 @@ export const Remitter_details = async (mobile: string) => {
   return await api.get(`${API_ROUTES.FETCH_REMITTER_DETAILS}/${mobile}`);
 };
 
-export const Register_Beneficiary = async (data: any) => {
+export const Register_Beneficiary = async (data: AddBeneficiaryPayload) => {
   return await api.post(`${API_ROUTES.REGISTER_BENEFICIARY}`, data);
 };
 

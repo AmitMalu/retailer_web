@@ -17,6 +17,7 @@ import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSe
 import { RefreshIcon } from "@/assets/svg";
 import { MobileNoRegex } from "@/Utils/helper";
 import OtpInput from "react-otp-input";
+import TextComponent from "@/components/Atoms/NewComponents/TextComponent";
 
 const AddBeneficiaryModal = ({
   opened,
@@ -30,7 +31,7 @@ const AddBeneficiaryModal = ({
   const [isBankLoading, setIsBankLoading] = useState(false);
   const [bankList, setBankList] = useState([]);
   const [showOtpField, setShowOtpField] = useState(false);
-  const [pendingBeneficiaryData, setPendingBeneficiaryData] = useState<AddBeneficiaryFormProps | null>(null);
+  const [pendingBeneficiaryData, setPendingBeneficiaryData] = useState<AddBeneficiaryPayload | null>(null);
   const [instantPayResponse, setInstantPayResponse] = useState<any>(null);
 
   const validationSchema: Yup.ObjectSchema<AddBeneficiaryFormProps> = Yup.object({
@@ -148,13 +149,15 @@ const AddBeneficiaryModal = ({
 
       if (showOtpField && pendingBeneficiaryData && instantPayResponse) {
         // OTP verification step using new API
-        console.log("InstantPay Response:", instantPayResponse);
-        
+
         const otpPayload: VerifyBeneficiaryOtpPayload = {
           remitterMobile: mobile ?? "",
           beneId: instantPayResponse?.data?.data?.bene_id || instantPayResponse?.data?.bene_id || "",
           otp: values.otp || "",
           referenceKey: instantPayResponse?.data?.data?.referenceKey || instantPayResponse?.data?.referenceKey || "",
+
+          // Merge previous payload
+          ...pendingBeneficiaryData
         };
 
         const response = await Verify_Beneficiary_Otp(otpPayload);
@@ -178,7 +181,7 @@ const AddBeneficiaryModal = ({
           if (responseCode === 2) {
             // InstantPay: Need OTP verification
             showSuccessNotification(response?.data?.message || "OTP sent for beneficiary verification");
-            setPendingBeneficiaryData(values);
+            setPendingBeneficiaryData(payload);
             setInstantPayResponse(response?.data); // Store the response for OTP verification
             setShowOtpField(true);
           } else if (responseCode === 1) {
@@ -389,12 +392,16 @@ const AddBeneficiaryModal = ({
                     </Grid.Col>
                   </Grid>
                 ) : (
-                  <div className="flex flex-col items-center justify-center gap-6 py-8">
+                  <div className="flex flex-col items-center justify-center gap-6 py-4">
                     <div className="text-center">
-                      <h3 className="text-2xl font-semibold text-gray-800 mb-2">OTP Verification</h3>
-                      <p className="text-sm text-gray-600">Enter the 6-digit OTP sent to the beneficiary mobile number</p>
+                      {/* <TextComponent fontSize={20} fontWeight={600} color={theme.palette.text.primary} className="mb-2">
+                                                OTP Verification
+                                            </TextComponent> */}
+                      <TextComponent fontSize={14} color={theme.palette.text.secondary} className="text-center">
+                        Enter the 6-digit OTP sent to <span className="font-semibold">{mobile || "Remitter mobile number"}</span>
+                      </TextComponent>
                     </div>
-                    
+
                     <div className="flex flex-col items-center gap-4">
                       <OtpInput
                         shouldAutoFocus={true}
