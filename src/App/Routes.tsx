@@ -106,6 +106,7 @@ const WebsitePageContent = lazy(
   () => import("@/pages/Home/WebsiteSettings/WebsitePageContent")
 );
 const Login = lazy(() => import("@/pages/Auth/Login"));
+const TransactionCompleted = lazy(() => import("@/pages/Home/Products/TransactionCompleted"));
 const PGScreen = lazy(() => import("@/pages/Home/Products/PG"));
 const PayoutScreen = lazy(() => import("@/pages/Home/Products/Payout"));
 const PayoutInfoTable = lazy(
@@ -226,6 +227,16 @@ const RouterOutlet = () => {
           >
             <Route index element={<SetPasswordScreen />} />
           </Route>
+
+          {/* ----------- Public Transaction Routes ----------- */}
+          <Route
+            path="/transaction-completed"
+            element={
+              <Suspense fallback={<Loader />}>
+                <TransactionCompleted />
+              </Suspense>
+            }
+          />
 
           {/* ----------- Protected Routes ----------- */}
           <Route
