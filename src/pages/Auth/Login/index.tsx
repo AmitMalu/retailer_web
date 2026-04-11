@@ -32,6 +32,16 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Construct PDF URLs using BASE_URL for subfolder deployment compatibility
+  const basePath = import.meta.env.BASE_URL || '/';
+  // Ensure basePath ends with slash to avoid URL concatenation issues
+  const normalizedBasePath = basePath.endsWith('/') ? basePath : `${basePath}/`;
+  const policyLinks = {
+    terms: `${normalizedBasePath}terms.pdf`,
+    privacy: `${normalizedBasePath}privacy.pdf`,
+    refund: `${normalizedBasePath}refund.pdf`,
+  };
+
   const validationSchema = Yup.object({
     userName: Yup.string()
       .max(10, "Please enter valid number")
@@ -124,7 +134,7 @@ const Login: React.FC = () => {
         authText='"Welcome to your financial hub."'
       >
         <div className="flex w-full  items-center justify-center flex-col gap-5">
-          <div className="flex h-auto w-[350px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
+          <div className="flex h-auto w-[360px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
             <div className="flex flex-col items-center justify-items-center gap-2 ">
               <TextComponent
                 fontSize={28}
@@ -227,6 +237,47 @@ const Login: React.FC = () => {
                           !values.password
                         }
                       />
+                    </div>
+                    <div className="mt-4 flex flex-col items-center justify-center">
+                      <TextComponent
+                        fontSize={12}
+                        fontWeight={400}
+                        color={theme.palette.text.secondary}
+                        align="center"
+                        className="px-2"
+                      >
+                        By continuing, you agree to our{" "}
+                        <a
+                          href={policyLinks.terms}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: theme.palette.primary.main }}
+                          className="hover:underline"
+                        >
+                          Terms & Conditions
+                        </a>
+                        ,{" "}
+                        <a
+                          href={policyLinks.privacy}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: theme.palette.primary.main }}
+                          className="hover:underline"
+                        >
+                          Privacy Policy
+                        </a>
+                        {" "}and{" "}
+                        <a
+                          href={policyLinks.refund}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: theme.palette.primary.main }}
+                          className="hover:underline"
+                        >
+                          Refund Policy
+                        </a>
+                        .
+                      </TextComponent>
                     </div>
                   </form>
                 </>

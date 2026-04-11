@@ -1,5 +1,6 @@
 import {
   AddBankFormType,
+  AddBeneficiaryPayload,
   BankVerificationPayload,
   ChangePasswordRequestProps,
   CommissionAndChargesRequest,
@@ -391,16 +392,32 @@ export const Remitter_Kyc = async (data: any) => {
   return await api.post(`${API_ROUTES.REMITTER_KYC}`, data);
 };
 
+export const Remitter_Profile = async (data: any) => {
+  return await api.post(`${API_ROUTES.REMITTER_PROFILE}`, data);
+};
+
+export const Validate_Otp = async (data: any) => {
+  return await api.post(`${API_ROUTES.VALIDATE_OTP}`, data);
+};
+
 export const Remitter_details = async (mobile: string) => {
   return await api.get(`${API_ROUTES.FETCH_REMITTER_DETAILS}/${mobile}`);
 };
 
-export const Register_Beneficiary = async (data: any) => {
+export const Register_Beneficiary = async (data: AddBeneficiaryPayload) => {
   return await api.post(`${API_ROUTES.REGISTER_BENEFICIARY}`, data);
 };
 
-export const Dmt_Bank_List = async () => {
-  return await api.get(`${API_ROUTES.DMT_BANK_LIST}`);
+export const Verify_Beneficiary_Otp = async (data: any) => {
+  return await api.post(`${API_ROUTES.VERIFY_BENEFICIARY_OTP}`, data);
+};
+
+export const Verify_Delete_Beneficiary_Otp = async (data: any) => {
+  return await api.post(`${API_ROUTES.DELETE_VERIFY_BENEFICIARY_OTP}`, data);
+};
+
+export const Dmt_Bank_List = async (data: any) => {
+  return await api.post(`${API_ROUTES.DMT_BANK_LIST}`, data);
 };
 
 export const Network_Bank_Master_List_Dropdown = async () => {

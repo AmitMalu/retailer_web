@@ -9,10 +9,14 @@ const DmtTranOtpModal = ({
     opened,
     onClose,
     onSubmit,
+    otpLength = 4,
+    mobile,
 }: {
     opened: boolean;
     onClose: () => void;
     onSubmit: (values: any) => void;
+    otpLength?: 4 | 6;
+    mobile?: string;
 }) => {
     const theme = useTheme();
 
@@ -20,15 +24,15 @@ const DmtTranOtpModal = ({
     const validationSchema = Yup.object().shape({
         otp: Yup.string()
             .required('Please enter the OTP')
-            .length(4, "OTP must be 4 digits"),
+            .length(otpLength, `OTP must be ${otpLength} digits`),
     });
 
     return (
         <Modal
             opened={opened}
             onClose={onClose}
-            title="OTP"
-            size="md"
+            title="OTP Verification"
+            size="lg"
             centered
             closeOnEscape={false}
             closeOnClickOutside={false}
@@ -74,13 +78,15 @@ const DmtTranOtpModal = ({
                 {() => (
                     <Form className=" mt-3 flex h-full flex-col justify-between">
                         <div className="w-full overflow-auto scrollbar-hide px-2 bg-background-paper rounded-2xl">
+                            <div className="text-center mb-6">
+                                <p className="text-sm text-gray-600">Enter the {otpLength}-digit OTP sent to <span className="font-semibold">{mobile || "Remitter mobile number"}</span></p>
+                            </div>
                             <Grid gutter="sm">
-                                {/* Mobile Number */}
                                 <Grid.Col className='flex justify-center' span={{ base: 12, md: 12 }}>
                                     <FormikTextInputComponent
                                         name="otp"
                                         oneTimeCode
-                                        length={4}
+                                        length={otpLength}
                                         type="text"
                                         fullWidth
                                     />

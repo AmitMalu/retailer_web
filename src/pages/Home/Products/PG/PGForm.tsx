@@ -142,6 +142,7 @@ const PGFormModal = ({
         cardHolderMobileNumber: values.cardHolderMobileNumber,
         amount: values.amount,
         productId: values.productId,
+        subProductId: values.subProductId,
       };
 
       const response = await Validate_Transaction(payload);
@@ -449,7 +450,7 @@ const PGFormModal = ({
                             touched.productId && errors.productId ? errors.productId : ""
                           }
                           className="w-full"
-                          disabled={Boolean(values.productId)} // ✅ disable if value is already set
+                          disabled={Boolean(values.productId)} // disable if value is already set
                         />
                       </div>
 
@@ -464,7 +465,7 @@ const PGFormModal = ({
                             touched.subProductId && errors.subProductId ? errors.subProductId : ""
                           }
                           className="w-full"
-                          disabled={Boolean(values.subProductId)} // ✅ disable if value is already set
+                          disabled={Boolean(values.subProductId)} // disable if value is already set
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">

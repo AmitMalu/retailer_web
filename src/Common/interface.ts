@@ -919,15 +919,19 @@ export type FindRemitterProps = {
   deviceType: string;
   csp: boolean;
   pidData: string;
+  pidParsed?: any; // Parsed biometric data from device
   otp?: string;
+  referenceKey?: string; // For InstantPay flow
 };
 
 export interface RemitterModalProps {
   isOpen: boolean;
   onClose: () => void;
-  modelMode: "ekyc" | "register" | null;
+  modalStep: "profile" | "ekyc" | "otp" | "register" | null;
+  vendorFlow: "paysprint dmt" | "instantpay dmt" | null;
   handleRemitterKyc: (values: any) => void;
-  handleRegisterRemitterSubmit: (values: any) => void;
+  handleRemitterProfile?: (values: any) => void;
+  handleOtpSubmit?: (values: any) => void;
 }
 
 export type RemitterData = Record<string, any>;
@@ -941,13 +945,14 @@ export type EditRemitterProps = {
 };
 
 export type AddBeneficiaryFormProps = {
-  // mobileNumber: string;
+  beneMobile: string;
   beneficiaryName: string;
   bankId: string;
   accountNumber: string;
   confirmAccountNumber: string;
   ifscCode: string;
   verified: string | undefined;
+  otp?: string;
   // gstState: string;
   // dob: Date | null;
   // address: string;
@@ -956,6 +961,7 @@ export type AddBeneficiaryFormProps = {
 
 export type AddBeneficiaryPayload = {
   mobile: string;
+  benemobile: string;
   benename: string;
   bankid: string;
   bankName: string;
@@ -967,6 +973,20 @@ export type AddBeneficiaryPayload = {
   // address: string;
   // pincode: string;
   subProductId: string;
+};
+
+export type VerifyBeneficiaryOtpPayload = {
+  remitterMobile: string;
+  beneId: string;
+  otp: string;
+  referenceKey: string;
+};
+
+export type VerifyDeleteBeneficiaryOtpPayload = {
+  mobile: string;
+  bene_id: string;
+  otp: string;
+  referenceKey: string;
 };
 
 export type RegisterRemitterFormProps = {

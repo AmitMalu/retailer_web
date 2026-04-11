@@ -1,5 +1,8 @@
 import { BackSvgIcon, FilterSvgIcon, PlusSvgIcon, TrashSvgIcon } from "@/assets/svg";
-import { TableColumn } from "@/Common/interface";
+import {
+  TableColumn,
+  VerifyDeleteBeneficiaryOtpPayload
+} from "@/Common/interface";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import Loader from "@/components/Atoms/Loader";
@@ -12,7 +15,7 @@ import DmtTranOtpModal from "@/components/Organism/DMT/DmtTranOtpModal";
 import EditRemitterModal from "@/components/Organism/DMT/EditRemitterModal";
 import RemitterInfoHeader from "@/components/Organism/DMT/RemitterInfoHeader";
 import { RootState } from "@/Redux/Store";
-import { delete_beneficiary, Dmt_Transaction, Dmt_Tranx_Send_Otp, edit_beneficiary, Fetch_Beneficiaries, Remitter_details, Update_Remitter } from "@/Services/api";
+import { delete_beneficiary, Dmt_Transaction, Dmt_Tranx_Send_Otp, edit_beneficiary, Fetch_Beneficiaries, Remitter_details, Update_Remitter, Verify_Delete_Beneficiary_Otp } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
@@ -35,7 +38,7 @@ const RemitterInfo = () => {
   const theme = useTheme();
   const { subProductId } = useParams();
   const location = useLocation();
-  const { mobileNumber } = location.state || {};
+  const { mobileNumber, remitterReferenceKey } = location.state || {};
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
@@ -46,8 +49,11 @@ const RemitterInfo = () => {
   const [showAddBeneficiaryForm, setShowAddBeneficiaryForm] = useState(false);
   const [showEditRemitterForm, setShowEditRemitterForm] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otpLength, setOtpLength] = useState<4 | 6>(4);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState<Record<string, any> | null>(null);
+  const [deleteOtpData, setDeleteOtpData] = useState<any>(null);
+  const [showDeleteOtpModal, setShowDeleteOtpModal] = useState(false);
   const [remitterDetails, setRemitterDetails] = useState<any>({});
   const { verify: verifyBank } = useBankVerification();
   const [tranxData, setTranxData] = useState<{
@@ -59,6 +65,7 @@ const RemitterInfo = () => {
     amount?: string;
     stateresp?: string;
     referenceId?: string;
+    referenceKey?: string;
   }>({});
 
   const apiResponses = useSelector(
@@ -159,6 +166,7 @@ const RemitterInfo = () => {
               beneId: values.beneId,
               txnType: values.paymentMode,
               amount: String(values.amount),
+              referenceKey: remitterReferenceKey
             };
             if (checkDuplicate(values.beneId, Number(values.amount))) {
               showErrorNotification(
@@ -169,14 +177,32 @@ const RemitterInfo = () => {
             const response = await Dmt_Tranx_Send_Otp(payload)
             const data = response?.data
             if (data?.statusCode == 200) {
-              setTranxData({
-                ...payload,
-                stateresp: data?.data?.stateresp,
-                referenceId: data?.data?.referenceId,
-              })
-              showSuccessNotification(data.message || "OTP Send Successfully")
-              resetForm()
-              setShowOtpModal(true)
+              const responseCode = data?.data?.response_code;
+
+              if (responseCode === 1) {
+                // Paysprint: 4-digit OTP, referenceId and stateresp
+                setTranxData({
+                  ...payload,
+                  stateresp: data?.data?.stateresp,
+                  referenceId: data?.data?.referenceId,
+                })
+                setOtpLength(4);
+                showSuccessNotification(data.message || "OTP Send Successfully")
+                resetForm()
+                setShowOtpModal(true)
+              } else if (responseCode === 2) {
+                // Instantpay: 6-digit OTP, referenceKey
+                setTranxData({
+                  ...payload,
+                  referenceKey: data?.data?.referenceKey, // Store proper vendor key
+                })
+                setOtpLength(6);
+                showSuccessNotification(data.message || "OTP Send Successfully")
+                resetForm()
+                setShowOtpModal(true)
+              } else {
+                showErrorNotification(data?.data?.message || data?.message || "Failed to Send OTP")
+              }
             } else {
               showErrorNotification(data?.message || "Failed to Send OTP")
             }
@@ -353,11 +379,11 @@ const RemitterInfo = () => {
         // Step 3: Build payload for DB
         const payload = {
           beneId: row?.bene_id,
+          mobileNumber: remitterDetails.mobile,
           bankname: verifiedData?.ifsc_details?.bank_name || row.bankname,
           name: verifiedData?.full_name || row.name,
           verified: "1",
           subProductId: subProductId
-          // createdBy: loginData?.mobileNumber,
         };
 
         // Step 4: Call DB API to persist changes
@@ -410,9 +436,11 @@ const RemitterInfo = () => {
     setIsDeleteModal(false);
     setSelectedRow(null);
     setTranxData({});
+    // Clear OTP data when modal is closed
+    setShowDeleteOtpModal(false);
+    setDeleteOtpData(null);
   };
 
-  // Delete beneficiary function
   const handleDeleteBeneficiary = async () => {
     if (!selectedRow) return;
 
@@ -426,14 +454,71 @@ const RemitterInfo = () => {
       };
 
       const response = await delete_beneficiary(payload);
+
       if (response?.data?.statusCode == "200") {
-        showSuccessNotification(response?.data?.message || "Beneficiary deleted successfully");
-        handleCloseDeleteModal();
-        await getBeneficiariesList(page, size, searchValues); // refresh with same filters
+        const responseCode = response?.data?.data?.response_code;
+
+        if (responseCode === 1) {
+          // Vendor 1: Direct delete success
+          showSuccessNotification(response?.data?.message || "Beneficiary deleted successfully");
+          handleCloseDeleteModal();
+          await getBeneficiariesList(page, size, searchValues); // refresh with same filters
+        } else if (responseCode === 2) {
+          // Vendor 2: OTP verification required
+          showSuccessNotification(response?.data?.message || "OTP sent for beneficiary deletion");
+          // Store response data for OTP verification
+          setDeleteOtpData({
+            referenceKey: response?.data?.data?.referenceKey,
+            bene_id: selectedRow?.bene_id,
+            mobile: mobileNumber
+          });
+          setShowDeleteOtpModal(true);
+        } else {
+          // Any other response_code means error
+          showErrorNotification(response?.data?.message || "Unable to delete beneficiary");
+        }
+      } else {
+        // Non-200 status code means error
+        showErrorNotification(response?.data?.message || "Unable to delete beneficiary");
       }
 
-      // Close modal after success
-      handleCloseDeleteModal();
+      // Close modal after success (for direct delete)
+      if (response?.data?.data?.response_code === 1) {
+        handleCloseDeleteModal();
+      }
+    } catch (error) {
+      handleCustomError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle delete beneficiary OTP verification
+  const handleDeleteOtpVerification = async (otp: string) => {
+    if (!deleteOtpData) return;
+
+    try {
+      setIsLoading(true);
+
+      const otpPayload: VerifyDeleteBeneficiaryOtpPayload = {
+        mobile: deleteOtpData.mobile,
+        bene_id: deleteOtpData.bene_id,
+        otp: otp,
+        referenceKey: deleteOtpData.referenceKey,
+      };
+
+      const response = await Verify_Delete_Beneficiary_Otp(otpPayload);
+
+      if (response?.data?.statusCode == "200" && response?.data?.data?.statuscode == "TXN") {
+        showSuccessNotification(response?.data?.message || "Beneficiary deleted successfully");
+        // Clear all OTP data and close modals
+        setShowDeleteOtpModal(false);
+        setDeleteOtpData(null);
+        handleCloseDeleteModal();
+        await getBeneficiariesList(page, size, searchValues); // refresh list
+      } else {
+        showErrorNotification(response?.data?.message || "OTP verification failed");
+      }
     } catch (error) {
       handleCustomError(error);
     } finally {
@@ -562,7 +647,18 @@ const RemitterInfo = () => {
         // Open drawer
         setReceiptDrawerOpened(true);
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.isAxiosError && error.response?.data?.data) {
+        const errorData = error.response.data;
+        const apiData = errorData.data;
+
+        // Store receipt data from error response
+        setReceiptData(apiData);
+        setReceiptTxnType(tranxData?.txnType || "");
+
+        // Open drawer for failure
+        setReceiptDrawerOpened(true);
+      }
       handleCustomError(error);
     } finally {
       setIsLoading(false);
@@ -702,12 +798,17 @@ const RemitterInfo = () => {
         isLoading={isLoading}
         onDeleteSubmit={handleDeleteBeneficiary}
         selectedRow={selectedRow}
+        showOtpField={showDeleteOtpModal}
+        onOtpVerify={handleDeleteOtpVerification}
+        mobileNumber={mobileNumber}
       />
 
       <DmtTranOtpModal
         opened={showOtpModal}
         onClose={() => setShowOtpModal(false)}
         onSubmit={handleOtpSubmit}
+        otpLength={otpLength}
+        mobile={mobileNumber}
       />
 
       <Drawer
