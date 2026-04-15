@@ -26,5 +26,9 @@ export default defineConfig(function (_a) {
                 },
             },
         },
+        define: {
+            // This defines the global variable 'global' as 'window' during build and dev
+            global: 'window',
+        },
     };
 });

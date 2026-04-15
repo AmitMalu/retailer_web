@@ -28,6 +28,7 @@ import { AppDispatch } from "@/Redux/Store";
 import OtpAuthImage from "@/assets/svg/Auth/Otp";
 import { useTheme } from "@mui/system";
 import { ArrowLeft } from "@mui/icons-material";
+import { useWebSocket } from "@/hooks/useWebSocket";
 
 const OtpInputScreen = () => {
   const theme = useTheme();
@@ -41,6 +42,7 @@ const OtpInputScreen = () => {
   const [hasStartedTimer, setHasStartedTimer] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const submitButtonRef = useRef<HTMLButtonElement>(null);
+  const { connect } = useWebSocket();
 
   useEffect(() => {
     // If the OTP is pre-populated and complete (6 digits), focus the submit button
@@ -98,6 +100,12 @@ const OtpInputScreen = () => {
           dispatch(saveApiResponse("loginData", response?.data?.data));
           document.cookie = `authToken=${encodeURIComponent(response?.data?.data?.token)}; expires=${new Date(Date.now() + 7 * 864e5).toUTCString()}; path=/; SameSite=Strict`;
           showSuccessNotification("Logged In Successfully");
+          
+          // Initialize WebSocket connection after successful login 
+          connect().catch((error) => {
+            console.error('Failed to connect WebSocket:', error);
+          });
+          
           navigate("/dashboard");
           // GenerateCredentials(values.userName);
         } else {

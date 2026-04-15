@@ -17,6 +17,7 @@ import {
   RefreshSvgIcon,
   // ThemeSettingSvgIcon,
 } from "@/assets/svg";
+import NotificationBell from "../Molecules/NotificationBell";
 import { decryptData, formatIndianNumber, useWalletBalance } from "@/Utils/helper";
 import { NavLink } from "react-router-dom";
 // import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
@@ -162,6 +163,7 @@ export default function Navbar({
                   )}
                 </>
               )}
+              <NotificationBell size="lg" />
               <NavLink to="/settings/myProfile">
                 <div className="cursor-pointer rounded-md p-2" style={{ backgroundColor: theme.palette.primary.light + "40" }}>
                   <ProfileSvgIcon color={theme.palette.primary.main} />

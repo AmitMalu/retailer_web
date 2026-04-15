@@ -137,7 +137,7 @@ export const API_ROUTES = {
   ////////////////////////////// RECHARGE //////////////////////////////////
   RECHARGE_FETCH_OPERATORS: `${BASE_URL}/api/recharge/operators`,
   RECHARGE_MOBILE_LOOKUP: `${BASE_URL}/api/recharge/mobile-lookup`,
-  RECHARGE_PLANS : `${BASE_URL}/api/recharge/plans`,
+  RECHARGE_PLANS: `${BASE_URL}/api/recharge/plans`,
   RECHARGE_TRANSACTION: `${BASE_URL}/api/recharge`,
 
 
@@ -167,6 +167,9 @@ export const API_ROUTES = {
   BILLAVENUE_BILLER_INFO: `${BASE_URL}/api/billavenue/biller-info`,
   BILLAVENUE_BILL_FETCH: `${BASE_URL}/api/billavenue/bill-fetch`,
   BILLAVENUE_BILL_PAYMENT: `${BASE_URL}/api/billavenue/bill-payment`,
+
+  ///////////////////////// NOTIFICATIONS ////////////////////////////////////
+  NOTIFICATIONS_LIST: `${BASE_URL}/api/notification`,
 
   /////////////////////////// COMMON ////////////////////////////////////
   NETWORK_BANK_MASTER_LIST_DROPDOWN: `${BASE_URL}/api/network-banks/all`,

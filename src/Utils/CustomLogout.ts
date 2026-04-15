@@ -1,6 +1,8 @@
 import { persistor, store } from "@/Redux/Store";
 import { useState, useRef, useEffect } from "react";
 import {  useLocation } from "react-router-dom";
+import websocketService from "@/Services/websocketService";
+import { clearNotifications } from "@/Redux/Reducers/notificationSlice";
 
 export const useLogoutHandling = () => {
   // const navigate = useNavigate();
@@ -24,10 +26,16 @@ export const useLogoutHandling = () => {
       // 3. Clear persisted redux storage
       await persistor.purge();
 
-      // 4. Reset redux state
+      // 4. Clear notifications
+      store.dispatch(clearNotifications());
+
+      // 5. Reset redux state
       store.dispatch({ type: "RESET_APP" });
 
-      // 5. Clear cookie
+      // 6. Disconnect WebSocket
+      websocketService.disconnect();
+
+      // 7. Clear cookie
       document.cookie = `authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict`;
 
       // Clear browser storage
