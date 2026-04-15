@@ -9,6 +9,7 @@ import paginationSlice from "../Reducers/paginationSlice";
 import locationReducer from "../Reducers/locationSlice";
 import reportStateSlice from "../Reducers/reportStateSlice";
 import chatSlice from "../Reducers/chatSlice";
+import notificationReducer from "../Reducers/notificationSlice";
 
 const appReducer = combineReducers({
   ui: uiReducer,
@@ -19,11 +20,12 @@ const appReducer = combineReducers({
   location: locationReducer,
   reportState: reportStateSlice,
   chat: chatSlice,
+  notifications: notificationReducer,
 });
 
 const rootReducer = (state: any, action: any) => {
   if (action.type === "RESET_APP") {
-    state = undefined; // 🔥 resets everything safely
+    state = undefined; // resets everything safely
   }
   return appReducer(state, action);
 };

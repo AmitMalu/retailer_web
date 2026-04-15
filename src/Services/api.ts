@@ -805,3 +805,57 @@ export const BillAvenue_Bill_Fetch = createAsyncThunk(
     }
   },
 );
+
+//////////////////////// NOTIFICATIONS ///////////////////////////
+export const Get_Notifications_List = async (params?: {
+  page?: number;
+  size?: number;
+}) => {
+  try {
+    const queryParams = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(params || {}).map(([key, value]) => [
+          key,
+          String(value ?? ""),
+        ]),
+      ),
+    ).toString();
+
+    const url = `${API_ROUTES.NOTIFICATIONS_LIST}${queryParams ? `?${queryParams}` : ""}`;
+    const response = await api.get(url);
+    return response;
+  } catch (error: any) {
+    handleCustomError(error);
+    throw error;
+  }
+};
+
+export const Mark_Notification_As_Read = async (notificationId: number) => {
+  try {
+    const response = await api.put(`${API_ROUTES.NOTIFICATIONS_LIST}/${notificationId}/read`);
+    return response;
+  } catch (error: any) {
+    handleCustomError(error);
+    throw error;
+  }
+};
+
+export const Mark_All_Notifications_As_Read = async () => {
+  try {
+    const response = await api.put(`${API_ROUTES.NOTIFICATIONS_LIST}/read-all`);
+    return response;
+  } catch (error) {
+    handleCustomError(error);
+    throw error;
+  }
+};
+
+export const Get_All_Notifications = async (page: number = 0, size: number = 50) => {
+  try {
+    const response = await api.get(`${API_ROUTES.NOTIFICATIONS_LIST}?page=${page}&size=${size}&deliveryChannel=WEB`);
+    return response;
+  } catch (error) {
+    console.error('Error fetching all notifications:', error);
+    handleCustomError(error);
+  }
+};

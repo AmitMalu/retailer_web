@@ -8,10 +8,14 @@ import ChatBot from "@/pages/Home/chatbot/ChatBot";
 import { useAppSelector } from "@/Redux/hooks";
 import { getThemeOptions } from "@/theme/ThemeConfig";
 import { useMemo } from "react";
+import { useWebSocket } from "@/hooks/useWebSocket";
 
 import { useLayoutEffect } from "react";
 
 const AppContent = ({ darkMode }: { darkMode: boolean }) => {
+  // Initialize WebSocket connection for real-time notifications
+  useWebSocket();
+
   // Sync dark mode class for Tailwind
   useLayoutEffect(() => {
     if (darkMode) {

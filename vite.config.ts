@@ -27,5 +27,9 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    define: {
+      // This defines the global variable 'global' as 'window' during build and dev
+      global: 'window',
+    },
   };
 });

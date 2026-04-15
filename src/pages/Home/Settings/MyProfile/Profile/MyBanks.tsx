@@ -84,7 +84,7 @@ const MyBanks = () => {
     }
   };
 
-  // ✅ Handle delete bank
+  // Handle delete bank
   const handleDeleteBank = async (id: any) => {
     if (!id) {
       showErrorNotification("Bank ID Not Found");
@@ -111,7 +111,7 @@ const MyBanks = () => {
     }
   };
 
-  // ✅ Table columns
+  // Table columns
   const tableColumns = [
     { key: "id", label: "ID", sortable: false },
     { key: "bankName", label: "Bank Name", sortable: false },

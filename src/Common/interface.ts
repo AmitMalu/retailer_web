@@ -1325,3 +1325,19 @@ export interface RechargeFetchPlanPayloadType {
   circleId: string;
   subProductId: string;
 }
+
+export interface NotificationMessage {
+  id: number;
+  title: string;
+  body: string;
+  alertType: string;
+  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  product?: string;
+  deliveryChannel?: string;
+  audienceType?: string;
+  sendMode?: string;
+  scheduleTime?: string | null;
+  isRead?: boolean;
+  createdAt: string;
+  userId?: string;
+}
