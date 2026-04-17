@@ -87,6 +87,7 @@ export const API_ROUTES = {
 
   //////////////////////////// DMT /////////////////////////////////
   FIND_REMITTER: `${BASE_URL}/api/remitter/check`,
+  DMT_MERCHANT_ONBOARD_INSTANTPAY: `${BASE_URL}/instantpay/aeps/onboard-merchant`,
   REGISTER_REMITTER: `${BASE_URL}/api/remitter/register`,
   REMITTER_SEND_OTP: `${BASE_URL}/api/remitter/send-otp`,
   REMITTER_RESEND_OTP: `${BASE_URL}/api/remitter/resend-otp`,

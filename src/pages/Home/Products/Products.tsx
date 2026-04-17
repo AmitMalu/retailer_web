@@ -35,10 +35,14 @@ export default function Products() {
 
     if (!bbps) return null;
 
-    return bbps.subProducts?.find((sp: any) =>
+    const billAvenueSubProduct = bbps.subProducts?.find((sp: any) =>
       sp.vendorName?.toLowerCase().includes("avenue") ||
       sp.vendorName?.toLowerCase().includes("bill")
     );
+
+    if (!billAvenueSubProduct) return bbps;
+
+    return billAvenueSubProduct;
   }, [loginData]);
 
   const productStatusMap = React.useMemo(() => {
@@ -240,6 +244,7 @@ export default function Products() {
 
             // Sub-product (Bill Avenue) for Credit Card
             const subProduct = bbpsBillAvenueSubProduct;
+
 
             if (!status?.isVisible)
               return (

@@ -364,8 +364,14 @@ export const Fetch_Transaction_Receipt = async (transactionId: string) => {
   );
 };
 
+
+// DMT APIs
 export const Find_Remitter = async (data: any) => {
   return await api.post(`${API_ROUTES.FIND_REMITTER}`, data);
+};
+
+export const DMT_Merchant_Onboard_InstantPay = async (data: any) => {
+  return await api.post(`${API_ROUTES.DMT_MERCHANT_ONBOARD_INSTANTPAY}`, data);
 };
 
 export const Register_Remitter = async (data: any) => {

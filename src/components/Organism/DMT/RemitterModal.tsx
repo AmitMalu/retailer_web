@@ -73,6 +73,10 @@ const RemitterModal = ({
                                     required
                                     withAsterisk
                                     maxLength={12}
+                                    allowCharacter={false}
+                                    allowSpace={false}
+                                    allowSpecialChar={false}
+                                    strictSpecialCharBlock
                                     size="sm"
                                 />
                             </Grid.Col>
@@ -96,6 +100,10 @@ const RemitterModal = ({
                                     required
                                     withAsterisk
                                     maxLength={12}
+                                    allowCharacter={false}
+                                    allowSpace={false}
+                                    allowSpecialChar={false}
+                                    strictSpecialCharBlock
                                     size="sm"
                                 />
                             </Grid.Col>
@@ -177,6 +185,10 @@ const RemitterModal = ({
                                     placeholder="Enter OTP"
                                     required
                                     withAsterisk
+                                    allowCharacter={false}
+                                    allowSpace={false}
+                                    allowSpecialChar={false}
+                                    strictSpecialCharBlock
                                     maxLength={6}
                                 />
                             </Grid.Col>

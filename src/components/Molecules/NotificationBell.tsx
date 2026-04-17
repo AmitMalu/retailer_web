@@ -208,7 +208,8 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
                     mb="xs"
                     style={{
                       borderRadius: '6px',
-                      border: `1px solid ${!notification.isRead ? getSeverityColor(notification.severity) : theme.palette.divider}`,
+                      border: `1px solid ${theme.palette.divider}`,
+                      borderLeft: !notification.isRead ? `3px solid ${getSeverityColor(notification.severity)}` : '1px solid ' + theme.palette.divider,
                       backgroundColor: !notification.isRead ? theme.palette.action.hover : theme.palette.background.paper,
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
