@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { setLocationCache, clearLocationCache } from "@/Utils/locationCache";
 
 interface LocationState {
   lat: number | null;
@@ -28,12 +29,20 @@ const locationSlice = createSlice({
         state.ipAddress = action.payload.ipAddress;
       }
       state.loading = false;
+      // Update cache for API service
+      setLocationCache({
+        lat: action.payload.lat,
+        lng: action.payload.lng,
+        ipAddress: action.payload.ipAddress,
+      });
     },
     clearLocation: (state) => {
       state.lat = null;
       state.lng = null;
       state.ipAddress = null;
       state.loading = false;
+      // Clear cache for API service
+      clearLocationCache();
     },
     setIpAddress: (state, action: PayloadAction<string>) => {
       state.ipAddress = action.payload;

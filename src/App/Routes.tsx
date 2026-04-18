@@ -1,5 +1,5 @@
 import { Route, Routes, Navigate, Outlet } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, memo } from "react";
 import MainLayout from "@/components/layouts/MainLayout";
 import ForgotPassword from "@/pages/Auth/ForgotPassword";
 import OtpInputScreen from "@/pages/Auth/Otp";
@@ -158,9 +158,24 @@ const CatchAllRedirect = () => {
 //   return getToken() ? <Outlet /> : <Navigate to="/login" />;
 // };
 
-const ProtecteAuthRoute: React.FC<{ children?: React.ReactNode }> = ({ }) => {
-  return getToken() ? <Navigate to="/dashboard" /> : <Outlet />;
-};
+const ProtecteAuthRoute: React.FC<{ children?: React.ReactNode }> = memo(({ }) => {
+  const hasToken = getToken();
+  const currentPath = window.location.pathname;
+  const isLoggingOut = sessionStorage.getItem("isLoggingOut");
+  const preventNavigation = sessionStorage.getItem("preventNavigation");
+  
+  // Prevent navigation during logout process
+  if (isLoggingOut === "true" || preventNavigation === "true") {
+    return <Outlet />;
+  }
+  
+  // Only navigate if not already at target
+  if (hasToken && currentPath !== "/dashboard") {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return <Outlet />;
+});
 
 const RouterOutlet = () => {
   return (
