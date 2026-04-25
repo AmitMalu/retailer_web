@@ -44,9 +44,9 @@ const WalletToBankFund = () => {
 
   const { checkDuplicate, store } = useTransactionCooldown("FUND_REQUEST");
 
-  const ipAddress = apiResponses?.ipAddress
-    ? decryptData(apiResponses?.ipAddress)
-    : null;
+  // const ipAddress = apiResponses?.ipAddress
+  //   ? decryptData(apiResponses?.ipAddress)
+  //   : null;
 
   const validationSchema = Yup.object().shape({
     depositType: Yup.string().required("Required"),
@@ -144,7 +144,7 @@ const WalletToBankFund = () => {
         bankTranId: values.transactionId,
         narration: values.narration,
         paymentMode: values.paymentMode,
-        ipAddress: ipAddress,
+        // ipAddress: ipAddress,
         depositDate: values.depositDate ? moment(values.depositDate).format("YYYY-MM-DD") : null,
         ...(isRetailer && {
           subProductId,
@@ -436,7 +436,7 @@ const WalletToBankFund = () => {
                   />
                 </div>
               </div>
-              <div className="mt-8 flex w-full items-center justify-end ">
+              <div className="mt-8 flex w-full items-center justify-center">
                 <ButtonComponent
                   title="Submit"
                   variant="filled"

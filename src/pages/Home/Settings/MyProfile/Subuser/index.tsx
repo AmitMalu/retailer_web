@@ -672,7 +672,7 @@ const SubuserCreation = () => {
                     </div>
                   </div >
 
-                  <div className="mt-8 flex w-full items-center justify-end ">
+                  <div className="mt-8 flex w-full items-center justify-center">
                     <ButtonComponent
                       title="Submit"
                       variant="filled"

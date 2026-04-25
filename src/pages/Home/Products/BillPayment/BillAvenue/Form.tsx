@@ -1,9 +1,9 @@
 import { RootState } from "@/Redux/Store";
 import { decryptData } from "@/Utils/helper";
 import { useTheme } from "@mui/system";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import MyLoader from "@/components/Atoms/Loader";
 import { Drawer, Loader, Modal, UnstyledButton } from "@mantine/core";
 import TextComponent from "@/components/Atoms/TextComponent";
@@ -31,10 +31,17 @@ interface Props {
     vendor: string;
 }
 
-const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-line @typescript-eslint/no-unused-vars */ }) => {
+const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
     // vendor prop is reserved for future vendor-specific logic
     const navigate = useNavigate();
     const theme = useTheme();
+    
+    // Check if this is a credit card shortcut navigation
+    // Only apply if serviceName is "Credit Card" AND we came directly from the shortcut (not through BBPS service screen)
+    const location = useLocation();
+    const isCreditCardShortcut = serviceName === "Credit Card" && 
+                                vendor?.toLowerCase().includes("avenue") && 
+                                location.state?.fromCreditCardShortcut === true;
 
     const [isLoading, setIsLoading] = useState(false);
     const [providerList, setProviderList] = useState([]);
@@ -50,6 +57,12 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
     const [receiptData, setReceiptData] = useState<any>(null);
 
     const [requestId, setRequestId] = useState('')
+    
+    // Ref for first Formik to enable form reset
+    const firstFormikRef = useRef<any>(null);
+    
+    // Key to force Formik remount when modal closes
+    const [formKey, setFormKey] = useState(0);
 
     const apiResponses = useSelector(
         (state: RootState) => state.apiResponse?.responses
@@ -398,11 +411,17 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                     {/* Back Button */}
                     <UnstyledButton
                         onClick={() => {
-                            navigate(`/products/billPay/service`, {
-                                state: {
-                                    subProductId,
-                                },
-                            });
+                            if (isCreditCardShortcut) {
+                                // Navigate back to products page for credit card shortcut
+                                navigate("/products");
+                            } else {
+                                // Normal BBPS navigation
+                                navigate(`/products/billPay/service`, {
+                                    state: {
+                                        subProductId,
+                                    },
+                                });
+                            }
                         }}
                     >
                         <BackSvgIcon color={theme.palette.primary.main} />
@@ -421,12 +440,14 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                 {/*Fetch Bill Details Form */}
                 <div className="mt-3 flex h-full flex-col justify-between">
                     <Formik<FormikValues>
+                        key={formKey}
                         initialValues={initialValues}
                         validationSchema={validationSchema}
                         onSubmit={handleFetchDetailsSubmit}
                         validateOnMount={false}
                         validateOnBlur={true}
                         validateOnChange={true}
+                        innerRef={firstFormikRef}
                     >
                         {(formik) => {
 
@@ -493,7 +514,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                                             onClick={() => {
                                                 handleSubmit();
                                             }}
-                                            disabled={isLoading}
+                                            disabled={isLoading || billModalOpened}
                                             radius={10}
                                             width={150}
                                         />
@@ -507,12 +528,19 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                 {/* Bill Payment Form */}
                 <Modal
                     opened={billModalOpened}
-                    onClose={() => !isLoading && setBillModalOpened(false)}
+                    onClose={() => {
+                        if (!isLoading) {
+                            setBillModalOpened(false);
+                            // Force Formik remount by incrementing key
+                            setFormKey(prev => prev + 1);
+                        }
+                    }}
                     title="Bill Details"
                     size="xl"
                     centered
                     closeOnEscape={false}
                     closeOnClickOutside={false}
+                    trapFocus={false}
                     styles={{
                         title: {
                             fontSize: "1.5rem",
@@ -564,6 +592,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
 
                                                         <div className="mt-6 flex h-9 w-full items-center justify-end">
                                                             <ButtonComponent
+
                                                                 type="submit"
                                                                 width={120}
                                                                 title={"SUBMIT"}
@@ -593,11 +622,26 @@ const Form: React.FC<Props> = ({ serviceName, subProductId,  /* eslint-disable-l
                         setSelectedProviderDetails(null);
                         setRequestId('');
                         setReceiptDrawerOpened(false);
-                        navigate(`/products/billPay/service`, {
-                            state: {
-                                subProductId: subProductId,
-                            },
-                        });
+                        
+                        if (isCreditCardShortcut) {
+                            // Navigate back to credit card form for shortcut users
+                            // navigate("/products/billPay/form", {
+                            //     state: {
+                            //         vendor: vendor,
+                            //         subProductId: subProductId,
+                            //         serviceName: "Credit Card",
+                            //         fromCreditCardShortcut: true
+                            //     }
+                            // });
+                            setFormKey(prev => prev + 1);
+                        } else {
+                            // Normal BBPS navigation
+                            navigate(`/products/billPay/service`, {
+                                state: {
+                                    subProductId: subProductId,
+                                },
+                            });
+                        }
                     }}
                     closeOnEscape={false}
                     closeOnClickOutside={false}

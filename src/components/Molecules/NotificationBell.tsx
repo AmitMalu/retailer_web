@@ -27,9 +27,12 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
   const [selectedNotification, setSelectedNotification] = useState<NotificationMessage | null>(null);
 
   useEffect(() => {
-    // Fetch notifications on component mount (unread count calculated from data)
-    dispatch(fetchNotifications({ page: 0, size: 5 }));
-  }, [dispatch]);
+    // Only fetch notifications if they haven't been loaded yet
+    if (notifications.length === 0 && !isLoadingMore) {
+      dispatch(fetchNotifications({ page: 0, size: 5 }));
+    } else {
+    }
+  }, [dispatch, notifications.length, isLoadingMore]);
 
   const handleMarkAllAsRead = async () => {
     try {
@@ -201,7 +204,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
                   </Text>
                 </Box>
               ) : (
-                notifications.map((notification) => (
+                notifications.map((notification:NotificationMessage) => (
                   <Box
                     key={notification.id}
                     p="xs"

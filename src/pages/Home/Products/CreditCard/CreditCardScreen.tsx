@@ -67,7 +67,7 @@ const CreditCardScreen = () => {
             showErrorNotification(
                 "This Service is currently inactive. Please contact support for more information."
             );
-            navigate("/products", { replace: true });
+            navigate("/products");
             return;
         }
 
@@ -76,9 +76,9 @@ const CreditCardScreen = () => {
             state: {
                 vendor: billAvenue.vendorName,
                 subProductId: billAvenue.subProductId,
-                serviceName: "Credit Card"
-            },
-            replace: true
+                serviceName: "Credit Card",
+                fromCreditCardShortcut: true
+            }
         });
 
     }, [loginData, navigate]);

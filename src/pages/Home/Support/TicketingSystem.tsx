@@ -695,7 +695,7 @@ const Ticketing = () => {
                         />
                       </div>
                     </div>
-                    <div className="mt-5 flex w-full items-center justify-end">
+                    <div className="mt-5 flex w-full items-center justify-center">
                       <ButtonComponent
                         title="Submit"
                         variant="filled"
