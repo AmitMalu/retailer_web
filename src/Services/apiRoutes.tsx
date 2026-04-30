@@ -29,6 +29,7 @@ export const API_ROUTES = {
   // WALLET_TO_BANK: `${BASE_URL}/api/move-to-bank/send-payout-request-VO`, //old url 
   WALLET_TO_BANK: `${BASE_URL}/api/send-payout-vo`,
   FETCH_HIERARCHY_BANKS: `${BASE_URL}/api/bank-details/verified`,
+  FETCH_ADMIN_BANKS: `${BASE_URL}/api/im-bank/list`,
 
   ///////////////// CREATE USER //////////////////////////
   CREATE_WHITE_LABEL: `${BASE_URL}/api/white-labels`,

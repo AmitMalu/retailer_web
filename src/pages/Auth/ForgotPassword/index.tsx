@@ -47,7 +47,7 @@ const ForgotPassword: React.FC = () => {
         response?.data?.statusCode === "200"
       ) {
         showSuccessNotification("OTP sent successfully");
-        navigate("/otpInput", { state: { userName: values.userName, otp: response?.data?.data?.OTP } });
+        navigate("/otpInput", { state: { userName: values.userName } }); // Disabled auto OTP functionality
       } else {
         showErrorNotification(response?.data?.message || "Unable to send OTP");
       }

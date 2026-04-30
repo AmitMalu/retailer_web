@@ -91,7 +91,7 @@ const RechargeTransactionReceipt = ({ data }: RechargeReceiptProps) => {
                     {/* Operator */}
                     <Table.Tr>
                         <Table.Td fw={500}>Operator</Table.Td>
-                        <Table.Td>{dash(data?.operatorName)}</Table.Td>
+                        <Table.Td>{dash(data?.operatorName || data?.operatorCode)}</Table.Td>
                     </Table.Tr>
 
                     {/* Mobile Number (only for mobile recharge) */}
@@ -125,7 +125,7 @@ const RechargeTransactionReceipt = ({ data }: RechargeReceiptProps) => {
                     {/* Transaction ID */}
                     <Table.Tr>
                         <Table.Td fw={500}>TX ID</Table.Td>
-                        <Table.Td>{dash(data?.transactionRef || data?.transactionId || data?.orderId)}</Table.Td>
+                        <Table.Td>{dash(data?.transactionRef || data?.transactionId || data?.orderId || data?.tranxId)}</Table.Td>
                     </Table.Tr>
 
                     {/* Transaction Status */}

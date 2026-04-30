@@ -16,6 +16,10 @@ const AppContent = ({ darkMode }: { darkMode: boolean }) => {
   // Initialize WebSocket connection for real-time notifications
   useWebSocket();
 
+  // Get login data to check authentication status
+  const apiResponses = useAppSelector((state: any) => state.apiResponse.responses);
+  const loginData = apiResponses?.loginData;
+
   // Sync dark mode class for Tailwind
   useLayoutEffect(() => {
     if (darkMode) {
@@ -29,7 +33,7 @@ const AppContent = ({ darkMode }: { darkMode: boolean }) => {
     <MantineProvider forceColorScheme={darkMode ? "dark" : "light"}>
       <LocationGuard />
       <RouterOutlet />
-      <ChatBot />
+      {loginData && <ChatBot />}
     </MantineProvider>
   );
 };

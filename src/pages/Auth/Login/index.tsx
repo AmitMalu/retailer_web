@@ -10,7 +10,6 @@ import Loader from "../../../components/Atoms/Loader";
 import { login } from "@/Services/api";
 import {
   showErrorNotification,
-  showSuccessNotification,
 } from "@/Utils/notifications";
 import {
   CloseEyeSvgIcon,
@@ -105,10 +104,8 @@ const Login: React.FC = () => {
         }
 
         navigate("/otpInput", {
-          // state: { userName: values.userName, login: true },
-          state: { userName: values.userName, login: true, otp: response?.data?.data?.otp },
+          state: { userName: values.userName, login: true },
         })
-        showSuccessNotification(response?.data?.data?.otp);
       } else {
         showErrorNotification(response?.data?.message || "Unable to login");
       }

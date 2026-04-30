@@ -36,7 +36,7 @@ const OtpInputScreen = () => {
   const location = useLocation();
   const username = location.state?.userName;
   const isLogin = location.state?.login;
-  const [autoOtp, setAutoOtp] = useState<string>(location.state?.otp || "");
+  // const [autoOtp, setAutoOtp] = useState<string>(location.state?.otp || "");
   const [isLoading, setIsLoading] = useState(false);
   const [timer, setTimer] = useState(30);
   const [hasStartedTimer, setHasStartedTimer] = useState(false);
@@ -44,14 +44,14 @@ const OtpInputScreen = () => {
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const { connect } = useWebSocket();
 
-  useEffect(() => {
-    // If the OTP is pre-populated and complete (6 digits), focus the submit button
-    if (autoOtp && autoOtp.length === 6) {
-      setTimeout(() => {
-        submitButtonRef.current?.focus();
-      }, 100); // small delay to ensure DOM is ready and OtpInput isn't stealing focus back
-    }
-  }, [autoOtp]);
+  // useEffect(() => {
+  //   // If the OTP is pre-populated and complete (6 digits), focus the submit button
+  //   if (autoOtp && autoOtp.length === 6) {
+  //     setTimeout(() => {
+  //       submitButtonRef.current?.focus();
+  //     }, 100); // small delay to ensure DOM is ready and OtpInput isn't stealing focus back
+  //   }
+  // }, [autoOtp]); // Disabled auto OTP functionality
 
   useEffect(() => {
     if (username && !hasStartedTimer) {
@@ -75,11 +75,13 @@ const OtpInputScreen = () => {
   }, [timer]);
 
   const validationSchema = Yup.object({
-    otp: Yup.string().required("Required"),
+    otp: Yup.string()
+    .matches(/^\d{6}$/, "OTP must be 6 digits")
+    .required("Required"),
   });
 
   const initialValues: OtpRequestProps = {
-    otp: autoOtp,
+    otp: "", // autoOtp, // Disabled auto OTP functionality
     userName: username,
   };
 
@@ -137,15 +139,15 @@ const OtpInputScreen = () => {
   const handleResendOtp = async () => {
     try {
       setIsLoading(true);
-      const response = await Resend_Otp({
+      await Resend_Otp({
         userName: username,
       });
       setTimer(30);
       setHasStartedTimer(true);
-      if (response?.data?.data?.otp) {
-        setAutoOtp(response.data.data.otp);
-      }
-      showSuccessNotification(response?.data?.data?.otp);
+      // if (response?.data?.data?.otp) {
+      //   setAutoOtp(response.data.data.otp);
+      // }
+      // showSuccessNotification(response?.data?.data?.otp); // Disabled auto OTP notification
     } catch (error: any) {
       setIsLoading(false);
       showErrorNotification(error.response?.data?.message || error.message);
@@ -190,10 +192,10 @@ const OtpInputScreen = () => {
                   <form className="w-full" onSubmit={handleSubmit}>
                     <div className="mb-3 mt-10 flex gap-4 w-full flex-col items-center justify-center">
                       <OtpInput
-                        shouldAutoFocus={!autoOtp || autoOtp.length < 6}
+                        shouldAutoFocus={true} // {!autoOtp || autoOtp.length < 6} // Disabled auto OTP functionality
                         value={values.otp}
                         onChange={handleChange("otp")}
-                        renderInput={(props) => <input {...props} />}
+                        renderInput={(props) => <input {...props} type="text" inputMode="numeric" pattern="[0-9]*" onKeyPress={(e) => { if (!/[0-9]/.test(e.key)) { e.preventDefault(); } if (e.key === 'Enter') { handleSubmit(); } }} />}
                         numInputs={6}
                         inputStyle={{
                           width: "2.5rem",
