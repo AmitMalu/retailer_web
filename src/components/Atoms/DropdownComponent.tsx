@@ -97,7 +97,7 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
             fontSize: "16px",
             fontWeight: 400,
             transform: "translate(14px, 16px) scale(1)",
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor: theme.palette.background.default,
             zIndex: 1,
             "&.Mui-focused, &.MuiFormLabel-filled": {
               color: error ? "error.main" : "primary.main",

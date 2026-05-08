@@ -422,7 +422,7 @@ const FundReversal = () => {
                     )}
                   </div>
 
-                  <div className="mt-6 flex h-9 w-full items-center justify-end">
+                  <div className="mt-6 flex h-9 w-full items-center justify-center">
                     <ButtonComponent
                       width={120}
                       title={"VERIFY"}

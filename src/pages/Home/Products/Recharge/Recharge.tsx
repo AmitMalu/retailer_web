@@ -9,10 +9,11 @@ import { Container, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
-import { Card, Grid, Stack, Group, Center, Box } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { Card, Grid, Stack, Group, Center, Box, Drawer } from "@mantine/core";
+import { useEffect, useState, useRef } from "react";
 import PlanDrawer from "./components/PlanDrawer";
 import SubscriberCard from "./components/SubscriberCard";
+import RechargeTransactionReceipt from "./RechargeTransactionReceipt";
 import { Recharge_Fetch_Operator, Recharge_Fetch_Plans, Recharge_Mobile_Lookup, Recharge_Transaction } from "@/Services/api";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
@@ -72,6 +73,9 @@ const Recharge = () => {
     const [plans, setPlans] = useState<any>([]);
     const [lookupInfo, setLookupInfo] = useState<any>(null);
     const [planTypes, setPlanTypes] = useState<string[]>([]);
+    const [showReceipt, setShowReceipt] = useState(false);
+    const [receiptData, setReceiptData] = useState<any>(null);
+    const resetFormRef = useRef<any>(null);
 
     const { responses } = useAppSelector(state => state.apiResponse)
 
@@ -324,6 +328,8 @@ const Recharge = () => {
     }, [])
 
     const handleSubmit = async (values: RechargeFormValues, resetForm: any) => {
+        // Store resetForm function in ref for later use
+        resetFormRef.current = resetForm;
         try {
             setIsLoading(true)
 
@@ -356,13 +362,19 @@ const Recharge = () => {
 
             if (outerData?.statusCode === 200) {
                 const innerData = outerData?.data
-                if (innerData?.status == "FAILED") {
-                    showErrorNotification(innerData?.message || "Failed to Process Recharge")
-                } else {
-                    showSuccessNotification("Recharge Processed")
-                    setSubscriber(null)
-                    resetForm();
-                }
+                // if (innerData?.status == "FAILED") {
+                //     showErrorNotification(innerData?.message || "Failed to Process Recharge")
+                // } else {
+                showSuccessNotification("Recharge Processed")
+                // Merge request and response data into single object for receipt
+                const mergedData = {
+                    ...payload,
+                    ...innerData,
+                    responseDateTime: innerData?.responseDateTime || new Date().toISOString()
+                };
+                setReceiptData(mergedData)
+                setShowReceipt(true)
+                // }
             } else {
                 showErrorNotification(response?.data?.message || "Failed to Process Recharge")
             }
@@ -377,6 +389,15 @@ const Recharge = () => {
     const getSelectedOperatorName = (spKey: string) => {
         const op = mobileOperators.find(o => o.value === spKey);
         return op?.label || "";
+    };
+
+    const handleReceiptClose = () => {
+        setShowReceipt(false);
+        setSubscriber(null);
+        if (resetFormRef.current) {
+            resetFormRef.current();
+        }
+        setReceiptData(null);
     };
 
     return (
@@ -681,6 +702,23 @@ const Recharge = () => {
                     }}
                 </Formik>
             </div >
+
+            {/* Receipt Modal */}
+            <Drawer
+                opened={showReceipt}
+                onClose={handleReceiptClose}
+                size="xl"
+                position="right"
+                closeOnEscape={false}
+                closeOnClickOutside={false}
+                className="receipt-modal"
+            >
+                {receiptData && (
+                    <RechargeTransactionReceipt
+                        data={receiptData}
+                    />
+                )}
+            </Drawer>
         </>
     );
 };

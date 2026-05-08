@@ -1,5 +1,6 @@
 import axios from "axios";
 import { InternalAxiosRequestConfig } from "axios";
+import { getLocationCache } from "@/Utils/locationCache";
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   isMultipart?: boolean;
@@ -34,17 +35,28 @@ api.interceptors.request.use(
     let lng = "";
     let ipAddress = "";
 
-    try {
-      const persistRoot = localStorage.getItem("persist:root");
-      if (persistRoot) {
-        const parsedRoot = JSON.parse(persistRoot);
-        const locationData = JSON.parse(parsedRoot.location || "{}");
-        lat = locationData.lat || "";
-        lng = locationData.lng || "";
-        ipAddress = locationData.ipAddress || "";
+    // First try to get location from cache (avoids circular dependency)
+    const cachedLocation = getLocationCache();
+    if (cachedLocation) {
+      lat = cachedLocation.lat;
+      lng = cachedLocation.lng;
+      ipAddress = cachedLocation.ipAddress;
+    }
+
+    // Fallback to localStorage if cache doesn't have complete location data
+    if (!lat || !lng || !ipAddress) {
+      try {
+        const persistRoot = localStorage.getItem("persist:root");
+        if (persistRoot) {
+          const parsedRoot = JSON.parse(persistRoot);
+          const locationData = JSON.parse(parsedRoot.location || "{}");
+          lat = lat || locationData.lat || "";
+          lng = lng || locationData.lng || "";
+          ipAddress = ipAddress || locationData.ipAddress || "";
+        }
+      } catch (err) {
+        console.error("ERROR reading location from persist storage:", err);
       }
-    } catch (err) {
-      console.error("ERROR reading location from persist storage:", err);
     }
 
     if (token) {

@@ -16,7 +16,7 @@ export interface BotConfigItem {
 const ROLES_ALL: UserRole[] = ["WL", "SD", "PT", "DT", "RT", "RU"];
 const ROLES_RT_RU: UserRole[] = ["RT", "RU"];
 const ROLES_WL_SD_PT_DT: UserRole[] = ["WL", "SD", "PT", "DT"];
-const ROLES_WL_SD_RT_RU: UserRole[] = ["WL", "SD", "RT", "RU"];
+// const ROLES_WL_SD_RT_RU: UserRole[] = ["WL", "SD", "RT", "RU"];
 
 export const BOT_ROUTE_OPTIONS: BotOption[] = [
   { label: "Dashboard", path: "/dashboard", allowedRoles: ROLES_ALL },
@@ -38,11 +38,11 @@ export const BOT_ROUTE_OPTIONS: BotOption[] = [
     path: "/manageUser/createUser",
     allowedRoles: ROLES_WL_SD_PT_DT,
   },
-  {
-    label: "Debit and Credit User",
-    path: "/manageUser/debitAndCreditUser",
-    allowedRoles: ROLES_WL_SD_PT_DT,
-  },
+  // {
+  //   label: "Debit and Credit User",
+  //   path: "/manageUser/debitAndCreditUser",
+  //   allowedRoles: ROLES_WL_SD_PT_DT,
+  // },
   {
     label: "View User",
     path: "/manageUser/ViewUser",
@@ -64,11 +64,11 @@ export const BOT_ROUTE_OPTIONS: BotOption[] = [
     path: "/reports/txn-wallet-report",
     allowedRoles: ROLES_RT_RU,
   },
-  {
-    label: "Account Summary",
-    path: "/reports/accountSummary",
-    allowedRoles: ROLES_ALL,
-  },
+  // {
+  //   label: "Account Summary",
+  //   path: "/reports/accountSummary",
+  //   allowedRoles: ROLES_ALL,
+  // },
   {
     label: "Wallet Report",
     path: "/reports/WalletReport",
@@ -79,21 +79,21 @@ export const BOT_ROUTE_OPTIONS: BotOption[] = [
     path: "/reports/searchTransaction",
     allowedRoles: ROLES_ALL,
   },
-  {
-    label: "Download Report",
-    path: "/reports/downloadReport",
-    allowedRoles: ROLES_ALL,
-  },
+  // {
+  //   label: "Download Report",
+  //   path: "/reports/downloadReport",
+  //   allowedRoles: ROLES_ALL,
+  // },
   {
     label: "Fund Loading",
     path: "/reports/fundLoading",
     allowedRoles: ROLES_ALL,
   },
-  {
-    label: "Payment Loading",
-    path: "/reports/paymentLoading",
-    allowedRoles: ROLES_WL_SD_PT_DT,
-  },
+  // {
+  //   label: "Payment Loading",
+  //   path: "/reports/paymentLoading",
+  //   allowedRoles: ROLES_WL_SD_PT_DT,
+  // },
   {
     label: "Commission and Charges",
     path: "/reports/commissionAndCharges",
@@ -109,16 +109,16 @@ export const BOT_ROUTE_OPTIONS: BotOption[] = [
     path: "/reports/debitHistory",
     allowedRoles: ROLES_WL_SD_PT_DT,
   },
-  {
-    label: "Agent Performance",
-    path: "/reports/agentPerformance",
-    allowedRoles: ROLES_WL_SD_PT_DT,
-  },
-  {
-    label: "Bank Withdrawal",
-    path: "/reports/bankWithdrawal",
-    allowedRoles: ROLES_WL_SD_PT_DT,
-  },
+  // {
+  //   label: "Agent Performance",
+  //   path: "/reports/agentPerformance",
+  //   allowedRoles: ROLES_WL_SD_PT_DT,
+  // },
+  // {
+  //   label: "Bank Withdrawal",
+  //   path: "/reports/bankWithdrawal",
+  //   allowedRoles: ROLES_WL_SD_PT_DT,
+  // },
   {
     label: "Down Line Balance",
     path: "/reports/downLineBalance",
@@ -132,87 +132,87 @@ export const BOT_ROUTE_OPTIONS: BotOption[] = [
     path: "/settings/ViewSubUser",
     allowedRoles: ["RT"],
   },
-  {
-    label: "Change TPIN",
-    path: "/settings/changeTPIN",
-    allowedRoles: ROLES_ALL,
-  },
-  {
-    label: "My Certificate",
-    path: "/settings/myCertificate",
-    allowedRoles: ROLES_ALL,
-  },
-  {
-    label: "Low Balance Alert",
-    path: "/settings/lowBalanceAlert",
-    allowedRoles: ROLES_RT_RU,
-  },
-  {
-    label: "ID Card",
-    path: "/settings/idCard",
-    allowedRoles: ROLES_WL_SD_PT_DT,
-  },
-  {
-    label: "Bio Metric Device",
-    path: "/support/bioMetricDevice",
-    allowedRoles: ROLES_RT_RU,
-  },
+  // {
+  //   label: "Change TPIN",
+  //   path: "/settings/changeTPIN",
+  //   allowedRoles: ROLES_ALL,
+  // },
+  // {
+  //   label: "My Certificate",
+  //   path: "/settings/myCertificate",
+  //   allowedRoles: ROLES_ALL,
+  // },
+  // {
+  //   label: "Low Balance Alert",
+  //   path: "/settings/lowBalanceAlert",
+  //   allowedRoles: ROLES_RT_RU,
+  // },
+  // {
+  //   label: "ID Card",
+  //   path: "/settings/idCard",
+  //   allowedRoles: ROLES_WL_SD_PT_DT,
+  // },
+  // {
+  //   label: "Bio Metric Device",
+  //   path: "/support/bioMetricDevice",
+  //   allowedRoles: ROLES_RT_RU,
+  // },
   {
     label: "Ticketing System",
     path: "/support/ticketingSystem",
     allowedRoles: ROLES_ALL,
   },
-  {
-    label: "Contact Us",
-    path: "/support/contactUs",
-    allowedRoles: ROLES_WL_SD_RT_RU,
-  },
-  {
-    label: "Top Up Request",
-    path: "/support/topUpRequest",
-    allowedRoles: ROLES_WL_SD_PT_DT,
-  },
-  {
-    label: "Top Up History",
-    path: "/support/topUpHistory",
-    allowedRoles: ROLES_WL_SD_PT_DT,
-  },
-  {
-    label: "Add Money",
-    path: "/support/addMoney",
-    allowedRoles: ROLES_WL_SD_PT_DT,
-  },
-  {
-    label: "Payment Request",
-    path: "/support/paymentRequest",
-    allowedRoles: ROLES_WL_SD_PT_DT,
-  },
-  {
-    label: "Payment History",
-    path: "/support/paymentHistory",
-    allowedRoles: ROLES_WL_SD_PT_DT,
-  },
-  {
-    label: "Payment Banks",
-    path: "/support/paymentBanks",
-    allowedRoles: ROLES_WL_SD_PT_DT,
-  },
+  // {
+  //   label: "Contact Us",
+  //   path: "/support/contactUs",
+  //   allowedRoles: ROLES_WL_SD_RT_RU,
+  // },
+  // {
+  //   label: "Top Up Request",
+  //   path: "/support/topUpRequest",
+  //   allowedRoles: ROLES_WL_SD_PT_DT,
+  // },
+  // {
+  //   label: "Top Up History",
+  //   path: "/support/topUpHistory",
+  //   allowedRoles: ROLES_WL_SD_PT_DT,
+  // },
+  // {
+  //   label: "Add Money",
+  //   path: "/support/addMoney",
+  //   allowedRoles: ROLES_WL_SD_PT_DT,
+  // },
+  // {
+  //   label: "Payment Request",
+  //   path: "/support/paymentRequest",
+  //   allowedRoles: ROLES_WL_SD_PT_DT,
+  // },
+  // {
+  //   label: "Payment History",
+  //   path: "/support/paymentHistory",
+  //   allowedRoles: ROLES_WL_SD_PT_DT,
+  // },
+  // {
+  //   label: "Payment Banks",
+  //   path: "/support/paymentBanks",
+  //   allowedRoles: ROLES_WL_SD_PT_DT,
+  // },
 
-  {
-    label: "Wallet to Bank",
-    path: "/funding/walletToBank",
-    allowedRoles: ROLES_ALL,
-  },
-  {
-    label: "Fund Request",
-    path: "/funding/walletToBankFund",
-    allowedRoles: ROLES_ALL,
-  },
-  {
-    label: "Wallet to Wallet",
-    path: "/funding/walletToWallet",
-    allowedRoles: ROLES_ALL,
-  },
+  // {
+  //   label: "Wallet to Bank",
+  //   path: "/funding/walletToBank",
+  //   allowedRoles: ROLES_ALL,
+  // },
+  // {
+  //   label: "Fund Request",
+  //   path: "/funding/walletToBankFund",
+  //   allowedRoles: ROLES_ALL,
+  // },
+  // {
+  //   label: "Wallet to Wallet",
+  //   path: "/funding/walletToWallet",
+  //   allowedRoles: ROLES_ALL,
+  // },
   {
     label: "Fund Transfer",
     path: "/funding/fundTransfer",

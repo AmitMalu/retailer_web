@@ -1,0 +1,25 @@
+.print-area {
+    background: white;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .print-area {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+        margin: 0 !important;
+        padding: 20px !important;
+    }
+}
+
+.receipt-modal .mantine-Modal-body {
+    padding: 0;
+}
+
+.receipt-modal .mantine-Modal-content {
+    max-width: 600px;
+    margin: 0 auto;
+}

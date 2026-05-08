@@ -127,6 +127,10 @@ export const Get_Hierarchy_Banks = async (id: string) => {
   return await api.get(url);
 };
 
+export const Get_Admin_Banks = async () => {
+  return await api.get(API_ROUTES.FETCH_ADMIN_BANKS);
+};
+
 export const Wallet_Balance = async (id: string) =>
   await api.get(`${API_ROUTES.WALLET_BALANCE}/${id}`);
 
@@ -364,8 +368,14 @@ export const Fetch_Transaction_Receipt = async (transactionId: string) => {
   );
 };
 
+
+// DMT APIs
 export const Find_Remitter = async (data: any) => {
   return await api.post(`${API_ROUTES.FIND_REMITTER}`, data);
+};
+
+export const DMT_Merchant_Onboard_InstantPay = async (data: any) => {
+  return await api.post(`${API_ROUTES.DMT_MERCHANT_ONBOARD_INSTANTPAY}`, data);
 };
 
 export const Register_Remitter = async (data: any) => {

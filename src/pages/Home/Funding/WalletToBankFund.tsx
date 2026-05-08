@@ -1,7 +1,7 @@
 import { FundRequestProps } from "@/Common/interface";
 import { RootState } from "@/Redux/Store";
 import { decryptData, singleDateValidationSchema } from "@/Utils/helper";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
@@ -15,7 +15,7 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
-import { Prefund_Request } from "@/Services/api";
+import { Prefund_Request, Get_Admin_Banks } from "@/Services/api";
 import Loader from "@/components/Atoms/Loader";
 import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePicker";
 import { IconCalendar } from "@tabler/icons-react";
@@ -28,7 +28,8 @@ import { PRODUCT_KEYS } from "@/Utils/productKeys";
 const WalletToBankFund = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isfile, setFile] = useState<File | null>(null);
-  const [formKey, setFormKey] = useState(0)
+  const [formKey, setFormKey] = useState(0);
+  const [adminBankList, setAdminBankList] = useState<{ label: string, value: string }[]>([]);
 
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
@@ -44,25 +45,56 @@ const WalletToBankFund = () => {
 
   const { checkDuplicate, store } = useTransactionCooldown("FUND_REQUEST");
 
-  const ipAddress = apiResponses?.ipAddress
-    ? decryptData(apiResponses?.ipAddress)
-    : null;
+  const getAdminBanks = async () => {
+    try {
+      const response = await Get_Admin_Banks();
+      if (response?.data?.statusCode === 200) {
+        const formatted = response?.data?.data?.map((bank: any) => ({
+          value: bank?.accountNumber?.toString() || "",
+          label: `${bank?.bankName || ""}/${bank?.accountNumber || ""}`,
+        }));
+        setAdminBankList(formatted);
+      } else {
+        setAdminBankList([]);
+        showErrorNotification(response?.data?.message);
+      }
+    } catch (error) {
+      await handleCustomError(error);
+    }
+  };
+
+  useEffect(() => {
+    getAdminBanks();
+  }, []);
+
+  // const ipAddress = apiResponses?.ipAddress
+  //   ? decryptData(apiResponses?.ipAddress)
+  //   : null;
 
   const validationSchema = Yup.object().shape({
+    bankTransferTo: Yup.string().required("Required"),
     depositType: Yup.string().required("Required"),
     transactionId: Yup.string().required("Required")
       .min(5, "Must be at least 5 characters")
       .max(50, "Must be at most 50 characters")
     ,
-    bankName: Yup.string().required("Required")
-      .min(2, "Must be at least 2 characters")
-      .max(50, "Must be at most 50 characters"),
-    bankAccountNumber: Yup.string()
-      .transform((value) => (value ? value.replace(/\s+/g, "") : "")) // remove all spaces
-      .required("Required")
-      .matches(/^[0-9]+$/, "Must be only digits")
-      .min(9, "Must be at least 9 digits")
-      .max(18, "Must be at most 18 digits"),
+    bankName: Yup.string().when("depositType", ([depositType]) => {
+      return depositType === "Cash"
+        ? Yup.string().optional()
+        : Yup.string().required("Required")
+          .min(2, "Must be at least 2 characters")
+          .max(50, "Must be at most 50 characters");
+    }),
+    bankAccountNumber: Yup.string().when("depositType", ([depositType]) => {
+      return depositType === "Cash"
+        ? Yup.string().optional()
+        : Yup.string()
+          .transform((value) => (value ? value.replace(/\s+/g, "") : "")) // remove all spaces
+          .required("Required")
+          .matches(/^[0-9]+$/, "Must be only digits")
+          .min(9, "Must be at least 9 digits")
+          .max(18, "Must be at most 18 digits");
+    }),
     amount: Yup.string()
       .required("Required")
       .matches(/^(?!0+(?:\.0{1,3})?$)(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount greater than 0"),
@@ -79,14 +111,22 @@ const WalletToBankFund = () => {
       .test("fileType", "Required", (value) => {
         return value instanceof File;
       }),
-    bankAccountHolderName: Yup.string().required("Required")
-      .min(2, "Must be at least 2 characters")
-      .max(50, "Must be at most 50 characters")
-    ,
-    paymentMode: Yup.string().required("Required"),
+    bankAccountHolderName: Yup.string().when("depositType", ([depositType]) => {
+      return depositType === "Cash"
+        ? Yup.string().optional()
+        : Yup.string().required("Required")
+          .min(2, "Must be at least 2 characters")
+          .max(50, "Must be at most 50 characters");
+    }),
+    paymentMode: Yup.string().when("depositType", ([depositType]) => {
+      return depositType === "Cash"
+        ? Yup.string().optional()
+        : Yup.string().required("Required");
+    }),
   });
 
   const initialValues: FundRequestProps = {
+    bankTransferTo: "",
     depositType: "",
     transactionId: "",
     bankName: "",
@@ -143,8 +183,9 @@ const WalletToBankFund = () => {
         bankAccountNumber: values.bankAccountNumber,
         bankTranId: values.transactionId,
         narration: values.narration,
-        paymentMode: values.paymentMode,
-        ipAddress: ipAddress,
+        ...(values?.depositType?.toUpperCase() === "ONLINE" && { paymentMode: values.paymentMode }),
+        bankTransferTo: values.bankTransferTo,
+        // ipAddress: ipAddress,
         depositDate: values.depositDate ? moment(values.depositDate).format("YYYY-MM-DD") : null,
         ...(isRetailer && {
           subProductId,
@@ -218,6 +259,21 @@ const WalletToBankFund = () => {
               <div className="mt-16 w-full flex flex-wrap items-start justify-start gap-6 ">
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <DropdownComponent
+                    label="Admin Banks"
+                    data={adminBankList || []}
+                    value={values.bankTransferTo}
+                    withAsterisk
+                    onChange={(value) => setFieldValue("bankTransferTo", value)}
+                    error={
+                      touched.bankTransferTo && errors.bankTransferTo
+                        ? errors.bankTransferTo
+                        : ""
+                    }
+                    className="w-max"
+                  />
+                </div>
+                <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                  <DropdownComponent
                     label="Deposit Type"
                     data={[
                       { value: "Cash", label: "Cash" },
@@ -260,7 +316,7 @@ const WalletToBankFund = () => {
                     error={
                       touched.bankName && errors.bankName ? errors.bankName : ""
                     }
-                    withAsterisk
+                    withAsterisk={values.depositType !== "Cash"}
                     minLength={2}
                     maxLength={50}
                     allowSpecialChar={false}
@@ -283,7 +339,7 @@ const WalletToBankFund = () => {
                         : ""
                     }
                     // type="number"
-                    withAsterisk
+                    withAsterisk={values.depositType !== "Cash"}
                     minLength={9}
                     maxLength={18}
                     className="w-max"
@@ -303,28 +359,32 @@ const WalletToBankFund = () => {
                         ? errors.bankAccountHolderName
                         : ""
                     }
-                    withAsterisk
+                    allowSpecialChar={false}
+                    allowNumber={false}
+                    withAsterisk={values.depositType !== "Cash"}
                     className="w-max"
                   />
                 </div>
-                <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                  <DropdownComponent
-                    label="Payment Mode"
-                    data={[
-                      { value: "IMPS", label: "IMPS" },
-                      { value: "NEFT", label: "NEFT" },
-                    ]}
-                    value={values.paymentMode}
-                    withAsterisk
-                    onChange={(value) => setFieldValue("paymentMode", value)}
-                    error={
-                      touched.paymentMode && errors.paymentMode
-                        ? errors.paymentMode
-                        : ""
-                    }
-                    className="w-max"
-                  />
-                </div>
+                {values.depositType !== "Cash" && (
+                  <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                    <DropdownComponent
+                      label="Payment Mode"
+                      data={[
+                        { value: "IMPS", label: "IMPS" },
+                        { value: "NEFT", label: "NEFT" },
+                      ]}
+                      value={values.paymentMode}
+                      withAsterisk
+                      onChange={(value) => setFieldValue("paymentMode", value)}
+                      error={
+                        touched.paymentMode && errors.paymentMode
+                          ? errors.paymentMode
+                          : ""
+                      }
+                      className="w-max"
+                    />
+                  </div>
+                )}
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Amount"}
@@ -399,7 +459,7 @@ const WalletToBankFund = () => {
                     maxDate={new Date}
                     valueFormat="YYYY-MM-DD"
                     leftIcon={<IconCalendar size={24} />}
-                    styles={{ input: { height: "55px", fontSize: "18px" } }}
+                    styles={{ input: { height: "55px", fontSize: "18px", backgroundColor: "inherit" } }}
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
@@ -436,7 +496,7 @@ const WalletToBankFund = () => {
                   />
                 </div>
               </div>
-              <div className="mt-8 flex w-full items-center justify-end ">
+              <div className="mt-8 flex w-full items-center justify-center">
                 <ButtonComponent
                   title="Submit"
                   variant="filled"

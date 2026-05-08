@@ -499,6 +499,7 @@ export type FundRequestProps = {
   depositSlip: File | string | null;
   bankAccountHolderName: string;
   paymentMode: string;
+  bankTransferTo: string;
 };
 
 export type FundTransferProps = {

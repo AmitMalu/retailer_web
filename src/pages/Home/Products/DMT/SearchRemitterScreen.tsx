@@ -8,15 +8,17 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { FindRemitterProps } from "@/Common/interface";
-import { encryptPidData, MobileNoRegex } from "@/Utils/helper";
+import { decryptData, encryptPidData, MobileNoRegex } from "@/Utils/helper";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import NewButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
 import RemitterReceiptModal from "@/components/Organism/DMT/RemitterReceipt";
 import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
-import { Find_Remitter, Register_Remitter, Remitter_Kyc, Validate_Otp } from "@/Services/api";
+import { DMT_Merchant_Onboard_InstantPay, Find_Remitter, Register_Remitter, Remitter_Kyc, Validate_Otp } from "@/Services/api";
 import RemitterModal from "@/components/Organism/DMT/RemitterModal";
 import { useMemo } from "react";
+import DmtOnboardModal from "@/components/Organism/DMT/DmtOnboardModal";
+import { useAppSelector } from "@/Redux/hooks";
 
 const SearchRemitterScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +28,14 @@ const SearchRemitterScreen = () => {
   const { subProduct } = location.state || {};
   const { subProductId } = useParams();
 
+  const { responses } = useAppSelector(
+    (state) => state.apiResponse
+  );
+
+  const loginData = responses?.loginData
+    ? decryptData(responses?.loginData)
+    : null;
+
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [modalStep, setModalStep] = useState<null | "profile" | "ekyc" | "otp" | "register">(null);
   const [vendorFlow, setVendorFlow] = useState<"paysprint dmt" | "instantpay dmt" | null>(null);
@@ -34,6 +44,7 @@ const SearchRemitterScreen = () => {
   const [ekycId, setEkycId] = useState("");
   const [stateResp, setStateResp] = useState("");
   const [referenceKey, setReferenceKey] = useState(""); // For InstantPay flow
+  const [onboardModalOpen, setOnboardModalOpen] = useState(false);
 
   const [isNewRemitter, setIsNewRemitter] = useState(false);
   const [isRemitterReceipt, setIsRemitterReceipt] = useState(false);
@@ -142,7 +153,12 @@ const SearchRemitterScreen = () => {
       } else {
         showErrorNotification(response?.data?.message || "Something Went Wrong")
       }
-    } catch (error) {
+    } catch (error: any) {
+      // to open instantpay onboard modal
+      if (error?.response?.data?.message == "Merchant not onboarded with InstantPay") {
+        setOnboardModalOpen(true);
+        return
+      }
       handleCustomError(error || "Error in Search Remitter.");
     } finally {
       setIsLoading(false);
@@ -318,6 +334,31 @@ const SearchRemitterScreen = () => {
     }
   };
 
+  const handleOnboardNow = async () => {
+    setIsLoading(true);
+    setOnboardModalOpen(false);
+    try {
+      const res = await DMT_Merchant_Onboard_InstantPay(
+        {
+          retailerId: loginData?.hierarchyId,
+          subProductId
+        }
+      );
+
+      if (res.data == 200) {
+        showSuccessNotification(res?.data?.message || "Merchant onboarded successfully!");
+
+      } else {
+        showErrorNotification(res?.data?.data?.status || res?.data?.message || "Unable to onboard merchant");
+        return;
+      }
+    } catch (error) {
+      handleCustomError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   return (
     <>
@@ -374,10 +415,11 @@ const SearchRemitterScreen = () => {
                       <FormikTextInputComponent
                         name="mobileNumber"
                         placeholder="Enter Mobile Number"
-                        allowCharacter={false}
                         disabled={isNewRemitter}
+                        allowCharacter={false}
                         allowSpace={false}
                         allowSpecialChar={false}
+                        strictSpecialCharBlock
                         maxLength={10}
                         minLength={10}
                         withAsterisk
@@ -422,6 +464,13 @@ const SearchRemitterScreen = () => {
         <RemitterReceiptModal
           opened={isRemitterReceipt}
           onClose={() => setIsRemitterReceipt(false)}
+        />
+
+        <DmtOnboardModal
+          opened={onboardModalOpen}
+          onClose={() => setOnboardModalOpen(false)}
+          retailerName={loginData?.retailerName}
+          onOnboard={handleOnboardNow}
         />
       </div>
     </>

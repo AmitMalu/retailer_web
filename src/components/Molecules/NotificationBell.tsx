@@ -27,9 +27,12 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
   const [selectedNotification, setSelectedNotification] = useState<NotificationMessage | null>(null);
 
   useEffect(() => {
-    // Fetch notifications on component mount (unread count calculated from data)
-    dispatch(fetchNotifications({ page: 0, size: 5 }));
-  }, [dispatch]);
+    // Only fetch notifications if they haven't been loaded yet
+    if (notifications.length === 0 && !isLoadingMore) {
+      dispatch(fetchNotifications({ page: 0, size: 5 }));
+    } else {
+    }
+  }, [dispatch, notifications.length, isLoadingMore]);
 
   const handleMarkAllAsRead = async () => {
     try {
@@ -201,14 +204,15 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
                   </Text>
                 </Box>
               ) : (
-                notifications.map((notification) => (
+                notifications.map((notification:NotificationMessage) => (
                   <Box
                     key={notification.id}
                     p="xs"
                     mb="xs"
                     style={{
                       borderRadius: '6px',
-                      border: `1px solid ${!notification.isRead ? getSeverityColor(notification.severity) : theme.palette.divider}`,
+                      border: `1px solid ${theme.palette.divider}`,
+                      borderLeft: !notification.isRead ? `3px solid ${getSeverityColor(notification.severity)}` : '1px solid ' + theme.palette.divider,
                       backgroundColor: !notification.isRead ? theme.palette.action.hover : theme.palette.background.paper,
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',

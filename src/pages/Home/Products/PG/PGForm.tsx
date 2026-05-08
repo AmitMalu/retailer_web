@@ -169,6 +169,7 @@ const PGFormModal = ({
         //   "https://uat.decipay.in/enterprises/api/pg/payment/callback",
         productId: values.productId,
         subProductId: values.subProductId,
+        schemeCode: selectedSubProduct?.schemeCode ?? "",
         initiatedBy: loginData?.hierarchyId
       };
 

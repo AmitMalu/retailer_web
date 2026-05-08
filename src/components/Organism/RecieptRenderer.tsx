@@ -3,6 +3,7 @@ import BBPSTransactionReciept from "@/pages/Home/Products/BillPayment/BBPSTransa
 import DMTTransactionReceipt from "@/pages/Home/Products/DMT/DMTTransactionReceipt";
 import PayoutTransactionReceipt from "@/pages/Home/Products/Payout/PayoutTransactionReceipt";
 import PGTransactionReceipt from "@/pages/Home/Products/PG/PGTransactionReceipt";
+import RechargeTransactionReceipt from "@/pages/Home/Products/Recharge/RechargeTransactionReceipt";
 import { Text } from "@mantine/core";
 
 const resolveProductType = (productName: string) => {
@@ -15,6 +16,7 @@ const resolveProductType = (productName: string) => {
   if (val.includes("BBPS") || val.includes("BILL")) return "BBPS";
   if (val.includes("PAYOUT")) return "PAYOUT";
   if (val.includes("PAYMENT GATEWAY") || val.includes("PG") || val.includes("GATEWAY")) return "PG";
+  if (val.includes("RECHARGE")) return "RECHARGE";
 
   return "UNKNOWN";
 };
@@ -42,6 +44,9 @@ const ReceiptRenderer = ({ productType, data }: any) => {
 
     case "PG":
       return <PGTransactionReceipt data={data} />;
+
+    case "RECHARGE":
+      return <RechargeTransactionReceipt data={data} />;
 
     default:
       return <Text>No receipt available</Text>;

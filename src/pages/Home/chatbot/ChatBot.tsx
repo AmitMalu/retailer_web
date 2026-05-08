@@ -111,7 +111,7 @@ export default function ChatBot() {
           style={{
             position: "fixed",
             bottom: 20,
-            right: 20,
+            left: 20,
             zIndex: 9999,
             animation: isShaking ? "mudra-sevak-shake 0.7s ease-in-out" : "none",
             border: "#FFFFFF",
@@ -132,7 +132,7 @@ export default function ChatBot() {
           style={{
             position: "fixed",
             bottom: 90,
-            right: 20,
+            left: 20,
             zIndex: 9999,
             width: 320,
             height: 450,

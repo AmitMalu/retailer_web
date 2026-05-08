@@ -12,14 +12,14 @@ import {
 import { Grid, Loader } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import NewTextComponent from "@/components/Atoms/NewComponents/TextComponent";
-import { RefreshIcon, RefreshSvgIcon } from "@/assets/svg";
+import { RefreshIcon } from "@/assets/svg";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
 import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
 import { DatesRangeValue } from "@mantine/dates";
 import moment from "moment";
 import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
-import { useHierarchySubHierarchy } from "@/Utils/CustomHooks/useHierarchySubHierarchy";
+// import { useHierarchySubHierarchy } from "@/Utils/CustomHooks/useHierarchySubHierarchy";
 import { useDispatch } from "react-redux";
 import { useFetchList } from "@/Utils/CustomHooks/useFetchList";
 import { API_ROUTES } from "@/Services/apiRoutes";
@@ -55,23 +55,25 @@ const validationSchema = Yup.object({
   dateRange: dateRangeValidationSchema,
 });
 
-const transformPayload = (values: any) => {
-  const [fromDate, toDate] = values.dateRange || [];
-  return {
-    fromDate: fromDate ? formatYMDdate(fromDate) : null,
-    toDate: toDate ? formatYMDdate(toDate) : null,
-    hierarchyType: values.hierarchyType ?? "",
-    hierarchyId: values.hierarchyId ?? "",
-    walletType: values.walletType ?? "",
-    productId: values.productId ?? "",
-    reportType: values.reportType ?? "",
-  }
-}
-
-
 const CommissionAndCharges = () => {
   const theme = useTheme()
   const dispatch = useDispatch();
+
+  const transformPayload = (values: any, loginData: any) => {
+    const [fromDate, toDate] = values.dateRange || [];
+    return {
+      fromDate: fromDate ? formatYMDdate(fromDate) : null,
+      toDate: toDate ? formatYMDdate(toDate) : null,
+      // Use own hierarchy code and ID instead of selection
+      hierarchyType: loginData?.hierarchyId?.split("-")?.[1] || "",
+      hierarchyId: loginData?.hierarchyId || "",
+      // hierarchyType: values.hierarchyType ?? "",
+      // hierarchyId: values.hierarchyId ?? "",
+      walletType: values.walletType ?? "",
+      productId: values.productId ?? "",
+      reportType: values.reportType ? values.reportType : "CHARGE_COMMISSION",
+    }
+  }
 
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
@@ -108,9 +110,9 @@ const CommissionAndCharges = () => {
     sendPaginationIn: "body",
   });
 
-  const myHierarchyCode = loginData?.hierarchyId?.split("-")[1];
-  const hierarchyOrder = ["SA", "AD", "ET", "WL", "SD", "PT", "DT", "RT"];
-  const myLevelIndex = hierarchyOrder.indexOf(myHierarchyCode);
+  // const myHierarchyCode = loginData?.hierarchyId?.split("-")[1];
+  // const hierarchyOrder = ["SA", "AD", "ET", "WL", "SD", "PT", "DT", "RT"];
+  // const myLevelIndex = hierarchyOrder.indexOf(myHierarchyCode);
 
   const initialValues: CommissionAndChargesParams = {
     hierarchyType: loginData?.hierarchyId?.split("-")?.[1] || "",
@@ -160,10 +162,10 @@ const CommissionAndCharges = () => {
     setFilterValues({});
     setSubmittedFilter(null);
 
-    setPayload(transformPayload(initialValues));
+    setPayload(transformPayload(initialValues, loginData));
     setRefreshKey((prev) => prev + 1);
 
-    // ✅ Reset Formik ONLY
+    // Reset Formik ONLY
     formikRef.current?.resetForm({
       values: initialValues,
     });
@@ -185,8 +187,8 @@ const CommissionAndCharges = () => {
 
   const throttledSubmit = useThrottledFormSubmit((values: any) => {
     setPayload(() => ({
-      ...transformPayload(values), // top filters
-      ...(submittedFilter || {}),                      // 🔴 keep inline filters
+      ...transformPayload(values, loginData),
+      ...(submittedFilter || {}),
     }));
 
     setViewSubmitted(true);
@@ -217,12 +219,12 @@ const CommissionAndCharges = () => {
         validationSchema={validationSchema}
         onSubmit={throttledSubmit}
       >
-        {({ values, setFieldValue }) => {
+        {() => {
 
-          const { hierarchyList, loadingHierarchyList, subHierarchyList, loadingSubHierarchyList, subHierarchyKey, refetchHierarchy } = useHierarchySubHierarchy({
-            selectedHierarchyCode: values.hierarchyType,
-            onSubHierarchyReset: () => setFieldValue("hierarchyId", "")
-          })
+          // const { hierarchyList, loadingHierarchyList, subHierarchyList, loadingSubHierarchyList, subHierarchyKey, refetchHierarchy } = useHierarchySubHierarchy({
+          //   selectedHierarchyCode: values.hierarchyType,
+          //   onSubHierarchyReset: () => setFieldValue("hierarchyId", "")
+          // })
 
           const {
             productDropdownData,
@@ -230,9 +232,9 @@ const CommissionAndCharges = () => {
             refetchProducts
           } = useProductSubProduct({});
 
-          const filteredHierarchyList = hierarchyList?.filter(
-            (item: any) => hierarchyOrder.indexOf(item?.value) >= myLevelIndex
-          );
+          // const filteredHierarchyList = hierarchyList?.filter(
+          //   (item: any) => hierarchyOrder.indexOf(item?.value) >= myLevelIndex
+          // );
 
           return (
             <Form className="flex flex-col gap-2 mt-4">
@@ -284,7 +286,7 @@ const CommissionAndCharges = () => {
                   />
                 </Grid.Col>
 
-                <Grid.Col span={{ base: 4, xs: 4, md: 4, lg: 2 }}>
+                {/* <Grid.Col span={{ base: 4, xs: 4, md: 4, lg: 2 }}>
                   <FormikSelectComponent
                     name="hierarchyType"
                     size="xs"
@@ -315,9 +317,9 @@ const CommissionAndCharges = () => {
                       </>
                     }
                   />
-                </Grid.Col>
+                </Grid.Col> */}
 
-                <Grid.Col span={{ base: 4, xs: 4, md: 4, lg: 2.5 }}>
+                {/* <Grid.Col span={{ base: 4, xs: 4, md: 4, lg: 2.5 }}>
                   <FormikSelectComponent
                     key={subHierarchyKey}
                     name="hierarchyId"
@@ -335,7 +337,7 @@ const CommissionAndCharges = () => {
                     nothingFoundMessage="Nothing Found"
                     disabled={loadingSubHierarchyList}
                   />
-                </Grid.Col>
+                </Grid.Col> */}
 
                 <Grid.Col span={{ base: 4, xs: 4, md: 4, lg: 2 }}>
                   <FormikSelectComponent
@@ -369,25 +371,12 @@ const CommissionAndCharges = () => {
                   />
                 </Grid.Col>
 
-                <Grid.Col span="auto">
-                  <div className="flex justify-end items-center mt-4">
-                    <GenericMasterToolbar
-                      onRefresh={handleRefresh}
-                      onExport={handleExportClick}
-                      onColumnChange={handleToggleColumn}
-                      visibleColumns={visibleColumns}
-                      onToggleAll={handleToggleAllColumns}
-                      onFilter={() => setFilterVisible((prev) => !prev)}
-                      headers={headers}
-                      loading={loading}
-                      error={error ? error.toString() : null}
-                    />
-
+                <Grid.Col span="auto" style={{ display: "flex", alignItems: "flex-end", justifyContent: "flex-end" }}>
+                  <div>
                     <ButtonComponent
                       fontSize="14"
                       fullWidth={false}
                       radius={6}
-                      style={{ marginTop: "10px" }}
                       size="sm"
                       variant="filled"
                       type="submit"
@@ -397,8 +386,20 @@ const CommissionAndCharges = () => {
                       VIEW
                     </ButtonComponent>
                   </div>
-                </Grid.Col>
+                </Grid.Col>̥
               </Grid>
+
+              <GenericMasterToolbar
+                onRefresh={handleRefresh}
+                onExport={handleExportClick}
+                onColumnChange={handleToggleColumn}
+                visibleColumns={visibleColumns}
+                onToggleAll={handleToggleAllColumns}
+                onFilter={() => setFilterVisible((prev) => !prev)}
+                headers={headers}
+                loading={loading}
+                error={error ? error.toString() : null}
+              />
             </Form>
           );
         }}

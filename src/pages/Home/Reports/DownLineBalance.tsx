@@ -1,22 +1,22 @@
 import { DownlineBalanceParams, DownlineBalanceTableType, GenericTableHeader } from "@/Common/interface";
-import ButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
+// import ButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
 import NewTextComponent from "@/components/Atoms/NewComponents/TextComponent";
 import ShimmerTableRows from "@/components/Atoms/ShimmerTableRows";
 import GenericMasterTable from "@/components/Molecules/GenericMasterTable";
 import GenericMasterToolbar from "@/components/Molecules/GenericMasterToolbar";
-import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
+// import FormikDateRangePicker from "@/components/Molecules/NewComponents/FormikDateRangePicker";
 import { clearPagination, savePagination } from "@/Redux/Reducers/paginationSlice";
 import { RootState } from "@/Redux/Store";
 // import { Single_Hierarchy_Child_List } from "@/Services/api";
 import { API_ROUTES } from "@/Services/apiRoutes";
 import { useFetchList } from "@/Utils/CustomHooks/useFetchList";
-import { useThrottledFormSubmit } from "@/Utils/CustomHooks/useThrottleFormSubmit";
+// import { useThrottledFormSubmit } from "@/Utils/CustomHooks/useThrottleFormSubmit";
 // import { handleCustomError } from "@/Utils/handleCustomError";
-import { dateRangeValidationSchema, decryptData, exportToCsv, formatYMDdate } from "@/Utils/helper";
+import { dateRangeValidationSchema, decryptData, exportToCsv } from "@/Utils/helper";
 import { Grid } from "@mantine/core";
 import { DatesRangeValue } from "@mantine/dates";
 import { useTheme } from "@mui/material";
-import { IconCalendar } from "@tabler/icons-react";
+// import { IconCalendar } from "@tabler/icons-react";
 import { Form, Formik } from "formik";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
@@ -45,7 +45,7 @@ const DownLineBalance = () => {
   const [filterVisible, setFilterVisible] = useState(false);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [submittedFilter, setSubmittedFilter] = useState<Record<string, any> | null>(null);
-  const [viewSubmitted, setViewSubmitted] = useState(false);
+  // const [viewSubmitted, setViewSubmitted] = useState(false);
 
   const [refreshKey, setRefreshKey] = useState<number>(0);
 
@@ -59,20 +59,24 @@ const DownLineBalance = () => {
     // { key: "narration", label: "Narration", filterType: "text" },
   ];
 
-  const transformPayload = (values: any) => {
-    const [fromDate, toDate] = values.dateRange || [];
-    return {
-      fromDate: fromDate ? formatYMDdate(fromDate) : null,
-      toDate: toDate ? formatYMDdate(toDate) : null,
-    }
-  }
+  // const transformPayload = () => {
+  //   // const [fromDate, toDate] = values.dateRange || [];
+  //   // return {
+  //   //   fromDate: fromDate ? formatYMDdate(fromDate) : null,
+  //   //   toDate: toDate ? formatYMDdate(toDate) : null,
+  //   // }
+  //   return {
+  //     fromDate: "2025-11-01", // Fixed from date: Nov 1, 2025
+  //     toDate: formatYMDdate(new Date()), // Current date
+  //   }
+  // }
 
   const {
     data, loading, pagination, error, setPage, setPageSize
   } = useFetchList<DownlineBalanceTableType>({
     method: "POST",
     key: DOWNLINE_BALANCE_KEY,
-    url: viewSubmitted ? `${API_ROUTES.DOWNLINE_BALANCE_REPORT}/${loginData?.hierarchyId}` : undefined,
+    url: `${API_ROUTES.DOWNLINE_BALANCE_REPORT}/${loginData?.hierarchyId}`,
     payload: payload,
     refreshKey,
     sendPaginationIn: "params",
@@ -117,18 +121,19 @@ const DownLineBalance = () => {
 
   const handleRefresh = () => {
     dispatch(clearPagination({ key: DOWNLINE_BALANCE_KEY }));
+    setPayload(null);
     setFilterValues({});
     setSubmittedFilter(null);
     setRefreshKey((prev) => prev + 1);
     setFilterVisible(false);
   };
 
-  const throttledSubmit = useThrottledFormSubmit((values: any) => {
-    setFormValues(values);
-    const payload = transformPayload(values);
-    setPayload(payload);
-    setViewSubmitted(true);
-  }, 3000);
+  // const throttledSubmit = useThrottledFormSubmit((values: any) => {
+  //   setFormValues(values);
+  //   const payload = transformPayload();
+  //   setPayload(payload);
+  //   setViewSubmitted(true);
+  // }, 3000);
 
   useEffect(() => {
     return () => {
@@ -157,7 +162,9 @@ const DownLineBalance = () => {
         initialValues={formValues}
         validationSchema={validationSchema}
         enableReinitialize
-        onSubmit={throttledSubmit}
+        onSubmit={() => {
+          // throttle submit
+        }}
       >
         {() => {
 
@@ -165,7 +172,7 @@ const DownLineBalance = () => {
             <Form className="flex flex-col gap-2 mt-4">
               <Grid gutter="sm">
                 <Grid.Col span={{ base: 6, xs: 4, md: 4, lg: 2.5 }}>
-                  <FormikDateRangePicker
+                  {/* <FormikDateRangePicker
                     name="dateRange"
                     label="Date Range"
                     placeholder="Select Date Range"
@@ -173,7 +180,7 @@ const DownLineBalance = () => {
                     shortcuts
                     required
                     leftIcon={<IconCalendar size={16} />}
-                  />
+                  /> */}
                 </Grid.Col>
 
                 <Grid.Col span="auto">
@@ -187,7 +194,7 @@ const DownLineBalance = () => {
                       error={error ? error.toString() : null}
                     />
 
-                    <ButtonComponent
+                    {/* <ButtonComponent
                       fontSize="14"
                       fullWidth={false}
                       radius={6}
@@ -198,7 +205,7 @@ const DownLineBalance = () => {
                       textColor="white"
                     >
                       VIEW
-                    </ButtonComponent>
+                    </ButtonComponent> */}
                   </div>
                 </Grid.Col>
               </Grid>
