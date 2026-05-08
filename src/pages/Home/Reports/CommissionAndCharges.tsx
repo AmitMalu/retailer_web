@@ -71,7 +71,7 @@ const CommissionAndCharges = () => {
       // hierarchyId: values.hierarchyId ?? "",
       walletType: values.walletType ?? "",
       productId: values.productId ?? "",
-      reportType: values.reportType ?? "",
+      reportType: values.reportType ? values.reportType : "CHARGE_COMMISSION",
     }
   }
 
