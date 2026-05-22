@@ -486,13 +486,10 @@ export const callAepsApi = async (
   config?: any,
 ) => {
   const vendorKey = resolveVendor(vendorName);
-  console.log(vendorKey, "vendorKey");
-  console.log(type, "type");
 
   if (!vendorKey) throw new Error("Unsupported Vendor");
 
   const apiConfig = AEPS_API_CONFIG[vendorKey]?.[type];
-  console.log(apiConfig, "apiConfig");
 
   if (!apiConfig) {
     console.warn(`Skipping unsupported API: ${type} for ${vendorKey}`);

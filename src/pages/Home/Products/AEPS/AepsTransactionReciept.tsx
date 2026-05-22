@@ -6,8 +6,6 @@ import { useTheme } from "@mui/system";
 import "./AepsTransactionReciept.css";
 
 const TransactionReciept = ({ data }: { data: any }) => {
-    console.log(data);
-
     const theme = useTheme();
     const apiResponses = useSelector(
         (state: RootState) => state.apiResponse.responses

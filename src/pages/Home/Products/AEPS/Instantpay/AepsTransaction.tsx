@@ -159,7 +159,6 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
 
 
     const handleSubmit = async (values: AepsFormValues) => {
-        console.log("Final Submit Values:", values);
         try {
             setIsLoading(true);
 

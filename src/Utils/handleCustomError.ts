@@ -96,7 +96,6 @@ export const handleCustomError = async (
     // Final fallback
     showErrorNotification("An unexpected error occurred.");
   } catch (e) {
-    console.log("10");
     console.error("Error inside handleCustomError:", e);
     showErrorNotification("Something went wrong while handling error.");
   }

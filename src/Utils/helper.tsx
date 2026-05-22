@@ -144,7 +144,6 @@ export const encryptData = (data: object | string): string => {
     padding: CryptoJS.pad.Pkcs7,
   })?.toString();
 
-  // console.log('🔒 Encrypted Output:', encrypted);
   return encrypted;
 };
 

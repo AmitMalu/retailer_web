@@ -9,18 +9,15 @@ const WebSocketTest: React.FC = () => {
 
   const handleTestNotification = () => {
     // Simulate a test notification (for development/testing)
-    const testNotification = {
-      id: Date.now(),
-      title: 'Test Notification',
-      message: 'This is a test notification from WebSocket system',
-      type: 'INFO' as const,
-      priority: 'MEDIUM' as const,
-      unreadCount: unreadCount + 1,
-      createdAt: new Date().toISOString(),
-    };
-
-    // This would normally come from the WebSocket server
-    console.log('Test notification:', testNotification);
+    // const testNotification = {
+    //   id: Date.now(),
+    //   title: 'Test Notification',
+    //   message: 'This is a test notification from WebSocket system',
+    //   type: 'INFO' as const,
+    //   priority: 'MEDIUM' as const,
+    //   unreadCount: unreadCount + 1,
+    //   createdAt: new Date().toISOString(),
+    // };
   };
 
   const handleSendTestMessage = () => {

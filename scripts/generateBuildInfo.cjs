@@ -12,7 +12,7 @@ const formatted = now.toLocaleString("en-IN", {
 
 const content =
   `export const BUILD_INFO = {
-  version: "v1.0.1",
+  version: "v1.0.0",
   builtAt: "${formatted}"
 };\n`;
 

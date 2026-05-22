@@ -45,8 +45,6 @@ const AepsServiceScreen = ({ vendorKey }: AepsScreenProps) => {
         }
       );
 
-      console.log("2FA Status Response:", res);
-
       if (res?.data?.statusCode == 200) {
         const actcode = res?.data?.data?.actcode;
         const is2faRequired = actcode === "LOGINREQUIRED";
@@ -55,23 +53,6 @@ const AepsServiceScreen = ({ vendorKey }: AepsScreenProps) => {
         } else {
           navigate(`/products/aeps/transaction/${subProductId}?service=${service}`);
         }
-        //   console.log("Onboard Status:", twoFaStatus);
-        //   if (twoFaStatus === 5) {
-        //     // Status 5 → go to transaction
-        //     navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {
-        //       state: { profile },
-        //     });
-        //   } else if (twoFaStatus === 3 || twoFaStatus === 4) {
-        //     // Status 3, 4 → go to 2FA page
-        //     navigate(`/products/aeps/2fa/${subProductId}?iinno=&service=${service}`, {
-        //       state: { profile },
-        //     });
-        //   } else {
-        //     // Other statuses → default to 2FA
-        //     navigate(`/products/aeps/2fa/${subProductId}?iinno=&service=${service}`, {
-        //       state: { profile },
-        //     });
-        //   }
       } else {
         //   // API error → treat as invalid 2FA
         showErrorNotification(res?.data?.message || "Failed to check 2FA status")

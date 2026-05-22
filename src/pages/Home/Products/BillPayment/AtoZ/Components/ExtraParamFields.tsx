@@ -15,12 +15,10 @@ const ExtraParamFields: React.FC<Props> = ({ params = [] }) => {
 
     const renderField = (
         param: ExtraParam,
-        idx: number,
         fieldKey: string,
         label?: string
     ) => {
         if (!label) return null;
-        console.log(idx);
 
         const lowerLabel = label.toLowerCase();
 
@@ -100,10 +98,10 @@ const ExtraParamFields: React.FC<Props> = ({ params = [] }) => {
         <>
             {params.map((param, idx) => (
                 <React.Fragment key={idx}>
-                    {renderField(param, idx, `field_one_${idx}`, param.field_one)}
-                    {renderField(param, idx, `field_two_${idx}`, param.field_two)}
-                    {renderField(param, idx, `field_three_${idx}`, param.field_three)}
-                    {renderField(param, idx, `field_four_${idx}`, param.field_four)}
+                    {renderField(param, `field_one_${idx}`, param.field_one)}
+                    {renderField(param, `field_two_${idx}`, param.field_two)}
+                    {renderField(param, `field_three_${idx}`, param.field_three)}
+                    {renderField(param, `field_four_${idx}`, param.field_four)}
                 </React.Fragment>
             ))}
         </>

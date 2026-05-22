@@ -89,7 +89,7 @@ const Login: React.FC = () => {
         iv,
         lat,
         lng,
-        url: isDevEnv ? "https://uat.nfttech.in/" : `${window.location.origin}/`,
+        url: isDevEnv ? "https://portal.nfttech.in/" : `${window.location.origin}/`,
       };
       const response = await login(bodyRequest);
       const AllowedRoles = ["RT", "RU", "DT", "PT", "SD", "EN", "WL"]

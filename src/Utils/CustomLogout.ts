@@ -6,7 +6,6 @@ import { clearNotifications } from "@/Redux/Reducers/notificationSlice";
 import { clearLocation } from "@/Redux/Reducers/locationSlice";
 
 export const useLogoutHandling = () => {
-  console.log("useLogoutHandling hook initialized");
   const location = useLocation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [logoutModal, setLogoutModal] = useState<boolean>(false);
@@ -179,61 +178,6 @@ export const useLogoutHandling = () => {
       sessionStorage.setItem('initialLoadComplete', 'true');
     }
   }, []);
-
-  // Detect reload using performance.navigation
-  // useEffect(() => {
-  //   console.log("Checking for reload detection");
-
-  //   // Check performance API
-  //   const navEntries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
-  //   console.log("Navigation entries:", navEntries);
-
-  //   if (navEntries.length > 0) {
-  //     console.log("Navigation type:", navEntries[0].type);
-  //   }
-
-  //   // Check if this is a reload AND not the initial page load
-  //   const isReload = navEntries.length > 0 && navEntries[0].type === "reload";
-  //   const hasInitialLoad = sessionStorage.getItem('initialLoadComplete') === 'true';
-
-  //   if (isReload && hasInitialLoad) {
-  //     console.log("Reload detected via performance API");
-  //     const currentPath: string = window.location.pathname;
-  //     const hasAuthToken: boolean = document.cookie.includes("authToken=");
-
-  //     // Only logout authenticated users on protected pages
-  //     if (
-  //       hasAuthToken &&
-  //       currentPath !== "/login" &&
-  //       currentPath !== "/register" &&
-  //       currentPath !== "/reset-password"
-  //     ) {
-  //       console.log("Logging out due to reload");
-  //       logout();
-  //     }
-  //   }
-
-  //   // Also check for session storage flag as backup
-  //   const isReloading = sessionStorage.getItem('isReloading');
-  //   console.log("Session storage reload flag:", isReloading);
-
-  //   if (isReloading === 'true') {
-  //     console.log("Reload detected via session storage");
-  //     sessionStorage.removeItem('isReloading');
-  //     const currentPath: string = window.location.pathname;
-  //     const hasAuthToken: boolean = document.cookie.includes("authToken=");
-
-  //     if (
-  //       hasAuthToken &&
-  //       currentPath !== "/login" &&
-  //       currentPath !== "/register" &&
-  //       currentPath !== "/reset-password"
-  //     ) {
-  //       console.log("Logging out due to session storage reload");
-  //       logout();
-  //     }
-  //   }
-  // }, []);
 
   useEffect(() => {
     const shouldLogout = sessionStorage.getItem("triggerLogoutOnReload");

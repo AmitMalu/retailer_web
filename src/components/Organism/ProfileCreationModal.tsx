@@ -216,8 +216,7 @@ const ProfileRegistrationForm = ({
       return fieldErrors !== undefined && fieldErrors !== "";
     });
 
-    console.log("Current Step Errors:", errors, hasErrors);
-    console.log(formik.errors, "ero");
+    console.log(formik.errors, "form-errors");
 
     if (!hasErrors) {
       // if (active === 0 && !verificationState.aadhaarAttempted || !verificationState.panAttempted) {

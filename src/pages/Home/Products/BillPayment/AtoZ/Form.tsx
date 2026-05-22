@@ -150,7 +150,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId }) => {
                             const parsedDate = moment(value, [format, "DD/MM/YYYY", "YYYY-MM-DD"], true);
 
                             if (parsedDate.isValid()) {
-                                // ✅ send date in backend-friendly format
+                                // send date in backend-friendly format
                                 (payload as any)[key] = parsedDate.format("DD/MM/YYYY");
                             } else {
                                 console.warn(`Invalid date format for ${key}:`, value);
