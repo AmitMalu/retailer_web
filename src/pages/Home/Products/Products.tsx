@@ -26,8 +26,6 @@ export default function Products() {
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  console.log(loginData, "loginData");
-
   const bbpsBillAvenueSubProduct = React.useMemo(() => {
     const bbps = loginData?.products?.find(
       (p: any) => p.productName?.toUpperCase() === "BBPS"

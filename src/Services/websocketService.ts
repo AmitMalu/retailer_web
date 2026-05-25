@@ -34,7 +34,6 @@ class WebSocketService {
 
     // WS-STEP-4: Get WebSocket URL from environment variables
     const wsUrl = this.getWebSocketUrl();
-    console.log("WS URL:", wsUrl);
 
     // WS-STEP-5: Prepare connection headers (auth token, location data)
     const headers = this.getConnectHeaders();
@@ -59,7 +58,6 @@ class WebSocketService {
   private getWebSocketUrl(): string {
     // Use the same approach as apiRoutes.tsx
     const BASE_URL = import.meta.env.VITE_SERVER_URL;
-    console.log("WebSocket BASE_URL Source:", BASE_URL);
 
     // Ensure BASE_URL is not undefined
     if (!BASE_URL) {
@@ -204,7 +202,7 @@ class WebSocketService {
 
       // WS-STEP-11: Check if already connected
       if (this.client?.connected) {
-        console.log("✅ STOMP CONNECTED");
+        console.log("STOMP CONNECTED");
         resolve();
         return;
       }

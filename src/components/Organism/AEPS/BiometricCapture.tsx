@@ -71,7 +71,6 @@ const generatePidOptions = (is2FA = true, wadh = "") => {
 // Parse PID XML
 // -------------------------------
 const parsePidData = (xmlText: string) => {
-    console.log(xmlText);
     const xml = new DOMParser().parseFromString(xmlText, "text/xml");
     const resp = xml.querySelector("Resp");
     const data = xml.querySelector("Data");

@@ -40,11 +40,8 @@ const AepsServiceScreen = ({ vendorKey }: AepsScreenProps) => {
         }
       );
 
-      console.log("2FA Status Response:", res);
-
       if (res?.data?.statusCode == 200) {
         const twoFaStatus = res?.data?.data?.twoFaStatus;
-        console.log("Onboard Status:", twoFaStatus);
         if (twoFaStatus === 5) {
           // Status 5 → go to transaction
           navigate(`/products/aeps/transaction/${subProductId}?service=${service}`, {

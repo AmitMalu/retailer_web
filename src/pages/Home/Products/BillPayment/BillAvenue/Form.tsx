@@ -309,8 +309,6 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
                 paymentMode: "Cash",
             });
 
-            console.log("FINAL TRANSACTION PAYLOAD", paymentPayload);
-
             if (checkDuplicate(selectedProviderDetails.billerId, Number(values.amount))) {
                 showErrorNotification(
                     "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
@@ -400,7 +398,6 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
 
         loadProviders();
     }, [serviceName]);
-    console.log(selectedProviderDetails, "selectedProviderDetails");
 
     return (
         <>

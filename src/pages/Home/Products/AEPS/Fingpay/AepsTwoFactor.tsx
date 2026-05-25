@@ -90,18 +90,10 @@ const AepsTwoFactor = ({ vendorKey }: AepsScreenProps) => {
         try {
             setIsLoading(true);
 
-            console.log('=== CAPTURE RESPONSE PAYLOAD ===');
-            console.log('Type:', typeof values.pidData);
-            console.log('Keys:', Object.keys(values.pidData || {}));
-            console.log('Full payload:', JSON.stringify(values.pidData, null, 2));
-
             const qScore = parseInt(values.pidData?.qScore || "0");
             const nmPoints = parseInt(values.pidData?.nmPoints || "0");
             const errCode = values.pidData?.errCode || "0";
             const errInfo = values.pidData?.errInfo || "";
-
-            console.log('Biometric Quality - qScore:', qScore, 'nmPoints:', nmPoints);
-            console.log('RD Service Status - errCode:', errCode, 'errInfo:', errInfo);
 
             if (errCode !== "0" || errInfo.toLowerCase().includes("fail")) {
                 showErrorNotification(`RD Service failed: ${errInfo}. Please scan again.`);
@@ -162,8 +154,6 @@ const AepsTwoFactor = ({ vendorKey }: AepsScreenProps) => {
                 setIsLoading(false);
                 return;
             }
-
-            console.log('================================');
 
             const res = await callAepsApi(
                 vendorKey,
