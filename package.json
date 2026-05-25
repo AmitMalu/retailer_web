@@ -5,16 +5,26 @@
   "type": "module",
   "scripts": {
     "prebuild": "node scripts/generateBuildInfo.cjs",
+
     "dev": "vite --mode development",
+    "dev:uat": "vite --mode uat",
     "dev:prod": "vite --mode production",
-    "build": "tsc -b && powershell -Command \"if (Test-Path dist) { Remove-Item -Recurse -Force dist }\" && vite build --mode production && npm run copy-webxml",
+
     "build:dev": "tsc -b && powershell -Command \"if (Test-Path dist) { Remove-Item -Recurse -Force dist }\" && vite build --mode development && npm run copy-webxml",
-    "war": "npm run build && powershell -Command \"Compress-Archive -Path dist\\* -DestinationPath app.zip -Force; Rename-Item app.zip app.war -Force\"",
+    "build:uat": "tsc -b && powershell -Command \"if (Test-Path dist) { Remove-Item -Recurse -Force dist }\" && vite build --mode uat && npm run copy-webxml",
+    "build": "tsc -b && powershell -Command \"if (Test-Path dist) { Remove-Item -Recurse -Force dist }\" && vite build --mode production && npm run copy-webxml",
+
     "war:dev": "npm run build:dev && powershell -Command \"Compress-Archive -Path dist\\* -DestinationPath app.zip -Force; Rename-Item app.zip app.war -Force\"",
+    "war:uat": "npm run build:uat && powershell -Command \"Compress-Archive -Path dist\\* -DestinationPath app.zip -Force; Rename-Item app.zip app.war -Force\"",
+    "war": "npm run build && powershell -Command \"Compress-Archive -Path dist\\* -DestinationPath app.zip -Force; Rename-Item app.zip app.war -Force\"",
+
     "copy-webxml": "powershell -Command \"New-Item -ItemType Directory -Force -Path dist\\WEB-INF; Copy-Item -Path deploy-resources\\WEB-INF\\* -Destination dist\\WEB-INF -Recurse -Force\"",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 1",
+
     "preview": "vite preview",
+    "preview:uat": "vite preview --mode uat",
     "preview:dev": "vite preview --mode development",
+    
     "prepare": "husky",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "lint-staged": "lint-staged",
