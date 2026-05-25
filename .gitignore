@@ -43,6 +43,7 @@ yarn-error.log*
 # Environment files (keep .env.example)
 .env
 .env.development
+.env.uat
 .env.production
 
 # vercel
