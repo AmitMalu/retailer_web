@@ -18,14 +18,15 @@ const dateKeys = [
   "requestdatetime",
   "createdatetime",
   "responsedatetime",
-  "timestamp"
+  "timestamp",
 ];
 
 const timeKeys = [
   "time",
   "timeoftransaction",
   "updatedtimeoftransaction",
-  "transactiontime"
+  "transactiontime",
+  "approveorrejecttime"
 ];
 
 const TableBody = <T,>({

@@ -75,41 +75,15 @@ const TableFilterRow = <T,>({
           case "time":
             return (
               <Table.Td key={String(key)}>
-                {/* <TimeComponent
-                  value={value || ""}
-                  onChange={(val) => {
-                    if (val) {
-                      onFilterChange?.(String(key), val);
-                      onFilterSubmit?.(String(key), val);
-                    } else {
-                      onFilterChange?.(String(key), null);
-                      onFilterSubmit?.(String(key), "");
-                    }
-                  }
-                  }
-                  withSeconds={true}
-                  maxTime={new Date().toLocaleTimeString()}
-                  className="w-full font-medium"
-                /> */}
                 <CustomTimePicker
-                  value={value ?? null} // value comes from current filter state
+                  value={value ?? ""}
+                  withSeconds
                   onChange={(val) => {
-                    if (!val) {
-                      onFilterChange?.(String(key), null);
-                      onFilterSubmit?.(String(key), "");
-                      return;
-                    }
-
-                    // Accept both HH:mm and HH:mm:ss formats
-                    const isComplete = /^\d{2}:\d{2}(:\d{2})?$/.test(val);
-
-                    if (isComplete) {
-                      onFilterChange?.(String(key), val);
-                      onFilterSubmit?.(String(key), val);
-                    }
+                    onFilterChange?.(String(key), val);
                   }}
-                  size="xs"
-                  placeholder="Pick Time"
+                  onSubmit={(val) => {
+                    onFilterSubmit?.(String(key), val);
+                  }}
                 />
               </Table.Td>
             );
@@ -123,6 +97,56 @@ const TableFilterRow = <T,>({
                   onChange={(e) => {
                     const num = e.target.value.replace(/[^0-9]/g, ''); // only digits
                     onFilterChange?.(String(key), num);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      onFilterSubmit?.(String(key), value?.trim() ?? "");
+                    }
+                  }}
+                />
+              </Table.Td>
+            );
+          case "amount":
+            return (
+              <Table.Td key={String(key)}>
+                <TextInputComponent
+                  size="xs"
+                  name={String(key)}
+                  value={value}
+                  onChange={(e) => {
+                    let amount = e.target.value
+                      .replace(/[^0-9.]/g, "")
+                      .replace(/(\..*)\./g, "$1"); // only one dot
+
+                    // if starts with dot => add 0
+                    if (amount.startsWith(".")) {
+                      amount = `0${amount}`;
+                    }
+
+                    onFilterChange?.(String(key), amount);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      onFilterSubmit?.(String(key), value?.trim() ?? "");
+                    }
+                  }}
+                />
+              </Table.Td>
+            );
+          case "coordinate":
+            return (
+              <Table.Td key={String(key)}>
+                <TextInputComponent
+                  size="xs"
+                  name={String(key)}
+                  value={value}
+                  onChange={(e) => {
+                    const coordinate = e.target.value
+                      .replace(/[^0-9.-]/g, "")   // digits + dot + minus
+                      .replace(/(?!^)-/g, "")     // only one minus at start
+                      .replace(/(\..*)\./g, "$1"); // only one dot
+
+                    onFilterChange?.(String(key), coordinate);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {

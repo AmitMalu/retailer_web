@@ -49,7 +49,7 @@ const FundLoading = () => {
   const headers: GenericTableHeader<FundLoadingTableType>[] = [
     { key: "paymentMode", label: "Deposit Type", filterType: "text" },
     { key: "bankTranId", label: "Transaction ID", filterType: "text" },
-    { key: "depositAmount", label: "Amount", filterType: "number" },
+    { key: "depositAmount", label: "Amount", filterType: "amount" },
     { key: "bankAccountNumber", label: "Account Number", filterType: "number" },
     { key: "depositDate", label: "Deposit Date", filterType: "date" },
     {
@@ -81,7 +81,7 @@ const FundLoading = () => {
     {
       key: "approveOrRejectTime",
       label: "Approve Or Reject Time",
-      filterType: "text",
+      filterType: "time",
     },
   ];
 

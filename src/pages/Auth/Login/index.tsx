@@ -74,22 +74,28 @@ const Login: React.FC = () => {
     try {
       setIsLoading(true);
 
+      const hostname = window.location.hostname;
+      const protocol = window.location.protocol;
+
       const { encryptedUsername, encryptedPassword, salt, iv } = encryptCredentials(values.userName, values.password);
 
-      const isDevEnv = ["localhost", "127.0.0.1"].includes(window.location.hostname) ||
-        window.location.hostname.startsWith("192.168.") ||
-        window.location.hostname === ""; // in case of file:// or blank
+      const isDevEnv = ["localhost", "127.0.0.1"].includes(hostname) ||
+        hostname.startsWith("192.168.") ||
+        hostname === ""; // in case of file:// or blank
+
+      const maskedOrigin = `${protocol}//*.${hostname
+        .split(".")
+        .slice(1)
+        .join(".")}/`;
 
       let bodyRequest = {
-        // userName: values.userName,
-        // password: values.password,
         userName: encryptedUsername,
         password: encryptedPassword,
         salt,
         iv,
         lat,
         lng,
-        url: isDevEnv ? "https://portal.nfttech.in/" : `${window.location.origin}/`,
+        url: isDevEnv ? "https://uat.nfttech.in/" : maskedOrigin,
       };
       const response = await login(bodyRequest);
       const AllowedRoles = ["RT", "RU", "DT", "PT", "SD", "EN", "WL"]

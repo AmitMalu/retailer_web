@@ -1,45 +1,56 @@
-import { useRef } from "react";
-import { TimeInput, TimeInputProps } from "@mantine/dates";
+import { ActionIcon } from "@mantine/core";
+import { TimeInput } from "@mantine/dates";
+import { IconX } from "@tabler/icons-react";
 
-const defaultClassNames = {
-    wrapper: "w-full",
-    label: "text-[14px] font-[500] mb-1",
-    input: `
-    border border-divider rounded-md text-[14px] font-[500] 
-    focus:border-primary focus:ring-0
-  `,
+interface CustomTimePickerProps {
+  value?: string;
+  size?: "xs" | "sm" | "md";
+  withSeconds?: boolean;
+  onChange?: (value: string) => void;
+  onSubmit?: (value: string) => void;
+}
+
+const CustomTimePicker = ({
+  value = "",
+  size = "xs",
+  withSeconds = true,
+  onChange,
+  onSubmit,
+}: CustomTimePickerProps) => {
+  return (
+    <TimeInput
+      size={size}
+      value={value}
+      withSeconds={withSeconds}
+      onChange={(e) => {
+        onChange?.(e.currentTarget.value);
+      }}
+      onBlur={(e) => {
+        onSubmit?.(e.currentTarget.value ?? "");
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          onSubmit?.(
+            (e.currentTarget as HTMLInputElement).value ?? ""
+          );
+        }
+      }}
+      rightSection={
+        value ? (
+          <ActionIcon
+            size="sm"
+            variant="subtle"
+            onClick={() => {
+              onChange?.("");
+              onSubmit?.("");
+            }}
+          >
+            <IconX size={14} />
+          </ActionIcon>
+        ) : null
+      }
+    />
+  );
 };
-
-interface CustomTimePickerProps
-    extends Omit<TimeInputProps, "value" | "onChange"> {
-    value: string | null;
-    onChange: (value: string | null) => void;
-}
-
-function CustomTimePicker({
-    value,
-    onChange,
-    label,
-    placeholder = "Pick time",
-    size = "xs",
-    classNames = defaultClassNames,
-    ...rest
-}: CustomTimePickerProps) {
-    const ref = useRef<HTMLInputElement>(null);
-
-    return (
-        <TimeInput
-            ref={ref}
-            label={label}
-            value={value || ""}
-            onChange={(event) => onChange(event.currentTarget.value || null)}
-            placeholder={placeholder}
-            size={size}
-            // rightSection={pickerControl}
-            classNames={classNames}
-            {...rest}
-        />
-    );
-}
 
 export default CustomTimePicker;
