@@ -65,7 +65,7 @@ const SubProductScreen = () => {
         <TextComponent
           fontSize={28}
           fontWeight={600}
-          color={theme.palette.primary.dark}
+          color={theme.palette.primary.main}
         >
           Bharat Bill Payment System
         </TextComponent>
@@ -107,7 +107,7 @@ const SubProductScreen = () => {
                     key={card.id}
                     image={
                       <BillPaymentSvgIcon
-                        color={theme.palette.primary.dark}
+                        color={theme.palette.primary.main}
                       />
                     }
                     title={card.title}

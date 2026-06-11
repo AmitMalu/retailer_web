@@ -21,11 +21,11 @@ const ShortcutButton = styled(Button)(({ theme }) => ({
   justifyContent: "flex-start",
   textTransform: "none",
   color: theme.palette.text.primary,
-  border: `1px solid ${theme.palette.primary.dark}`,
+  border: `1px solid ${theme.palette.primary.main}`,
   "&:hover": {
     backgroundColor: "transparent",
     opacity: 0.8,
-    border: `1px solid ${theme.palette.primary.dark}`,
+    border: `1px solid ${theme.palette.primary.main}`,
   },
 }));
 

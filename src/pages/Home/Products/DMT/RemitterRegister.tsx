@@ -84,7 +84,7 @@ const RemitterRegister = () => {
           <TextComponent
             fontSize={28}
             fontWeight={600}
-            color={theme.palette.primary.dark}
+            color={theme.palette.primary.main}
           >
             Register Remitter
           </TextComponent>
@@ -147,7 +147,7 @@ const RemitterRegister = () => {
                         <TextComponent
                           fontSize={20}
                           fontWeight={500}
-                          color={theme.palette.primary.dark}
+                          color={theme.palette.primary.main}
                         >
                           Send OTP
                         </TextComponent>

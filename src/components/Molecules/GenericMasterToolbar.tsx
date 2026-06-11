@@ -63,7 +63,7 @@ const GenericMasterToolbar = ({
               onClick={onAdd}
               textColor={theme.palette.primary.contrastText}
               fontSize="14"
-              bgColor={theme.palette.primary.dark}
+              bgColor={theme.palette.primary.main}
               borderColor={theme.palette.background.paper}
               leftIcon={<AddIconSvg />}
               disabled={!!loading}
@@ -101,7 +101,7 @@ const GenericMasterToolbar = ({
             throttleMs={0}
             bgColor={theme.palette.background.paper}
             onClick={onFilter}
-            leftIcon={<FilterSvgIcon color={theme.palette.primary.dark} />}
+            leftIcon={<FilterSvgIcon color={theme.palette.primary.main} />}
             disabled={!!loading || !!error}
           >
             Filter

@@ -65,7 +65,7 @@ export default function PayoutScreen() {
         <TextComponent
           fontSize={28}
           fontWeight={600}
-          color={theme.palette.primary.dark}
+          color={theme.palette.primary.main}
         >
           Payout
         </TextComponent>
@@ -105,7 +105,7 @@ export default function PayoutScreen() {
                   <PayoutCard
                     key={card.id}
                     image={
-                      <PGTezMasterSvgIcon color={theme.palette.primary.dark} />
+                      <PGTezMasterSvgIcon color={theme.palette.primary.main} />
                     }
                     title={card.title}
                     onClick={handleClick}

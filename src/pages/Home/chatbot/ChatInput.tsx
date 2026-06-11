@@ -136,7 +136,7 @@ export default function ChatInput() {
       />
 
       <Group grow>
-        <Button color={theme.palette.primary.dark} onClick={handleSend}>Send</Button>
+        <Button color={theme.palette.primary.main} onClick={handleSend}>Send</Button>
         <Button
           variant={isListening ? "filled" : "outline"}
           color={isListening ? theme.palette.primary.main : "gray"}

@@ -159,7 +159,7 @@ export const SET_CURRENT_ROUTE = "route/SET_CURRENT_ROUTE";
 
 export type SaveApiResponseAction = {
   type: typeof SAVE_API_RESPONSE;
-  payload: { key: string; data: string | object };
+  payload: { key: string; data: string | object | boolean };
 };
 
 export type ClearApiResponseAction = {
@@ -180,6 +180,7 @@ export type ApiActionTypes =
   | ClearApiResponseAction
   | ClearAllResponsesAction
   | SetCurrentRouteAction;
+
 
 export type CustomTextInputProps = Omit<
   TextInputProps,
@@ -339,14 +340,14 @@ export type GenericTableHeader<T> = {
   key: keyof T;
   label?: string;
   filterType?:
-    | "text"
-    | "number"
-    | "amount"
-    | "boolean"
-    | "date"
-    | "coordinate"
-    | "time"
-    | "none";
+  | "text"
+  | "number"
+  | "amount"
+  | "boolean"
+  | "date"
+  | "coordinate"
+  | "time"
+  | "none";
   filterOptions?: { label: string; value: any }[];
   searchable?: boolean; // optionally override with this
   renderType?: "link" | "custom" | "statusBadge"; //

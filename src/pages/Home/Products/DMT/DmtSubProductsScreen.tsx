@@ -71,7 +71,7 @@ export default function DmtSubProductsScreen() {
         <TextComponent
           fontSize={28}
           fontWeight={600}
-          color={theme.palette.primary.dark}
+          color={theme.palette.primary.main}
         >
           DMT
         </TextComponent>
@@ -110,7 +110,7 @@ export default function DmtSubProductsScreen() {
                   <PayoutCard
                     key={card.id}
                     image={
-                      <PGTezMasterSvgIcon color={theme.palette.primary.dark} />
+                      <PGTezMasterSvgIcon color={theme.palette.primary.main} />
                     }
                     title={card.title}
                     onClick={handleClick}

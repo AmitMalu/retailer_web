@@ -20,9 +20,9 @@ import {
 import { encryptCredentials, MobileNoRegex } from "@/Utils/helper";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { LoginRequest } from "@/Common/interface";
-import LoginImage from "@/assets/svg/Auth/login";
 import { useTheme } from "@mui/system";
 import { useAppSelector } from "@/Redux/hooks";
+import { useBranding } from "@/Config/branding";
 
 const Login: React.FC = () => {
   const theme = useTheme();
@@ -30,15 +30,12 @@ const Login: React.FC = () => {
   const { lat, lng, loading } = useAppSelector(state => state.location)
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  // Construct PDF URLs using BASE_URL for subfolder deployment compatibility
-  const basePath = import.meta.env.BASE_URL || '/';
-  // Ensure basePath ends with slash to avoid URL concatenation issues
-  const normalizedBasePath = basePath.endsWith('/') ? basePath : `${basePath}/`;
+  const branding = useBranding();
+  
   const policyLinks = {
-    terms: `${normalizedBasePath}terms.pdf`,
-    privacy: `${normalizedBasePath}privacy.pdf`,
-    refund: `${normalizedBasePath}refund.pdf`,
+    terms: branding.terms,
+    privacy: branding.privacy,
+    refund: branding.refund,
   };
 
   const validationSchema = Yup.object({
@@ -133,8 +130,8 @@ const Login: React.FC = () => {
     <>
       {isLoading && <Loader />}
       <AuthLayout
-        authImage={<LoginImage />}
-        authText='"Welcome to your financial hub."'
+        authImage={<img src={branding.loginBgImg} alt="img" className="h-full w-full object-cover" />}
+        authText={branding.welcomeText}
       >
         <div className="flex w-full  items-center justify-center flex-col gap-5">
           <div className="flex h-auto w-[360px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">

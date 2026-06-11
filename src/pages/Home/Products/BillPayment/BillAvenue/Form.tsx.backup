@@ -317,14 +317,14 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
                             });
                         }}
                     >
-                        <BackSvgIcon color={theme.palette.primary.dark} />
+                        <BackSvgIcon color={theme.palette.primary.main} />
                     </UnstyledButton>
 
                     {/* Title */}
                     <TextComponent
                         fontSize={28}
                         fontWeight={600}
-                        color={theme.palette.primary.dark}
+                        color={theme.palette.primary.main}
                     >
                         {serviceName}
                     </TextComponent>

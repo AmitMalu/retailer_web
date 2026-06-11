@@ -4,6 +4,7 @@ import moment from "moment";
 import { useTheme } from "@mui/system";
 import { useAppSelector } from "@/Redux/hooks";
 import "./PGTransactionReceipt.css";
+import { useBranding } from "@/Config/branding";
 
 const PGTransactionReceipt = ({ data }: { data: any }) => {
     const theme = useTheme();
@@ -13,6 +14,8 @@ const PGTransactionReceipt = ({ data }: { data: any }) => {
     const loginData = responses?.loginData
         ? decryptData(responses?.loginData)
         : null;
+
+    const branding = useBranding();
 
     if (!data) return <Text>No receipt data available.</Text>;
 
@@ -34,8 +37,8 @@ const PGTransactionReceipt = ({ data }: { data: any }) => {
                             height: 120,
                             objectFit: "contain",
                         }}
-                        src={loginData?.logoUrl ?? ""}
-                        alt="logo"
+                        src={branding?.logo ?? loginData.logoUrl ?? ""}
+                        alt={branding?.companyName ?? "Logo"}
                     />
                 </Group>
 
@@ -130,7 +133,7 @@ const PGTransactionReceipt = ({ data }: { data: any }) => {
 
             {/* --- Print Button --- */}
             <Group justify="center" mt="lg" className="no-print">
-                <Button onClick={handlePrint} color={theme.palette.primary.dark}>
+                <Button onClick={handlePrint} color={theme.palette.primary.main}>
                     🖨️ Print Receipt
                 </Button>
             </Group>

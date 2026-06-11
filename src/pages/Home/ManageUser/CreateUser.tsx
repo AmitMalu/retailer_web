@@ -98,7 +98,7 @@ const CreateUser = () => {
             <path
               d="M145,60 C40,150 40,250 50,300"
               fill="none"
-              stroke={theme.palette.primary.dark}
+              stroke={theme.palette.primary.main}
               strokeWidth="3"
               strokeDasharray="6,6"
             />
@@ -112,7 +112,7 @@ const CreateUser = () => {
                   cy="100"
                   r="30"
                   fill={theme.palette.primaryExtra.accent}
-                  stroke={theme.palette.primary.dark}
+                  stroke={theme.palette.primary.main}
                   strokeWidth="2"
                   className="cursor-pointer"
                 />
@@ -141,7 +141,7 @@ const CreateUser = () => {
                   cy="215"
                   r="30"
                   fill={theme.palette.primaryExtra.accent}
-                  stroke={theme.palette.primary.dark}
+                  stroke={theme.palette.primary.main}
                   strokeWidth="2"
                   className="cursor-pointer"
                 />
@@ -162,7 +162,7 @@ const CreateUser = () => {
             <path
               d="M355,60 C460,150 460,250 450,300"
               fill="none"
-              stroke={theme.palette.primary.dark}
+              stroke={theme.palette.primary.main}
               strokeWidth="3"
               strokeDasharray="6,6"
             />
@@ -178,7 +178,7 @@ const CreateUser = () => {
                     cy="98"
                     r="30"
                     fill={theme.palette.primaryExtra.accent}
-                    stroke={theme.palette.primary.dark}
+                    stroke={theme.palette.primary.main}
                     strokeWidth="2"
                     className="cursor-pointer"
                   />
@@ -210,7 +210,7 @@ const CreateUser = () => {
                     cy="216"
                     r="30"
                     fill={theme.palette.primaryExtra.accent}
-                    stroke={theme.palette.primary.dark}
+                    stroke={theme.palette.primary.main}
                     strokeWidth="2"
                     className="cursor-pointer"
                   />

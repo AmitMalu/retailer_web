@@ -137,7 +137,7 @@ export const booleanSelectData2 = [
   { label: "false", value: "false" },
 ];
 
-export const encryptData = (data: object | string): string => {
+export const encryptData = (data: object | string | boolean): string => {
   const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), KEY, {
     iv: IV,
     mode: CryptoJS.mode.CBC,
@@ -172,6 +172,28 @@ export const EmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export const PanRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
 
 export const PinCodeRegex = /^[0-9]{6}$/;
+
+export const getCompanyNameLines = (name: string) => {
+  const trimmed = name?.trim() || "";
+
+  // short names stay on one line
+  if (trimmed.length <= 25) {
+    return [trimmed, ""];
+  }
+
+  const words = trimmed.split(" ");
+
+  if (words.length <= 2) {
+    return [trimmed, ""];
+  }
+
+  const splitIndex = Math.ceil(words.length / 2);
+
+  return [
+    words.slice(0, splitIndex).join(" "),
+    words.slice(splitIndex).join(" "),
+  ];
+};
 
 export const useIpAddress = () => {
   const dispatch = useDispatch<AppDispatch>();

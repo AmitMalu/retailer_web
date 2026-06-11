@@ -613,7 +613,7 @@ const SubuserCreation = () => {
                           <TextComponent
                             fontSize={12}
                             fontWeight={400}
-                            color={theme.palette.primary.dark}
+                            color={theme.palette.primary.main}
                           >
                             {errors.role_id}
                           </TextComponent>
@@ -661,7 +661,7 @@ const SubuserCreation = () => {
                               <TextComponent
                                 fontSize={12}
                                 fontWeight={400}
-                                color={theme.palette.primary.dark}
+                                color={theme.palette.primary.main}
                               >
                                 {errors.subRoleId}
                               </TextComponent>

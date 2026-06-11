@@ -6,6 +6,7 @@ import moment from "moment";
 // import ImLogo from '@/assets/svg/ImFullLogo'
 import { useTheme } from "@mui/system";
 import "./BillReciept.css";
+import { useBranding } from "@/Config/branding";
 
 const BillReceipt = ({ data }: { data: any }) => {
 
@@ -16,6 +17,8 @@ const BillReceipt = ({ data }: { data: any }) => {
     const loginData = apiResponses?.loginData
         ? decryptData(apiResponses?.loginData)
         : null;
+
+    const branding = useBranding();
 
     if (!data) return <Text>No receipt data available.</Text>;
 
@@ -35,7 +38,8 @@ const BillReceipt = ({ data }: { data: any }) => {
                             height: 120,
                             objectFit: "contain",
                         }}
-                        src={loginData?.logoUrl ?? ""} alt="img"
+                        src={branding?.logo ?? loginData.logoUrl ?? ""}
+                        alt={branding?.companyName ?? "Logo"}
                     />
                 </Group>
                 <Text fw={600} size="sm" ta="right">
@@ -113,7 +117,7 @@ const BillReceipt = ({ data }: { data: any }) => {
 
             {/* Print Button */}
             <Group justify="center" mt="lg" className="no-print">
-                <Button onClick={handlePrint} color={theme.palette.primary.dark}>
+                <Button onClick={handlePrint} color={theme.palette.primary.main}>
                     🖨️ Print Receipt
                 </Button>
             </Group>

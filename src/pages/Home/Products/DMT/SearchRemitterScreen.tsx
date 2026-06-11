@@ -376,7 +376,7 @@ const SearchRemitterScreen = () => {
           <TextComponent
             fontSize={28}
             fontWeight={600}
-            color={theme.palette.primary.dark}
+            color={theme.palette.primary.main}
           >
             Mudra Remit
           </TextComponent>
@@ -406,7 +406,7 @@ const SearchRemitterScreen = () => {
                     <TextComponent
                       fontSize={28}
                       fontWeight={600}
-                      color={theme.palette.primary.dark}
+                      color={theme.palette.primary.main}
                     >
                       Find Remitter
                     </TextComponent>

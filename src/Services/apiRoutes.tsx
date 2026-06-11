@@ -6,6 +6,7 @@ export const API_ROUTES = {
   VERIFY_TOKEN: `${BASE_URL}/api/aes/validate-token`,
 
   //////////////// Auth /////////////////////
+  BRAND_INFO: `${BASE_URL}/api/tenant/config`,
   LOGIN: `${BASE_URL}/auth/login`,
   FORGOT_PASSWORD: `${BASE_URL}/auth/forgot-password`,
   VERIFY_OTP: `${BASE_URL}/auth/verify-otp`,
