@@ -83,9 +83,18 @@ export { themeColors, type ThemeOption, type ThemeColors };
 
 export const createThemeOptions = (
   themeKey: ThemeOption = "default",
-  darkMode: boolean = false
+  darkMode: boolean = false,
+  customPrimary?: string,
+  customSecondary?: string
 ): ThemeOptions => {
-  const colors = themeColors[themeKey] || themeColors.default;
+  const colors = { ...(themeColors[themeKey] || themeColors.default) };
+
+  if (customPrimary) {
+    colors.primary = customPrimary;
+  }
+  if (customSecondary) {
+    colors.secondary = customSecondary;
+  }
 
   // Override colors for dark mode if not using the explicit dark theme
   const adjustedColors: ThemeColors =
@@ -223,9 +232,11 @@ export const createThemeOptions = (
 // Helper function to get theme options
 export const getThemeOptions = (
   themeKey: ThemeOption = "default",
-  darkMode: boolean = false
+  darkMode: boolean = false,
+  customPrimary?: string,
+  customSecondary?: string
 ) => {
-  return createThemeOptions(themeKey, darkMode);
+  return createThemeOptions(themeKey, darkMode, customPrimary, customSecondary);
 };
 
 // Create and export default theme instance

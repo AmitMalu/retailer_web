@@ -77,7 +77,7 @@ const RemitterEkyc = () => {
           <TextComponent
             fontSize={28}
             fontWeight={600}
-            color={theme.palette.primary.dark}
+            color={theme.palette.primary.main}
           >
             Remitter eKYC
           </TextComponent>
@@ -97,7 +97,7 @@ const RemitterEkyc = () => {
                       <TextComponent
                         fontSize={16}
                         fontWeight={400}
-                        color={theme.palette.primary.dark}
+                        color={theme.palette.primary.main}
                       >
                         Please select a Device
                       </TextComponent>
@@ -111,7 +111,7 @@ const RemitterEkyc = () => {
                             <Radio
                               value="Mantra"
                               label="Mantra"
-                              color={theme.palette.primary.dark}
+                              color={theme.palette.primary.main}
                               variant="outline"
                               checked={values.device === "Mantra"}
                               classNames={{
@@ -123,42 +123,42 @@ const RemitterEkyc = () => {
                             <Radio
                               value="Morpho"
                               label="Morpho"
-                              color={theme.palette.primary.dark}
+                              color={theme.palette.primary.main}
                               variant="outline"
                               checked={values.device === "Morpho"}
                             />
                             <Radio
                               value="Precision"
                               label="Precision"
-                              color={theme.palette.primary.dark}
+                              color={theme.palette.primary.main}
                               variant="outline"
                               checked={values.device === "Precision"}
                             />
                             <Radio
                               value="Startek"
                               label="Startek"
-                              color={theme.palette.primary.dark}
+                              color={theme.palette.primary.main}
                               variant="outline"
                               checked={values.device === "Startek"}
                             />
                             <Radio
                               value="Tatvik"
                               label="Tatvik"
-                              color={theme.palette.primary.dark}
+                              color={theme.palette.primary.main}
                               variant="outline"
                               checked={values.device === "Tatvik"}
                             />
                             <Radio
                               value="SecuGen"
                               label="SecuGen"
-                              color={theme.palette.primary.dark}
+                              color={theme.palette.primary.main}
                               variant="outline"
                               checked={values.device === "SecuGen"}
                             />
                             <Radio
                               value="Cogent"
                               label="Cogent"
-                              color={theme.palette.primary.dark}
+                              color={theme.palette.primary.main}
                               variant="outline"
                               checked={values.device === "Cogent"}
                             />
@@ -171,7 +171,7 @@ const RemitterEkyc = () => {
                               setFieldValue("csp", e.currentTarget.checked)
                             }
                             label="C.S.P"
-                            color={theme.palette.primary.dark}
+                            color={theme.palette.primary.main}
                           />
                         </div>
                       </div>
@@ -187,7 +187,7 @@ const RemitterEkyc = () => {
                         setFieldValue("alert", e.currentTarget.checked)
                       }
                       label="Alert!"
-                      color={theme.palette.primary.dark}
+                      color={theme.palette.primary.main}
                     />
                   </div>
                 </div>

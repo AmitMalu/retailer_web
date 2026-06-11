@@ -51,7 +51,7 @@ const ViewUser = () => {
       render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-center">
           <TextComponent
-            color={theme.palette.primary.dark}
+            color={theme.palette.primary.main}
             fontSize={12}
             fontWeight={400}
           >
@@ -68,7 +68,7 @@ const ViewUser = () => {
       render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-center">
           <TextComponent
-            color={theme.palette.primary.dark}
+            color={theme.palette.primary.main}
             fontSize={12}
             fontWeight={400}
           >
@@ -94,7 +94,7 @@ const ViewUser = () => {
       render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-center">
           <TextComponent
-            color={theme.palette.primary.dark}
+            color={theme.palette.primary.main}
             fontSize={12}
             fontWeight={400}
           >
@@ -129,7 +129,7 @@ const ViewUser = () => {
       render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-self-center w-max bg-GreenColor-light px-1 py-1 rounded text-center justify-center">
           <TextComponent
-            color={theme.palette.primary.dark}
+            color={theme.palette.primary.main}
             fontSize={12}
             fontWeight={400}
           >
@@ -158,13 +158,13 @@ const ViewUser = () => {
       render: (_value: any, _index: number, row: ViewUserList) => (
         <div className="flex items-center justify-center">
           <TextComponent
-            color={theme.palette.primary.dark}
+            color={theme.palette.primary.main}
             fontSize={12}
             fontWeight={400}
           >
             {String(row.isBlocked)}
             {/* {row?.isBlocked === true ? (
-              <NotBlockedSvgIcon color={theme.palette.primary.dark} />
+              <NotBlockedSvgIcon color={theme.palette.primary.main} />
             ) : (
               <BlockedSvgIcon color={theme.palette.greenColor.DEFAULT} />
             )} */}
@@ -288,9 +288,9 @@ const ViewUser = () => {
         <div className="flex w-full items-center justify-between gap-2">
           <div className="flex w-full items-center justify-start gap-2">
             <div className="flex w-max items-center justify-center rounded-lg border gap-2 bg-primary-light p-2 shadow-lg">
-              <ViewUserSvgIcon color={theme.palette.primary.dark} />
+              <ViewUserSvgIcon color={theme.palette.primary.main} />
               <TextComponent
-                color={theme.palette.primary.dark}
+                color={theme.palette.primary.main}
                 fontSize={14}
                 fontWeight={600}
               >
@@ -304,11 +304,11 @@ const ViewUser = () => {
                 onClick={() => setIsSeacrh(!isSeacrh)}
                 className="flex w-max items-center justify-center gap-2 "
               >
-                <FilterSvgIcon color={theme.palette.primary.dark} />
+                <FilterSvgIcon color={theme.palette.primary.main} />
                 <TextComponent
                   fontSize={16}
                   fontWeight={400}
-                  color={theme.palette.primary.dark}
+                  color={theme.palette.primary.main}
                   align="center"
                 >
                   Filter
@@ -320,9 +320,9 @@ const ViewUser = () => {
               onClick={() => setShowColumnModal(true)}
               className="flex w-max items-center justify-center gap-2 rounded-lg border-2 border-midNeutral bg-background-paper px-2 py-[6px]"
             >
-              <ColsSvgIcon color={theme.palette.primary.dark} />
+              <ColsSvgIcon color={theme.palette.primary.main} />
               <TextComponent
-                color={theme.palette.primary.dark}
+                color={theme.palette.primary.main}
                 fontSize={16}
                 fontWeight={400}
               >
@@ -333,9 +333,9 @@ const ViewUser = () => {
               <Menu shadow="md" width={140}>
                 <Menu.Target>
                   <div className="flex items-center gap-2">
-                    <ExportSvgIcon color={theme.palette.primary.dark} />
+                    <ExportSvgIcon color={theme.palette.primary.main} />
                     <TextComponent
-                      color={theme.palette.primary.dark}
+                      color={theme.palette.primary.main}
                       fontSize={14}
                       fontWeight={600}
                     >

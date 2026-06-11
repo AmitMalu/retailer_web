@@ -331,7 +331,7 @@ export default function HorizontalLayout({ children }: HorizontalLayoutProps) {
                   borderColor: (theme) => theme.palette.background.paper + "80",
                 }}
               >
-                <Avatar sx={{ bgcolor: "primary.dark" }}>
+                <Avatar sx={{ bgcolor: "primary.main" }}>
                   <PersonIcon />
                 </Avatar>
               </IconButton>

@@ -67,7 +67,7 @@ const PGScreen = () => {
         <TextComponent
           fontSize={24}
           fontWeight={600}
-          color={theme.palette.primary.dark}
+          color={theme.palette.primary.main}
         >
           Payment Gateway
         </TextComponent>
@@ -103,7 +103,7 @@ const PGScreen = () => {
                 return (
                   <PGCard
                     key={card.id}
-                    image={<PgPrepaidSvgIcon color={theme.palette.primary.dark} />}
+                    image={<PgPrepaidSvgIcon color={theme.palette.primary.main} />}
                     title={card.title}
                     onClick={handleClick}
                     disabled={status?.blocked}

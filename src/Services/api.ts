@@ -82,6 +82,9 @@ export const Verify_Token = async (body: VerifyTokenRequest) =>
 export const login = async (data: LoginRequest) =>
   await api.post(API_ROUTES.LOGIN, data);
 
+export const Get_Brand_Info = async () =>
+  await api.get(`${API_ROUTES.BRAND_INFO}`);
+
 export const Forgot_Password = async (data: ForgotPasswordRequestProps) =>
   await api.post(API_ROUTES.FORGOT_PASSWORD, data);
 

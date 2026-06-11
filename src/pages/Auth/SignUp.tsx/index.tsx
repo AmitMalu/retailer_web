@@ -154,7 +154,7 @@ const SignUp: React.FC = () => {
                     <TextComponent
                       fontSize={14}
                       fontWeight={600}
-                      color="primary.dark"
+                      color="primary.main"
                       className="underline cursor-pointer"
                       onClick={() => navigate("/login")}
                     >

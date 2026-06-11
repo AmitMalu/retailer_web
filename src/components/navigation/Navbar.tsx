@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../Redux/Store";
-import NFTLogo from "@/assets/Images/NFT_Logo.png";
+// import NFTLogo from "@/assets/Images/NFT_Logo.png";
 import { NavbarProps } from "@/Common/interface";
 import TextComponent from "../Atoms/TextComponent";
 import {
@@ -18,8 +18,9 @@ import {
   // ThemeSettingSvgIcon,
 } from "@/assets/svg";
 import NotificationBell from "../Molecules/NotificationBell";
-import { decryptData, formatIndianNumber, useWalletBalance } from "@/Utils/helper";
+import { decryptData, formatIndianNumber, getCompanyNameLines, useWalletBalance } from "@/Utils/helper";
 import { NavLink } from "react-router-dom";
+import { useBranding } from "@/Config/branding";
 // import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
 // import { useDispatch } from "react-redux";
 
@@ -45,6 +46,10 @@ export default function Navbar({
   //   dispatch(toggleSettingsDrawer());
   // };
   const { WalletBalanceReq, isLoading } = useWalletBalance();
+  const branding = useBranding();
+  const [line1, line2] = getCompanyNameLines(
+    branding?.companyName
+  );
   const WalletDisplay = ({
     title,
     amount,
@@ -116,15 +121,31 @@ export default function Navbar({
               </IconButton>
             ) : (
               <div className="flex items-center gap-2.5">
-                <img src={NFTLogo} alt="logo" className="h-10 w-10" />
+                {/* <img src={NFTLogo} alt="logo" className="h-10 w-10" /> */}
+                <img
+                  src={branding?.logo}
+                  alt={branding?.companyName}
+                  className="h-10 w-10 object-contain"
+                />
 
                 <div className="flex flex-col leading-tight">
-                  <span className="font-semibold text-sm whitespace-nowrap" style={{ color: theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark }}>
-                    NFT Network Technologies
+                  <span className="font-semibold text-sm whitespace-nowrap" style={{ color: theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.main }}>
+                    {/* NFT Network Technologies */}
+                    {line1}
                   </span>
-                  <span className="text-[10px]" style={{ color: theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark }}>
-                    Private Limited
-                  </span>
+                  {line2 && (
+                    <span
+                      className="text-[10px]"
+                      style={{
+                        color:
+                          theme.palette.mode === "dark"
+                            ? theme.palette.primary.light
+                            : theme.palette.primary.main,
+                      }}
+                    >
+                      {line2}
+                    </span>
+                  )}
                 </div>
               </div>
             )}

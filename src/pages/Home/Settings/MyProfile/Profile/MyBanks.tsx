@@ -193,7 +193,7 @@ const MyBanks = () => {
     //           // setShowDrawerForm(true);
     //         }}
     //       >
-    //         <ViewDocSvgIcon color={theme.palette.primary.dark} />
+    //         <ViewDocSvgIcon color={theme.palette.primary.main} />
     //       </UnstyledButton>
     //     </div>
     //   ),

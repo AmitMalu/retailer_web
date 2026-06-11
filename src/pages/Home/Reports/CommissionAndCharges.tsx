@@ -7,7 +7,6 @@ import {
   decryptData,
   exportToCsv,
   formatYMDdate,
-  walletTypeSelectData,
 } from "@/Utils/helper";
 import { Grid, Loader } from "@mantine/core";
 import { useTheme } from "@mui/system";
@@ -37,17 +36,17 @@ const KEY = "commision_and_charge_report"
 
 const headers: GenericTableHeader<CommissionAndChargeTableType>[] = [
   { key: "txId", label: "Transaction ID", filterType: "text", copyable: true },
-  { key: "productName", label: "Product Name", filterType: "text" },
+  { key: "productName", label: "Product Name", filterType: "none" },
   // { key: "subProductName", label: "Sub Product Name", filterType: "text" },
-  { key: "hierarchyId", label: "User ID", filterType: "text" },
-  { key: "walletType", label: "Wallet Type", filterType: "boolean", filterOptions: walletTypeSelectData }, // Could add options if needed
+  { key: "hierarchyId", label: "User ID", filterType: "none" },
+  { key: "walletType", label: "Wallet Type", filterType: "none"}, // Could add options if needed
   { key: "txType", label: "Transaction Type", filterType: "text" },
   // { key: "operator", label: "Operator", filterType: "text" },
-  { key: "balBefore", label: "Balance Before", filterType: "number" },
-  { key: "amount", label: "Amount", filterType: "number" },
-  { key: "balAfter", label: "Balance After", filterType: "number" },
+  { key: "balBefore", label: "Balance Before", filterType: "amount" },
+  { key: "amount", label: "Amount", filterType: "amount" },
+  { key: "balAfter", label: "Balance After", filterType: "amount" },
   { key: "transactionDate", label: "Transaction Date", filterType: "date" },
-  { key: "transactionTime", label: "Transaction Time", filterType: "text" },
+  { key: "transactionTime", label: "Transaction Time", filterType: "time" },
   { key: "narration", label: "Narration", filterType: "text" },
 ];
 

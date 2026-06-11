@@ -107,7 +107,7 @@ const AepsServiceScreen = ({ vendorKey }: AepsScreenProps) => {
         <TextComponent
           fontSize={28}
           fontWeight={600}
-          color={theme.palette.primary.dark}
+          color={theme.palette.primary.main}
         >
           AEPS Services
         </TextComponent>

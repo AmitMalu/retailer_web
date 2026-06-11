@@ -41,7 +41,7 @@ const CommonDashboard = (props: commonDashboardProps) => {
       ]
     : [
         theme.palette.primary.main,
-        theme.palette.primary.dark,
+        theme.palette.primary.main,
         theme.palette.primary.light,
         theme.palette.secondary.dark,
       ];

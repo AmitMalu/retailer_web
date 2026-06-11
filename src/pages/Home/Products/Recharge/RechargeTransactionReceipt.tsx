@@ -4,6 +4,7 @@ import moment from "moment";
 import { useTheme } from "@mui/system";
 import { useAppSelector } from "@/Redux/hooks";
 import "./RechargeTransactionReceipt.css";
+import { useBranding } from "@/Config/branding";
 
 interface RechargeReceiptProps {
     data: any;
@@ -13,6 +14,7 @@ const RechargeTransactionReceipt = ({ data }: RechargeReceiptProps) => {
     const theme = useTheme();
 
     const { responses } = useAppSelector(state => state.apiResponse);
+    const branding = useBranding();
 
     const loginData = responses?.loginData
         ? decryptData(responses?.loginData)
@@ -40,8 +42,8 @@ const RechargeTransactionReceipt = ({ data }: RechargeReceiptProps) => {
                             height: 120,
                             objectFit: "contain",
                         }}
-                        src={loginData?.logoUrl ?? ""}
-                        alt="logo"
+                        src={branding?.logo ?? loginData?.logoUrl ?? ""}
+                        alt={branding?.companyName}
                     />
                 </Group>
 
@@ -144,14 +146,14 @@ const RechargeTransactionReceipt = ({ data }: RechargeReceiptProps) => {
                     p="sm"
                     radius="md"
                     withBorder
-                    style={{ 
+                    style={{
                         borderColor: data?.status === "HOLD" ? "#fab005" : "#fa5252",
                         backgroundColor: data?.status === "HOLD" ? "#fff9db" : "transparent"
                     }}
                 >
-                    <Text 
-                        fw={600} 
-                        c={data?.status === "HOLD" ? "#f59f00" : "red"} 
+                    <Text
+                        fw={600}
+                        c={data?.status === "HOLD" ? "#f59f00" : "red"}
                         size="sm"
                     >
                         Transaction {data?.status} Reason
@@ -173,7 +175,7 @@ const RechargeTransactionReceipt = ({ data }: RechargeReceiptProps) => {
 
             {/* --- Action Buttons --- */}
             <Group justify="center" mt="lg" className="no-print">
-                <Button onClick={handlePrint} color={theme.palette.primary.dark}>
+                <Button onClick={handlePrint} color={theme.palette.primary.main}>
                     🖨️ Print Receipt
                 </Button>
             </Group>

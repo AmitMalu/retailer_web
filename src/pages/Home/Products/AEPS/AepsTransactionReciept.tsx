@@ -4,6 +4,7 @@ import { Card, Table, Text, Group, Divider, Button, Badge } from "@mantine/core"
 import { useSelector } from "react-redux";
 import { useTheme } from "@mui/system";
 import "./AepsTransactionReciept.css";
+import { useBranding } from "@/Config/branding";
 
 const TransactionReciept = ({ data }: { data: any }) => {
     const theme = useTheme();
@@ -13,6 +14,8 @@ const TransactionReciept = ({ data }: { data: any }) => {
     const loginData = apiResponses?.loginData
         ? decryptData(apiResponses?.loginData)
         : null;
+
+    const branding = useBranding();
 
     if (!data) return <Text>No receipt data available.</Text>;
 
@@ -33,7 +36,8 @@ const TransactionReciept = ({ data }: { data: any }) => {
                             height: 120,
                             objectFit: "contain",
                         }}
-                        src={loginData?.logoUrl ?? ""} alt="img"
+                        src={branding?.logo ?? loginData.logoUrl ?? ""}
+                        alt={branding?.companyName ?? "Logo"}
                     />
                     {/* <ImLogo /> */}
                 </Group>
@@ -151,7 +155,7 @@ const TransactionReciept = ({ data }: { data: any }) => {
 
             {/* Print Button */}
             <Group justify="center" mt="lg" className="no-print">
-                <Button onClick={handlePrint} color={theme.palette.primary.dark}>
+                <Button onClick={handlePrint} color={theme.palette.primary.main}>
                     🖨️ Print Receipt
                 </Button>
             </Group>

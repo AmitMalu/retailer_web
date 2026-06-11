@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { useTheme } from "@mui/system";
 import moment from "moment";
 import "./DMTTransactionReciept.css";
+import { useBranding } from "@/Config/branding";
 
 const DMTTransactionReceipt = ({
     data,
@@ -30,6 +31,8 @@ const DMTTransactionReceipt = ({
     const loginData = apiResponses?.loginData
         ? decryptData(apiResponses?.loginData)
         : null;
+
+    const branding = useBranding();
 
     if (!data) return <Text>No receipt data available.</Text>;
 
@@ -50,8 +53,8 @@ const DMTTransactionReceipt = ({
                             height: 120,
                             objectFit: "contain",
                         }}
-                        src={loginData?.logoUrl ?? ""}
-                        alt="img"
+                        src={branding?.logo ?? loginData.logoUrl ?? ""}
+                        alt={branding?.companyName ?? "Logo"}
                     />
                 </Group>
 
@@ -177,7 +180,7 @@ const DMTTransactionReceipt = ({
 
             {/* Print Button */}
             <Group justify="center" mt="lg" className="no-print">
-                <Button onClick={handlePrint} color={theme.palette.primary.dark}>
+                <Button onClick={handlePrint} color={theme.palette.primary.main}>
                     🖨️ Print Receipt
                 </Button>
             </Group>

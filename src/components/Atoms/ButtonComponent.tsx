@@ -57,14 +57,14 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
       backgroundColor: color || "primary.main",
       backgroundImage:
         !color && isAuth
-          ? `linear-gradient(90deg, ${theme.palette.primary.main} 3%, ${theme.palette.primary.dark} 97%)`
+          ? `linear-gradient(90deg, ${theme.palette.primary.main} 3%, ${theme.palette.primary.main} 97%)`
           : "none",
       color: "#fff",
       "&:hover": {
         backgroundColor: color || "primary.main",
         backgroundImage:
           !color && isAuth
-            ? `linear-gradient(90deg, ${theme.palette.primary.main} 3%, ${theme.palette.primary.dark} 97%)`
+            ? `linear-gradient(90deg, ${theme.palette.primary.main} 3%, ${theme.palette.primary.main} 97%)`
             : "none",
         opacity: 0.9,
       },

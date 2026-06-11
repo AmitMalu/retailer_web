@@ -4,6 +4,7 @@ import moment from "moment";
 import { useTheme } from "@mui/system";
 import "./BBPSTransactionReciept.css";
 import { useAppSelector } from "@/Redux/hooks";
+import { useBranding } from "@/Config/branding";
 
 const BBPSTransactionReciept = ({ data }: { data: any }) => {
 
@@ -14,6 +15,8 @@ const BBPSTransactionReciept = ({ data }: { data: any }) => {
     const loginData = responses?.loginData
         ? decryptData(responses?.loginData)
         : null;
+
+    const branding = useBranding();
 
     if (!data) return <Text>No receipt data available.</Text>;
 
@@ -34,8 +37,8 @@ const BBPSTransactionReciept = ({ data }: { data: any }) => {
                             height: 120,
                             objectFit: "contain",
                         }}
-                        src={loginData?.logoUrl ?? ""}
-                        alt="img"
+                        src={branding?.logo ?? loginData.logoUrl ?? ""}
+                        alt={branding?.companyName ?? "Logo"}
                     />
                 </Group>
 
@@ -127,7 +130,7 @@ const BBPSTransactionReciept = ({ data }: { data: any }) => {
 
             {/* Print Button */}
             <Group justify="center" mt="lg" className="no-print">
-                <Button onClick={handlePrint} color={theme.palette.primary.dark}>
+                <Button onClick={handlePrint} color={theme.palette.primary.main}>
                     🖨️ Print Receipt
                 </Button>
             </Group>

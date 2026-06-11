@@ -30,20 +30,27 @@ const KEY = "wallet_report"
 
 const headers: GenericTableHeader<WalletReportTableType>[] = [
   { key: "tranxId", label: "Transaction ID", filterType: "text", copyable: true },
-  { key: "productName", label: "Product Name", filterType: "text" },
+  { key: "productName", label: "Product Name", filterType: "none" },
   // { key: "subProductName", label: "Sub Product Name", filterType: "text" },
   // { key: "schemeName", label: "Scheme Name", filterType: "text" },
-  { key: "hierarchyId", label: "User ID", filterType: "text" },
+  { key: "hierarchyId", label: "User ID", filterType: "none" },
   // { key: "outletName", label: "Outlet Name", filterType: "text" },
   // { key: "transactionType", label: "Transaction Type", filterType: "text" },
-  // { key: "walletType", label: "Wallet Type", filterType: "boolean", filterOptions: walletTypeSelectData },
-  { key: "balBefore", label: "Balance Before", filterType: "number" },
-  { key: "amount", label: "Amount", filterType: "number" },
-  { key: "balAfter", label: "Balance After", filterType: "number" },
+  { key: "walletType", label: "Wallet Type", filterType: "none" },
+  { key: "balBefore", label: "Balance Before", filterType: "amount" },
+  { key: "amount", label: "Amount", filterType: "amount" },
+  { key: "balAfter", label: "Balance After", filterType: "amount" },
   { key: "actionOnBalanceAmount", label: "Action On Balance Amount", filterType: "text" },
-  { key: "status", label: "Status", filterType: "text" },
+  {
+    key: "status", label: "Status", filterType: "boolean", filterOptions:
+      [
+        { label: "SUCCESS", value: "SUCCESS" },
+        { label: "FAILURE", value: "FAILURE" },
+        { label: "PENDING", value: "PENDING" },
+      ]
+  },
   { key: "transactionDate", label: "Transaction Date", filterType: "date" },
-  { key: "transactionTime", label: "Transaction Time", filterType: "text" },
+  { key: "transactionTime", label: "Transaction Time", filterType: "time" },
   { key: "narration", label: "Narration", filterType: "text" },
 ];
 

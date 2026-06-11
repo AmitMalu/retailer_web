@@ -66,15 +66,21 @@ const TransactionReport = () => {
         { key: "userId", label: "User ID", filterType: "text" },
         // { key: "mobileNo", label: "Mobile No", filterType: "text" },
         // { key: "schemeName", label: "Scheme", filterType: "text" },
-        { key: "amount", label: "Amount", filterType: "number" },
-        { key: "txStatus", label: "Transaction Status", filterType: "text" },
+        { key: "amount", label: "Amount", filterType: "amount" },
+        { key: "txStatus", label: "Transaction Status", filterType: "boolean", filterOptions : 
+            [
+                {label : "SUCCESS", value : "SUCCESS"},
+                {label : "FAILURE", value : "FAILURE"},
+                {label : "PENDING", value : "PENDING"},
+            ] 
+        },
         // { key: "txType", label: "Transaction Type", filterType: "text" },
         { key: "remarks", label: "Remarks", filterType: "text" },
         { key: "walletType", label: "Wallet Type", filterType: "none" },
         // { key: "medium", label: "Medium", filterType: "text" },
         // { key: "vendor", label: "Vendor", filterType: "text" },
         { key: "dateOfTransaction", label: "Transaction Date", filterType: "date" },
-        { key: "timeOfTransaction", label: "Transaction Time", filterType: "text" },
+        { key: "timeOfTransaction", label: "Transaction Time", filterType: "time" },
         // { key: "updatedDateOfTransaction", label: "Updated Date", filterType: "date" },
         // { key: "updatedTimeOfTransaction", label: "Updated Time", filterType: "time" },
     ];

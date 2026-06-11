@@ -72,6 +72,12 @@ api.interceptors.request.use(
       config.headers.set("IpAddress", ipAddress);
     }
 
+    const tenantDomain = window.location.hostname;
+
+    if (tenantDomain) {
+      config.headers.set("X-Tenant-Domain", tenantDomain);
+    }
+
     if (config.isMultipart) {
       config.headers.set("Content-Type", "multipart/form-data");
       config.headers.set("Accept", "application/json, text/plain, */*");

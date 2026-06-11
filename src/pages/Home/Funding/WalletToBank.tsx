@@ -156,7 +156,7 @@ const WalletToBank = () => {
           </div>
         </div>
         <div className="flex flex-col h-[calc(100vh-200px)]">
-          {/* <TextComponent fontSize={30} fontWeight={500} color="primary.dark">
+          {/* <TextComponent fontSize={30} fontWeight={500} color="primary.main">
             Coming Soon!
           </TextComponent> */}
           <Formik<WalletToBankProps>

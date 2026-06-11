@@ -159,7 +159,7 @@ export const SET_CURRENT_ROUTE = "route/SET_CURRENT_ROUTE";
 
 export type SaveApiResponseAction = {
   type: typeof SAVE_API_RESPONSE;
-  payload: { key: string; data: string | object };
+  payload: { key: string; data: string | object | boolean };
 };
 
 export type ClearApiResponseAction = {
@@ -180,6 +180,7 @@ export type ApiActionTypes =
   | ClearApiResponseAction
   | ClearAllResponsesAction
   | SetCurrentRouteAction;
+
 
 export type CustomTextInputProps = Omit<
   TextInputProps,
@@ -338,7 +339,15 @@ export type TimeComponentProps = {
 export type GenericTableHeader<T> = {
   key: keyof T;
   label?: string;
-  filterType?: "text" | "number" | "boolean" | "date" | "time" | "none";
+  filterType?:
+  | "text"
+  | "number"
+  | "amount"
+  | "boolean"
+  | "date"
+  | "coordinate"
+  | "time"
+  | "none";
   filterOptions?: { label: string; value: any }[];
   searchable?: boolean; // optionally override with this
   renderType?: "link" | "custom" | "statusBadge"; //
@@ -1173,6 +1182,7 @@ export interface PendingTransactionTableType {
   txType: string | null;
   remarks: string | null;
   medium: string | null;
+  walletType: string;
   dateOfTransaction: string; // e.g. "2025-10-14"
   timeOfTransaction: string; // e.g. "18:14:18.35"
   updatedAt: string | null;
@@ -1253,6 +1263,7 @@ export interface WalletReportTableType {
   balBefore?: string;
   amount?: string;
   balAfter?: string;
+  walletType?: string;
   actionOnBalanceAmount?: string;
   status?: string;
   transactionDate?: number;
@@ -1332,7 +1343,7 @@ export interface NotificationMessage {
   title: string;
   body: string;
   alertType: string;
-  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
   product?: string;
   deliveryChannel?: string;
   audienceType?: string;
