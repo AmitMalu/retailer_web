@@ -8,114 +8,285 @@ import TextComponent from "@/components/Atoms/TextComponent";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/system";
 import { AepsCardSvgIcon } from "@/assets/svg/Products/AepsSvgIcon";
+import { useSelector } from "react-redux";
+import { RootState } from "@/Redux/Store";
+import { decryptData } from "@/Utils/helper";
+import React from "react";
+import { showErrorNotification } from "@/Utils/notifications";
 
 export default function Products() {
   const navigate = useNavigate();
   const theme = useTheme();
 
-  const row1 = [
+  const apiResponses = useSelector(
+    (state: RootState) => state.apiResponse.responses
+  );
+
+  const loginData = apiResponses?.loginData
+    ? decryptData(apiResponses?.loginData)
+    : null;
+
+  const bbpsBillAvenueSubProduct = React.useMemo(() => {
+    const bbps = loginData?.products?.find(
+      (p: any) => p.productName?.toUpperCase() === "BBPS"
+    );
+
+    if (!bbps) return null;
+
+    const billAvenueSubProduct = bbps.subProducts?.find((sp: any) =>
+      sp.vendorName?.toLowerCase().includes("avenue") ||
+      sp.vendorName?.toLowerCase().includes("bill")
+    );
+
+    if (!billAvenueSubProduct) return bbps;
+
+    return billAvenueSubProduct;
+  }, [loginData]);
+
+  const productStatusMap = React.useMemo(() => {
+    const map: Record<string, any> = {};
+
+    loginData?.products?.forEach((p: any) => {
+      map[p.productName.toUpperCase()] = {
+        isVisible: p.isVisible,
+        blocked: p.blocked,
+        active: p.active,
+        subProducts: p.subProducts || [],
+      };
+    });
+
+    return map;
+  }, [loginData]);
+
+  const handleProductClick = (productKey: string, route: string) => {
+    const status = productStatusMap[productKey];
+
+    if (!status) return;
+
+    if (status.blocked) return;
+
+    if (!status.active) {
+      showErrorNotification(
+        "This product is currently inactive. Please contact support for more information."
+      );
+      return;
+    }
+
+    if (!status.subProducts || status.subProducts.length < 1) {
+      showErrorNotification(
+        "No Scheme Found For You on this Product."
+      );
+      return;
+    }
+
+    navigate(route);
+  };
+
+
+
+  const row1: any = [
     {
       id: 1,
-      image: <PGSvgIcon color={theme.palette.red.DEFAULT} />,
+      key: "PAYMENT GATEWAY",
+      image: <PGSvgIcon />,
       title: "Payment Gateway",
-      onClick: () => {
-        navigate(`/products/pgScreen`);
-      },
+      route: "/products/pgScreen"
     },
     {
       id: 2,
-      image: <PayoutSvgIcon color={theme.palette.red.DEFAULT} />,
+      key: "PAYOUT",
+      image: <PayoutSvgIcon />,
       title: "Payout",
-      onClick: () => {
-        navigate(`/products/payoutScreen`);
-      },
+      route: `/products/payoutScreen`,
     },
     {
       id: 3,
-      image: <DMTSvgIcon color={theme.palette.red.DEFAULT} />,
+      key: "DMT",
+      image: <DMTSvgIcon />,
       title: "DMT",
-      onClick: () => {
-        navigate(`/products/dmt`);
-      },
+      route: `/products/dmt`,
     },
   ];
 
-  const row2 = [
+  const row2: any = [
+    // {
+    //   id: 4,
+    //   key: "MPOS",
+    //   image: <RechargeSvgIcon color={theme.palette.background.paper} />,
+    //   title: "MPOS",
+    //   route: `/products/mpos`,
+    // },
     {
       id: 4,
-      image: <RechargeSvgIcon color={theme.palette.background.paper} />,
-      title: "MPOS",
-      onClick: () => {
-        navigate(`/products/mpos`);
-      },
+      key: "RECHARGE",
+      image: <RechargeSvgIcon />,
+      title: "Recharge",
+      route: `/products/recharge`,
     },
     {
       id: 5,
-      image: <AepsCardSvgIcon color={theme.palette.background.paper} />,
+      key: "AEPS",
+      image: <AepsCardSvgIcon />,
       title: "AEPS",
-      onClick: () => {
-        navigate(`/products/aepsScreen`);
-      },
+      route: "/products/aeps"
     },
   ];
 
-  const row3 = [
+  const row3: any = [
     {
       id: 6,
-      image: <BillPaymenstSvgIcon color={theme.palette.red.DEFAULT} />,
-      title: "Bill Payment",
-      onClick: () => {
-        navigate(`/products/billPay`);
-      },
+      key: "BBPS",
+      image: <BillPaymenstSvgIcon />,
+      title: "Credit Card",
+      route: "/products/credit-card"
     },
+    {
+      id: 7,
+      key: "BBPS",
+      image: <BillPaymenstSvgIcon />,
+      title: "Bill Payment",
+      route: "/products/billPay"
+    },
+    {
+      id: 8,
+      key: "CMS",
+      image: <PGSvgIcon />,
+      title: "CMS",
+      route: ""
+    }
   ];
 
   return (
-    <div className="mx-auto py-10 px-4 text-center relative">
-      <TextComponent
-        fontSize={24}
-        fontWeight={600}
-        color={"background.default"}
-      >
-        Products
-      </TextComponent>
-
-      <div className="flex justify-center gap-16 my-12">
-        {row1.map((product) => (
-          <ProductCard
-            key={product.id}
-            image={product.image}
-            title={product.title}
-            fill={false}
-            onClick={product.onClick}
-          />
-        ))}
+    <div
+      style={{
+        scrollbarWidth: "none",
+      }}
+      className="mx-auto py-2 px-4 relative flex flex-col gap-5 items-center justify-center"
+    >
+      <div>
+        <TextComponent
+          fontSize={24}
+          fontWeight={600}
+          color={theme.palette.text.primary}
+        >
+          Products
+        </TextComponent>
       </div>
 
-      <div className="flex justify-center gap-16 mb-12 mt-[-32px]">
-        <div className="w-20" />
-        {row2.map((product) => (
-          <ProductCard
-            key={product.id}
-            image={product.image}
-            title={product.title}
-            fill={true}
-            onClick={product.onClick}
-          />
-        ))}
-        <div className="w-20" />
-      </div>
+      <div>
+        <div className="flex justify-center gap-12 my-1">
+          {row1?.map((product: any) => {
+            const status = productStatusMap[product.key];
 
-      <div className="flex justify-center mt-[-32px]">
-        {row3.map((product) => (
-          <ProductCard
-            key={product.id}
-            image={product.image}
-            title={product.title}
-            fill={false}
-            onClick={product.onClick}
-          />
-        ))}
+            if (!status?.isVisible)
+              return (
+                <ProductCard
+                  key={product.id}
+                  size={{ base: 24, md: 24, lg: 32 }}
+                  placeholder
+                />
+              );
+
+            return (
+              <div key={product.id} className="scale-90">
+                <ProductCard
+                  key={product?.id}
+                  image={product?.image}
+                  title={product?.title}
+                  fill={false}
+                  onClick={() => handleProductClick(product?.key, product?.route)}
+                  size={{ base: 24, md: 24, lg: 32 }}
+                  disabled={status.blocked}
+                />
+              </div>
+            )
+          })}
+        </div>
+
+        <div className="flex justify-center gap-12 mb-0 mt-[-32px]">
+          <div className="w-20" />
+          {row2?.map((product: any) => {
+            const status = productStatusMap[product.key];
+
+            if (!status?.isVisible)
+              return (
+                <ProductCard
+                  key={product.id}
+                  size={{ base: 24, md: 24, lg: 32 }}
+                  placeholder
+                />
+              );
+
+            return (
+              <div key={product.id} className="scale-90">
+                <ProductCard
+                  key={product?.id}
+                  image={product?.image}
+                  title={product?.title}
+                  fill={true}
+                  onClick={() => handleProductClick(product?.key, product?.route)}
+                  size={{ base: 24, md: 24, lg: 32 }}
+                  disabled={status.blocked}
+                />
+              </div>
+            )
+          })}
+          <div className="w-20" />
+        </div>
+
+        <div className="flex justify-center gap-12 mt-[-24px]">
+          {row3.map((product: any) => {
+
+            const status = productStatusMap[product.key];
+            const isCreditCard = product.title === "Credit Card";
+
+            // Sub-product (Bill Avenue) for Credit Card
+            const subProduct = bbpsBillAvenueSubProduct;
+
+
+            if (!status?.isVisible)
+              return (
+                <ProductCard
+                  key={product.id}
+                  size={{ base: 24, md: 24, lg: 32 }}
+                  placeholder
+                />
+              );
+
+            // Hide Credit Card if sub-product not visible
+            if (isCreditCard && !subProduct?.isVisible) {
+              return (
+                <ProductCard
+                  key={product.id}
+                  size={{ base: 24, md: 24, lg: 32 }}
+                  placeholder
+                />
+              );
+            }
+
+            // DISABLED LOGIC for Credit Card and Common
+            const isDisabled =
+              status?.blocked ||
+              (isCreditCard && subProduct?.blocked);
+
+            return (
+              <div key={product.id} className="scale-90">
+                <ProductCard
+                  key={product?.id}
+                  image={product?.image}
+                  title={product?.title}
+                  fill={false}
+                  onClick={() => {
+                    if (isDisabled) return;
+                    handleProductClick(product?.key, product?.route)
+                  }}
+                  size={{ base: 24, md: 24, lg: 32 }}
+                  disabled={isDisabled}
+                />
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   );

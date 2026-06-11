@@ -4,7 +4,7 @@ import {
   PGFormBodyProps,
 } from "@/Common/interface";
 import { Modal } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Formik, FormikHelpers, useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -24,12 +24,13 @@ import {
 import theme from "@/theme/ThemeConfig";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 
 const PGFormModal = ({
   opened,
   onClose,
-  // rowData,
-  //   openedAs,
+  productId,
+  subProductId,
 }: PartnerRegistrationModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBinDetails, setIsBinDetails] = useState(false);
@@ -40,6 +41,14 @@ const PGFormModal = ({
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
+
+  const selectedSubProduct = loginData?.products
+    ?.flatMap((product: any) => product.subProducts)
+    ?.find(
+      (subProduct: any) => subProduct.subProductId === subProductId
+    );
+
+  const { checkDuplicate, store } = useTransactionCooldown("PG");
 
   const productOptions =
     loginData?.products?.map((product: any) => ({
@@ -52,7 +61,11 @@ const PGFormModal = ({
     cardBinNo: Yup.string()
       .max(6, "Enter valid Number")
       .min(6, "Enter valid Number")
-      .required("Required"),
+      .when("cardType", {
+        is: (val: string) => val === "Card", // only required if Card Type is "Card"
+        then: (schema) => schema.required("Required"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
     ...(isBinDetails && {
       paymentMethod: Yup.string().required("Required"),
       cardHolderName: Yup.string().required("Required"),
@@ -63,7 +76,19 @@ const PGFormModal = ({
         .required("Required"),
       productId: Yup.string().required("Required"),
       subProductId: Yup.string().required("Required"),
-      amount: Yup.number().required("Required"),
+      // amount: Yup.number().required("Required"),
+      amount: Yup.number()
+        .required("Required")
+        .test(
+          "max-amount",
+          selectedSubProduct?.maxAmount
+            ? `Amount should not exceed ₹${selectedSubProduct.maxAmount}`
+            : "",
+          function (value) {
+            if (!value || !selectedSubProduct?.maxAmount) return true;
+            return value <= selectedSubProduct.maxAmount;
+          }
+        ),
       confirmAmount: Yup.number()
         .required("Required")
         .oneOf([Yup.ref("amount")], "Amounts must match"),
@@ -80,8 +105,8 @@ const PGFormModal = ({
     amount: "",
     confirmAmount: "",
     narration: "",
-    productId: "",
-    subProductId: "",
+    productId: productId || "",
+    subProductId: subProductId || "",
   };
 
   const handleFetchCardTypeSubmit = async (
@@ -117,11 +142,12 @@ const PGFormModal = ({
         cardHolderMobileNumber: values.cardHolderMobileNumber,
         amount: values.amount,
         productId: values.productId,
+        subProductId: values.subProductId,
       };
 
       const response = await Validate_Transaction(payload);
       if (response?.status === 200 || response?.data?.statusCode === 200) {
-        showSuccessNotification(response?.data?.message);
+        // showSuccessNotification(response?.data?.message);
         handleCreateOrder(values);
       } else {
         showErrorNotification(response?.data?.message || "Unable to Validate");
@@ -137,18 +163,51 @@ const PGFormModal = ({
       setIsLoading(true);
       const payload = {
         amount: values.amount,
-        callbackUrl:
-          "https://uat.decipay.in/enterprises/api/pg/payment/callback",
+        cardHolderMobile: values.cardHolderMobileNumber,
+        cardHolderName: values.cardHolderName,
+        // callbackUrl:
+        //   "https://uat.decipay.in/enterprises/api/pg/payment/callback",
         productId: values.productId,
         subProductId: values.subProductId,
+        schemeCode: selectedSubProduct?.schemeCode ?? "",
+        initiatedBy: loginData?.hierarchyId
       };
 
+      if (checkDuplicate(values.cardHolderMobileNumber, Number(values.amount))) {
+        showErrorNotification(
+          "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
+        );
+        return;
+      }
+
       const response = await Create_Order(payload);
-      if (response?.status === 200 || response?.data?.statusCode === 200) {
-        showSuccessNotification(response?.data?.message);
-        onClose();
+      // Outer success check (HTTP or API-level)
+      if (response?.data?.statusCode == 200) {
+        // Parse the inner JSON (which might be stringified)
+        const orderData = response?.data?.data || {};
+
+        // Inner (business logic) success check
+        if (orderData?.paymentLink) {
+
+          store(values.cardHolderMobileNumber, Number(values.amount));
+
+          // Open payment link in a new tab
+          window.open(orderData?.paymentLink, "_blank");
+
+          // Close modal and reset UI
+          setIsBinDetails(false);
+          onClose();
+        } else {
+          // Inner FAIL case
+          showErrorNotification(
+            orderData.message ||
+            response.data.message ||
+            "Order creation failed. Please try again."
+          );
+        }
       } else {
-        showErrorNotification(response?.data?.message || "Unable to create");
+        // Outer FAIL case
+        showErrorNotification(response?.data?.message || "Error While Creating Order");
       }
     } catch (error) {
       await handleCustomError(error);
@@ -246,19 +305,38 @@ const PGFormModal = ({
                 label: sub.subProductName,
               })) || [];
 
+            useEffect(() => {
+              if (formik.values.cardType === "Other") {
+                setIsBinDetails(true); // Directly show full form
+              } else {
+                setIsBinDetails(false); // Reset to Fetch flow
+              }
+            }, [formik.values.cardType]);
+
             return (
               <>
                 <div className="mt-3 flex flex-wrap items-start justify-start gap-3">
                   <div className="w-full sm:w-[calc(50%-12px)] ">
                     <DropdownComponent
                       label="Card Type"
+                      disabled={!!isBinDetails}
                       data={[
                         { value: "Card", label: "Card" },
                         { value: "Other", label: "Other" },
                       ]}
                       value={values.cardType}
                       withAsterisk
-                      onChange={(value) => setFieldValue("cardType", value)}
+                      // onChange={(value) => setFieldValue("cardType", value)}
+                      onChange={(value) => {
+                        setFieldValue("cardType", value);
+                        if (value === "Other") {
+                          // reset bin and directly show form
+                          setFieldValue("cardBinNo", "");
+                          setIsBinDetails(true);
+                        } else {
+                          setIsBinDetails(false);
+                        }
+                      }}
                       error={
                         touched.cardType && errors.cardType
                           ? errors.cardType
@@ -267,32 +345,47 @@ const PGFormModal = ({
                       className="w-max"
                     />
                   </div>
-                  <div className="w-full sm:w-[calc(50%-12px)] ">
-                    <TextInputComponent
-                      label={"Card Bin No"}
-                      placeholder={"Enter"}
-                      value={values.cardBinNo}
-                      onChange={handleChange("cardBinNo")}
-                      error={
-                        touched.cardBinNo && errors.cardBinNo
-                          ? errors.cardBinNo
-                          : ""
-                      }
-                      maxLength={6}
-                      minLength={6}
-                      withAsterisk
-                      className="w-max"
-                    />
-                  </div>
+
+                  {/* Show Card Bin only if Card Type is "Card" */}
+                  {values.cardType === "Card" && (
+                    <div className="w-full sm:w-[calc(50%-12px)] ">
+                      <TextInputComponent
+                        label={"Card Bin No"}
+                        disabled={!!isBinDetails}
+                        allowSpecialChar={false}
+                        placeholder={"Enter"}
+                        value={values.cardBinNo}
+                        onChange={handleChange("cardBinNo")}
+                        error={
+                          touched.cardBinNo && errors.cardBinNo
+                            ? errors.cardBinNo
+                            : ""
+                        }
+                        maxLength={6}
+                        minLength={6}
+                        withAsterisk
+                        className="w-max"
+                      />
+                    </div>
+                  )}
+
                   {isBinDetails && (
                     <>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <DropdownComponent
+                          disabled={values.cardType === "Card" && !!isBinDetails}
                           label="Payment Method"
-                          data={[
-                            { value: "credit", label: "Credit" },
-                            { value: "debit", label: "Debit" },
-                          ]}
+                          data={
+                            values.cardType === "Card"
+                              ? [
+                                { value: "credit", label: "Credit" },
+                                { value: "debit", label: "Debit" },
+                              ]
+                              : [
+                                { value: "netbanking", label: "Net Banking" },
+                                { value: "upi", label: "UPI" },
+                              ]
+                          }
                           value={values.paymentMethod}
                           withAsterisk
                           onChange={(value) =>
@@ -304,7 +397,6 @@ const PGFormModal = ({
                               : ""
                           }
                           className="w-max"
-                          disabled={true}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -320,17 +412,22 @@ const PGFormModal = ({
                           }
                           withAsterisk
                           className="w-max"
+                          allowNumber={false}
+                          allowSpecialChar={false}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Card Holder Mobile"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.cardHolderMobileNumber}
                           onChange={handleChange("cardHolderMobileNumber")}
                           error={
                             touched.cardHolderMobileNumber &&
-                            errors.cardHolderMobileNumber
+                              errors.cardHolderMobileNumber
                               ? errors.cardHolderMobileNumber
                               : ""
                           }
@@ -349,47 +446,35 @@ const PGFormModal = ({
                           withAsterisk
                           onChange={(value) => {
                             setFieldValue("productId", value);
-                            // const newProduct = loginData?.products?.find(
-                            //   (p: any) => p.productId === value
-                            // );
-                            // const firstSubProduct =
-                            //   newProduct?.subProducts?.[0];
-                            // setFieldValue(
-                            //   "subProductId",
-                            //   firstSubProduct?.subProductId || ""
-                            // );
                           }}
                           error={
-                            touched.productId && errors.productId
-                              ? errors.productId
-                              : ""
+                            touched.productId && errors.productId ? errors.productId : ""
                           }
                           className="w-full"
+                          disabled={Boolean(values.productId)} // disable if value is already set
                         />
                       </div>
-                      <div className="w-full sm:w-[calc(50%-12px)] ">
+
+                      <div className="w-full sm:w-[calc(50%-12px)]">
                         <DropdownComponent
                           label="Sub Product"
                           data={subProductOptions}
                           value={values.subProductId}
                           withAsterisk
-                          onChange={(value) =>
-                            setFieldValue("subProductId", value)
-                          }
+                          onChange={(value) => setFieldValue("subProductId", value)}
                           error={
-                            touched.subProductId && errors.subProductId
-                              ? errors.subProductId
-                              : ""
+                            touched.subProductId && errors.subProductId ? errors.subProductId : ""
                           }
                           className="w-full"
-                          disabled={
-                            !values.productId || !subProductOptions.length
-                          }
+                          disabled={Boolean(values.subProductId)} // disable if value is already set
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Amount"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.amount}
                           onChange={handleChange("amount")}
@@ -403,6 +488,9 @@ const PGFormModal = ({
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Confirm Amount"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.confirmAmount}
                           onChange={handleChange("confirmAmount")}
@@ -433,7 +521,6 @@ const PGFormModal = ({
                     </>
                   )}
                 </div>
-
                 <div className="flex w-max self-end mt-5">
                   <ButtonComponent
                     title={isBinDetails ? "Submit" : "Fetch Details"}

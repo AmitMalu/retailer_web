@@ -6,15 +6,26 @@ import App from "./App";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import "@mantine/core/styles.css";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorFallback from "./components/Organism/ErrorFallback";
+import { redirectTo } from "./Utils/helper";
+import ReduxProvider from "./components/providers/ReduxProvider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter
-      basename={import.meta.env.VITE_APP_BASE_PATH}
-      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() => redirectTo("/login")}
     >
-      <App />
-    </BrowserRouter>
-    <ToastContainer />
+      <ReduxProvider>
+        <BrowserRouter
+          basename={import.meta.env.VITE_APP_BASE_PATH}
+          future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+        >
+          <App />
+        </BrowserRouter>
+      </ReduxProvider>
+      <ToastContainer />
+    </ErrorBoundary>
   </StrictMode>
 );

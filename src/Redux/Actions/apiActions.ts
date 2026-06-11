@@ -7,7 +7,7 @@ import { encryptData } from "@/Utils/helper";
 
 export const saveApiResponse = (
   key: string,
-  data: string | object
+  data: string | object | boolean
 ): SaveApiResponseAction => {
   const encryptedData = encryptData(data);
   return {

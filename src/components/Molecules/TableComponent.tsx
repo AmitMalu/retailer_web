@@ -7,14 +7,15 @@ import React, {
 } from "react";
 import { TableProps } from "@/Common/interface";
 import TextComponent from "../Atoms/TextComponent";
-import CustomDateComponent from "../Atoms/CustomDateComponent";
 import DropdownComponent from "../Atoms/DropdownComponent";
 import TimeComponent from "../Atoms/TimeComponent";
-import { formatDate } from "@/Utils/helper";
+import { formatYMDdate, YesNoSelectData } from "@/Utils/helper";
 import { Pagination, Table } from "@mantine/core";
 import { useTheme } from "@mui/system";
-import TextInputComponent from "../Atoms/TextInputComponent";
 import { SortSvgIcon } from "@/assets/svg";
+import SelectComponent from "../Atoms/NewComponents/SelectComponent";
+import CustomDatePicker from "../Atoms/NewComponents/CustomDatePicker";
+import TextInputComponent from "../Atoms/NewComponents/TextInputComponent";
 
 const TableComponent: React.FC<TableProps> = ({
   data,
@@ -24,20 +25,34 @@ const TableComponent: React.FC<TableProps> = ({
   onCurrentPageData,
   onSearch,
   showSearch = false,
+  searchTrigger = "enter",
   keyField = "id",
   page = 1,
   size = 10,
   onPageChange,
   onPageSizeChange,
+  serverSide = false,         // default to client-side pagination
+  totalRecords = 0,
+  enablePagination = true,
+  onAddRow,             // callback + flag
+  addRowLabel,              // optional text
+  addRowIcon,
+  showNoDataFound = true, // default to true
 }) => {
   const theme = useTheme();
 
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
   const startIndex = (page - 1) * size;
 
-  const handleSearch = (columnKey: string, value: string) => {
-    setSearchValues((prev) => ({ ...prev, [columnKey]: value }));
-    onSearch?.(columnKey, value);
+  type SearchValue = string | number | string[] | number[];
+
+  const handleSearch = (columnKey: string, value: SearchValue) => {
+    const normalizedValue = Array.isArray(value)
+      ? value.join(",")
+      : String(value ?? "");
+
+    setSearchValues((prev) => ({ ...prev, [columnKey]: normalizedValue }));
+    onSearch?.(columnKey, normalizedValue);
   };
 
   const [sortConfig, setSortConfig] = useState<{
@@ -87,8 +102,16 @@ const TableComponent: React.FC<TableProps> = ({
   }, [data, sortConfig.key, sortConfig.direction]);
 
   const paginatedData = useMemo(() => {
+    if (!enablePagination) {
+      return sortedData; // 👈 show all data, ignore slicing
+    }
+
+    if (serverSide) {
+      // in server mode, parent already gives only current page’s data
+      return Array.isArray(data) ? data : [];
+    }
     return sortedData.slice(startIndex, startIndex + size);
-  }, [sortedData, startIndex, size]);
+  }, [data, sortedData, serverSide, startIndex, size]);
 
   const prevPaginatedData = useRef(paginatedData);
 
@@ -138,14 +161,14 @@ const TableComponent: React.FC<TableProps> = ({
             return (
               <Table.Td
                 key={cellKey}
-                className="w-max items-center justify-center text-center"
+                className={`w-max items-center justify-center text-center ${isActionColumn
+                  ? `bg-${theme.palette.background.paperColor}`
+                  : "bg-transparent"
+                  } `}
                 style={{
                   position: isActionColumn ? "sticky" : "relative",
                   right: isActionColumn ? 0 : "auto",
                   zIndex: isActionColumn ? 2 : 1,
-                  backgroundColor: isActionColumn
-                    ? theme.palette.background.paperColor
-                    : "transparent",
                   minWidth: isActionColumn ? "120px" : "auto",
                 }}
               >
@@ -153,56 +176,67 @@ const TableComponent: React.FC<TableProps> = ({
                   column.render(item[column.key], index, item)
                 ) : (
                   <TextComponent
-                    color={theme.palette.background.default}
+                    color={theme.palette.text.primary}
                     fontSize={14}
                     fontWeight={400}
                     className="w-max justify-self-center"
                     align="center"
                   >
                     {item[column.key] === undefined ||
-                    item[column.key] === null ||
-                    item[column.key] === ""
+                      item[column.key] === null ||
+                      item[column.key] === ""
                       ? "-"
                       : item[column.key]}
                   </TextComponent>
                 )}
               </Table.Td>
             );
-          })}
-      </Table.Tr>
+          })
+        }
+      </Table.Tr >
     );
   });
 
   return (
     <>
       <div
-        className="my-6 overflow-auto rounded-lg border border-gray-light shadow-xl"
-        style={{ position: "relative", scrollbarWidth: "none" }}
+        className="my-6 overflow-auto rounded-lg border shadow-xl"
+        style={{ 
+          position: "relative", 
+          scrollbarWidth: "none",
+          borderColor: theme.palette.divider 
+        }}
       >
         <Table
           striped
           stickyHeader
           highlightOnHover
-          withRowBorders={false}
+          withRowBorders={true}
           withColumnBorders={false}
           verticalSpacing="sm"
           horizontalSpacing="md"
           captionSide="bottom"
-          style={{ minWidth: "100%", width: "100%" }}
+          style={{ 
+            minWidth: "100%", 
+            width: "100%",
+            borderColor: theme.palette.divider
+          }}
           styles={{
             th: {
               position: "sticky",
               top: 0,
               zIndex: 3,
-              backgroundColor: theme.palette.gray.light,
+              backgroundColor: theme.palette.mode === "light" ? theme.palette.background.default : theme.palette.secondary.dark,
+              borderBottom: `2px solid ${theme.palette.divider}`,
             },
             td: {
               backgroundColor: theme.palette.background.paper,
+              borderBottom: `1px solid ${theme.palette.divider}`,
             },
           }}
         >
           <Table.Thead>
-            <Table.Tr style={{ backgroundColor: theme.palette.gray.dark }}>
+            <Table.Tr style={{ backgroundColor: theme.palette.mode === "light" ? theme.palette.background.default : theme.palette.secondary.dark }}>
               {columns
                 .filter(
                   (column) =>
@@ -216,14 +250,13 @@ const TableComponent: React.FC<TableProps> = ({
                     <Table.Th
                       key={column.key}
                       style={{
-                        backgroundColor: theme.palette.gray.dark,
+                        backgroundColor: theme.palette.mode === "light" ? theme.palette.background.default : theme.palette.secondary.dark,
                         position: isActionColumn ? "sticky" : "relative",
                         right: isActionColumn ? 0 : "auto",
                         zIndex: isActionColumn ? 3 : 2,
                       }}
-                      className={`items-center justify-center bg-background-paper text-center ${
-                        column.sortable ? "cursor-pointer" : "cursor-default"
-                      }`}
+                      className={`items-center justify-center bg-background-paper text-center ${column.sortable ? "cursor-pointer" : "cursor-default"
+                        }`}
                     >
                       <div
                         className="flex w-max items-center justify-center gap-1 justify-self-center text-center"
@@ -232,7 +265,7 @@ const TableComponent: React.FC<TableProps> = ({
                         }
                       >
                         <TextComponent
-                          color={theme.palette.background.default}
+                          color={theme.palette.text.primary}
                           fontSize={14}
                           fontWeight={500}
                           className="w-max justify-self-center"
@@ -242,7 +275,7 @@ const TableComponent: React.FC<TableProps> = ({
                         </TextComponent>
                         {column.sortable && (
                           <span>
-                            <SortSvgIcon color={theme.palette.red.DEFAULT} />
+                            <SortSvgIcon color={theme.palette.primary.main} />
                           </span>
                         )}
                       </div>
@@ -259,6 +292,8 @@ const TableComponent: React.FC<TableProps> = ({
                   )
                   .map((column) => {
                     const isActionColumn = column?.key === "action";
+                    const colType = column.type ?? "text";
+
                     return (
                       <Table.Th
                         key={column.key}
@@ -268,92 +303,184 @@ const TableComponent: React.FC<TableProps> = ({
                           zIndex: isActionColumn ? 3 : 2,
                         }}
                       >
-                        {column.type === "date" ? (
-                          <CustomDateComponent
-                            value={
-                              searchValues[column.key]
-                                ? parseDateString(searchValues[column.key])
-                                : null
-                            }
-                            onChange={(
-                              date: Date | [Date | null, Date | null] | null
-                            ) => {
-                              if (date) {
-                                if (Array.isArray(date)) {
-                                  const singleDate = date[0] || date[1];
-                                  if (singleDate) {
-                                    const formattedDate =
-                                      formatDate(singleDate) || "";
-                                    handleSearch(column.key, formattedDate);
-                                  }
-                                } else {
-                                  const formattedDate = formatDate(date) || "";
-                                  handleSearch(column.key, formattedDate);
+
+                        <div className="flex justify-center">
+                          {column.disableSearch ? null :
+                            (colType === "date" ? (
+                              <CustomDatePicker
+                                clearable
+                                value={
+                                  searchValues[column.key]
+                                    ? parseDateString(searchValues[column.key])
+                                    : null
                                 }
-                              } else {
-                                handleSearch(column.key, "");
-                              }
-                            }}
-                            className="w-full font-medium "
-                            dateFormat="DD-MM-YYYY"
-                          />
-                        ) : column.type === "time" ? (
-                          <TimeComponent
-                            value={searchValues[column.key] || ""}
-                            onChange={(value) =>
-                              handleSearch(column.key, value)
-                            }
-                            withSeconds={true}
-                            maxTime={new Date().toLocaleTimeString()}
-                            className="w-full font-medium"
-                          />
-                        ) : (
-                          <div>
-                            <TextInputComponent
-                              value={searchValues[column.key] || ""}
-                              onChange={(e) =>
-                                handleSearch(column.key, e.target.value)
-                              }
-                              withAsterisk
-                              className="w-max font-medium h-5"
-                            />
-                          </div>
-                        )}
+                                onChange={(date) => {
+                                  if (date) {
+                                    const formattedDate = formatYMDdate(date) || "";
+                                    handleSearch(column.key, formattedDate);
+                                  } else {
+                                    handleSearch(column.key, "");
+                                  }
+                                }}
+                                valueFormat="YYYY-MM-DD"
+                                placeholder="Pick date"
+                                className="w-full font-medium min-w-[100px]"
+                                maxDate={new Date()}
+                              />
+                            ) : colType === "time" ? (
+                              <TimeComponent
+                                value={searchValues[column.key] || ""}
+                                onChange={(value) =>
+                                  handleSearch(column.key, value)
+                                }
+                                withSeconds={true}
+                                maxTime={new Date().toLocaleTimeString()}
+                                className="w-full font-medium"
+                              />
+                            ) : colType === "dropdown" ? (
+                              <SelectComponent
+                                placeholder={`Search ${column.label || ""}`}
+                                name={column.key}
+                                data={column?.options || []}
+                                value={searchValues[column.key] || null}
+                                onChange={(value) => {
+                                  if (value === null) {
+                                    // user deselected → clear the search
+                                    handleSearch(column.key, "");
+                                  } else {
+                                    handleSearch(column.key, String(value));
+                                  }
+                                }} className="w-max font-medium"
+                                size="xs"
+                                searchable
+                                allowDeselect
+                              />
+                            ) : colType === "boolean" ? (
+                              <SelectComponent
+                                placeholder={`Search ${column.label || ""}`}
+                                name={column.key}
+                                data={column?.options || YesNoSelectData}
+                                value={searchValues[column.key] || null}
+                                onChange={(value) => {
+                                  if (value === null || value === "") {
+                                    // user deselected → clear the search
+                                    handleSearch(column.key, "");
+                                  } else {
+                                    handleSearch(column.key, String(value));
+                                  }
+                                }}
+                                size="xs"
+                                className="w-max font-medium"
+                                allowDeselect
+                              />
+                            ) : colType === "number" ? (
+                              <TextInputComponent
+                                allowCharacter={false}
+                                allowSpecialChar={false}
+                                name={column.key} // 🔑 important for Formik or event mapping
+                                value={searchValues[column.key] || ""}
+                                placeholder={`Search ${column.label || ""}`}
+                                withAsterisk
+                                size="xs"
+                                className="w-max font-medium"
+                                onChange={(e) => {
+                                  if (searchTrigger === "change") {
+                                    handleSearch(column.key, e.target.value); // 🔍 search on typing
+                                  } else {
+                                    setSearchValues((prev) => ({
+                                      ...prev,
+                                      [column.key]: e.target.value,
+                                    }));
+                                  }
+                                }}
+                                onKeyDown={(e) => {
+                                  if (searchTrigger === "enter" && e.key === "Enter") {
+                                    handleSearch(column.key, searchValues[column.key] || "");
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <TextInputComponent
+                                name={column.key} // 🔑 important for Formik or event mapping
+                                value={searchValues[column.key] || ""}
+                                placeholder={`Search ${column.label || ""}`}
+                                withAsterisk
+                                size="xs"
+                                className="w-max font-medium"
+                                onChange={(e) => {
+                                  if (searchTrigger === "change") {
+                                    handleSearch(column.key, e.target.value); // 🔍 search on typing
+                                  } else {
+                                    setSearchValues((prev) => ({
+                                      ...prev,
+                                      [column.key]: e.target.value,
+                                    }));
+                                  }
+                                }}
+                                onKeyDown={(e) => {
+                                  if (searchTrigger === "enter" && e.key === "Enter") {
+                                    handleSearch(column.key, searchValues[column.key] || "");
+                                  }
+                                }}
+                              />
+                            ))}
+                        </div>
                       </Table.Th>
                     );
                   })}
               </Table.Tr>
             )}
           </Table.Thead>
-          {sortedData.length > 0 ? (
-            <Table.Tbody>{rows}</Table.Tbody>
-          ) : (
+
+          {sortedData?.length > 0 ? (
+            <Table.Tbody>
+              {rows}
+            </Table.Tbody>
+          ) : showNoDataFound ? (
             <Table.Caption>
               <TextComponent
-                color={theme.palette.red.DEFAULT}
+                color={theme.palette.primary.main}
                 fontSize={20}
                 fontWeight={500}
               >
                 No data Available
               </TextComponent>
             </Table.Caption>
+          ) : null}
+
+          {/* ✅ Always show Add Row button when onAddRow exists */}
+          {onAddRow && (
+            <Table.Tbody>
+              <Table.Tr>
+                <Table.Td colSpan={columns.length} className="text-center">
+                  <button
+                    onClick={onAddRow}
+                    className="flex items-center justify-center gap-2 px-3 py-1 rounded bg-primary-500 text-white hover:bg-primary-600 mx-auto"
+                  >
+                    {addRowIcon || <span className="text-white font-bold text-lg">+</span>}
+                    {addRowLabel || "Add Row"}
+                  </button>
+                </Table.Td>
+              </Table.Tr>
+            </Table.Tbody>
           )}
+
           {caption && (
             <Table.Caption>
               <TextComponent
-                color={theme.palette.red.DEFAULT}
+                color={theme.palette.primary.main}
                 fontSize={16}
                 fontWeight={500}
               >
-                View all records
+                {caption || "View all records"}
               </TextComponent>
             </Table.Caption>
           )}
         </Table>
       </div>
 
-      <div className="flex justify-between items-center mt-4 bg-white shadow-lg">
-        {sortedData.length > 0 && (
+      <div className="flex justify-between items-center mt-4 bg-background-paper shadow-lg">
+        {enablePagination && sortedData.length > 0 && (
           <div className="flex items-center justify-between gap-4 w-full m-2">
             <div className="flex items-center w-1/4 gap-3">
               <div>
@@ -375,16 +502,20 @@ const TableComponent: React.FC<TableProps> = ({
                 />
               </div>
               <TextComponent fontSize={12} fontWeight={400}>
-                {`Showing ${startIndex + 1}-${startIndex + paginatedData.length} of ${
-                  data.length
-                } Records`}
+                {serverSide
+                  ? `Showing ${startIndex + 1}-${startIndex + paginatedData.length} of ${totalRecords || 0} Records`
+                  : `Showing ${startIndex + 1}-${startIndex + paginatedData.length} of ${data?.length} Records`}
               </TextComponent>
             </div>
             <Pagination
               value={page}
               onChange={onPageChange}
-              total={Math.ceil(data.length / size)}
-              color={theme.palette.red.DEFAULT}
+              total={
+                serverSide
+                  ? Math.ceil((totalRecords || 0) / size)
+                  : Math.ceil(data.length / size)
+              }
+              color={theme.palette.primary.main}
               size="sm"
             />
           </div>

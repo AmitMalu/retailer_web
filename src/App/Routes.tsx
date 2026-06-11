@@ -1,5 +1,5 @@
 import { Route, Routes, Navigate, Outlet } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, memo } from "react";
 import MainLayout from "@/components/layouts/MainLayout";
 import ForgotPassword from "@/pages/Auth/ForgotPassword";
 import OtpInputScreen from "@/pages/Auth/Otp";
@@ -7,7 +7,14 @@ import SetPasswordScreen from "@/pages/Auth/SetPassword";
 import SignUp from "@/pages/Auth/SignUp.tsx";
 import Loader from "@/components/Atoms/Loader";
 import ProtectedRoute from "./ProtectedRoutes";
-
+import AepsSubProductsScreen from "@/pages/Home/Products/AEPS/AepsSubproductsScreen";
+import WrapperFormPage from "@/pages/Home/Products/BillPayment/WrapperFormPage";
+import TransactionReport from "@/pages/Home/Reports/TransactionReport";
+import TransactionWalletReport from "@/pages/Home/Reports/TransactionWalletReport";
+import RechargeSubProducts from "@/pages/Home/Products/Recharge/RechargeSubProducts";
+import Recharge from "@/pages/Home/Products/Recharge/Recharge";
+import AepsVendorWrapper from "@/pages/Home/Products/AEPS/AepsVendorWrapper";
+import CreditCardScreen from "@/pages/Home/Products/CreditCard/CreditCardScreen";
 const Dashboard = lazy(() => import("@/pages/Home/Dashboard"));
 const CreateUser = lazy(() => import("@/pages/Home/ManageUser/CreateUser"));
 const DebitAndCreditUser = lazy(
@@ -61,6 +68,9 @@ const MyProfile = lazy(() => import("@/pages/Home/Settings/MyProfile"));
 const CreateSubUser = lazy(
   () => import("@/pages/Home/Settings/MyProfile/Subuser")
 );
+const ViewSubUser = lazy(
+  () => import("@/pages/Home/Settings/MyProfile/Subuser/ViewSubUser")
+);
 const ChangeTPIN = lazy(() => import("@/pages/Home/Settings/ChangeTPin"));
 const MyCertificate = lazy(() => import("@/pages/Home/Settings/MyCertificate"));
 const LowBalanceAlert = lazy(
@@ -96,43 +106,14 @@ const WebsitePageContent = lazy(
   () => import("@/pages/Home/WebsiteSettings/WebsitePageContent")
 );
 const Login = lazy(() => import("@/pages/Auth/Login"));
+const TransactionCompleted = lazy(() => import("@/pages/Home/Products/TransactionCompleted"));
 const PGScreen = lazy(() => import("@/pages/Home/Products/PG"));
 const PayoutScreen = lazy(() => import("@/pages/Home/Products/Payout"));
 const PayoutInfoTable = lazy(
   () => import("@/pages/Home/Products/Payout/InfoTable")
 );
-const AepsScreen = lazy(() => import("@/pages/Home/Products/AEPS"));
-const CashWithdrawal = lazy(
-  () => import("@/pages/Home/Products/AEPS/CashWithdrawal")
-);
-const SelectCashWithdrawalBank = lazy(
-  () => import("@/pages/Home/Products/AEPS/CashWithdrawal/SelectBank")
-);
-const TwoFactorCashWithdrawal = lazy(
-  () => import("@/pages/Home/Products/AEPS/CashWithdrawal/TwoFA")
-);
-const BalanceEnquiry = lazy(
-  () => import("@/pages/Home/Products/AEPS/BalanceEnquiry")
-);
-const SelectBankBalanceEnquiry = lazy(
-  () =>
-    import("@/pages/Home/Products/AEPS/BalanceEnquiry/SelectBankBalanceEnquiry")
-);
-const TwoFactorBalanceEnquiry = lazy(
-  () => import("@/pages/Home/Products/AEPS/BalanceEnquiry/TwoFABalanceEnquiry")
-);
-const MiniStatement = lazy(
-  () => import("@/pages/Home/Products/AEPS/MiniStatement")
-);
-const SelectBankMiniStatement = lazy(
-  () =>
-    import("@/pages/Home/Products/AEPS/MiniStatement/SelectBankMinistatement")
-);
-const TwoFactorMiniStatement = lazy(
-  () => import("@/pages/Home/Products/AEPS/MiniStatement/TwoFAMinistatement")
-);
-
-const DMTScreen = lazy(() => import("@/pages/Home/Products/DMT"));
+const DmtSubProductsScreen = lazy(() => import("@/pages/Home/Products/DMT/DmtSubProductsScreen"));
+const SearchRemitterScreen = lazy(() => import("@/pages/Home/Products/DMT/SearchRemitterScreen"))
 
 const RemitterInfo = lazy(
   () => import("@/pages/Home/Products/DMT/RemitterInfo")
@@ -147,14 +128,11 @@ const RemitterEkyc = lazy(
 );
 
 const MposScreen = lazy(() => import("@/pages/Home/Products/MPOS"));
-const BillPaymentScreen = lazy(
-  () => import("@/pages/Home/Products/BillPayment")
+const SubProductScreen = lazy(
+  () => import("@/pages/Home/Products/BillPayment/SubProductScreen")
 );
-const BillPayOneScreen = lazy(
-  () => import("@/pages/Home/Products/BillPayment/BillPay1")
-);
-const FetchBillDetails = lazy(
-  () => import("@/pages/Home/Products/BillPayment/BillPay1/FetchBillDetails")
+const ServicesScreen = lazy(
+  () => import("@/pages/Home/Products/BillPayment/ServicesScreen")
 );
 
 const getToken = () => {
@@ -171,13 +149,33 @@ const getToken = () => {
   return token ? true : false;
 };
 
+const CatchAllRedirect = () => {
+  const token = getToken();
+  return token ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />;
+};
+
 // const ProtectedRoute: React.FC<{ children?: React.ReactNode }> = ({}) => {
 //   return getToken() ? <Outlet /> : <Navigate to="/login" />;
 // };
 
-const ProtecteAuthRoute: React.FC<{ children?: React.ReactNode }> = ({}) => {
-  return getToken() ? <Navigate to="/dashboard" /> : <Outlet />;
-};
+const ProtecteAuthRoute: React.FC<{ children?: React.ReactNode }> = memo(({ }) => {
+  const hasToken = getToken();
+  const currentPath = window.location.pathname;
+  const isLoggingOut = sessionStorage.getItem("isLoggingOut");
+  const preventNavigation = sessionStorage.getItem("preventNavigation");
+  
+  // Prevent navigation during logout process
+  if (isLoggingOut === "true" || preventNavigation === "true") {
+    return <Outlet />;
+  }
+  
+  // Only navigate if not already at target
+  if (hasToken && currentPath !== "/dashboard") {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return <Outlet />;
+});
 
 const RouterOutlet = () => {
   return (
@@ -190,6 +188,10 @@ const RouterOutlet = () => {
     >
       <Routes>
         <Route path="/" element={<Outlet />}>
+          {/* Redirect root (/) to login or dashboard */}
+          <Route index element={<CatchAllRedirect />} />
+
+          {/* ----------- Public Auth Routes ----------- */}
           <Route
             path="/login"
             element={
@@ -240,6 +242,18 @@ const RouterOutlet = () => {
           >
             <Route index element={<SetPasswordScreen />} />
           </Route>
+
+          {/* ----------- Public Transaction Routes ----------- */}
+          <Route
+            path="/transaction-completed"
+            element={
+              <Suspense fallback={<Loader />}>
+                <TransactionCompleted />
+              </Suspense>
+            }
+          />
+
+          {/* ----------- Protected Routes ----------- */}
           <Route
             path="dashboard"
             element={
@@ -257,10 +271,11 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
           <Route
             path="products"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -277,7 +292,7 @@ const RouterOutlet = () => {
           <Route
             path="products/pgScreen"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -294,7 +309,7 @@ const RouterOutlet = () => {
           <Route
             path="products/payoutScreen"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -311,7 +326,7 @@ const RouterOutlet = () => {
           <Route
             path="products/payoutScreen/Info"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -325,181 +340,82 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
+          {/* AEPS */}
           <Route
-            path="products/aepsScreen"
+            path="products/aeps"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
           >
+            {/* Sub Product  */}
             <Route
               index
               element={
                 <MainLayout>
-                  <AepsScreen />
+                  <AepsSubProductsScreen />
                 </MainLayout>
               }
             />
-          </Route>
-          <Route
-            path="products/aepsScreen/cashWithdrawal/aepsForm"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
+
+            {/* Status Check Screen */}
             <Route
-              index
+              path="status/:subProductId"
               element={
                 <MainLayout>
-                  <TwoFactorCashWithdrawal />
+                  <AepsVendorWrapper type="status" />
                 </MainLayout>
               }
             />
-          </Route>
-          <Route
-            path="products/aepsScreen/cashWithdrawal/TwoFactorCashWithdrawal"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
+
+            {/* AEPS Services */}
             <Route
-              index
+              path="service/:subProductId"
               element={
                 <MainLayout>
-                  <SelectCashWithdrawalBank />
+                  <AepsVendorWrapper type="service" />
+                </MainLayout>
+              }
+            />
+
+            {/* Ekyc Screen */}
+            <Route
+              path="ekyc/:subProductId"
+              element={
+                <MainLayout>
+                  <AepsVendorWrapper type="ekyc" />
+                </MainLayout>
+              }
+            />
+
+            {/* AEPS 2FA */}
+            <Route
+              path="2fa/:subProductId"
+              element={
+                <MainLayout>
+                  <AepsVendorWrapper type="twoFactor" />
+                </MainLayout>
+              }
+            />
+
+            {/* AEPS Transaction Screen */}
+            <Route
+              path="transaction/:subProductId"
+              element={
+                <MainLayout>
+                  <AepsVendorWrapper type="transaction" />
                 </MainLayout>
               }
             />
           </Route>
 
-          <Route
-            path="products/aepsScreen/vendors/cashWithdrawal"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <CashWithdrawal />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/vendors/balanceEnquiry"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <BalanceEnquiry />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/balanceEnquiry/TwoFactorBalanceEnquiry"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <TwoFactorBalanceEnquiry />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/balanceEnquiry/TwoFactorBalanceEnquiry"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <SelectBankBalanceEnquiry />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/vendors/miniStatement"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <MiniStatement />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/miniStatement/twoFAMinistatement"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <TwoFactorMiniStatement />
-                </MainLayout>
-              }
-            />
-          </Route>
-          <Route
-            path="products/aepsScreen/miniStatement/SelectBankMiniStatement"
-            element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
-                <Outlet />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              index
-              element={
-                <MainLayout>
-                  <SelectBankMiniStatement />
-                </MainLayout>
-              }
-            />
-          </Route>
+          {/* DMT */}
           <Route
             path="products/dmt"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -508,15 +424,32 @@ const RouterOutlet = () => {
               index
               element={
                 <MainLayout>
-                  <DMTScreen />
+                  <DmtSubProductsScreen />
                 </MainLayout>
               }
             />
           </Route>
           <Route
-            path="products/dmt/RemitterInfo"
+            path="products/dmt/:subProductId"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <SearchRemitterScreen />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="products/dmt/RemitterInfo/:subProductId"
+            element={
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -533,7 +466,7 @@ const RouterOutlet = () => {
           <Route
             path="products/dmt/remitterRegister"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -550,7 +483,7 @@ const RouterOutlet = () => {
           <Route
             path="products/dmt/remitterRegister/ekyc"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -564,10 +497,12 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
+          {/* MPOS */}
           <Route
             path="products/mpos"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -581,10 +516,12 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
+          {/* BBPS */}
           <Route
             path="products/billPay"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -593,7 +530,7 @@ const RouterOutlet = () => {
               index
               element={
                 <MainLayout>
-                  <BillPaymentScreen />
+                  <SubProductScreen />
                 </MainLayout>
               }
             />
@@ -601,7 +538,7 @@ const RouterOutlet = () => {
           <Route
             path="products/billPay/service"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -610,15 +547,15 @@ const RouterOutlet = () => {
               index
               element={
                 <MainLayout>
-                  <BillPayOneScreen />
+                  <ServicesScreen />
                 </MainLayout>
               }
             />
           </Route>
           <Route
-            path="products/billPay/service/billDetails"
+            path="products/billPay/form"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -627,11 +564,41 @@ const RouterOutlet = () => {
               index
               element={
                 <MainLayout>
-                  <FetchBillDetails />
+                  <WrapperFormPage />
                 </MainLayout>
               }
             />
           </Route>
+
+          {/* CREDIT CARD */}
+          <Route
+            path="products/credit-card"
+            element={
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
+                <MainLayout>
+                  <Outlet />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<CreditCardScreen />} />
+          </Route>
+
+          {/* RECHARGE */}
+          <Route
+            path="products/recharge"
+            element={
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
+                <MainLayout>
+                  <Outlet />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<RechargeSubProducts />} />
+            <Route path=":subProductId" element={<Recharge />} />
+          </Route>
+
           <Route
             path="/manageUser/createUser"
             element={
@@ -687,7 +654,7 @@ const RouterOutlet = () => {
             path="reports/networkTransaction"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+                allowedRoles={["WL", "SD", "PT", "DT"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -703,10 +670,48 @@ const RouterOutlet = () => {
             />
           </Route>
           <Route
+            path="reports/transaction-report"
+            element={
+              <ProtectedRoute
+                allowedRoles={["RT", "RU"]}
+              >
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <TransactionReport />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
+            path="reports/txn-wallet-report"
+            element={
+              <ProtectedRoute
+                allowedRoles={["RT", "RU"]}
+              >
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <TransactionWalletReport />
+                </MainLayout>
+              }
+            />
+          </Route>
+          <Route
             path="reports/accountSummary"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -725,7 +730,7 @@ const RouterOutlet = () => {
             path="reports/WalletReport"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -744,7 +749,7 @@ const RouterOutlet = () => {
             path="reports/searchTransaction"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -759,12 +764,11 @@ const RouterOutlet = () => {
               }
             />
           </Route>
-
           <Route
             path="reports/downloadReport"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -782,7 +786,9 @@ const RouterOutlet = () => {
           <Route
             path="reports/fundLoading"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
+              >
                 <Outlet />
               </ProtectedRoute>
             }
@@ -817,7 +823,7 @@ const RouterOutlet = () => {
             path="reports/commissionAndCharges"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -835,7 +841,7 @@ const RouterOutlet = () => {
           <Route
             path="reports/pendingTransaction"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -917,11 +923,12 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
           <Route
             path="settings/myProfile"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -953,12 +960,28 @@ const RouterOutlet = () => {
               }
             />
           </Route>
-
+          <Route
+            path="settings/ViewSubUser"
+            element={
+              <ProtectedRoute allowedRoles={["RT"]}>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <MainLayout>
+                  <ViewSubUser />
+                </MainLayout>
+              }
+            />
+          </Route>
           <Route
             path="settings/changeTPIN"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -977,7 +1000,7 @@ const RouterOutlet = () => {
             path="settings/myCertificate"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -995,7 +1018,7 @@ const RouterOutlet = () => {
           <Route
             path="settings/lowBalanceAlert"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1026,10 +1049,11 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
           <Route
             path="support/bioMetricDevice"
             element={
-              <ProtectedRoute allowedRoles={["RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1047,7 +1071,7 @@ const RouterOutlet = () => {
             path="support/ticketingSystem"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -1065,7 +1089,7 @@ const RouterOutlet = () => {
           <Route
             path="support/contactUs"
             element={
-              <ProtectedRoute allowedRoles={["WL", "SD", "RT", "RA"]}>
+              <ProtectedRoute allowedRoles={["WL", "SD", "RT", "RU"]}>
                 <Outlet />
               </ProtectedRoute>
             }
@@ -1185,7 +1209,7 @@ const RouterOutlet = () => {
             path="/funding/walletToBank"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -1204,7 +1228,7 @@ const RouterOutlet = () => {
             path="/funding/walletToBankFund"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -1223,7 +1247,7 @@ const RouterOutlet = () => {
             path="/funding/walletToWallet"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -1242,7 +1266,7 @@ const RouterOutlet = () => {
             path="/funding/fundTransfer"
             element={
               <ProtectedRoute
-                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RA"]}
+                allowedRoles={["WL", "SD", "PT", "DT"]}
               >
                 <Outlet />
               </ProtectedRoute>
@@ -1342,6 +1366,9 @@ const RouterOutlet = () => {
               }
             />
           </Route>
+
+          {/* ----------- Catch-all Route ----------- */}
+          <Route path="*" element={<CatchAllRedirect />} />
         </Route>
       </Routes>
     </Suspense>

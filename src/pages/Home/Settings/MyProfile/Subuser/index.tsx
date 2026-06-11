@@ -2,36 +2,43 @@ import { RootState } from "@/Redux/Store";
 import {
   decryptData,
   EmailRegex,
-  formatYMDdate,
   MobileNoRegex,
   PasswordRegex,
+  singleDateValidationSchema,
 } from "@/Utils/helper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Field, Formik, FormikHelpers } from "formik";
+import { Field, Formik, FormikHelpers, FormikProps } from "formik";
 import * as Yup from "yup";
 import { SubuserCreationProps } from "@/Common/interface";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import Loader from "@/components/Atoms/Loader";
+import MyLoader from "@/components/Atoms/Loader";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
+import NewButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
 import TextComponent from "@/components/Atoms/TextComponent";
-import { Chip, Group } from "@mantine/core";
+import { Chip, Group, Loader, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
-import { CloseEyeSvgIcon, OpenEyeSvgIcon } from "@/assets/svg";
-import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
-import { Create_Sub_User } from "@/Services/api";
+import { BackSvgIcon, CloseEyeSvgIcon, OpenEyeSvgIcon } from "@/assets/svg";
+import { Create_Sub_User, Email_Verification } from "@/Services/api";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
+import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePicker";
+import { IconCalendar } from "@tabler/icons-react";
+import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 const SubuserCreation = () => {
   const theme = useTheme();
+  const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false);
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
   const [selectedSubChips, setSelectedSubChips] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false);
+  const [emailVerifying, setEmailVerifying] = useState(false);
+
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
@@ -58,8 +65,10 @@ const SubuserCreation = () => {
       ),
     emailId: Yup.string()
       .matches(EmailRegex, "Enter valid email")
-      .required("Required"),
-    dob: Yup.string().required("Required"),
+      .required("Email is Required"),
+    emailVerified: Yup.boolean(),
+    lastVerifiedEmail: Yup.string().nullable(),
+    dob: singleDateValidationSchema,
     add: Yup.object().shape({
       address: Yup.string().required("Required"),
       city: Yup.string().required("Required"),
@@ -69,8 +78,56 @@ const SubuserCreation = () => {
         .min(6, "Enter valid Number")
         .required("Required"),
     }),
-    role_id: Yup.string().required("Required"),
-    subRoleId: Yup.string().required("Required"),
+    role_id: Yup.string().required("Menu is Required"),
+    subRoleId: Yup.string().test(
+      "subRoleId-required-per-menu",
+      "Sub menu selection missing for at least one selected menu.",
+      function (value) {
+        const { role_id } = this.parent;
+        const subChipMap = {
+          "2": ["2.1", "2.2", "2.3"],
+          "3": ["3.1", "3.2", "3.3"],
+          "4": ["4.1", "4.2", "4.3"],
+          "5": ["5.1", "5.2", "5.3", "5.4", "5.5", "5.6"],
+        };
+
+        // Extract selected main menus from role_id binary string like "11100"
+        const selectedMainMenus = role_id
+          ?.split("")
+          .map((v: any, i: any) => (v === "1" ? (i + 1).toString() : null))
+          .filter(Boolean);
+
+        if (!selectedMainMenus || selectedMainMenus.length === 0) return true;
+
+        const selectedSubMenus = (value || "")
+          .split(",")
+          .filter((v) => v && v !== "0");
+
+        // Check each selected menu that has submenus
+        for (const menu of selectedMainMenus) {
+          if (subChipMap[menu as keyof typeof subChipMap]) {
+            // Has submenus → must select at least one of them
+            const hasAny = subChipMap[menu as keyof typeof subChipMap].some((s: any) =>
+              selectedSubMenus.includes(s)
+            );
+            if (!hasAny) {
+              // ❌ At least one menu with submenus has no submenu selected
+              return this.createError({
+                message: `Please select at least one sub-menu for ${menu === "2"
+                  ? "Funding"
+                  : menu === "3"
+                    ? "Settings"
+                    : menu === "4"
+                      ? "Support"
+                      : "Reports"
+                  }.`,
+              });
+            }
+          }
+        }
+        return true;
+      }
+    ),
   });
 
   const initialValues: SubuserCreationProps = {
@@ -80,7 +137,8 @@ const SubuserCreation = () => {
     username: "",
     password: "",
     emailId: "",
-    emailVerified: true,
+    emailVerified: false,
+    lastVerifiedEmail: null,
     dob: null,
     add: {
       address: "",
@@ -93,6 +151,31 @@ const SubuserCreation = () => {
     role_id: "",
     subRoleId: "",
   };
+
+
+  const handleEmailVerify = async (formik: FormikProps<any>) => {
+    try {
+      const resData = await Email_Verification(formik.values.emailId);
+      const isSuccess = resData?.data?.data?.status_code === 200;
+
+      if (isSuccess) {
+        formik.setFieldValue("emailVerified", true);
+        formik.setFieldError("emailId", "");
+      } else {
+        formik.setFieldValue("emailVerified", false);
+        formik.setTouched({ emailId: true });
+
+        const remark = resData?.data?.data?.message || "Email verification failed.";
+        setTimeout(() => {
+          formik.setFieldError("emailId", remark);
+        }, 0);
+      }
+    } catch (error) {
+      handleCustomError(error)
+      formik.setFieldValue("emailVerified", false);
+      formik.setFieldError("emailId", "Something went wrong during Email verification.");
+    }
+  }
 
   const handleRequest = async (
     values: SubuserCreationProps,
@@ -107,8 +190,8 @@ const SubuserCreation = () => {
         username: values?.mobileNumber,
         password: values?.password,
         emailId: values?.emailId,
-        emailVerified: true,
-        dob: formatYMDdate(values?.dob),
+        emailVerified: Boolean(values.emailVerified),
+        dob: values.dob ? moment(values.dob).format("YYYY-MM-DD") : null,
         add: {
           address: values?.add?.address,
           city: values?.add?.city,
@@ -140,42 +223,48 @@ const SubuserCreation = () => {
   };
 
   const subChipMap: Record<string, string[]> = {
-    "2": ["2.1", "2.2", "2.3", "2.4"],
+    "2": ["2.1", "2.2", "2.3"],
     "3": ["3.1", "3.2", "3.3"],
     "4": ["4.1", "4.2", "4.3"],
-    "5": ["5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8"],
+    "5": ["5.1", "5.2", "5.3", "5.4", "5.5", "5.6"],
   };
 
   const chipLabels: Record<string, string> = {
-    "2.1": "Wallet to Bank Fund",
+    "2.1": "Fund Request",
     "2.2": "Wallet to Wallet",
-    "2.3": "Fund Transfer",
-    "2.4": "Wallet to Bank",
+    "2.3": "Move to Bank",
     "3.1": "Change TPIN",
     "3.2": "My Certificate",
-    "3.3": "Low BAlance Alert",
+    "3.3": "Low Balance Alert",
     "4.1": "Bio Metric Device",
     "4.2": "Ticketing System",
     "4.3": "Contact Us",
     "5.1": "Commission and Charges",
     "5.2": "Wallet Report",
     "5.3": "Network Transaction",
-    "5.4": "Account Summary",
-    "5.5": "Search Transaction",
-    "5.6": "Download Report",
-    "5.7": "Fund Loading",
-    "5.8": "Pending Transaction",
+    "5.4": "Search Transaction",
+    "5.5": "Fund Loading",
+    "5.6": "Pending Transaction",
+    // "5.4": "Account Summary",
+    // "5.6": "Download Report",
   };
 
   return (
     <>
-      {isLoading && <Loader />}
+      {isLoading && <MyLoader />}
       <div>
-        <div>
+        <div className="flex gap-5">
+          <UnstyledButton
+            onClick={() => {
+              navigate(`/settings/ViewSubUser`);
+            }}
+          >
+            <BackSvgIcon color={theme.palette.primary.main} />
+          </UnstyledButton>
           <TextComponent
             fontSize={22}
             fontWeight={600}
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.main}
           >
             Sub User Creation
           </TextComponent>
@@ -187,14 +276,38 @@ const SubuserCreation = () => {
             onSubmit={handleRequest}
             enableReinitialize={true}
           >
-            {({
-              handleChange,
-              setFieldValue,
-              errors,
-              touched,
-              values,
-              handleSubmit,
-            }) => {
+            {(formik) => {
+
+              const {
+                handleChange,
+                setFieldValue,
+                errors,
+                touched,
+                values,
+                handleSubmit,
+              } = formik;
+
+              const showEmailVerifyButton =
+                formik.values.emailId &&
+                !formik.values.emailVerified &&
+                !emailVerifying &&
+                EmailRegex.test(formik.values.emailId);
+
+              const showEmailVerifiedMess =
+                formik?.values?.emailId?.length > 0 && formik?.values?.emailVerified;
+
+              useEffect(() => {
+                if (
+                  formik.values.emailVerified &&
+                  formik.values.lastVerifiedEmail &&
+                  formik.values.emailId !== formik.values.lastVerifiedEmail
+                ) {
+                  formik.setFieldValue("emailVerified", false);
+                  formik.setFieldValue("lastVerifiedEmail", null);
+                }
+              }, [formik.values.emailId]);
+
+
               const handleChipChange = (selectedValues: string[]) => {
                 setSelectedChips(selectedValues);
                 const chips = ["1", "2", "3", "4", "5"];
@@ -243,6 +356,10 @@ const SubuserCreation = () => {
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                         <TextInputComponent
                           label={"Mobile"}
+                          autoComplete="off"
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.mobileNumber}
                           onChange={handleChange("mobileNumber")}
@@ -261,6 +378,7 @@ const SubuserCreation = () => {
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                         <TextInputComponent
                           label="Password"
+                          autoComplete="new-password"
                           value={values.password}
                           onChange={handleChange("password")}
                           error={
@@ -277,11 +395,9 @@ const SubuserCreation = () => {
                               style={{ cursor: "pointer" }}
                             >
                               {showPassword ? (
-                                <OpenEyeSvgIcon
-                                  color={theme.palette.background.default}
-                                />
+                                <OpenEyeSvgIcon color={theme.palette.text.secondary} />
                               ) : (
-                                <CloseEyeSvgIcon />
+                                <CloseEyeSvgIcon color={theme.palette.text.secondary} />
                               )}
                             </div>
                           }
@@ -290,9 +406,53 @@ const SubuserCreation = () => {
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                         <TextInputComponent
                           label={"Email"}
+                          autoComplete="off"
                           placeholder={"Enter"}
                           value={values.emailId}
                           onChange={handleChange("emailId")}
+                          rightSection={
+                            showEmailVerifiedMess ? (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  color: "#28a745",
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                ✅ Verified
+                              </div>
+                            ) : showEmailVerifyButton ? (
+                              emailVerifying ? (
+                                <div style={{ display: "flex", alignItems: "center", height: "24px" }}>
+                                  <Loader size="xs" color="#007B55" />
+                                </div>
+                              ) : (
+                                <NewButtonComponent
+                                  fw="500"
+                                  style={{
+                                    marginRight: "0px",
+                                    padding: "0px 8px",
+                                    height: "24px",
+                                    cursor: "pointer",
+                                    fontSize: "12px",
+                                  }}
+                                  bgColor="#007B55"
+                                  textColor="white"
+                                  fontSize="12"
+                                  size="xs"
+                                  onClick={async () => {
+                                    setFieldValue("lastVerifiedEmail", values.emailId);
+                                    setEmailVerifying(true);
+                                    await handleEmailVerify(formik);
+                                    setEmailVerifying(false);
+                                  }}
+                                >
+                                  {emailVerifying ? "Verifying..." : "Verify"}
+                                </NewButtonComponent>
+                              )
+                            ) : null}
                           error={
                             touched.emailId && errors.emailId
                               ? errors.emailId
@@ -304,7 +464,7 @@ const SubuserCreation = () => {
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                        <CustomDateComponent
+                        {/* <CustomDateComponent
                           label="Date of Birth"
                           value={values.dob ? new Date(values.dob) : null}
                           onChange={(value) => setFieldValue("dob", value)}
@@ -313,6 +473,16 @@ const SubuserCreation = () => {
                           dateFormat="YYYY-MM-DD"
                           withAsterisk
                           className="w-max"
+                        /> */}
+                        <FormikDatePicker
+                          name="dob"
+                          placeholder="Select a DOB"
+                          size="lg"
+                          required
+                          maxDate={new Date}
+                          valueFormat="YYYY-MM-DD"
+                          leftIcon={<IconCalendar size={24} />}
+                          styles={{ input: { height: "55px", fontSize: "18px", borderRadius: "6px" } }}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
@@ -363,6 +533,9 @@ const SubuserCreation = () => {
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                         <TextInputComponent
                           label={"Zipcode"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.add.zipCode}
                           onChange={handleChange("add.zipCode")}
@@ -383,7 +556,7 @@ const SubuserCreation = () => {
                         <TextComponent
                           fontSize={18}
                           fontWeight={500}
-                          color={theme.palette.background.default}
+                          color="text.primary"
                           className="self-start"
                         >
                           Menu
@@ -398,35 +571,35 @@ const SubuserCreation = () => {
                       >
                         <Group justify="center" mt="md">
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="1"
                             size="md"
                           >
                             Products
                           </Chip>
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="2"
                             size="md"
                           >
                             Funding
                           </Chip>
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="3"
                             size="md"
                           >
                             Settings
                           </Chip>
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="4"
                             size="md"
                           >
                             Support
                           </Chip>
                           <Chip
-                            color={theme.palette.red.DEFAULT}
+                            color={theme.palette.primary.main}
                             value="5"
                             size="md"
                           >
@@ -440,7 +613,7 @@ const SubuserCreation = () => {
                           <TextComponent
                             fontSize={12}
                             fontWeight={400}
-                            color={theme.palette.red.Default}
+                            color={theme.palette.primary.main}
                           >
                             {errors.role_id}
                           </TextComponent>
@@ -454,10 +627,10 @@ const SubuserCreation = () => {
                             <TextComponent
                               fontSize={18}
                               fontWeight={500}
-                              color={theme.palette.background.default}
+                              color="text.primary"
                               className="self-start"
                             >
-                              sub Menus
+                              Sub Menus
                               <span className="ml-1 text-light-primaryColor">
                                 *
                               </span>
@@ -472,7 +645,7 @@ const SubuserCreation = () => {
                             <Group justify="center" mt="md">
                               {getVisibleSubChips().map((chip) => (
                                 <Chip
-                                  color={theme.palette.red.DEFAULT}
+                                  color={theme.palette.primary.main}
                                   key={chip}
                                   value={chip}
                                   size="md"
@@ -488,7 +661,7 @@ const SubuserCreation = () => {
                               <TextComponent
                                 fontSize={12}
                                 fontWeight={400}
-                                color={theme.palette.red.Default}
+                                color={theme.palette.primary.main}
                               >
                                 {errors.subRoleId}
                               </TextComponent>
@@ -497,9 +670,9 @@ const SubuserCreation = () => {
                         </>
                       )}
                     </div>
-                  </div>
+                  </div >
 
-                  <div className="mt-8 flex w-full items-center justify-end ">
+                  <div className="mt-8 flex w-full items-center justify-center">
                     <ButtonComponent
                       title="Submit"
                       variant="filled"
@@ -513,7 +686,7 @@ const SubuserCreation = () => {
             }}
           </Formik>
         </div>
-      </div>
+      </div >
     </>
   );
 };

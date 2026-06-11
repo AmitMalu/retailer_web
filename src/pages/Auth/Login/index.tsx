@@ -10,7 +10,6 @@ import Loader from "../../../components/Atoms/Loader";
 import { login } from "@/Services/api";
 import {
   showErrorNotification,
-  showSuccessNotification,
 } from "@/Utils/notifications";
 import {
   CloseEyeSvgIcon,
@@ -18,17 +17,26 @@ import {
   OpenEyeSvgIcon,
   UserNameSvgIcon,
 } from "@/assets/svg";
-import { MobileNoRegex } from "@/Utils/helper";
+import { encryptCredentials, MobileNoRegex } from "@/Utils/helper";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { LoginRequest } from "@/Common/interface";
-import LoginImage from "@/assets/svg/Auth/login";
 import { useTheme } from "@mui/system";
+import { useAppSelector } from "@/Redux/hooks";
+import { useBranding } from "@/Config/branding";
 
 const Login: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { lat, lng, loading } = useAppSelector(state => state.location)
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const branding = useBranding();
+  
+  const policyLinks = {
+    terms: branding.terms,
+    privacy: branding.privacy,
+    refund: branding.refund,
+  };
 
   const validationSchema = Yup.object({
     userName: Yup.string()
@@ -50,29 +58,69 @@ const Login: React.FC = () => {
   // };
 
   const handleSubmit = async (values: LoginRequest) => {
+
+    if (loading) {
+      showErrorNotification("Fetching your location, please wait...");
+      return;
+    }
+
+    if (!lat || !lng) {
+      showErrorNotification("Please enable your location to continue.");
+      return;
+    }
     try {
       setIsLoading(true);
+
+      const hostname = window.location.hostname;
+      const protocol = window.location.protocol;
+
+      const { encryptedUsername, encryptedPassword, salt, iv } = encryptCredentials(values.userName, values.password);
+
+      const isDevEnv = ["localhost", "127.0.0.1"].includes(hostname) ||
+        hostname.startsWith("192.168.") ||
+        hostname === ""; // in case of file:// or blank
+
+      const maskedOrigin = `${protocol}//*.${hostname
+        .split(".")
+        .slice(1)
+        .join(".")}/`;
+
       let bodyRequest = {
-        userName: values.userName,
-        password: values.password,
-        url: "https://uat.decipay.in/",
-        // url: getCurrentUrl(),
+        userName: encryptedUsername,
+        password: encryptedPassword,
+        salt,
+        iv,
+        lat,
+        lng,
+        url: isDevEnv ? "https://uat.nfttech.in/" : maskedOrigin,
       };
       const response = await login(bodyRequest);
-      if (
+      const AllowedRoles = ["RT", "RU", "DT", "PT", "SD", "EN", "WL"]
+      if (response && response?.data &&
         response?.data?.statusCode === 200 ||
         response?.data?.statusCode === "200"
       ) {
+        const data = response?.data?.data;
+        if (!AllowedRoles.includes(data?.role)) {
+          showErrorNotification("Invalid credentials");
+          return;
+        }
+
         navigate("/otpInput", {
           state: { userName: values.userName, login: true },
-        });
-        showSuccessNotification(response?.data?.data?.otp);
+        })
       } else {
         showErrorNotification(response?.data?.message || "Unable to login");
       }
     } catch (error: any) {
-      showErrorNotification(error.response?.data?.message || error.message);
-      setIsLoading(false);
+      console.error(error, "login error");
+      // Safely extract message
+      const errorMessage =
+        error?.response?.data?.message ||  // API returned a message
+        error?.message ||                  // Network or generic error
+        "Something went wrong. Please try again.";
+
+      showErrorNotification(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -82,23 +130,23 @@ const Login: React.FC = () => {
     <>
       {isLoading && <Loader />}
       <AuthLayout
-        authImage={<LoginImage />}
-        authText='"Welcome to your financial hub."'
+        authImage={<img src={branding.loginBgImg} alt="img" className="h-full w-full object-cover" />}
+        authText={branding.welcomeText}
       >
         <div className="flex w-full  items-center justify-center flex-col gap-5">
-          <div className="flex h-auto w-[350px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
+          <div className="flex h-auto w-[360px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
             <div className="flex flex-col items-center justify-items-center gap-2 ">
               <TextComponent
                 fontSize={28}
-                fontWeight={500}
-                color="background.default"
+                fontWeight={600}
+                color={theme.palette.text.primary}
               >
-                Welcome
+                Welcome!
               </TextComponent>
               <TextComponent
-                fontSize={12}
+                fontSize={14}
                 fontWeight={400}
-                color="background.default"
+                color={theme.palette.text.secondary}
               >
                 Login and manage everything in one place.
               </TextComponent>
@@ -110,99 +158,128 @@ const Login: React.FC = () => {
             >
               {({ handleSubmit, handleChange, errors, touched, values }) => (
                 <>
-                  <div className="mt-10 flex w-full flex-col gap-4 items-center justify-center">
-                    <TextInputComponent
-                      label="Mobile Number"
-                      value={values.userName}
-                      onChange={handleChange("userName")}
-                      error={
-                        touched.userName && errors.userName
-                          ? errors.userName
-                          : ""
-                      }
-                      withAsterisk
-                      leftSection={<UserNameSvgIcon />}
-                      maxLength={10}
-                      minLength={10}
-                      type="tel"
-                      className="w-full"
-                      isAuth={true}
-                    />
-                    <TextInputComponent
-                      label={"Password "}
-                      value={values.password}
-                      onChange={handleChange("password")}
-                      error={
-                        touched.password && errors.password
-                          ? errors.password
-                          : ""
-                      }
-                      type={showPassword ? "text" : "password"}
-                      className="w-full"
-                      isAuth={true}
-                      withAsterisk
-                      leftSection={<LockSvgIcon />}
-                      rightSection={
-                        <div
-                          onClick={() => setShowPassword(!showPassword)}
-                          style={{ cursor: "pointer" }}
+                  <form className="w-full" onSubmit={handleSubmit}>
+                    <div className="mt-10 flex w-full flex-col gap-4 items-center justify-center">
+                      <TextInputComponent
+                        autoFocus
+                        label="Mobile Number"
+                        allowCharacter={false}
+                        allowSpace={false}
+                        allowSpecialChar={false}
+                        value={values.userName}
+                        onChange={handleChange("userName")}
+                        error={
+                          touched.userName && errors.userName
+                            ? errors.userName
+                            : ""
+                        }
+                        withAsterisk
+                        leftSection={<UserNameSvgIcon />}
+                        maxLength={10}
+                        minLength={10}
+                        type="tel"
+                        className="w-full"
+                        isAuth={true}
+                      />
+                      <TextInputComponent
+                        label={"Password "}
+                        value={values.password}
+                        onChange={handleChange("password")}
+                        error={
+                          touched.password && errors.password
+                            ? errors.password
+                            : ""
+                        }
+                        type={showPassword ? "text" : "password"}
+                        className="w-full"
+                        isAuth={true}
+                        withAsterisk
+                        leftSection={<LockSvgIcon />}
+                        rightSection={
+                          <div
+                            onClick={() => setShowPassword(!showPassword)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            {!showPassword ? (
+                              <OpenEyeSvgIcon
+                                color={theme.palette.text.secondary}
+                              />
+                            ) : (
+                              <CloseEyeSvgIcon color={theme.palette.text.secondary} />
+                            )}
+                          </div>
+                        }
+                      />
+                    </div>
+                    <UnstyledButton
+                      className="mt-1 w-max self-end "
+                      onClick={() => navigate("/forgotPassword")}
+                    >
+                      <TextComponent
+                        fontSize={12}
+                        fontWeight={400}
+                        color="primary.main"
+                        align="right"
+                      >
+                        Forgot Password?
+                      </TextComponent>
+                    </UnstyledButton>
+                    <div className="mt-6 flex w-full items-center justify-center">
+                      <ButtonComponent
+                        type="submit"
+                        title="CONTINUE"
+                        variant="filled"
+                        radius={28}
+                        fullWidth={true}
+                        disabled={
+                          isLoading ||
+                          !values.userName ||
+                          !values.password
+                        }
+                      />
+                    </div>
+                    <div className="mt-4 flex flex-col items-center justify-center">
+                      <TextComponent
+                        fontSize={12}
+                        fontWeight={400}
+                        color={theme.palette.text.secondary}
+                        align="center"
+                        className="px-2"
+                      >
+                        By continuing, you agree to our{" "}
+                        <a
+                          href={policyLinks.terms}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: theme.palette.primary.main }}
+                          className="hover:underline"
                         >
-                          {!showPassword ? (
-                            <OpenEyeSvgIcon
-                              color={theme.palette.background.default}
-                            />
-                          ) : (
-                            <CloseEyeSvgIcon />
-                          )}
-                        </div>
-                      }
-                    />
-                  </div>
-                  <UnstyledButton
-                    className="mt-1 w-max self-end "
-                    onClick={() => navigate("/forgotPassword")}
-                  >
-                    <TextComponent
-                      fontSize={12}
-                      fontWeight={400}
-                      color={"background.default"}
-                      align="right"
-                    >
-                      Forgot Password?
-                    </TextComponent>
-                  </UnstyledButton>
-                  <div className="mt-6 flex w-full items-center justify-center">
-                    <ButtonComponent
-                      title="CONTINUE"
-                      variant="filled"
-                      onClick={() => handleSubmit()}
-                      loading={isLoading}
-                      radius={28}
-                      fullWidth={true}
-                      disabled={
-                        isLoading || !values.userName || !values.password
-                      }
-                      isAuth={true}
-                    />
-                  </div>
-                  <div className="flex items-center justify-center gap-2 mt-2 ">
-                    <TextComponent
-                      fontSize={14}
-                      fontWeight={400}
-                      color="background.default"
-                    >
-                      Don't have an account yet?
-                    </TextComponent>
-                    <TextComponent
-                      fontSize={14}
-                      fontWeight={600}
-                      color="red.DEFAULT"
-                      className="underline cursor-pointer"
-                      onClick={() => navigate("/signUp")}
-                    >
-                      Sign up
-                    </TextComponent>
-                  </div>
+                          Terms & Conditions
+                        </a>
+                        ,{" "}
+                        <a
+                          href={policyLinks.privacy}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: theme.palette.primary.main }}
+                          className="hover:underline"
+                        >
+                          Privacy Policy
+                        </a>
+                        {" "}and{" "}
+                        <a
+                          href={policyLinks.refund}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: theme.palette.primary.main }}
+                          className="hover:underline"
+                        >
+                          Refund Policy
+                        </a>
+                        .
+                      </TextComponent>
+                    </div>
+                  </form>
                 </>
               )}
             </Formik>

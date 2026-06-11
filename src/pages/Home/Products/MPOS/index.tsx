@@ -171,12 +171,12 @@ const MposScreen = () => {
             navigate(`/products`);
           }}
         >
-          <BackSvgIcon color={theme.palette.red.DEFAULT} />
+          <BackSvgIcon color={theme.palette.primary.main} />
         </UnstyledButton>
         <TextComponent
           fontSize={28}
           fontWeight={600}
-          color={"background.default"}
+          color={theme.palette.primary.main}
         >
           MPOS
         </TextComponent>
@@ -210,7 +210,7 @@ const MposScreen = () => {
               })) || [];
 
             return (
-              <div className="w-[calc(40%-24px)] flex flex-col items-center justify-center border-2 border-red-light p-5 rounded-lg">
+              <div className="w-[calc(40%-24px)] flex flex-col items-center justify-center border-2 border-primary-ligh p-5 rounded-lg">
                 <div className="w-full flex flex-col items-center justify-center gap-3">
                   {/* <div className="w-full ">
                     <DropdownComponent
@@ -232,6 +232,7 @@ const MposScreen = () => {
                   </div> */}
                   <div className="w-full ">
                     <TextInputComponent
+                      allowSpecialChar={false}
                       label={"Card Bin No"}
                       placeholder={"Enter"}
                       value={values.cardBinNo}
@@ -288,12 +289,15 @@ const MposScreen = () => {
                       <div className="w-full ">
                         <TextInputComponent
                           label={"Card Holder Mobile"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.cardHolderMobileNumber}
                           onChange={handleChange("cardHolderMobileNumber")}
                           error={
                             touched.cardHolderMobileNumber &&
-                            errors.cardHolderMobileNumber
+                              errors.cardHolderMobileNumber
                               ? errors.cardHolderMobileNumber
                               : ""
                           }
@@ -353,6 +357,9 @@ const MposScreen = () => {
                       <div className="w-full ">
                         <TextInputComponent
                           label={"Amount"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.amount}
                           onChange={handleChange("amount")}
@@ -366,6 +373,9 @@ const MposScreen = () => {
                       <div className="w-full ">
                         <TextInputComponent
                           label={"Confirm Amount"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.confirmAmount}
                           onChange={handleChange("confirmAmount")}

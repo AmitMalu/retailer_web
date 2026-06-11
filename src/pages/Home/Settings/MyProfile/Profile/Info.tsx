@@ -18,7 +18,7 @@ const Info = () => {
         <TextComponent
           fontSize={18}
           fontWeight={600}
-          color={theme.palette.red.DEFAULT}
+          color={theme.palette.primary.main}
         >
           Name:
         </TextComponent>
@@ -34,7 +34,7 @@ const Info = () => {
         <TextComponent
           fontSize={18}
           fontWeight={600}
-          color={theme.palette.red.DEFAULT}
+          color={theme.palette.primary.main}
         >
           Member No:
         </TextComponent>
@@ -50,7 +50,7 @@ const Info = () => {
         <TextComponent
           fontSize={18}
           fontWeight={600}
-          color={theme.palette.red.DEFAULT}
+          color={theme.palette.primary.main}
         >
           Mobile Number:
         </TextComponent>
@@ -66,7 +66,7 @@ const Info = () => {
         <TextComponent
           fontSize={18}
           fontWeight={600}
-          color={theme.palette.red.DEFAULT}
+          color={theme.palette.primary.main}
         >
           Email:
         </TextComponent>
@@ -82,7 +82,7 @@ const Info = () => {
         <TextComponent
           fontSize={18}
           fontWeight={600}
-          color={theme.palette.red.DEFAULT}
+          color={theme.palette.primary.main}
         >
           DOB:
         </TextComponent>
@@ -98,7 +98,7 @@ const Info = () => {
         <TextComponent
           fontSize={18}
           fontWeight={600}
-          color={theme.palette.red.DEFAULT}
+          color={theme.palette.primary.main}
         >
           Outlet Name:
         </TextComponent>
@@ -114,7 +114,7 @@ const Info = () => {
         <TextComponent
           fontSize={18}
           fontWeight={600}
-          color={theme.palette.red.DEFAULT}
+          color={theme.palette.primary.main}
         >
           Is Blacklisted:
         </TextComponent>
@@ -130,7 +130,7 @@ const Info = () => {
         <TextComponent
           fontSize={18}
           fontWeight={600}
-          color={theme.palette.red.DEFAULT}
+          color={theme.palette.primary.main}
         >
           Is Blocked:
         </TextComponent>

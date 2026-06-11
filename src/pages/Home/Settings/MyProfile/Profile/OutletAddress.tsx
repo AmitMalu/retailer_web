@@ -18,7 +18,7 @@ const OutletAddress = () => {
         <TextComponent
           fontSize={18}
           fontWeight={600}
-          color={theme.palette.red.DEFAULT}
+          color={theme.palette.primary.main}
         >
           Building / Apartment:
         </TextComponent>
@@ -34,7 +34,7 @@ const OutletAddress = () => {
         <TextComponent
           fontSize={18}
           fontWeight={600}
-          color={theme.palette.red.DEFAULT}
+          color={theme.palette.primary.main}
         >
           City:
         </TextComponent>
@@ -50,7 +50,7 @@ const OutletAddress = () => {
         <TextComponent
           fontSize={18}
           fontWeight={600}
-          color={theme.palette.red.DEFAULT}
+          color={theme.palette.primary.main}
         >
           State:
         </TextComponent>
@@ -66,7 +66,7 @@ const OutletAddress = () => {
         <TextComponent
           fontSize={18}
           fontWeight={600}
-          color={theme.palette.red.DEFAULT}
+          color={theme.palette.primary.main}
         >
           Pincode:
         </TextComponent>

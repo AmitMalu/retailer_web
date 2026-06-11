@@ -40,7 +40,7 @@ const Profile = () => {
   const FetchUserList = async () => {
     try {
       const response = await User_Profile(loginData?.hierarchyId);
-      if (response?.status === 200) {
+      if (response?.data?.statusCode == 200) {
         dispatch(saveApiResponse("userProfile", response?.data?.data));
       } else {
         showErrorNotification(response?.data?.message);
@@ -55,16 +55,12 @@ const Profile = () => {
       <Tabs.List>
         <Tabs.Tab value="1">
           <div
-            className={`py-2 px-4 bg-background-paper border-2 rounded-full ${value === "1" ? "border-red-dark" : "border-gray"}`}
+            className={`py-2 px-4 bg-background-paper border-2 rounded-full ${value === "1" ? "border-primary-dark" : "border-gray"}`}
           >
             <TextComponent
               fontSize={value === "1" ? 18 : 16}
               fontWeight={value === "1" ? 600 : 400}
-              color={
-                value === "1"
-                  ? theme.palette.red.DEFAULT
-                  : theme.palette.gray.DEFAULT
-              }
+              color={theme.palette.primary.main}
             >
               INFO
             </TextComponent>
@@ -72,16 +68,12 @@ const Profile = () => {
         </Tabs.Tab>
         <Tabs.Tab value="2">
           <div
-            className={`py-2 px-4 bg-background-paper border-2 rounded-full ${value === "2" ? "border-red-dark" : "border-gray"}`}
+            className={`py-2 px-4 bg-background-paper border-2 rounded-full ${value === "2" ? "border-primary" : "border-gray"}`}
           >
             <TextComponent
               fontSize={value === "2" ? 18 : 16}
               fontWeight={value === "2" ? 600 : 400}
-              color={
-                value === "2"
-                  ? theme.palette.red.DEFAULT
-                  : theme.palette.gray.DEFAULT
-              }
+              color={theme.palette.primary.main}
             >
               ADDRESS
             </TextComponent>
@@ -89,16 +81,12 @@ const Profile = () => {
         </Tabs.Tab>
         <Tabs.Tab value="3">
           <div
-            className={`py-2 px-4 bg-background-paper border-2 rounded-full ${value === "3" ? "border-red-dark" : "border-gray"}`}
+            className={`py-2 px-4 bg-background-paper border-2 rounded-full ${value === "3" ? "border-primary" : "border-gray"}`}
           >
             <TextComponent
               fontSize={value === "3" ? 18 : 16}
               fontWeight={value === "3" ? 600 : 400}
-              color={
-                value === "3"
-                  ? theme.palette.red.DEFAULT
-                  : theme.palette.gray.DEFAULT
-              }
+              color={theme.palette.primary.main}
             >
               OUTLET ADDRESS
             </TextComponent>
@@ -106,16 +94,12 @@ const Profile = () => {
         </Tabs.Tab>
         <Tabs.Tab value="4">
           <div
-            className={`py-2 px-4 bg-background-paper border-2 rounded-full ${value === "4" ? "border-red-dark" : "border-gray"}`}
+            className={`py-2 px-4 bg-background-paper border-2 rounded-full ${value === "4" ? "border-primary" : "border-gray"}`}
           >
             <TextComponent
               fontSize={value === "4" ? 18 : 16}
               fontWeight={value === "4" ? 600 : 400}
-              color={
-                value === "4"
-                  ? theme.palette.red.DEFAULT
-                  : theme.palette.gray.DEFAULT
-              }
+              color={theme.palette.primary.main}
             >
               MY BANKS
             </TextComponent>
@@ -123,16 +107,12 @@ const Profile = () => {
         </Tabs.Tab>
         <Tabs.Tab value="5">
           <div
-            className={`py-2 px-4 bg-background-paper border-2 rounded-full ${value === "5" ? "border-red-dark" : "border-gray"}`}
+            className={`py-2 px-4 bg-background-paper border-2 rounded-full ${value === "5" ? "border-primary" : "border-gray"}`}
           >
             <TextComponent
               fontSize={value === "5" ? 18 : 16}
               fontWeight={value === "5" ? 600 : 400}
-              color={
-                value === "5"
-                  ? theme.palette.red.DEFAULT
-                  : theme.palette.gray.DEFAULT
-              }
+              color={theme.palette.primary.main}
             >
               KYC DOCS
             </TextComponent>

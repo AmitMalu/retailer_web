@@ -16,6 +16,10 @@ import { RootState } from "@/Redux/Store";
 import { WalletToWalletProps } from "@/Common/interface";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import { Wallet_To_Wallet } from "@/Services/api";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
+import { useProductEngine } from "../../../Utils/CustomHooks/useProductEngine";
+import { SUB_PRODUCT_MAP } from "@/Utils/subProductMap";
+import { PRODUCT_KEYS } from "@/Utils/productKeys";
 
 const WalletToWallet = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,8 +31,30 @@ const WalletToWallet = () => {
     ? decryptData(apiResponses?.loginData)
     : null;
 
+  const isRetailer = loginData?.role === "RT";
+  const { getSubProduct } = useProductEngine(
+    isRetailer ? loginData : null
+  ); const { checkDuplicate, store } = useTransactionCooldown("WALLET-TO-WALLET");
+
   const validationSchema = Yup.object().shape({
-    transferAmount: Yup.string().required("Required"),
+    // transferAmount: Yup.string()
+    //   .required("Required")
+    //   .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount"),
+    // confirmAmount: Yup.string()
+    //   .required("Required")
+    //   .oneOf([Yup.ref("transferAmount")], "Amounts must match")
+    //   .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount"),
+    transferAmount: Yup.string()
+      .required("Required")
+      .matches(/^(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount")
+      .test(
+        "non-zero",
+        "Amount must be greater than 0",
+        (value) => {
+          if (!value) return false; // required check
+          return parseFloat(value) > 0;
+        }
+      ),
     confirmAmount: Yup.string()
       .required("Required")
       .oneOf([Yup.ref("transferAmount")], "Amounts must match"),
@@ -51,16 +77,52 @@ const WalletToWallet = () => {
     try {
       setIsLoading(true);
 
+      let subProductId: string | undefined;
+      let schemeCode: string | undefined;
+
+      if (isRetailer) {
+        const subProductName =
+          SUB_PRODUCT_MAP.BALANCE_TRANSFER[
+          values.walletTypeTo as "PREPAID" | "POSTPAID"
+          ];
+
+        const config = getSubProduct(
+          PRODUCT_KEYS.BALANCE_TRANSFER,
+          subProductName
+        );
+
+        if (config?.error) {
+          showErrorNotification(config.error);
+          return;
+        }
+
+        subProductId = config?.subProduct?.subProductId;
+        schemeCode = config?.subProduct?.schemeCode;
+      }
+
       const bodyData = {
         hierarchyId: loginData?.hierarchyId,
         transferAmount: values.transferAmount,
         confirmAmount: values.confirmAmount,
         walletTypeFrom: values.walletTypeFrom,
         walletTypeTo: values.walletTypeTo,
+
+        ...(isRetailer && {
+          subProductId,
+          schemeCode,
+        }),
       };
+
+      if (checkDuplicate(values.walletTypeFrom, Number(values.transferAmount))) {
+        showErrorNotification(
+          "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
+        );
+        return;
+      }
 
       const response = await Wallet_To_Wallet(bodyData);
       if (response?.status === 200 || response?.status === 201) {
+        store(values.walletTypeFrom, Number(values.transferAmount));
         showSuccessNotification(response?.data?.message);
         resetForm();
       } else {
@@ -78,13 +140,13 @@ const WalletToWallet = () => {
       {isLoading && <Loader />}
       <div className=" flex w-full flex-col flex-wrap items-center justify-start gap-1">
         <div className="relative w-[80%]">
-          <div className="absolute inset-0 bg-red-dark rounded-[20px] blur-[8px] h-full"></div>
+          <div className="absolute inset-0 bg-gray-200 rounded-[20px] blur-[1px] h-full"></div>
 
           <div className="relative py-1 flex items-center justify-center">
             <TextComponent
               fontSize={30}
               fontWeight={500}
-              color="background.paper"
+              color="primary.main"
             >
               Wallet To Wallet
             </TextComponent>
@@ -152,6 +214,11 @@ const WalletToWallet = () => {
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Transfer Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.transferAmount}
                     onChange={handleChange("transferAmount")}
@@ -160,7 +227,7 @@ const WalletToWallet = () => {
                         ? errors.transferAmount
                         : ""
                     }
-                    type="number"
+                    // type="number"
                     withAsterisk
                     className="w-max"
                   />
@@ -168,6 +235,11 @@ const WalletToWallet = () => {
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Confirm Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.confirmAmount}
                     onChange={handleChange("confirmAmount")}
@@ -176,13 +248,13 @@ const WalletToWallet = () => {
                         ? errors.confirmAmount
                         : ""
                     }
-                    type="number"
+                    // type="number"
                     withAsterisk
                     className="w-max"
                   />
                 </div>
               </div>
-              <div className="mt-8 flex w-full items-center justify-end ">
+              <div className="mt-8 flex w-full items-center justify-center">
                 <ButtonComponent
                   title="Submit"
                   variant="filled"

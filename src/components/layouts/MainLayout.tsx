@@ -7,12 +7,16 @@ import StandardLayout from "./variants/StandardLayout";
 import HorizontalLayout from "./variants/HorizontalLayout";
 import MinimalLayout from "./variants/MinimalLayout";
 import FooterLayout from "./variants/FooterLayout";
+import { useLogoutHandling } from "@/Utils/CustomLogout";
 
 export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Initialize logout handling for reload detection and navigation protection
+  useLogoutHandling();
+  
   const { layoutVariant } = useSelector((state: RootState) => state.settings);
 
   // Render the appropriate layout based on the selected variant

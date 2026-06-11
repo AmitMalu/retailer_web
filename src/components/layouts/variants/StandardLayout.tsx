@@ -49,20 +49,26 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
       sidebar={<Sidebar mobileOpen={mobileOpen} onClose={handleDrawerToggle} />}
       footer={null}
     >
+      {/* Main Content Area */}
       <Box
         sx={{
-          p: layout === "compact" ? 2 : 3,
-          mt: navbarPosition === "fixed" ? "64px" : 0,
+          p: layout === "compact" ? 2 : 1,
+          mt: navbarPosition === "fixed" ? "0px" : 0,
           transition: "margin-left 0.3s ease",
           position: "relative",
           width: "100%",
+          flex: 1,
+          overflow: "auto",
+          // height: "100%"
           // backgroundColor: theme.palette.background.navBackground,
-          height: "100vh",
+          // height: "100vh",
+          // border: "1px solid green",
         }}
         style={{
           scrollbarWidth: "none",
         }}
       >
+        
         {/* Breadcrumbs */}
         {/* <Paper
           elevation={0}
@@ -92,7 +98,7 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
           </Breadcrumbs>
         </Paper> */}
 
-        <div>{children}</div>
+        {children}
 
         {/* Floating action button */}
         {/* <Tooltip title="Add new item">

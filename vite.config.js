@@ -8,10 +8,27 @@ export default defineConfig(function (_a) {
     return {
         base: env.VITE_APP_BASE_PATH,
         plugins: [react()],
+        server: {
+            host: '0.0.0.0', // Allow external connections
+            port: 5173, // Your preferred port
+        },
         resolve: {
             alias: {
                 "@": path.resolve(__dirname, "./src"),
             },
+        },
+        build: {
+            rollupOptions: {
+                output: {
+                    entryFileNames: "assets/[name].[hash].js",
+                    chunkFileNames: "assets/[name].[hash].js",
+                    assetFileNames: "assets/[name].[hash].[ext]",
+                },
+            },
+        },
+        define: {
+            // This defines the global variable 'global' as 'window' during build and dev
+            global: 'window',
         },
     };
 });

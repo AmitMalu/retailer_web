@@ -79,12 +79,12 @@ const RemitterRegister = () => {
               navigate(`/products/dmt`);
             }}
           >
-            <BackSvgIcon color={theme.palette.red.DEFAULT} />
+            <BackSvgIcon color={theme.palette.primary.main} />
           </UnstyledButton>
           <TextComponent
             fontSize={28}
             fontWeight={600}
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.main}
           >
             Register Remitter
           </TextComponent>
@@ -101,10 +101,13 @@ const RemitterRegister = () => {
               const { handleChange, errors, touched, values } = formik;
               return (
                 <>
-                  <div className="mt-3 flex flex-col items-start justify-center gap-3 border-2 border-red-light p-4 rounded-lg w-[calc(40%-12px)]">
+                  <div className="mt-3 flex flex-col items-start justify-center gap-3 border-2 border-primary-light p-4 rounded-lg w-[calc(40%-12px)]">
                     <div className="w-full ">
                       <TextInputComponent
                         label={"Aadhaar Number"}
+                        allowCharacter={false}
+                        allowSpace={false}
+                        allowSpecialChar={false}
                         placeholder={"Enter"}
                         value={values.aadhaarNumber}
                         onChange={handleChange("aadhaarNumber")}
@@ -121,6 +124,9 @@ const RemitterRegister = () => {
                     <div className="w-full ">
                       <TextInputComponent
                         label={"Mobile Number"}
+                        allowCharacter={false}
+                        allowSpace={false}
+                        allowSpecialChar={false}
                         placeholder={"Enter"}
                         value={values.mobileNumber}
                         onChange={handleChange("mobileNumber")}
@@ -137,11 +143,11 @@ const RemitterRegister = () => {
                       />
                     </div>
                     <div className="mb-6 flex self-end ">
-                      <UnstyledButton onClick={() => {}}>
+                      <UnstyledButton onClick={() => { }}>
                         <TextComponent
                           fontSize={20}
                           fontWeight={500}
-                          color={theme.palette.red.DEFAULT}
+                          color={theme.palette.primary.main}
                         >
                           Send OTP
                         </TextComponent>
@@ -150,6 +156,9 @@ const RemitterRegister = () => {
                     <div className="w-full ">
                       <TextInputComponent
                         label={"OTP"}
+                        allowCharacter={false}
+                        allowSpace={false}
+                        allowSpecialChar={false}
                         placeholder={"Enter"}
                         value={values.otp}
                         onChange={handleChange(".otp")}
@@ -164,7 +173,7 @@ const RemitterRegister = () => {
                       <TextComponent
                         fontSize={16}
                         fontWeight={400}
-                        color={theme.palette.background.default}
+                        color="text.secondary"
                       >
                         Note: Please note that in accordance with bank
                         guidelines, a one-time eKYC is required for remitter

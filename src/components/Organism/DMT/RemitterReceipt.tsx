@@ -1,7 +1,7 @@
 import { PartnerRegistrationModalProps } from "@/Common/interface";
 import { Modal } from "@mantine/core";
 import React, { useRef, useState } from "react";
-import theme from "@/theme/ThemeConfig";
+import { useTheme } from "@mui/material";
 import TextComponent from "@/components/Atoms/TextComponent";
 import ImFullLogo from "@/assets/svg/ImFullLogo";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
@@ -12,6 +12,7 @@ const ReceiptContent = React.forwardRef<
   HTMLDivElement,
   { orientation: "portrait" | "landscape"; isThermal?: boolean }
 >(({ orientation, isThermal = false }, ref) => {
+  const theme = useTheme();
   return (
     <div
       ref={ref}
@@ -21,39 +22,40 @@ const ReceiptContent = React.forwardRef<
         width: isThermal ? "80mm" : "100%",
         fontFamily: isThermal ? "monospace" : "inherit",
         fontSize: isThermal ? "12px" : "14px",
+        backgroundColor: theme.palette.background.paper,
       }}
     >
-      <div className="flex w-full flex-col border-2 border-red-light rounded-xl">
-        <div className="flex items-center justify-between border-b-2 border-b-red-light">
-          <div className="flex items-center justify-center border-r-2 p-4 border-r-red-light w-[calc(35%-10px)]">
+      <div className="flex w-full flex-col border-2 rounded-xl" style={{ borderColor: theme.palette.divider }}>
+        <div className="flex items-center justify-between border-b-2" style={{ borderBottomColor: theme.palette.divider }}>
+          <div className="flex items-center justify-center border-r-2 p-4 w-[calc(35%-10px)]" style={{ borderRightColor: theme.palette.divider }}>
             <ImFullLogo />
           </div>
           <div className="flex p-4 w-[calc(65%-10px)]">
             <TextComponent
               fontSize={16}
               fontWeight={500}
-              color={theme.palette.background.default}
+              color="text.primary"
               align="left"
             >
               Demo/IM-R-009650/9653192852
             </TextComponent>
           </div>
         </div>
-        <div className="flex items-center justify-between pl-4 py-2 border-b-2 border-b-red-light">
+        <div className="flex items-center justify-between pl-4 py-2 border-b-2" style={{ borderBottomColor: theme.palette.divider }}>
           <TextComponent
             fontSize={16}
             fontWeight={500}
-            color={theme.palette.background.default}
+            color="text.primary"
           >
             Transactions Receipts
           </TextComponent>
         </div>
-        <div className="flex w-full items-center justify-between border-b-2 border-b-red-light">
-          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-red-light w-[calc(45%-10px)]">
+        <div className="flex w-full items-center justify-between border-b-2" style={{ borderBottomColor: theme.palette.divider }}>
+          <div className="flex items-center justify-start border-r-2 px-4 py-2 w-[calc(45%-10px)]" style={{ borderRightColor: theme.palette.divider }}>
             <TextComponent
               fontSize={16}
               fontWeight={500}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               Transfer to:
             </TextComponent>
@@ -62,36 +64,36 @@ const ReceiptContent = React.forwardRef<
             <TextComponent
               fontSize={16}
               fontWeight={400}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               Mamata Gawand
             </TextComponent>
           </div>
         </div>
-        <div className="flex w-full items-center justify-between border-b-2 border-b-red-light">
-          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-red-light w-[calc(20%-10px)]">
+        <div className="flex w-full items-center justify-between border-b-2" style={{ borderBottomColor: theme.palette.divider }}>
+          <div className="flex items-center justify-start border-r-2 px-4 py-2 w-[calc(20%-10px)]" style={{ borderRightColor: theme.palette.divider }}>
             <TextComponent
               fontSize={16}
               fontWeight={500}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               Date
             </TextComponent>
           </div>
-          <div className="flex px-4 py-2 w-[calc(40%-10px)] border-r-2 border-r-red-light">
+          <div className="flex px-4 py-2 w-[calc(40%-10px)] border-r-2" style={{ borderRightColor: theme.palette.divider }}>
             <TextComponent
               fontSize={16}
               fontWeight={400}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               29-07-2025 05:40 pm
             </TextComponent>
           </div>
-          <div className="flex px-4 py-2 w-[calc(30%-10px)] border-r-2 border-r-red-light">
+          <div className="flex px-4 py-2 w-[calc(30%-10px)] border-r-2" style={{ borderRightColor: theme.palette.divider }}>
             <TextComponent
               fontSize={16}
               fontWeight={500}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               Transaction Mode
             </TextComponent>
@@ -100,36 +102,36 @@ const ReceiptContent = React.forwardRef<
             <TextComponent
               fontSize={16}
               fontWeight={400}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               ACCV
             </TextComponent>
           </div>
         </div>
-        <div className="flex w-full items-center justify-between border-b-2 border-b-red-light">
-          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-red-light w-[calc(20%-10px)]">
+        <div className="flex w-full items-center justify-between border-b-2" style={{ borderBottomColor: theme.palette.divider }}>
+          <div className="flex items-center justify-start border-r-2 px-4 py-2 w-[calc(20%-10px)]" style={{ borderRightColor: theme.palette.divider }}>
             <TextComponent
               fontSize={16}
               fontWeight={500}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               Sender Name
             </TextComponent>
           </div>
-          <div className="flex px-4 py-2 w-[calc(25%-10px)] border-r-2 border-r-red-light">
+          <div className="flex px-4 py-2 w-[calc(25%-10px)] border-r-2" style={{ borderRightColor: theme.palette.divider }}>
             <TextComponent
               fontSize={16}
               fontWeight={400}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               Umair
             </TextComponent>
           </div>
-          <div className="flex px-4 py-2 w-[calc(25%-10px)] border-r-2 border-r-red-light">
+          <div className="flex px-4 py-2 w-[calc(25%-10px)] border-r-2" style={{ borderRightColor: theme.palette.divider }}>
             <TextComponent
               fontSize={16}
               fontWeight={500}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               Receiver Bank
             </TextComponent>
@@ -138,18 +140,18 @@ const ReceiptContent = React.forwardRef<
             <TextComponent
               fontSize={16}
               fontWeight={400}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               Chikhli Urben Co-Op Bank
             </TextComponent>
           </div>
         </div>
-        <div className="flex w-full items-center justify-between border-b-2 border-b-red-light">
-          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-red-light w-[calc(20%-10px)]">
+        <div className="flex w-full items-center justify-between border-b-2" style={{ borderBottomColor: theme.palette.divider }}>
+          <div className="flex items-center justify-start border-r-2 px-4 py-2 w-[calc(20%-10px)]" style={{ borderRightColor: theme.palette.divider }}>
             <TextComponent
               fontSize={16}
               fontWeight={500}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               IFSC Code
             </TextComponent>
@@ -158,59 +160,59 @@ const ReceiptContent = React.forwardRef<
             <TextComponent
               fontSize={16}
               fontWeight={400}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               ICIC000000
             </TextComponent>
           </div>
         </div>
-        <div className="flex w-full items-center justify-between border-b-2 border-b-red-light">
-          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-red-light w-[calc(20%-10px)]">
+        <div className="flex w-full items-center justify-between border-b-2" style={{ borderBottomColor: theme.palette.divider }}>
+          <div className="flex items-center justify-start border-r-2 px-4 py-2 w-[calc(20%-10px)]" style={{ borderRightColor: theme.palette.divider }}>
             <TextComponent
               fontSize={16}
               fontWeight={500}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               Txn | UTR/RRN
             </TextComponent>
           </div>
-          <div className="flex items-center justify-start border-r-2 px-4 py-2 border-r-red-light w-[calc(15%-10px)]">
+          <div className="flex items-center justify-start border-r-2 px-4 py-2 w-[calc(15%-10px)]" style={{ borderRightColor: theme.palette.divider }}>
             <TextComponent
               fontSize={16}
               fontWeight={400}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               NA
             </TextComponent>
           </div>
-          <div className="flex px-4 py-2 w-[calc(30%-10px)] border-r-2 border-r-red-light">
+          <div className="flex px-4 py-2 w-[calc(30%-10px)] border-r-2" style={{ borderRightColor: theme.palette.divider }}>
             <TextComponent
               fontSize={16}
               fontWeight={500}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               Transaction Amount:
             </TextComponent>
             <TextComponent
               fontSize={16}
               fontWeight={400}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               300
             </TextComponent>
           </div>
-          <div className="flex px-4 py-2 w-[calc(25%-10px)] border-r-2 border-r-red-light">
+          <div className="flex px-4 py-2 w-[calc(25%-10px)] border-r-2" style={{ borderRightColor: theme.palette.divider }}>
             <TextComponent
               fontSize={16}
               fontWeight={500}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               TX ID:
             </TextComponent>
             <TextComponent
               fontSize={16}
               fontWeight={400}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               04055051025950040550
             </TextComponent>
@@ -219,14 +221,14 @@ const ReceiptContent = React.forwardRef<
             <TextComponent
               fontSize={16}
               fontWeight={500}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               Transaction Status:
             </TextComponent>
             <TextComponent
               fontSize={16}
               fontWeight={400}
-              color={theme.palette.background.default}
+              color="text.primary"
             >
               Failed
             </TextComponent>
@@ -243,6 +245,7 @@ const RemitterReceiptModal = ({
   // rowData,
   //   openedAs,
 }: PartnerRegistrationModalProps) => {
+  const theme = useTheme();
   // const apiResponses = useSelector(
   //   (state: RootState) => state.apiResponse.responses
   // );

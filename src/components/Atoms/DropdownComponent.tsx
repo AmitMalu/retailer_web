@@ -26,22 +26,9 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
   multiple = false,
   // withCheckIcon = true,
   className = "",
+  allowDeselect = false
 }) => {
   const theme = useTheme();
-
-  const handleChange = (event: SelectChangeEvent<any>) => {
-    const newValue = event.target.value;
-
-    if (multiple) {
-      const updatedValue = Array.isArray(newValue)
-        ? newValue
-        : [String(newValue)];
-
-      onChange?.(updatedValue);
-    } else {
-      onChange?.(newValue);
-    }
-  };
 
   const menuItems = data.map((item) => {
     if (typeof item === "string") {
@@ -50,12 +37,32 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
     return item;
   });
 
+  const handleChange = (event: SelectChangeEvent<any>) => {
+
+    const newValue = event.target.value;
+
+    if (multiple) {
+      const updatedValue = Array.isArray(newValue) ? newValue : [String(newValue)];
+
+      if (allowDeselect && JSON.stringify(updatedValue) === JSON.stringify(value)) {
+        onChange?.([]);
+      } else {
+        onChange?.(updatedValue);
+      }
+    } else {
+      if (allowDeselect && newValue === value) {
+        onChange?.("");
+      } else {
+        onChange?.(newValue);
+      }
+    }
+  };
+
   return (
     <Box
       sx={{
         mb: 0.125,
         width: "100%",
-
         position: "relative",
       }}
     >
@@ -86,14 +93,14 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
       >
         <InputLabel
           sx={{
-            color: "background.blackColor",
+            color: "text.primary",
             fontSize: "16px",
             fontWeight: 400,
             transform: "translate(14px, 16px) scale(1)",
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor: theme.palette.background.default,
             zIndex: 1,
             "&.Mui-focused, &.MuiFormLabel-filled": {
-              borderColor: error ? "error.main" : "background.blackColor",
+              color: error ? "error.main" : "primary.main",
               transform: "translate(14px, -9px) scale(0.75)",
               zIndex: 1,
             },
@@ -117,20 +124,20 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
             width: "100%",
             height: "100%",
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: error ? "error.main" : "#000 !important",
+              borderColor: error ? "error.main" : "primary.main",
               borderWidth: "1px !important",
             },
             "& .MuiInputBase-input.Mui-disabled": {
               WebkitTextFillColor:
                 disabled && value
-                  ? theme.palette.background.default
+                  ? theme.palette.text.secondary
                   : undefined,
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: error ? "error.main" : "#000 !important",
+              borderColor: error ? "error.main" : "primary.main",
             },
             "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: error ? "error.main" : "rgba(0, 0, 0, 0.23)",
+              borderColor: error ? "error.main" : theme.palette.divider,
               borderRadius: "6px",
             },
             "&.Mui-error .MuiOutlinedInput-notchedOutline": {
@@ -173,6 +180,11 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
             <MenuItem
               key={item.value}
               value={item.value}
+              onClick={() => {
+                if (!multiple && allowDeselect && item.value === value) {
+                  onChange?.(""); // deselect
+                }
+              }}
               sx={{
                 fontSize: "14px",
                 "&.Mui-selected": {

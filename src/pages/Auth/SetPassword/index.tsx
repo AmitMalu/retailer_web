@@ -21,6 +21,7 @@ import {
   showSuccessNotification,
 } from "@/Utils/notifications";
 import { useTheme } from "@mui/system";
+import { ArrowLeft } from "@mui/icons-material";
 
 const SetPasswordScreen: React.FC = () => {
   const theme = useTheme();
@@ -80,15 +81,15 @@ const SetPasswordScreen: React.FC = () => {
             <div className="flex flex-col items-center justify-center gap-3 ">
               <TextComponent
                 fontSize={30}
-                fontWeight={500}
-                color={"background.default"}
+                fontWeight={600}
+                color={theme.palette.text.primary}
               >
                 Set Password
               </TextComponent>
               <TextComponent
-                fontSize={12}
+                fontSize={14}
                 fontWeight={500}
-                color={"background.default"}
+                color={theme.palette.text.secondary}
               >
                 Please enter new password
               </TextComponent>
@@ -122,10 +123,10 @@ const SetPasswordScreen: React.FC = () => {
                         >
                           {showNewPassword ? (
                             <OpenEyeSvgIcon
-                              color={theme.palette.background.default}
+                              color={theme.palette.text.secondary}
                             />
                           ) : (
-                            <CloseEyeSvgIcon />
+                            <CloseEyeSvgIcon color={theme.palette.text.secondary} />
                           )}
                         </div>
                       }
@@ -151,23 +152,35 @@ const SetPasswordScreen: React.FC = () => {
                         >
                           {showPassword ? (
                             <OpenEyeSvgIcon
-                              color={theme.palette.background.default}
+                              color={theme.palette.text.secondary}
                             />
                           ) : (
-                            <CloseEyeSvgIcon />
+                            <CloseEyeSvgIcon color={theme.palette.text.secondary} />
                           )}
                         </div>
                       }
                     />
                   </div>
 
-                  <div className="mt-6 flex w-full items-center justify-center">
+                  <div className="mt-6 flex w-full items-center justify-between">
+                    <div>
+                      <ButtonComponent
+                        width={80}
+                        title={"BACK"}
+                        variant="light"
+                        onClick={() => navigate("/login")}
+                        leftIcon={<ArrowLeft />}
+                        radius={28}
+                      />
+                    </div>
                     <ButtonComponent
+                      width={120}
                       title={"CONTINUE"}
                       variant="filled"
                       onClick={() => handleSubmit()}
                       loading={isLoading}
                       radius={28}
+                      fontSize={14}
                       fullWidth={true}
                       disabled={
                         isLoading ||
@@ -177,24 +190,24 @@ const SetPasswordScreen: React.FC = () => {
                       isAuth={true}
                     />
                   </div>
-                  <div className="flex items-center justify-center gap-2 mt-2 ">
+                  {/* <div className="flex items-center justify-center gap-2 mt-2 ">
                     <TextComponent
                       fontSize={14}
                       fontWeight={400}
-                      color="background.default"
+                      color="text.secondary"
                     >
                       Don't have an account yet?
                     </TextComponent>
                     <TextComponent
                       fontSize={14}
                       fontWeight={600}
-                      color="red.DEFAULT"
+                      color="primary.main"
                       className="underline cursor-pointer"
                       onClick={() => navigate("/signUp")}
                     >
                       Sign up
                     </TextComponent>
-                  </div>
+                  </div> */}
                 </>
               )}
             </Formik>

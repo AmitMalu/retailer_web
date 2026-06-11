@@ -49,6 +49,7 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
       if (onChange) {
         onChange(null);
       }
+      event.target.value = ""; // reset input
       return;
     }
 
@@ -75,6 +76,7 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
       if (onChange) {
         onChange(null);
       }
+      event.target.value = ""; // reset input
       return;
     }
 
@@ -82,6 +84,8 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
     if (onChange) {
       onChange(file);
     }
+
+    event.target.value = ""; // reset input
   };
 
   const handleRemoveFile = (e: React.MouseEvent) => {
@@ -145,12 +149,12 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
                     alignItems: "center",
                     justifyContent: "center",
                     textTransform: "none",
-                    borderColor: errorText ? "error.main" : "gray.DEFAULT",
-                    color: errorText ? "error.main" : "background.default",
+                    borderColor: errorText ? "error.main" : "primary.main",
+                    color: errorText ? "error.main" : "primary.main",
                     "&:hover": {
                       borderColor: errorText
                         ? "error.main"
-                        : "background.default",
+                        : "primary.main",
                       backgroundColor: "rgba(0, 0, 0, 0.04)",
                     },
                   }}
@@ -173,7 +177,7 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
             fontSize: "16px",
             fontWeight: 400,
             "&.Mui-focused": {
-              color: error ? "error.main" : "background.default",
+              color: error ? "error.main" : "primary.main",
             },
             "&.Mui-error": {
               color: "error.main",
@@ -188,19 +192,19 @@ const FileInputComponent: React.FC<customFileinputProps> = ({
               borderRadius: "6px !important",
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: error ? "error.main" : "background.default",
+              borderColor: error ? "error.main" : "primary.main",
               borderWidth: "1px",
               borderRadius: "6px !important",
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: error ? "error.main" : "background.default",
+              borderColor: error ? "error.main" : "primary.main",
             },
             "& fieldset": {
               borderColor: "gray.DEFAULT",
               borderRadius: "6px !important",
             },
             "&:hover fieldset": {
-              borderColor: error ? "error.main" : "background.default",
+              borderColor: error ? "error.main" : "primary.main",
               borderRadius: "6px !important",
             },
           },

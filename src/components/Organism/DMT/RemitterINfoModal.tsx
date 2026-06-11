@@ -202,7 +202,7 @@ const RemitterInfoEditModal = ({
                         margin: "0 0.3rem",
                         fontSize: "1.5rem",
                         borderRadius: "8px",
-                        border: `1px solid  ${touched.otp && errors.otp ? theme.palette.error.main : "#ccc"}`,
+                        border: `1px solid  ${touched.otp && errors.otp ? theme.palette.error.main : theme.palette.divider}`,
                       }}
                     />
                     {touched.otp && errors.otp && (

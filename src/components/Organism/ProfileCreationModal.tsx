@@ -2,7 +2,7 @@ import {
   PartnerRegistrationModalProps,
   UserProfileFormProps,
 } from "@/Common/interface";
-import { Stepper, Group, Modal, UnstyledButton } from "@mantine/core";
+import { Stepper, Group, Modal, Loader } from "@mantine/core";
 import { useEffect, useRef, useState } from "react";
 import { Formik, FormikProps } from "formik";
 import * as Yup from "yup";
@@ -21,15 +21,18 @@ import { handleCustomError } from "@/Utils/handleCustomError";
 import { useSelector } from "react-redux";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
-import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
-import FileInputComponent from "@/components/Atoms/FileInputComponent";
+import NewButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent";
+// import FileInputComponent from "@/components/Atoms/FileInputComponent";
 import { RootState } from "@/Redux/Store";
 import {
+  Adhaar_Pan_Link,
+  Adhaar_Verification,
   Create_Distributor,
   Create_Partner,
   Create_Retailer,
   Create_Super_Distributor,
+  Pan_Verification,
 } from "@/Services/api";
 import {
   AddressSvgIcon,
@@ -39,12 +42,10 @@ import {
   StoreSvgIcon,
 } from "@/assets/svg";
 import { useTheme } from "@mui/system";
-import TextComponent from "../Atoms/TextComponent";
-import {
-  useAadhaarVerification,
-  useAdhaarPanVerification,
-  usePanVerification,
-} from "@/Utils/Verification";
+import CustomDatePicker from "../Atoms/NewComponents/CustomDatePicker";
+import { CalendarIcon } from "@mui/x-date-pickers";
+import FormikFileInput from "../Molecules/NewComponents/FormikFileInput";
+import FormikTextInputComponent from "../Molecules/NewComponents/FormikTextInputComponent";
 
 const ProfileRegistrationForm = ({
   opened,
@@ -54,31 +55,34 @@ const ProfileRegistrationForm = ({
 }: PartnerRegistrationModalProps) => {
   const theme = useTheme();
   const [active, setActive] = useState(0);
-  const [showImagePreview, setShowImagePreview] = useState(false);
-  const [isimage, setImage] = useState<File | null>(null);
+  const [aadhaarVerifying, setAadhaarVerifying] = useState(false);
+  const [panVerifying, setPanVerifying] = useState(false);
+  // const [showImagePreview, setShowImagePreview] = useState(false);
+  // const [isimage, setImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { verify: verifyAadhaar } = useAadhaarVerification();
-  const { verify: verifyPan } = usePanVerification();
-  const { verify: verifyAdhaarPanLink } = useAdhaarPanVerification();
-  // const { verify: verifyEmail } = useEmailVerification();
+  // const { verify: verifyAadhaar } = useAadhaarVerification();
+  // const { verify: verifyPan } = usePanVerification();
+  // const { verify: verifyAdhaarPanLink } = useAdhaarPanVerification();
+  // // const { verify: verifyEmail } = useEmailVerification();
 
-  const [verificationState, setVerificationState] = useState({
-    aadhaarAttempted: false,
-    panAttempted: false,
-    linkingDone: false,
-  });
+  // const [verificationState, setVerificationState] = useState({
+  //   aadhaarAttempted: false,
+  //   panAttempted: false,
+  //   linkingDone: false,
+  // });
 
-  const hasLinked = useRef(false);
+  // const hasLinked = useRef(false);
   const formikRef = useRef<FormikProps<UserProfileFormProps>>(null);
 
   const handleClose = () => {
-    hasLinked.current = false;
+    // hasLinked.current = false;
+    setActive(0)
     onClose();
-    setVerificationState({
-      aadhaarAttempted: false,
-      panAttempted: false,
-      linkingDone: false,
-    });
+    // setVerificationState({
+    //   aadhaarAttempted: false,
+    //   panAttempted: false,
+    //   linkingDone: false,
+    // });
   };
 
   const apiResponses = useSelector(
@@ -93,6 +97,76 @@ const ProfileRegistrationForm = ({
     ? decryptData(apiResponses?.ipAddress)
     : null;
 
+  const handleAadhaarVerify = async (formik: FormikProps<any>) => {
+    try {
+      const resData = await Adhaar_Verification(Number(formik.values.aadhaarNumber));
+      const isAadhaarSuccess = resData?.data?.data?.success === true && resData?.data?.data?.status_code == 200;
+
+      if (!isAadhaarSuccess) {
+        const remark = resData?.data?.data?.message || resData?.data?.data?.data?.remarks || "Verification failed.";
+
+        formik.setFieldValue("isAadhaarVerified", false);
+        formik.setFieldValue("aadhaarPanVerified", false);
+        formik.setTouched({ aadhaarNumber: true });
+
+        setTimeout(() => {
+          formik.setFieldError("aadhaarNumber", remark);
+        }, 0);
+
+        return;
+      }
+      // Aadhaar verification passed ✅
+      // Now check Aadhaar-PAN link
+      try {
+        const panLinkRes = await Adhaar_Pan_Link(Number(formik.values.aadhaarNumber))
+        const isPanApiSuccess = panLinkRes?.data?.data?.status_code == 200;
+        const isLinked = isPanApiSuccess && panLinkRes?.data?.data?.data?.linking_status === true;
+
+        // Save PAN linking status
+        formik.setFieldValue("aadhaarPanVerified", isLinked);
+
+        // ✅ Only now mark Aadhaar as fully verified
+        formik.setFieldValue("isAadhaarVerified", true);
+        formik.setFieldError("aadhaarNumber", "");
+      } catch (error) {
+        // PAN API failed – Aadhaar verification fails too ❌
+        handleCustomError(error)
+        formik.setFieldValue("aadhaarPanVerified", false);
+        formik.setFieldValue("isAadhaarVerified", false);
+        formik.setFieldError("aadhaarNumber", "Aadhaar-PAN link check failed");
+      }
+    } catch (error) {
+      formik.setFieldValue("isAadhaarVerified", false);
+      formik.setFieldError("aadhaarNumber", "Something went wrong during verification.");
+      handleCustomError(error)
+    }
+  }
+
+  const handlePanVerify = async (formik: FormikProps<any>) => {
+    try {
+      const resData = await Pan_Verification(formik.values.panNumber);
+      const isSuccess = resData?.data?.data?.status_code === 200;
+
+      if (isSuccess) {
+        formik.setFieldValue("panVerified", true);
+        formik.setFieldError("panNumber", "");
+      } else {
+        formik.setFieldValue("panVerified", false);
+        formik.setTouched({ panNumber: true });
+
+        const remark = resData?.data?.data?.message || "PAN verification failed.";
+        setTimeout(() => {
+          formik.setFieldError("panNumber", remark);
+        }, 0);
+      }
+    } catch (error) {
+      handleCustomError(error)
+      formik.setFieldValue("panVerified", false);
+      formik.setFieldError("panNumber", "Something went wrong during PAN verification.");
+    }
+  }
+
+
   const nextStep = async (formik: FormikProps<UserProfileFormProps>) => {
     const stepFields: { [key: number]: string[] } = {
       0: [
@@ -103,7 +177,12 @@ const ProfileRegistrationForm = ({
         "mobileNumber",
         "emailId",
         "aadhaarNumber",
+        "lastVerifiedAadhaar",
+        "isAadhaarVerified",
         "panNumber",
+        "lastVerifiedPan",
+        "panVerified",
+        "aadhaarPanVerified",
         "shopNumber",
         "businessNumber",
       ],
@@ -115,13 +194,15 @@ const ProfileRegistrationForm = ({
         "outletState",
         "outletZipCode",
       ],
-      3: ["bankName", "bankAccountNumber", "ifscCode", "branchName"],
+      3: ["bankName", "bankAccountNumber", "ifscCode", "branchName", "bankHolderName", "isBankVerified"],
       4: [
         "aadhaarCardFrontImage",
         "aadhaarCardBackImage",
         "panCardImage",
         "businessProofImage",
         "shopImage",
+        "longitude",
+        "latitude"
       ],
     };
 
@@ -135,13 +216,15 @@ const ProfileRegistrationForm = ({
       return fieldErrors !== undefined && fieldErrors !== "";
     });
 
+    console.log(formik.errors, "form-errors");
+
     if (!hasErrors) {
-      if (active === 0 && !verificationState.linkingDone) {
-        showErrorNotification(
-          "Please verify both Aadhaar and PAN before proceeding"
-        );
-        return;
-      }
+      // if (active === 0 && !verificationState.aadhaarAttempted || !verificationState.panAttempted) {
+      //   showErrorNotification(
+      //     "Please verify both Aadhaar and PAN before proceeding"
+      //   );
+      //   return;
+      // }
       setActive((current) => (current < 4 ? current + 1 : current));
     } else {
       // Create a properly typed touched object
@@ -156,8 +239,9 @@ const ProfileRegistrationForm = ({
     }
   };
 
-  const prevStep = () =>
+  const prevStep = () => {
     setActive((current) => (current > 0 ? current - 1 : current));
+  }
 
   const validationSchema = Yup.object().shape({
     title: Yup.string().required("Required"),
@@ -166,7 +250,7 @@ const ProfileRegistrationForm = ({
       .matches(MobileNoRegex, "Please enter valid number")
       .required("Required"),
     emailId: Yup.string()
-      .matches(EmailRegex, "Please enter valid number")
+      .matches(EmailRegex, "Please enter valid Email")
       .required("Required"),
     parentAccount: Yup.string().required("Required"),
     name: Yup.string().required("Required"),
@@ -187,19 +271,71 @@ const ProfileRegistrationForm = ({
       .matches(PinCodeRegex, "Please enter valid number")
       .required("Required"),
     bankName: Yup.string().required("Required"),
-    bankAccountNumber: Yup.string().required("Required"),
-    ifscCode: Yup.string().required("Required"),
+    bankAccountNumber: Yup.string()
+      .transform((value) => (value ? value.replace(/\s+/g, "") : "")) // remove all spaces
+      .required("Required")
+      .matches(/^[0-9]+$/, "Must be only digits")
+      .min(9, "Must be at least 9 digits")
+      .max(20, "Must be at most 20 digits"),
+    ifscCode: Yup.string()
+      .required("Required")
+      .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Enter valid IFSC code"),
+    bankHolderName: Yup.string().required("Bank Holder Name is Required"),
+    isBankVerified: Yup.boolean(),
     branchName: Yup.string().required("Required"),
+    // aadhaarNumber: Yup.string()
+    //   .max(12, "Please Enter valid Aadhaar Number")
+    //   .min(12, "Please Enter valid Aadhaar Number")
+    //   .matches(/^[0-9]+$/, "Please enter valid Aadhaar number")
+    //   .required("Required"),
     aadhaarNumber: Yup.string()
-      .max(12, "Enter valid Number")
-      .min(12, "Enter valid Number")
-      .matches(/^[0-9]+$/, "Please enter valid number")
-      .required("Required"),
+      .trim()
+      .matches(/^\d{12}$/, "Aadhaar must be exactly 12 digits")
+      .required("Aadhaar Number is required")
+      .test(
+        "aadhaar-verified",
+        "Aadhaar Verification is required",
+        function (value) {
+          const { isAadhaarVerified } = this.parent;
+          return !value || value.length !== 12 || isAadhaarVerified === true;
+        }
+      ),
+    isAadhaarVerified: Yup.boolean(),
+    lastVerifiedAadhaar: Yup.string().nullable(), // or stricter version
+    aadhaarPanVerified: Yup.boolean(),
+    // panNumber: Yup.string()
+    //   .matches(PanRegex, "Please enter valid PAN Number")
+    //   .required("Required"),
+    panNumber: Yup.string()
+      .matches(PanRegex, "Invalid PAN number format")
+      .max(10, "PAN number must be exactly 10 characters")
+      .required("PAN number is required")
+      .test(
+        "pan-verified",
+        "PAN Verification is required",
+        function (value) {
+          const { panVerified } = this.parent;
+          return !value || value.length !== 10 || panVerified === true;
+        }
+      ),
+    lastVerifiedPan: Yup.string().nullable(),
+    panVerified: Yup.boolean(),
     businessNumber: Yup.string().required("Required"),
     shopNumber: Yup.string().required("Required"),
-    panNumber: Yup.string()
-      .matches(PanRegex, "Please enter valid number")
-      .required("Required"),
+    ...(openedAs === "RT" && {
+      longitude: Yup.string()
+        .matches(
+          /^-?(180(\.0{1,6})?|1?[0-7]?\d(\.\d{1,6})?)$/,
+          "Longitude must be between -180 and 180 with up to 6 decimal places"
+        )
+        .required("Longitude is required"),
+      latitude: Yup.string()
+        .matches(
+          /^-?(90(\.0{1,6})?|[1-8]?\d(\.\d{1,6})?)$/,
+          "Latitude must be between -90 and 90 with up to 6 decimal places"
+        )
+        .required("Latitude is required"),
+    }),
     aadhaarCardFrontImage: Yup.string().required("Required"),
     aadhaarCardBackImage: Yup.string().required("Required"),
     panCardImage: Yup.string().required("Required"),
@@ -226,26 +362,32 @@ const ProfileRegistrationForm = ({
     bankName: "",
     bankAccountNumber: "",
     ifscCode: "",
+    bankHolderName: "",
+    isBankVerified: false,
     branchName: "",
     aadhaarNumber: "",
+    lastVerifiedAadhaar: null, //field to track last verified Aadhaar number
+    isAadhaarVerified: false,
     panNumber: "",
+    panVerified: false,
+    lastVerifiedPan: null, // field to track last verified PAN number
+    aadhaarPanVerified: false,
     shopNumber: "",
     businessNumber: "",
     createdBy: loginData?.mobileNumber,
     createdByIPAddress: ipAddress,
+    longitude: null,
+    latitude: null,
     aadhaarCardFrontImage: null,
     aadhaarCardBackImage: null,
     panCardImage: null,
     shopImage: null,
     businessProofImage: null,
-    isAadhaarVerified: false,
     emailVerified: false,
     gstNumberVerified: false,
-    panVerified: false,
-    aadhaarPanVerified: false,
   };
 
-  const handleSubmit = async (values: UserProfileFormProps, resetForm: any) => {
+  const handleSubmit = async (values: UserProfileFormProps, resetForm: () => void) => {
     try {
       setIsLoading(true);
       const formData = new FormData();
@@ -293,7 +435,9 @@ const ProfileRegistrationForm = ({
           bankName: values?.bankName,
           bankAccountNumber: values?.bankAccountNumber,
           ifscCode: values?.ifscCode,
-          branchName: values?.branchName,
+          bankHolderName: values.bankHolderName,
+          isVerified: values.isBankVerified
+          // branchName: values?.branchName,
         },
         aadhaarNumber: values?.aadhaarNumber,
         panNumber: values?.panNumber,
@@ -308,48 +452,29 @@ const ProfileRegistrationForm = ({
         aadhaarPanVerified: values.aadhaarPanVerified,
       };
 
+      if (openedAs === "RT") {
+        data.longitude = values.longitude;
+        data.latitude = values.latitude;
+      }
+
       formData.append("data", JSON.stringify(data));
 
-      if (openedAs === "SD") {
-        const response = await Create_Super_Distributor(formData);
-        if (response?.status === 201 || response?.data?.statusCode === "201") {
-          showSuccessNotification(response?.data?.message);
-          handleClose();
-          resetForm();
-        } else {
-          showErrorNotification(response?.data?.message || "Unable to create");
-        }
-      } else if (openedAs === "PT") {
-        const response = await Create_Partner(formData);
-        if (response?.status === 201 || response?.data?.statusCode === "201") {
-          showSuccessNotification(response?.data?.message);
-          handleClose();
-          resetForm();
-        } else {
-          showErrorNotification(response?.data?.message || "Unable to create");
-        }
-      } else if (openedAs === "DT") {
-        const response = await Create_Distributor(formData);
-        if (response?.status === 201 || response?.data?.statusCode === "201") {
-          showSuccessNotification(response?.data?.message);
-          handleClose();
-          resetForm();
-        } else {
-          showErrorNotification(response?.data?.message || "Unable to create");
-        }
-      } else if (openedAs === "RT") {
-        const response = await Create_Retailer(formData);
-        if (response?.status === 201 || response?.data?.statusCode === "201") {
-          showSuccessNotification(response?.data?.message);
-          handleClose();
-          resetForm();
-        } else {
-          showErrorNotification(response?.data?.message || "Unable to create");
-        }
+      let response;
+
+      if (openedAs === "SD") response = await Create_Super_Distributor(formData);
+      else if (openedAs === "PT") response = await Create_Partner(formData);
+      else if (openedAs === "DT") response = await Create_Distributor(formData);
+      else if (openedAs === "RT") response = await Create_Retailer(formData);
+
+      if (response && ["201", "200", 201, 200].includes(response?.data?.statusCode)) {
+        showSuccessNotification(response?.data?.message);
+        handleClose();
+        resetForm();
+      } else {
+        showErrorNotification(response?.data?.message);
       }
     } catch (error: any) {
       await handleCustomError(error);
-      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
@@ -397,11 +522,11 @@ const ProfileRegistrationForm = ({
         <Formik<UserProfileFormProps>
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-          enableReinitialize={true}
+          onSubmit={(values, formikHelpers) => handleSubmit(values, formikHelpers.resetForm)}
+          enableReinitialize
           innerRef={formikRef}
-          validateOnBlur={false}
-          validateOnChange={false}
+          validateOnBlur={true}
+          validateOnChange={true}
         >
           {(formik) => {
             const {
@@ -413,32 +538,43 @@ const ProfileRegistrationForm = ({
               values,
             } = formik;
 
-            useEffect(() => {
-              const linkAadhaarPan = async () => {
-                if (
-                  verificationState.aadhaarAttempted &&
-                  verificationState.panAttempted &&
-                  !hasLinked.current
-                ) {
-                  hasLinked.current = true;
-                  const success = await verifyAdhaarPanLink(
-                    Number(values.aadhaarNumber)
-                  );
-                  setVerificationState({
-                    ...verificationState,
-                    linkingDone: true,
-                  });
-                  if (success) {
-                    formik.setFieldValue("aadhaarPanVerified", true, false);
-                  }
-                }
-              };
+            const showVerifyButton =
+              formik?.values?.aadhaarNumber?.length === 12 &&
+              formik?.values?.isAadhaarVerified !== true;
 
-              linkAadhaarPan();
-            }, [
-              verificationState.aadhaarAttempted,
-              verificationState.panAttempted,
-            ]);
+            const showVerifiedMess = formik?.values?.aadhaarNumber?.length === 12 && formik?.values?.isAadhaarVerified;
+
+            const showVerifiedLinkedMess = showVerifiedMess && formik.values?.aadhaarPanVerified
+
+            const showPanVerifyButton =
+              formik?.values?.panNumber?.length === 10 &&
+              formik?.values?.panVerified !== true;
+
+            const showPanVerifiedMess = formik?.values?.panNumber?.length === 10 && formik?.values?.panVerified;
+
+            useEffect(() => {
+              if (
+                formik.values.isAadhaarVerified &&
+                formik.values.lastVerifiedAadhaar &&
+                formik.values.aadhaarNumber !== formik.values.lastVerifiedAadhaar
+              ) {
+                formik.setFieldValue("isAadhaarVerified", false);
+                formik.setFieldValue("aadhaarPanVerified", false);
+                formik.setFieldValue("lastVerifiedAadhaar", null);
+              }
+            }, [formik.values.aadhaarNumber]);
+
+            useEffect(() => {
+              if (
+                formik.values.panVerified &&
+                formik.values.lastVerifiedPan &&
+                formik.values.panNumber !== formik.values.lastVerifiedPan
+              ) {
+                formik.setFieldValue("panVerified", false);
+                formik.setFieldValue("lastVerifiedPan", null);
+              }
+            }, [formik.values.panNumber]);
+
 
             return (
               <>
@@ -451,7 +587,7 @@ const ProfileRegistrationForm = ({
                     },
                     stepIcon: {
                       color: theme.palette.background.paper,
-                      backgroundColor: theme.palette.red.dark,
+                      backgroundColor: theme.palette.primaryExtra.accent,
                       width: 35,
                       height: 35,
                     },
@@ -460,7 +596,6 @@ const ProfileRegistrationForm = ({
                   onStepClick={setActive}
                   allowNextStepsSelect={false}
                   size="sm"
-                  color="oklch(63.7% 0.237 25.331)"
                   iconSize={25}
                 >
                   <Stepper.Step
@@ -485,12 +620,15 @@ const ProfileRegistrationForm = ({
                             touched.title && errors.title ? errors.title : ""
                           }
                           className="w-max"
+                          clearable
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
+                          allowNumber={false}
+                          allowSpecialChar={false}
                           label={"Name"}
-                          placeholder={"Enter"}
+                          placeholder={"Enter Name"}
                           value={values.name}
                           onChange={handleChange("name")}
                           error={touched.name && errors.name ? errors.name : ""}
@@ -499,21 +637,34 @@ const ProfileRegistrationForm = ({
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
-                        <CustomDateComponent
-                          label="Date of Birth"
+                        <CustomDatePicker
+                          name="dob"
                           value={values.dob}
                           onChange={(value) => setFieldValue("dob", value)}
                           error={touched.dob && errors.dob ? errors.dob : ""}
-                          type="default"
-                          dateFormat="YYYY-MM-DD"
-                          withAsterisk
-                          className="w-max"
+                          placeholder="Select DOB"
+                          valueFormat="YYYY-MM-DD"
+                          radius={6}
+                          size="lg"
+                          rightSection={<CalendarIcon />}
+                          required
+                          maxDate={new Date()}
+                          styles={{
+                            input: {
+                              height: "55px", // exact height
+                              fontSize: "16px",
+                              fontWeight: "600"
+                            },
+                          }}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Mobile Number"}
-                          placeholder={"Enter"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
+                          placeholder={"Enter Mobile Number"}
                           value={values.mobileNumber}
                           onChange={handleChange("mobileNumber")}
                           error={
@@ -534,53 +685,24 @@ const ProfileRegistrationForm = ({
                           placeholder={"Enter"}
                           value={values.emailId}
                           onChange={handleChange("emailId")}
-                          // rightSection={
-                          //   <>
-                          //     {isEmailVerified ? (
-                          //       <TextComponent
-                          //         fontSize={14}
-                          //         fontWeight={700}
-                          //         color={theme.palette.greenColor.DEFAULT}
-                          //       >
-                          //         Verified
-                          //       </TextComponent>
-                          //     ) : (
-                          //       <>
-                          //         {values.emailId &&
-                          //           EmailRegex.test(values.emailId) && (
-                          //             <UnstyledButton
-                          //               onClick={() =>
-                          //                 EmailVerificationRequest(
-                          //                   values.emailId
-                          //                 )
-                          //               }
-                          //             >
-                          //               <TextComponent
-                          //                 fontSize={14}
-                          //                 fontWeight={500}
-                          //                 color={theme.palette.red.dark}
-                          //               >
-                          //                 Verify
-                          //               </TextComponent>
-                          //             </UnstyledButton>
-                          //           )}
-                          //       </>
-                          //     )}
-                          //   </>
-                          // }
+                          allowSpace={false}
+                          allowSpecialChar={false}
+                          allowedChars="@._-"
                           error={
                             touched.emailId && errors.emailId
                               ? errors.emailId
                               : ""
                           }
                           withAsterisk
-                          type="email"
                           className="w-max"
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Adhaar Number"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"XXXX-XXXX-XXXX-XXXX"}
                           value={values.aadhaarNumber}
                           onChange={handleChange("aadhaarNumber")}
@@ -589,54 +711,57 @@ const ProfileRegistrationForm = ({
                               ? errors.aadhaarNumber
                               : ""
                           }
+                          rightSectionWidth={aadhaarVerifying ? 40 : 70}
                           rightSection={
-                            <>
-                              {values.aadhaarNumber &&
-                              values.aadhaarNumber.length === 12 &&
-                              values.isAadhaarVerified ? (
-                                <TextComponent
-                                  fontSize={14}
-                                  fontWeight={700}
-                                  color={theme.palette.greenColor.DEFAULT}
-                                >
-                                  Verified
-                                </TextComponent>
+                            showVerifiedMess ? (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  color: "#28a745",
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                ✅ Verified{showVerifiedLinkedMess && " & Linked"}
+                              </div>
+                            ) : showVerifyButton ? (
+                              aadhaarVerifying ? (
+                                <div style={{ display: "flex", alignItems: "center", height: "24px" }}>
+                                  <Loader size="xs" color="#007B55" />
+                                </div>
                               ) : (
-                                <>
-                                  {values.aadhaarNumber &&
-                                    values.aadhaarNumber.length === 12 && (
-                                      <UnstyledButton
-                                        onClick={async (e) => {
-                                          e.preventDefault();
-                                          const success = await verifyAadhaar(
-                                            values.aadhaarNumber
-                                          );
-                                          setVerificationState({
-                                            ...verificationState,
-                                            aadhaarAttempted: true,
-                                          });
-                                          if (success) {
-                                            formik.setFieldValue(
-                                              "isAadhaarVerified",
-                                              true,
-                                              false
-                                            );
-                                          }
-                                        }}
-                                      >
-                                        <TextComponent
-                                          fontSize={14}
-                                          fontWeight={500}
-                                          color={theme.palette.red.dark}
-                                        >
-                                          Verify
-                                        </TextComponent>
-                                      </UnstyledButton>
-                                    )}
-                                </>
-                              )}
-                            </>
-                          }
+                                <NewButtonComponent
+                                  fw="500"
+                                  style={{
+                                    marginRight: "0px",
+                                    padding: "0px 8px",
+                                    height: "24px",
+                                    cursor: "pointer",
+                                    fontSize: "12px",
+                                  }}
+                                  bgColor="#007B55"
+                                  textColor="white"
+                                  fontSize="12"
+                                  size="xs"
+                                  onClick={async () => {
+                                    formik.setFieldValue("lastVerifiedAadhaar", formik.values.aadhaarNumber);
+                                    setAadhaarVerifying(true); // ✅ Start spinner
+                                    await handleAadhaarVerify(formik);
+                                    setAadhaarVerifying(false); // ✅ Stop spinner
+                                  }}
+                                >
+                                  {aadhaarVerifying ? (
+                                    <>
+                                      <span>Verifying</span>
+                                      <span className="spinner" />
+                                    </>
+                                  ) : (
+                                    "Verify"
+                                  )}
+                                </NewButtonComponent>
+                              )
+                            ) : null}
                           withAsterisk
                           maxLength={12}
                           minLength={12}
@@ -651,54 +776,52 @@ const ProfileRegistrationForm = ({
                           onChange={handleChange("panNumber")}
                           maxLength={10}
                           minLength={10}
+                          capitalize
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           rightSection={
-                            <>
-                              {values.panNumber &&
-                              values.panNumber.length === 10 &&
-                              values.panVerified ? (
-                                <TextComponent
-                                  fontSize={14}
-                                  fontWeight={700}
-                                  color={theme.palette.greenColor.DEFAULT}
-                                >
-                                  Verified
-                                </TextComponent>
+                            showPanVerifiedMess ? (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  color: "#28a745",
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                ✅ Verified
+                              </div>
+                            ) : showPanVerifyButton ? (
+                              panVerifying ? (
+                                <div style={{ display: "flex", alignItems: "center", height: "24px" }}>
+                                  <Loader size="xs" color="#007B55" />
+                                </div>
                               ) : (
-                                <>
-                                  {values.panNumber &&
-                                    values.panNumber.length === 10 && (
-                                      <UnstyledButton
-                                        onClick={async (e) => {
-                                          e.preventDefault();
-                                          const success = await verifyPan(
-                                            values.panNumber
-                                          );
-                                          setVerificationState({
-                                            ...verificationState,
-                                            panAttempted: true,
-                                          });
-                                          if (success) {
-                                            formik.setFieldValue(
-                                              "panVerified",
-                                              true,
-                                              false
-                                            );
-                                          }
-                                        }}
-                                      >
-                                        <TextComponent
-                                          fontSize={14}
-                                          fontWeight={500}
-                                          color={theme.palette.red.dark}
-                                        >
-                                          Verify
-                                        </TextComponent>
-                                      </UnstyledButton>
-                                    )}
-                                </>
-                              )}
-                            </>
-                          }
+                                <NewButtonComponent
+                                  fw="500"
+                                  style={{
+                                    marginRight: "0px",
+                                    padding: "0px 8px",
+                                    height: "24px",
+                                    cursor: "pointer",
+                                    fontSize: "12px",
+                                  }}
+                                  bgColor="#007B55"
+                                  textColor="white"
+                                  fontSize="12"
+                                  size="xs"
+                                  onClick={async () => {
+                                    formik.setFieldValue("lastVerifiedPan", formik.values.panNumber);
+                                    setPanVerifying(true);
+                                    await handlePanVerify(formik);
+                                    setPanVerifying(false);
+                                  }}
+                                >
+                                  {panVerifying ? "Verifying..." : "Verify"}
+                                </NewButtonComponent>
+                              )
+                            ) : null}
                           error={
                             touched.panNumber && errors.panNumber
                               ? errors.panNumber
@@ -721,6 +844,7 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          maxLength={40}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -736,6 +860,7 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          maxLength={40}
                         />
                       </div>
                     </div>
@@ -760,6 +885,8 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          allowSpecialChar={false}       // allow only certain symbols
+                          allowedChars={",./-#"}        // whitelist these symbols
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -771,6 +898,9 @@ const ProfileRegistrationForm = ({
                           error={touched.city && errors.city ? errors.city : ""}
                           withAsterisk
                           className="w-max"
+                          allowNumber={false}        // no digits
+                          allowSpecialChar={false}    // allow only specified symbols
+                          allowedChars={`-'`}        // allow hyphen and apostrophe
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -784,11 +914,17 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          allowNumber={false}
+                          allowSpecialChar={false}
+                          allowedChars={`-'`}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Zip Code"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.addessZipCode}
                           onChange={handleChange("addessZipCode")}
@@ -824,6 +960,8 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          allowedChars={`-'`}    // allow hyphen and apostrophe
+                          allowSpecialChar={false}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -839,6 +977,9 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          allowedChars={`.,-/'`}   // allow common address symbols
+                          allowSpecialChar={false}
+
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -854,6 +995,8 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          allowedChars={`-'`}
+                          allowSpecialChar={false}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -869,11 +1012,16 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          allowedChars={`-'`}
+                          allowSpecialChar={false}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Outlet Zip Code"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.outletZipCode}
                           onChange={handleChange("outletZipCode")}
@@ -883,7 +1031,7 @@ const ProfileRegistrationForm = ({
                               : ""
                           }
                           withAsterisk
-                          type="number"
+                          // type="number"
                           maxLength={6}
                           className="w-max"
                         />
@@ -911,21 +1059,47 @@ const ProfileRegistrationForm = ({
                               : ""
                           }
                           withAsterisk
+                          maxLength={50}
+                          allowSpecialChar={false}
+                          allowNumber={false}
+                          className="w-max"
+                        />
+                      </div>
+                      <div className="w-full sm:w-[calc(50%-12px)] ">
+                        <TextInputComponent
+                          label={"Bank Hodler Name"}
+                          placeholder={"Enter Holder Name"}
+                          value={values.bankHolderName}
+                          onChange={handleChange("bankHolderName")}
+                          error={
+                            touched.bankHolderName && errors.bankHolderName
+                              ? errors.bankHolderName
+                              : ""
+                          }
+                          withAsterisk
+                          maxLength={50}
+                          allowSpecialChar={false}
+                          allowNumber={false}
                           className="w-max"
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
                           label={"Bank Account Number"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
                           placeholder={"Enter"}
                           value={values.bankAccountNumber}
                           onChange={handleChange("bankAccountNumber")}
                           error={
                             touched.bankAccountNumber &&
-                            errors.bankAccountNumber
+                              errors.bankAccountNumber
                               ? errors.bankAccountNumber
                               : ""
                           }
+                          maxLength={20}
+                          minLength={9}
                           withAsterisk
                           className="w-max"
                         />
@@ -943,6 +1117,10 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
+                          capitalize
+                          allowSpecialChar={false}     // block special characters
+                          allowSpace={false}
+                          maxLength={15}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -969,189 +1147,104 @@ const ProfileRegistrationForm = ({
                     }
                   >
                     <div className="mt-5 flex w-full flex-wrap items-start justify-start gap-4">
+
                       <div className="flex w-full items-center justify-between gap-8">
-                        <div className="w-full sm:w-[calc(50%-12px)] ">
-                          <FileInputComponent
-                            accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
-                            label={"Aadhar Card Front"}
-                            onChange={(file) => {
-                              setFieldValue("aadhaarCardFrontImage", file);
-                            }}
-                            placeholder={"Choose"}
-                            value={values?.aadhaarCardFrontImage || null}
+                        <div className="w-full sm:w-[calc(33%-12px)] ">
+                          <FormikFileInput
+                            label="Aadhaar Card Front"
+                            name="aadhaarCardFrontImage"
+                            placeholder="Choose"
+                            accept="image/png,image/jpeg, image/jpg,"
                             withAsterisk
-                            error={
-                              touched.aadhaarCardFrontImage &&
-                              errors.aadhaarCardFrontImage
-                                ? errors.aadhaarCardFrontImage
-                                : ""
-                            }
+                            showPreviewIcon={true}
                           />
                         </div>
-
-                        {values?.aadhaarCardFrontImage && (
-                          <div className="mt-2 flex w-32 items-end justify-end gap-8">
-                            <ButtonComponent
-                              title="Preview"
-                              variant="outline"
-                              onClick={() => {
-                                setShowImagePreview(true);
-                                setImage(values?.aadhaarCardFrontImage || null);
-                              }}
-                              radius={15}
-                            />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex w-full items-center justify-between gap-8">
-                        <div className="w-full sm:w-[calc(50%-12px)] ">
-                          <FileInputComponent
-                            accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
+                        <div className="w-full sm:w-[calc(33%-12px)] ">
+                          <FormikFileInput
+                            name="aadhaarCardBackImage"
+                            accept="image/png,image/jpeg, image/jpg,"
                             label={"Aadhar Card Back"}
-                            onChange={(file) => {
-                              setFieldValue("aadhaarCardBackImage", file);
-                            }}
+                            // onChange={(file) => {
+                            //   setFieldValue("aadhaarCardBackImage", file);
+                            // }}
                             placeholder={"Choose"}
-                            value={values?.aadhaarCardBackImage || null}
+                            // value={values?.aadhaarCardBackImage || null}
                             withAsterisk
-                            error={
-                              touched.aadhaarCardBackImage &&
-                              errors.aadhaarCardBackImage
-                                ? errors.aadhaarCardBackImage
-                                : ""
-                            }
+                          // error={
+                          //   touched.aadhaarCardBackImage &&
+                          //     errors.aadhaarCardBackImage
+                          //     ? errors.aadhaarCardBackImage
+                          //     : ""
+                          // }
                           />
                         </div>
-
-                        {values?.aadhaarCardBackImage && (
-                          <div className="mt-2 flex w-32 items-end justify-end gap-8">
-                            <ButtonComponent
-                              title="Preview"
-                              variant="outline"
-                              onClick={() => {
-                                setShowImagePreview(true);
-                                setImage(values?.aadhaarCardBackImage || null);
-                              }}
-                              radius={15}
-                            />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex w-full items-center justify-between gap-8">
-                        <div className="w-full sm:w-[calc(50%-12px)] ">
-                          <FileInputComponent
-                            accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
+                        <div className="w-full sm:w-[calc(33%-12px)] ">
+                          <FormikFileInput
+                            name="panCardImage"
+                            accept="image/png,image/jpeg, image/jpg,"
                             label={"Pan Card"}
-                            onChange={(file) => {
-                              setFieldValue("panCardImage", file);
-                            }}
+                            // onChange={(file) => {
+                            //   setFieldValue("panCardImage", file);
+                            // }}
                             placeholder={"Choose"}
-                            value={values?.panCardImage || null}
+                            // value={values?.panCardImage || null}
                             withAsterisk
-                            error={
-                              touched.panCardImage && errors.panCardImage
-                                ? errors.panCardImage
-                                : ""
-                            }
+                          // error={
+                          //   touched.panCardImage && errors.panCardImage
+                          //     ? errors.panCardImage
+                          //     : ""
+                          // }
                           />
                         </div>
-
-                        {values?.panCardImage && (
-                          <div className="mt-2 flex w-32 items-end justify-end gap-8">
-                            <ButtonComponent
-                              title="Preview"
-                              variant="outline"
-                              onClick={() => {
-                                setShowImagePreview(true);
-                                setImage(values?.panCardImage || null);
-                              }}
-                              radius={15}
-                            />
-                          </div>
-                        )}
                       </div>
+
                       <div className="flex w-full items-center justify-between gap-8">
                         <div className="w-full sm:w-[calc(50%-12px)] ">
-                          <FileInputComponent
-                            accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
+                          <FormikFileInput
+                            name="shopImage"
+                            accept="image/png,image/jpeg, image/jpg,"
                             label={"Shop Image"}
-                            onChange={(file) => {
-                              setFieldValue("shopImage", file);
-                            }}
                             placeholder={"Choose"}
-                            value={values?.shopImage || null}
                             withAsterisk
-                            error={
-                              touched.shopImage && errors.shopImage
-                                ? errors.shopImage
-                                : ""
-                            }
                           />
                         </div>
-
-                        {values?.shopImage && (
-                          <div className="mt-2 flex w-32 items-end justify-end gap-8">
-                            <ButtonComponent
-                              title="Preview"
-                              variant="outline"
-                              onClick={() => {
-                                setShowImagePreview(true);
-                                setImage(values?.shopImage || null);
-                              }}
-                              radius={15}
-                            />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex w-full items-center justify-between gap-8">
                         <div className="w-full sm:w-[calc(50%-12px)] ">
-                          <FileInputComponent
-                            accept="image/png,image/jpeg, image/jpg,.pdf,application/pdf"
+                          <FormikFileInput
+                            name="businessProofImage"
+                            accept="image/png,image/jpeg, image/jpg,"
                             label={"Business Proof Image"}
-                            onChange={(file) => {
-                              setFieldValue("businessProofImage", file);
-                            }}
                             placeholder={"Choose"}
-                            value={values?.businessProofImage || null}
                             withAsterisk
-                            error={
-                              touched.businessProofImage &&
-                              errors.businessProofImage
-                                ? errors.businessProofImage
-                                : ""
-                            }
                           />
                         </div>
-
-                        {values?.businessProofImage && (
-                          <div className="mt-2 flex w-32 items-end justify-end gap-8">
-                            <ButtonComponent
-                              title="Preview"
-                              variant="outline"
-                              onClick={() => {
-                                setShowImagePreview(true);
-                                setImage(values?.businessProofImage || null);
-                              }}
-                              radius={15}
-                            />
-                          </div>
-                        )}
                       </div>
 
-                      {showImagePreview && isimage && (
-                        <div
-                          className="absolute inset-0 z-50 flex h-lvh items-center justify-center bg-black bg-opacity-60"
-                          onClick={() => setShowImagePreview(false)}
-                        >
-                          <img
-                            src={
-                              typeof isimage === "string"
-                                ? isimage
-                                : URL.createObjectURL(isimage)
-                            }
-                            alt=" Preview"
-                            className="max-h-[100vh] max-w-full object-contain"
-                          />
+                      {openedAs === "RT" && (
+                        <div className="flex w-full items-center justify-between gap-8">
+                          <div className="w-full sm:w-[calc(50%-12px)] ">
+                            <FormikTextInputComponent
+                              name="longitude"
+                              label="Longitude"
+                              placeholder="Enter longitude"
+                              allowCharacter={false}
+                              allowSpace={false}
+                              fullWidth
+                              withAsterisk
+                              maxLength={11}
+                            />
+                          </div>
+                          <div className="w-full sm:w-[calc(50%-12px)] ">
+                            <FormikTextInputComponent
+                              name="latitude"
+                              label={"Latitude"}
+                              placeholder="Enter latitude"
+                              allowCharacter={false}
+                              allowSpace={false}
+                              fullWidth
+                              withAsterisk
+                              maxLength={11}
+                            />
+                          </div>
                         </div>
                       )}
                     </div>
@@ -1179,7 +1272,7 @@ const ProfileRegistrationForm = ({
                   )}
                   <div className="flex w-max self-center">
                     <ButtonComponent
-                      title="Next"
+                      title={`${active === 4 ? "Submit" : "Next"}`}
                       variant="filled"
                       onClick={() => {
                         nextStep(formik);

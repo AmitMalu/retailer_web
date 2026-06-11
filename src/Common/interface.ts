@@ -1,4 +1,5 @@
 import { TextInputProps } from "@mantine/core";
+import { DatesRangeValue, DateValue } from "@mantine/dates";
 import { ReactNode, ChangeEvent, MouseEventHandler } from "react";
 
 export type LayoutType = "default" | "compact" | "wide";
@@ -38,11 +39,18 @@ export type ThemeColors = {
   red: string;
   redLight: string;
   redDark: string;
+  grayMain: string;
+  grayBasic: string;
   grayDefault: string;
   grayLight: string;
   grayDark: string;
   greenDefault: string;
   greenLight: string;
+  primaryHover: string;
+  primaryAccent: string;
+  primaryHighlight: string;
+  primaryDark: string;
+  primaryLight: string;
 };
 
 export type SettingsState = {
@@ -125,7 +133,9 @@ export type ApiState = {
   responses: { [key: string]: any };
 };
 
-export type UserRole = "RT" | "DT" | "SD" | "WL" | "PT" | "RA";
+export type UserRole = "RT" | "DT" | "SD" | "WL" | "PT" | "RU";
+
+type WalletType = "PREPAID" | "POSTPAID" | "";
 
 export type ProtectedRouteProps = {
   children: JSX.Element;
@@ -149,7 +159,7 @@ export const SET_CURRENT_ROUTE = "route/SET_CURRENT_ROUTE";
 
 export type SaveApiResponseAction = {
   type: typeof SAVE_API_RESPONSE;
-  payload: { key: string; data: string | object };
+  payload: { key: string; data: string | object | boolean };
 };
 
 export type ClearApiResponseAction = {
@@ -171,6 +181,7 @@ export type ApiActionTypes =
   | ClearAllResponsesAction
   | SetCurrentRouteAction;
 
+
 export type CustomTextInputProps = Omit<
   TextInputProps,
   "error" | "onChange" | "onBlur"
@@ -184,7 +195,7 @@ export type CustomTextInputProps = Omit<
   required?: boolean;
   type?: "text" | "password" | "email" | "number" | "tel" | "url";
   leftSection?: React.ReactElement;
-  rightSection?: React.ReactElement;
+  rightSection?: React.ReactElement | null;
   maxLength?: number;
   minLength?: number;
   pattern?: string;
@@ -197,6 +208,15 @@ export type CustomTextInputProps = Omit<
   variant?: "default" | "filled" | "unstyled";
   withAsterisk?: boolean | false;
   isAuth?: boolean;
+  allowNumber?: boolean;
+  allowDecimal?: boolean;
+  decimalPlaces?: number;
+  allowCharacter?: boolean;
+  allowSpecialChar?: boolean;
+  allowSpace?: boolean;
+  allowedChars?: string;
+  capitalize?: boolean;
+  size?: "medium" | "small";
 };
 
 export type CustomTextProps = {
@@ -214,6 +234,7 @@ export type CustomTextProps = {
 };
 
 export type ButtonComponentProps = {
+  type?: "submit" | "button";
   title: string;
   onClick?: () => void;
   variant?: "filled" | "outline" | "light" | "gradient";
@@ -222,13 +243,15 @@ export type ButtonComponentProps = {
   rightIcon?: React.ReactNode;
   disabled?: boolean;
   loading?: boolean;
-  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "small" | "medium" | "large";
   fullWidth?: boolean;
   radius?: number;
   color?: string;
   fontSize?: number;
   isAuth?: boolean;
   width?: string | number;
+  height?: string | number;
+  buttonRef?: React.Ref<any>;
 };
 
 export type CustomDatePickerProps = {
@@ -267,6 +290,7 @@ export interface CustomDropdownProps {
   error?: string;
   disabled?: boolean;
   clearable?: boolean;
+  allowDeselect?: boolean;
   withAsterisk?: boolean;
   multiple?: boolean;
   className?: string;
@@ -296,6 +320,12 @@ export type DynamicModalProps = {
   onClick?: () => void;
 };
 
+export type subProductObjType = {
+  schemeCode: string;
+  subProductName: string;
+  subProductId: string;
+};
+
 export type TimeComponentProps = {
   value?: string;
   onChange?: (value: string) => void;
@@ -306,18 +336,51 @@ export type TimeComponentProps = {
   disabled?: boolean;
 };
 
+export type GenericTableHeader<T> = {
+  key: keyof T;
+  label?: string;
+  filterType?:
+  | "text"
+  | "number"
+  | "amount"
+  | "boolean"
+  | "date"
+  | "coordinate"
+  | "time"
+  | "none";
+  filterOptions?: { label: string; value: any }[];
+  searchable?: boolean; // optionally override with this
+  renderType?: "link" | "custom" | "statusBadge"; //
+  copyable?: boolean;
+};
+
+export type FetchListParams = {
+  key: string;
+  url: string;
+  page?: number;
+  size?: number;
+  filter?: Record<string, any> | null;
+  method?: "GET" | "POST";
+  payload?: any;
+  skipPagination?: Boolean;
+  returnFullData?: Boolean;
+  sendPaginationIn?: "params" | "body";
+};
+
 export type TableColumn = {
   key: string;
   label: string | JSX.Element;
   render?: (
     value: any,
     index: number,
-    row: Record<string, any>
+    row: Record<string, any>,
   ) => React.ReactNode;
   searchKey?: string;
   sortable?: boolean;
   searchable?: boolean;
-  type?: string;
+  disableSearch?: boolean;
+  type?: "text" | "date" | "time" | "dropdown" | "number" | "boolean";
+  options?: { value: string; label: string }[];
   align?: "left" | "center" | "right";
 };
 
@@ -329,12 +392,20 @@ export type TableProps = {
   onSelectRow?: (row: Record<string, any>) => void;
   onCurrentPageData?: (data: Record<string, any>[]) => void;
   onSearch?: (columnKey: string, value: string) => void;
+  searchTrigger?: "change" | "enter";
   showSearch?: boolean;
   keyField?: string;
   page?: number;
   size?: number;
   onPageChange?: (size: number) => void;
   onPageSizeChange?: (size: number) => void;
+  serverSide?: boolean;
+  totalRecords?: number; // required only when serverSide = true
+  enablePagination?: boolean;
+  onAddRow?: () => void; // If defined → show Add Row; if undefined → hide
+  addRowLabel?: string; // Optional text for Add Row
+  addRowIcon?: React.ReactNode; // Optional icon for Add Row
+  showNoDataFound?: boolean; // Show "No data found" when data is empty
 };
 
 export type CustomTextareaProps = {
@@ -416,10 +487,13 @@ export type ResendOtpRequestProps = {
 };
 
 export type ProductCardProps = {
-  image: React.ReactNode;
-  title: string;
-  fill: boolean;
-  onClick: () => void;
+  image?: React.ReactNode;
+  title?: string;
+  fill?: boolean;
+  onClick?: () => void;
+  size?: number | { base: number; md?: number; lg?: number };
+  disabled?: boolean;
+  placeholder?: boolean;
 };
 
 export type FundRequestProps = {
@@ -429,11 +503,12 @@ export type FundRequestProps = {
   bankAccountNumber: string;
   amount: string;
   confirmAmount: string;
-  depositDate: string;
+  depositDate: DateValue;
   narration: string;
   depositSlip: File | string | null;
   bankAccountHolderName: string;
   paymentMode: string;
+  bankTransferTo: string;
 };
 
 export type FundTransferProps = {
@@ -447,29 +522,48 @@ export type FundTransferProps = {
 };
 
 export type WalletToBankProps = {
-  requesterHierarchyId: string;
-  walletBalance?: string;
+  walletType: string;
+  retailerId: string;
   selectBank: string;
-  TransactionType: string;
-  amount?: string;
-  confirmAmount?: string;
+  // accountNumber: string;
+  // ifscCode: string;
+  amount: string;
+  confirmAmount: string;
+  // beneficiaryName: string;
+  paymentMode: string;
+  // subProductId: string;
 };
 
-export type FundReversalProps = {
+export type WalletToBankRequest = {
+  retailerId: string;
+  accountNumber: string;
+  ifscCode: string;
+  amount: string;
+  beneficiaryName: string;
+  paymentMode: string;
+  subProductId: string;
+};
+
+export type FundReversalFormType = {
   parentHierarchyId: string;
   childHierarchyId: string;
   walletType: string;
   reversalAmount: string;
   confirmAmount?: string;
-  narration?: string;
+  remark?: string;
+  otp?: string;
+  isResendOtp?: boolean;
+  fundReversalRequestId?: string;
 };
 
 export type WalletToWalletProps = {
   hierarchyId: string;
   transferAmount: string;
   confirmAmount: string;
-  walletTypeFrom: string;
-  walletTypeTo: string;
+  walletTypeFrom: WalletType;
+  walletTypeTo: WalletType;
+  subProductId?: string;
+  schemeCode?: string;
 };
 
 export type ChildMemberListProps = Record<string, any>;
@@ -481,7 +575,12 @@ export type UserProfileFormProps = {
   parentAccount: string;
   name: string;
   aadhaarNumber: string;
+  lastVerifiedAadhaar: string | null;
+  isAadhaarVerified: boolean;
   panNumber: string;
+  lastVerifiedPan: string | null;
+  panVerified: boolean;
+  aadhaarPanVerified: boolean;
   shopNumber: string;
   businessNumber: string;
   dob: Date | null;
@@ -497,19 +596,20 @@ export type UserProfileFormProps = {
   bankName: string;
   bankAccountNumber: string;
   ifscCode: string;
+  bankHolderName: string;
+  isBankVerified: boolean;
   branchName: string;
   createdBy: string;
   createdByIPAddress: string;
+  longitude: number | null;
+  latitude: number | null;
   aadhaarCardFrontImage: File | null;
   aadhaarCardBackImage: File | null;
   panCardImage: File | null;
   shopImage: File | null;
   businessProofImage: File | null;
-  isAadhaarVerified: boolean;
   emailVerified: boolean;
   gstNumberVerified: boolean;
-  panVerified: boolean;
-  aadhaarPanVerified: boolean;
 };
 
 export type PendingPartnerActivationData = Record<string, any>;
@@ -519,6 +619,34 @@ export type PartnerRegistrationModalProps = {
   onClose: () => void;
   rowData?: PendingPartnerActivationData;
   openedAs?: string;
+  productId?: string;
+  subProductId?: string;
+};
+
+export type AddBankFormProps = {
+  opened: boolean;
+  onClose: () => void;
+};
+
+export type AddBankFormType = {
+  hierarchyId: string;
+  bankName: string;
+  isVerified: boolean;
+  bankHolderName: string;
+  bankAccountNumber: string;
+  ifscCode: string;
+  createdBy: string;
+};
+
+export type EditBankFormType = {
+  id: string;
+  hierarchyId: string;
+  bankName: string;
+  isVerified: boolean;
+  bankHolderName: string;
+  bankAccountNumber: string;
+  ifscCode: string;
+  createdBy: string;
 };
 
 export type ViewUserProps = {
@@ -543,6 +671,8 @@ export type ColumsSelectionModalProps = {
 
 export type ViewUserAPIProps = {
   search?: string;
+  page?: string;
+  size?: string;
 };
 
 export type TicketingSystemProps = {
@@ -561,21 +691,42 @@ export type UserProfileData = Record<string, any>;
 export type CommissionData = Record<string, any>;
 
 export type CommissionAndChargesParams = {
-  fromDate: Date | string | null;
-  toDate: Date | string | null;
+  // fromDate: Date | string | null;
+  // toDate: Date | string | null;
+  dateRange: DatesRangeValue;
+  hierarchyType: string;
   hierarchyId: string;
+  productId: string;
   walletType: string;
-  subProductName: string;
   reportType: string;
+  [key: string]: any;
+};
+
+export interface CommissionAndChargesRequest {
+  fromDate: string | null;
+  toDate: string | null;
+  hierarchyType: string;
+  hierarchyId: any;
+  walletType: string;
+  productId: string;
+  reportType: string;
+}
+
+export type WalletParams = {
+  hierarchyId: string;
+  dateRange: DatesRangeValue;
+  subProductName: string;
+  walletType: string;
+  status: string;
   page: number;
   size: number;
   [key: string]: any;
 };
 
-export type WalletParams = {
+export type WalletRequest = {
+  fromDate: string | null;
+  toDate: string | null;
   hierarchyId: string;
-  fromDate: Date | string | null;
-  toDate: Date | string | null;
   subProductName: string;
   walletType: string;
   status: string;
@@ -588,15 +739,104 @@ export type WalletData = Record<string, any>;
 
 export type NetworkTransactionParams = {
   loginHierarchyId: string;
-  fromDate: Date | string | null;
-  toDate: Date | string | null;
+  dateRange: DatesRangeValue;
+  partnerId: string;
+  whitelabelId: string;
+  superDistributorId: string;
+  distributorId: string;
+  retailerId: string;
+  reportType: string;
+  page: number;
+  size: number;
+  [key: string]: any;
+};
+
+export type WalletReportParams = {
+  dateRange: DatesRangeValue;
+  hierarchyType?: string;
+  hierarchyId?: string;
+  productId?: string;
+  walletType?: string;
+  status?: string;
+  [key: string]: any;
+};
+
+export type PendingTransactionParams = {
+  dateRange?: DatesRangeValue;
+  productId?: string | number;
+  subProductId?: string | number;
+  walletType?: string;
+  tranStatus?: string;
+  [key: string]: any;
+};
+
+export type TransactionReportParams = {
+  dateRange?: DatesRangeValue;
+  productId?: string | number;
+  subProductId?: string | number;
+  walletType?: string;
+  tranStatus?: string;
+  [key: string]: any;
+};
+
+export type TransactionWalletReportParams = {
+  dateRange?: DatesRangeValue;
+  productId?: string | number;
+  subProductId?: string | number;
+  walletType?: string;
+  tranStatus?: string;
+  [key: string]: any;
+};
+
+export type FundLoadingParams = {
+  dateRange: DatesRangeValue;
+  [key: string]: any;
+};
+
+export type DebitHistoryParams = {
+  dateRange: DatesRangeValue;
+  hierarchyType: string;
+  hierarchyId: string;
+  walletType: string;
+  [key: string]: any;
+};
+
+export type DownlineBalanceParams = {
+  dateRange: DatesRangeValue;
+  [key: string]: any;
+};
+
+export interface SearchTransReportTableType {
+  transactionId: string;
+  hierarchyId: string;
+  walletType: string;
+  balBefore: number;
+  amount: number;
+  balAfter: number;
+  productName: string | null;
+  narration: string | null;
+  status: string;
+  date: string;
+  time: string;
+}
+
+export interface SearchTransReportData {
+  transactionDetails: SearchTransReportTableType[];
+  walletDetails: SearchTransReportTableType[];
+}
+
+export type NetworkTransactionRequest = {
+  loginHierarchyId: string;
+  fromDate: string | null;
+  toDate: string | null;
   subProductName: string;
   partnerId: string;
   whitelabelId: string;
   superDistributorId: string;
   distributorId: string;
   retailerId: string;
-  status: string;
+  // status: string;
+  reportType: string;
   page: number;
   size: number;
   [key: string]: any;
@@ -607,6 +847,19 @@ export type NetworkTransactionData = Record<string, any>;
 export type TransactionDetailsParams = {
   transactionId: string;
   hierarchyId: string;
+};
+
+export type RaisedTicketParams = {
+  page?: number | string; // optional, 0-indexed
+  size?: number | string;
+  raisedBy?: string;
+  [key: string]: any; // additional filters
+};
+
+export type PayoutBankDetailsParams = {
+  page?: number | string; // optional, 0-indexed
+  size?: number | string;
+  [key: string]: any; // additional filters
 };
 
 export type TransactionDetailsData = Record<string, any>;
@@ -636,9 +889,10 @@ export type ValidateTransactionProps = {
 };
 export type CreateOrderProps = {
   amount: string;
-  callbackUrl: string;
+  // callbackUrl: string;
   productId: string;
   subProductId: string;
+  initiatedBy?: string;
 };
 
 export type PayoutBankDetails = Record<string, any>;
@@ -668,11 +922,27 @@ export type TwoFAFormBodyProps = {
 
 export type FindRemitterProps = {
   mobileNumber: string;
-  name?: string;
-  dob?: string;
-  page: number;
-  size: number;
+  firstName?: string;
+  lastName?: string;
+  // dob?: string;
+  aadhaarNumber?: string;
+  deviceType: string;
+  csp: boolean;
+  pidData: string;
+  pidParsed?: any; // Parsed biometric data from device
+  otp?: string;
+  referenceKey?: string; // For InstantPay flow
 };
+
+export interface RemitterModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  modalStep: "profile" | "ekyc" | "otp" | "register" | null;
+  vendorFlow: "paysprint dmt" | "instantpay dmt" | null;
+  handleRemitterKyc: (values: any) => void;
+  handleRemitterProfile?: (values: any) => void;
+  handleOtpSubmit?: (values: any) => void;
+}
 
 export type RemitterData = Record<string, any>;
 
@@ -685,11 +955,48 @@ export type EditRemitterProps = {
 };
 
 export type AddBeneficiaryFormProps = {
-  fullName: string;
-  bankName: string;
-  bankAccountNumber: string;
-  confirmBankAccountNumber: string;
+  beneMobile: string;
+  beneficiaryName: string;
+  bankId: string;
+  accountNumber: string;
+  confirmAccountNumber: string;
   ifscCode: string;
+  verified: string | undefined;
+  otp?: string;
+  // gstState: string;
+  // dob: Date | null;
+  // address: string;
+  // pincode: string;
+};
+
+export type AddBeneficiaryPayload = {
+  mobile: string;
+  benemobile: string;
+  benename: string;
+  bankid: string;
+  bankName: string;
+  accno: string;
+  ifsccode: string;
+  verified: string; // "0" or "1"
+  // gst_state: string;
+  // dob: string | null;
+  // address: string;
+  // pincode: string;
+  subProductId: string;
+};
+
+export type VerifyBeneficiaryOtpPayload = {
+  remitterMobile: string;
+  beneId: string;
+  otp: string;
+  referenceKey: string;
+};
+
+export type VerifyDeleteBeneficiaryOtpPayload = {
+  mobile: string;
+  bene_id: string;
+  otp: string;
+  referenceKey: string;
 };
 
 export type RegisterRemitterFormProps = {
@@ -717,6 +1024,12 @@ export type MposBodyProps = {
   subProductId: string;
 };
 
+export type FetchSubUserRequest = {
+  page?: number | string; // optional, 0-indexed
+  size?: number | string;
+  [key: string]: any; // additional filters
+};
+
 export type SubuserCreationProps = {
   parentAccount: string;
   name: string;
@@ -725,6 +1038,7 @@ export type SubuserCreationProps = {
   password: string;
   emailId: string;
   emailVerified: boolean;
+  lastVerifiedEmail?: string | null;
   dob: Date | string | null;
   add: {
     address: string;
@@ -747,15 +1061,27 @@ export type PayoutSaveBeneficiaryProps = {
   createdBy: string;
 };
 
+export type EditBeneficiaryBankRequest = {
+  id: string | number;
+  hierarchyId: string;
+  bankName: string;
+  bankHolderName: string;
+  bankAccountNumber: string;
+  ifscCode: string;
+  isVerified: boolean;
+  createdBy: string;
+};
+
 export type PayoutSendBeneficiaryProps = {
   retailerId: string;
   accountNumber: string;
   ifscCode: string;
-  amount: number;
+  amount: string | number | null;
   beneficiaryName: string;
   paymentMode: string;
   subProductId: string;
-  callbackurl: string;
+  schemeCode: string;
+  // callbackurl: string;
 };
 
 export type FetchBillDetailsProps = {
@@ -768,6 +1094,32 @@ export type FetchBillDetailsProps = {
   field_two?: string;
   field_three?: string;
   field_four?: string;
+};
+
+export type TransactionProps = {
+  retailerId: string;
+  subProductId: string;
+  number: string; // Biller number / Consumer Number
+  provider: string | number; // provider id
+  amount: string | number;
+  context?: string;
+  bill_due_date?: string;
+  consumerNumber: string | number; // Customer Number
+  field_one?: string;
+  field_two?: string;
+  field_three?: string;
+  field_four?: string;
+};
+
+export type BankVerificationRequest = {
+  id_number: string;
+  ifsc: string;
+  ifsc_details: boolean;
+};
+
+export type BankVerificationPayload = BankVerificationRequest & {
+  subProductId?: string;
+  schemeCode?: string;
 };
 
 export type ExtraParamContent = {
@@ -801,3 +1153,203 @@ export type FormValues = {
   consumerNumber?: string;
   [key: string]: any;
 };
+
+//////////////////////////REPORTS//////////////////////////////
+export interface NetworkTransactionTableType {
+  tranxId: string;
+  productName: string;
+  schemeName: string;
+  balBefore: string;
+  amount: string;
+  balAfter: string;
+  actionOnBalanceAmount: string;
+  status: string;
+  transactionDate: number;
+  transactionTime: number;
+  narration: string;
+}
+
+export interface PendingTransactionTableType {
+  txId: string;
+  userId: string;
+  productName: string;
+  subProductName: string;
+  vendor: string | null;
+  schemeName: string | null;
+  mobileNo: string | null;
+  amount: number;
+  txStatus: string;
+  txType: string | null;
+  remarks: string | null;
+  medium: string | null;
+  walletType: string;
+  dateOfTransaction: string; // e.g. "2025-10-14"
+  timeOfTransaction: string; // e.g. "18:14:18.35"
+  updatedAt: string | null;
+  updatedDateOfTransaction: string | null;
+  updatedTimeOfTransaction: string | null;
+}
+
+export interface TransactionReportTableType {
+  txId: string;
+  userId: string;
+  productName: string;
+  subProductName: string;
+  vendor: string | null;
+  schemeName: string | null;
+  mobileNo: string | null;
+  amount: number;
+  txStatus: string;
+  txType: string | null;
+  remarks: string | null;
+  medium: string | null;
+  walletType: "POSTPAID" | "PREPAID" | null;
+  dateOfTransaction: string; // e.g. "2025-10-14"
+  timeOfTransaction: string; // e.g. "18:14:18.35"
+  updatedAt: string | null;
+  updatedDateOfTransaction: string | null;
+  updatedTimeOfTransaction: string | null;
+}
+
+export interface TransactionWalletReportTableType {
+  txId: string;
+  userId: string;
+  productName: string;
+  subProductName: string;
+  vendor: string | null;
+  schemeName: string | null;
+  mobileNo: string | null;
+  amount: number;
+  chargeAmount: number | string | null;
+  commissionAmount: number | string | null;
+  gstAmount: number | string | null;
+  tdsAmount: number | string | null;
+  txStatus: string;
+  txType: string | null;
+  remarks: string | null;
+  medium: string | null;
+  walletType: string | null;
+  dateOfTransaction: string; // e.g. "2025-10-14"
+  timeOfTransaction: string; // e.g. "18:14:18.35"
+  updatedAt: string | null;
+  updatedDateOfTransaction: string | null;
+  updatedTimeOfTransaction: string | null;
+}
+
+export interface FundLoadingTableType {
+  id: string | number;
+  paymentMode: string;
+  bankTranId: string;
+  depositAmount: string;
+  bankAccountNumber: string;
+  depositDate: string;
+  depositImage: string | null;
+  requestedBy: string;
+  ipAddress: string;
+  mobileNumber: string;
+  status: string;
+  remarks: string;
+  createDateTime: string;
+  approveOrRejectDate: string;
+  approveOrRejectTime: string;
+}
+
+export interface WalletReportTableType {
+  tranxId?: string;
+  productName?: string;
+  subProductName?: string;
+  schemeName?: string;
+  hierarchyId?: string;
+  balBefore?: string;
+  amount?: string;
+  balAfter?: string;
+  walletType?: string;
+  actionOnBalanceAmount?: string;
+  status?: string;
+  transactionDate?: number;
+  transactionTime?: number;
+  narration?: string;
+}
+
+export interface CommissionAndChargeTableType {
+  txId: string;
+  productName: string;
+  subProductName: string;
+  hierarchyId: string;
+  walletType: string;
+  txType: string;
+  operator: string;
+  balBefore: string | number;
+  amount: string | number;
+  balAfter: string | number;
+  transactionDate: string;
+  transactionTime: string;
+  narration: string;
+}
+
+export interface DebitHistoryTableType {
+  transactionId: string;
+  transactionType: string | null;
+  service: string;
+  balBeforeTran: string | number;
+  amount: string | number;
+  balAfterTran: string | number;
+  finalBalance: string | number;
+  dateOfTransaction: string;
+  timeOfTransaction: string;
+  narration: string;
+}
+
+export interface DownlineBalanceTableType {
+  userId: string;
+  name: string;
+  parentAccount: string;
+  prepaidBalance: string | number;
+  postpaidBalance: string | number;
+  createdOn: string;
+  narration: string;
+}
+
+export interface RechargeTransactionType {
+  operatorCode: string;
+  operatorName: string;
+  customerNumber: string;
+  amount: number;
+  subProductId: string;
+  schemeCode: string;
+}
+
+export interface RechargeOperatorListType {
+  id: number;
+  name: string;
+  code: string;
+  type: "MOBILE" | "DTH";
+  [key: string]: any;
+}
+
+export interface RechargeMobileLookupPayloadType {
+  mobileNumber: string;
+  subProductId: string;
+}
+
+export interface RechargeFetchPlanPayloadType {
+  spkey: string;
+  circleId: string;
+  subProductId: string;
+}
+
+export interface NotificationMessage {
+  id: number;
+  title: string;
+  body: string;
+  alertType: string;
+  severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+  product?: string;
+  deliveryChannel?: string;
+  audienceType?: string;
+  sendMode?: string;
+  scheduleTime?: string | null;
+  isRead?: boolean;
+  createdAt: string;
+  userId?: string;
+}

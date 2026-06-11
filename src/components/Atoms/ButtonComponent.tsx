@@ -4,10 +4,12 @@ import {
   ButtonProps,
   Typography,
   Box,
+  useTheme,
 } from "@mui/material";
 import { ButtonComponentProps } from "@/Common/interface";
 
 const ButtonComponent: React.FC<ButtonComponentProps> = ({
+  type = "button",
   title,
   onClick,
   variant = "contained",
@@ -23,8 +25,11 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
   fontSize = 16,
   isAuth = false,
   width,
+  height,
+  buttonRef,
   ...rest
 }) => {
+  const theme = useTheme();
   const getMuiVariant = (): ButtonProps["variant"] => {
     switch (variant) {
       case "filled":
@@ -45,36 +50,37 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
     fontSize: `${fontSize}px`,
     textTransform: "none",
     width: width || "100%",
+    height: height || "40",
     fontWeight: 500,
     padding: "8px 16px",
     "&.MuiButton-contained": {
-      backgroundColor: color || (!isAuth ? "error.main" : "primary.main"),
+      backgroundColor: color || "primary.main",
       backgroundImage:
         !color && isAuth
-          ? "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)"
+          ? `linear-gradient(90deg, ${theme.palette.primary.main} 3%, ${theme.palette.primary.main} 97%)`
           : "none",
       color: "#fff",
       "&:hover": {
-        backgroundColor: color || (!isAuth ? "error.main" : "primary.main"),
+        backgroundColor: color || "primary.main",
         backgroundImage:
           !color && isAuth
-            ? "linear-gradient(90deg, #EB3535 3%, rgba(247, 108, 8, 0.48) 97%)"
+            ? `linear-gradient(90deg, ${theme.palette.primary.main} 3%, ${theme.palette.primary.main} 97%)`
             : "none",
         opacity: 0.9,
       },
     },
     "&.MuiButton-outlined": {
-      borderColor: color || (!isAuth ? "error.main" : "primary.main"),
-      color: color || (!isAuth ? "error.main" : "primary.main"),
+      borderColor: color || "primary.main",
+      color: color || "primary.main",
       "&:hover": {
-        borderColor: color || (!isAuth ? "error.main" : "primary.main"),
-        backgroundColor: "rgba(0, 0, 0, 0.04)",
+        borderColor: color || "primary.main",
+        backgroundColor: (color || theme.palette.primary.main) + "15",
       },
     },
     "&.MuiButton-text": {
-      color: color || (!isAuth ? "error.main" : "primary.main"),
+      color: color || "primary.main",
       "&:hover": {
-        backgroundColor: "rgba(0, 0, 0, 0.04)",
+        backgroundColor: (color || theme.palette.primary.main) + "15",
       },
     },
   };
@@ -87,7 +93,8 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
       onClick={onClick}
       sx={buttonSx}
       {...rest}
-      type="submit"
+      ref={buttonRef}
+      type={type}
     >
       {leftIcon && (
         <Box component="span" mr={1}>

@@ -16,9 +16,12 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
+import { ArrowLeft } from "@mui/icons-material";
+import { useTheme } from "@mui/system";
 
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
 
   const validationSchema = Yup.object({
@@ -44,7 +47,7 @@ const ForgotPassword: React.FC = () => {
         response?.data?.statusCode === "200"
       ) {
         showSuccessNotification("OTP sent successfully");
-        navigate("/otpInput", { state: { userName: values.userName } });
+        navigate("/otpInput", { state: { userName: values.userName } }); // Disabled auto OTP functionality
       } else {
         showErrorNotification(response?.data?.message || "Unable to send OTP");
       }
@@ -68,15 +71,15 @@ const ForgotPassword: React.FC = () => {
             <div className="flex flex-col items-center justify-center gap-3">
               <TextComponent
                 fontSize={30}
-                fontWeight={500}
-                color={"background.default"}
+                fontWeight={600}
+                color={theme.palette.text.primary}
               >
                 Forgot Password
               </TextComponent>
               <TextComponent
-                fontSize={12}
+                fontSize={14}
                 fontWeight={500}
-                color={"background.default"}
+                color={theme.palette.text.secondary}
               >
                 Please enter your registered mobile number.
               </TextComponent>
@@ -88,55 +91,56 @@ const ForgotPassword: React.FC = () => {
             >
               {({ handleSubmit, handleChange, errors, touched, values }) => (
                 <>
-                  <div className="mt-10 flex w-full flex-col items-center justify-center">
-                    <TextInputComponent
-                      label={"Mobile Number"}
-                      value={values.userName}
-                      onChange={handleChange("userName")}
-                      maxLength={10}
-                      minLength={10}
-                      error={
-                        touched.userName && errors.userName
-                          ? errors.userName
-                          : ""
-                      }
-                      withAsterisk
-                      leftSection={<UserNameSvgIcon />}
-                      type="tel"
-                      className="w-full"
-                      isAuth={true}
-                    />
-                  </div>
-                  <div className="mt-6 flex w-full items-center justify-center">
-                    <ButtonComponent
-                      title={"CONTINUE"}
-                      variant="filled"
-                      onClick={() => handleSubmit()}
-                      loading={isLoading}
-                      radius={28}
-                      fullWidth={true}
-                      disabled={isLoading || !values.userName}
-                      isAuth={true}
-                    />
-                  </div>
-                  <div className="flex items-center justify-center gap-2 mt-2 ">
-                    <TextComponent
-                      fontSize={14}
-                      fontWeight={400}
-                      color="background.default"
-                    >
-                      Don't have an account yet?
-                    </TextComponent>
-                    <TextComponent
-                      fontSize={14}
-                      fontWeight={600}
-                      color="red.DEFAULT"
-                      className="underline cursor-pointer"
-                      onClick={() => navigate("/signUp")}
-                    >
-                      Sign up
-                    </TextComponent>
-                  </div>
+                  <form className="w-full" onSubmit={handleSubmit}>
+                    <div className="mt-10 flex w-full flex-col items-center justify-center">
+                      <TextInputComponent
+                        autoFocus
+                        label={"Mobile Number"}
+                        allowCharacter={false}
+                        allowSpace={false}
+                        allowSpecialChar={false}
+                        value={values.userName}
+                        onChange={handleChange("userName")}
+                        maxLength={10}
+                        minLength={10}
+                        error={
+                          touched.userName && errors.userName
+                            ? errors.userName
+                            : ""
+                        }
+                        withAsterisk
+                        leftSection={<UserNameSvgIcon />}
+                        type="tel"
+                        className="w-full"
+                        isAuth={true}
+                      />
+                    </div>
+                    <div className="mt-6 flex w-full items-center justify-between">
+                      <div>
+                        <ButtonComponent
+                          width={80}
+                          title={"BACK"}
+                          variant="light"
+                          onClick={() => navigate("/login")}
+                          leftIcon={<ArrowLeft />}
+                          radius={28}
+                        />
+                      </div>
+                      <ButtonComponent
+                        type="submit"
+                        width={120}
+                        title={"CONTINUE"}
+                        variant="filled"
+                        onClick={() => handleSubmit()}
+                        loading={isLoading}
+                        radius={28}
+                        fontSize={14}
+                        fullWidth={true}
+                        disabled={isLoading || !values.userName}
+                        isAuth={true}
+                      />
+                    </div>
+                  </form>
                 </>
               )}
             </Formik>

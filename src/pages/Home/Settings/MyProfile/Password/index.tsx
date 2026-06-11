@@ -117,11 +117,11 @@ const ChangePassowrd: React.FC = () => {
       {isLoading && <Loader />}
       <div className="flex w-1/3 mt-16 items-center justify-center flex-col gap-5 justify-self-center">
         <div className="flex items-center justify-center gap-3">
-          <ProfileSvgIcon color={theme.palette.red.DEFAULT} />
+          <ProfileSvgIcon color={theme.palette.primary.main} />
           <TextComponent
             fontSize={24}
             fontWeight={400}
-            color={theme.palette.red.DEFAULT}
+            color={theme.palette.primary.main}
           >
             {UserProfileData?.info?.name}
           </TextComponent>
@@ -149,14 +149,14 @@ const ChangePassowrd: React.FC = () => {
                           margin: "0 0.3rem",
                           fontSize: "1.5rem",
                           borderRadius: "8px",
-                          border: `1px solid  ${touched.otp && errors.otp ? theme.palette.error.main : "#ccc"}`,
+                          border: `1px solid  ${touched.otp && errors.otp ? theme.palette.error.main : theme.palette.divider}`,
                         }}
                       />
                       {touched.otp && errors.otp && (
                         <TextComponent
                           fontSize={12}
                           fontWeight={400}
-                          color={theme.palette.red.DEFAULT}
+                          color={theme.palette.primary.main}
                           style={{ textAlign: "right" }}
                         >
                           {errors.otp}
@@ -165,6 +165,7 @@ const ChangePassowrd: React.FC = () => {
                     </div>
                     <TextInputComponent
                       label="Old Password"
+                      autoComplete="new-password"
                       value={values.oldPassword}
                       onChange={handleChange("oldPassword")}
                       error={
@@ -184,15 +185,16 @@ const ChangePassowrd: React.FC = () => {
                         >
                           {showOldPassword ? (
                             <OpenEyeSvgIcon
-                              color={theme.palette.background.default}
+                              color={theme.palette.text.secondary}
                             />
                           ) : (
-                            <CloseEyeSvgIcon />
+                            <CloseEyeSvgIcon color={theme.palette.text.secondary} />
                           )}
                         </div>
                       }
                     />
                     <TextInputComponent
+                      autoComplete="new-password"
                       label="New Password"
                       value={values.newPassword}
                       onChange={handleChange("newPassword")}
@@ -213,15 +215,16 @@ const ChangePassowrd: React.FC = () => {
                         >
                           {showNewPassword ? (
                             <OpenEyeSvgIcon
-                              color={theme.palette.background.default}
+                              color={theme.palette.text.secondary}
                             />
                           ) : (
-                            <CloseEyeSvgIcon />
+                            <CloseEyeSvgIcon color={theme.palette.text.secondary} />
                           )}
                         </div>
                       }
                     />
                     <TextInputComponent
+                      autoComplete="new-password"
                       label={"Re-enter New Password"}
                       value={values.confirmPassword}
                       onChange={handleChange("confirmPassword")}
@@ -242,10 +245,10 @@ const ChangePassowrd: React.FC = () => {
                         >
                           {showPassword ? (
                             <OpenEyeSvgIcon
-                              color={theme.palette.background.default}
+                              color={theme.palette.text.secondary}
                             />
                           ) : (
-                            <CloseEyeSvgIcon />
+                            <CloseEyeSvgIcon color={theme.palette.text.secondary} />
                           )}
                         </div>
                       }
@@ -259,11 +262,11 @@ const ChangePassowrd: React.FC = () => {
                       loading={isLoading}
                       radius={28}
                       fullWidth={true}
-                      // disabled={
-                      //   isLoading ||
-                      //   !values.newPassword ||
-                      //   !values.confirmPassword
-                      // }
+                    // disabled={
+                    //   isLoading ||
+                    //   !values.newPassword ||
+                    //   !values.confirmPassword
+                    // }
                     />
                   </div>
                 </>

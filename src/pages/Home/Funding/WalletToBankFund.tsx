@@ -1,14 +1,13 @@
 import { FundRequestProps } from "@/Common/interface";
 import { RootState } from "@/Redux/Store";
-import { decryptData } from "@/Utils/helper";
-import { useState } from "react";
+import { decryptData, singleDateValidationSchema } from "@/Utils/helper";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
-import CustomDateComponent from "@/components/Atoms/CustomDateComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import FileInputComponent from "@/components/Atoms/FileInputComponent";
 import TextComponent from "@/components/Atoms/TextComponent";
@@ -16,12 +15,21 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
-import { Prefund_Request } from "@/Services/api";
+import { Prefund_Request, Get_Admin_Banks } from "@/Services/api";
 import Loader from "@/components/Atoms/Loader";
+import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePicker";
+import { IconCalendar } from "@tabler/icons-react";
+import moment from "moment";
+import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
+import { useProductEngine } from "@/Utils/CustomHooks/useProductEngine";
+import { SUB_PRODUCT_MAP } from "@/Utils/subProductMap";
+import { PRODUCT_KEYS } from "@/Utils/productKeys";
 
 const WalletToBankFund = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isfile, setFile] = useState<File | null>(null);
+  const [formKey, setFormKey] = useState(0);
+  const [adminBankList, setAdminBankList] = useState<{ label: string, value: string }[]>([]);
 
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
@@ -29,20 +37,73 @@ const WalletToBankFund = () => {
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
-  const ipAddress = apiResponses?.ipAddress
-    ? decryptData(apiResponses?.ipAddress)
-    : null;
+
+  const isRetailer = loginData?.role === "RT";
+  const { getSubProduct } = useProductEngine(
+    isRetailer ? loginData : null
+  );
+
+  const { checkDuplicate, store } = useTransactionCooldown("FUND_REQUEST");
+
+  const getAdminBanks = async () => {
+    try {
+      const response = await Get_Admin_Banks();
+      if (response?.data?.statusCode === 200) {
+        const formatted = response?.data?.data?.map((bank: any) => ({
+          value: bank?.accountNumber?.toString() || "",
+          label: `${bank?.bankName || ""}/${bank?.accountNumber || ""}`,
+        }));
+        setAdminBankList(formatted);
+      } else {
+        setAdminBankList([]);
+        showErrorNotification(response?.data?.message);
+      }
+    } catch (error) {
+      await handleCustomError(error);
+    }
+  };
+
+  useEffect(() => {
+    getAdminBanks();
+  }, []);
+
+  // const ipAddress = apiResponses?.ipAddress
+  //   ? decryptData(apiResponses?.ipAddress)
+  //   : null;
 
   const validationSchema = Yup.object().shape({
+    bankTransferTo: Yup.string().required("Required"),
     depositType: Yup.string().required("Required"),
-    transactionId: Yup.string().required("Required"),
-    bankName: Yup.string().required("Required"),
-    bankAccountNumber: Yup.string().required("Required"),
-    amount: Yup.string().required("Required"),
+    transactionId: Yup.string().required("Required")
+      .min(5, "Must be at least 5 characters")
+      .max(50, "Must be at most 50 characters")
+    ,
+    bankName: Yup.string().when("depositType", ([depositType]) => {
+      return depositType === "Cash"
+        ? Yup.string().optional()
+        : Yup.string().required("Required")
+          .min(2, "Must be at least 2 characters")
+          .max(50, "Must be at most 50 characters");
+    }),
+    bankAccountNumber: Yup.string().when("depositType", ([depositType]) => {
+      return depositType === "Cash"
+        ? Yup.string().optional()
+        : Yup.string()
+          .transform((value) => (value ? value.replace(/\s+/g, "") : "")) // remove all spaces
+          .required("Required")
+          .matches(/^[0-9]+$/, "Must be only digits")
+          .min(9, "Must be at least 9 digits")
+          .max(18, "Must be at most 18 digits");
+    }),
+    amount: Yup.string()
+      .required("Required")
+      .matches(/^(?!0+(?:\.0{1,3})?$)(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount greater than 0"),
+
     confirmAmount: Yup.string()
       .required("Required")
-      .oneOf([Yup.ref("amount")], "Amounts must match"),
-    depositDate: Yup.date().required("Required"),
+      .oneOf([Yup.ref("amount")], "Amounts must match")
+      .matches(/^(?!0+(?:\.0{1,3})?$)(?:\d+|\d*\.\d{1,3})$/, "Enter a valid amount greater than 0"),
+    depositDate: singleDateValidationSchema,
     narration: Yup.string().required("Required"),
     depositSlip: Yup.mixed()
       .nullable()
@@ -50,18 +111,29 @@ const WalletToBankFund = () => {
       .test("fileType", "Required", (value) => {
         return value instanceof File;
       }),
-    bankAccountHolderName: Yup.string().required("Required"),
-    paymentMode: Yup.string().required("Required"),
+    bankAccountHolderName: Yup.string().when("depositType", ([depositType]) => {
+      return depositType === "Cash"
+        ? Yup.string().optional()
+        : Yup.string().required("Required")
+          .min(2, "Must be at least 2 characters")
+          .max(50, "Must be at most 50 characters");
+    }),
+    paymentMode: Yup.string().when("depositType", ([depositType]) => {
+      return depositType === "Cash"
+        ? Yup.string().optional()
+        : Yup.string().required("Required");
+    }),
   });
 
   const initialValues: FundRequestProps = {
+    bankTransferTo: "",
     depositType: "",
     transactionId: "",
     bankName: "",
     bankAccountNumber: "",
     amount: "",
     confirmAmount: "",
-    depositDate: "",
+    depositDate: null,
     narration: "",
     depositSlip: null,
     bankAccountHolderName: "",
@@ -74,6 +146,27 @@ const WalletToBankFund = () => {
   ) => {
     try {
       setIsLoading(true);
+
+      let subProductId: string | undefined;
+      let schemeCode: string | undefined;
+
+      if (isRetailer) {
+        const subProductName =
+          SUB_PRODUCT_MAP.FUND_REQUEST.CADD;
+
+        const config = getSubProduct(
+          PRODUCT_KEYS.FUND_REQUEST,
+          subProductName
+        );
+
+        if (config?.error) {
+          showErrorNotification(config.error);
+          return;
+        }
+
+        subProductId = config?.subProduct?.subProductId;
+        schemeCode = config?.subProduct?.schemeCode;
+      }
 
       const formData = new FormData();
       if (isfile instanceof File) {
@@ -90,13 +183,27 @@ const WalletToBankFund = () => {
         bankAccountNumber: values.bankAccountNumber,
         bankTranId: values.transactionId,
         narration: values.narration,
-        paymentMode: values.paymentMode,
-        ipAddress: ipAddress,
-        depositDate: values?.depositDate,
+        ...(values?.depositType?.toUpperCase() === "ONLINE" && { paymentMode: values.paymentMode }),
+        bankTransferTo: values.bankTransferTo,
+        // ipAddress: ipAddress,
+        depositDate: values.depositDate ? moment(values.depositDate).format("YYYY-MM-DD") : null,
+        ...(isRetailer && {
+          subProductId,
+          schemeCode,
+        }),
       });
       formData.append("data", jsonData);
+
+      if (checkDuplicate(values.bankAccountNumber, Number(values.amount))) {
+        showErrorNotification(
+          "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
+        );
+        return;
+      }
+
       const response = await Prefund_Request(formData);
       if (response?.status === 200 || response?.status === 201) {
+        store(values.bankAccountNumber, Number(values.amount));
         showSuccessNotification(response?.data?.message);
         resetForm({
           values: {
@@ -104,6 +211,7 @@ const WalletToBankFund = () => {
             depositSlip: null,
           },
         });
+        setFormKey((prev) => prev + 1)
         setFile(null);
       } else {
         showErrorNotification(response?.data?.message);
@@ -120,19 +228,20 @@ const WalletToBankFund = () => {
       {isLoading && <Loader />}
       <div className=" flex w-full flex-col flex-wrap items-center justify-start gap-1">
         <div className="relative w-[80%]">
-          <div className="absolute inset-0 bg-red-dark rounded-[20px] blur-[8px] h-full"></div>
+          <div className="absolute inset-0 bg-divider rounded-[20px] blur-[1px] h-full"></div>
 
           <div className="relative py-1 flex items-center justify-center">
             <TextComponent
               fontSize={30}
               fontWeight={500}
-              color="background.paper"
+              color="primary.main"
             >
               Fund Request
             </TextComponent>
           </div>
         </div>
         <Formik<FundRequestProps>
+          key={formKey}
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleFundRequest}
@@ -148,6 +257,21 @@ const WalletToBankFund = () => {
           }) => (
             <>
               <div className="mt-16 w-full flex flex-wrap items-start justify-start gap-6 ">
+                <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                  <DropdownComponent
+                    label="Admin Banks"
+                    data={adminBankList || []}
+                    value={values.bankTransferTo}
+                    withAsterisk
+                    onChange={(value) => setFieldValue("bankTransferTo", value)}
+                    error={
+                      touched.bankTransferTo && errors.bankTransferTo
+                        ? errors.bankTransferTo
+                        : ""
+                    }
+                    className="w-max"
+                  />
+                </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <DropdownComponent
                     label="Deposit Type"
@@ -179,6 +303,8 @@ const WalletToBankFund = () => {
                     }
                     withAsterisk
                     className="w-max"
+                    minLength={6}
+                    maxLength={50}
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
@@ -190,13 +316,20 @@ const WalletToBankFund = () => {
                     error={
                       touched.bankName && errors.bankName ? errors.bankName : ""
                     }
-                    withAsterisk
+                    withAsterisk={values.depositType !== "Cash"}
+                    minLength={2}
+                    maxLength={50}
+                    allowSpecialChar={false}
+                    allowNumber={false}
                     className="w-max"
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Bank Account Number"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
                     placeholder={"Enter"}
                     value={values.bankAccountNumber}
                     onChange={handleChange("bankAccountNumber")}
@@ -205,60 +338,78 @@ const WalletToBankFund = () => {
                         ? errors.bankAccountNumber
                         : ""
                     }
-                    type="number"
-                    withAsterisk
+                    // type="number"
+                    withAsterisk={values.depositType !== "Cash"}
+                    minLength={9}
+                    maxLength={18}
                     className="w-max"
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Bank Account Holder Name"}
+                    minLength={2}
+                    maxLength={50}
                     placeholder={"Enter"}
                     value={values.bankAccountHolderName}
                     onChange={handleChange("bankAccountHolderName")}
                     error={
                       touched.bankAccountHolderName &&
-                      errors.bankAccountHolderName
+                        errors.bankAccountHolderName
                         ? errors.bankAccountHolderName
                         : ""
                     }
-                    withAsterisk
+                    allowSpecialChar={false}
+                    allowNumber={false}
+                    withAsterisk={values.depositType !== "Cash"}
                     className="w-max"
                   />
                 </div>
-                <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                  <DropdownComponent
-                    label="Payment Mode"
-                    data={[
-                      { value: "IMPS", label: "IMPS" },
-                      { value: "NEFT", label: "NEFT" },
-                    ]}
-                    value={values.paymentMode}
-                    withAsterisk
-                    onChange={(value) => setFieldValue("paymentMode", value)}
-                    error={
-                      touched.paymentMode && errors.paymentMode
-                        ? errors.paymentMode
-                        : ""
-                    }
-                    className="w-max"
-                  />
-                </div>
+                {values.depositType !== "Cash" && (
+                  <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                    <DropdownComponent
+                      label="Payment Mode"
+                      data={[
+                        { value: "IMPS", label: "IMPS" },
+                        { value: "NEFT", label: "NEFT" },
+                      ]}
+                      value={values.paymentMode}
+                      withAsterisk
+                      onChange={(value) => setFieldValue("paymentMode", value)}
+                      error={
+                        touched.paymentMode && errors.paymentMode
+                          ? errors.paymentMode
+                          : ""
+                      }
+                      className="w-max"
+                    />
+                  </div>
+                )}
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.amount}
                     onChange={handleChange("amount")}
                     error={touched.amount && errors.amount ? errors.amount : ""}
                     withAsterisk
-                    type="number"
+                    // type="number"
                     className="w-max"
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <TextInputComponent
                     label={"Confirm Amount"}
+                    allowCharacter={false}
+                    allowSpace={false}
+                    allowSpecialChar={false}
+                    allowDecimal={true}
+                    maxLength={10}
                     placeholder={"Enter"}
                     value={values.confirmAmount}
                     onChange={handleChange("confirmAmount")}
@@ -267,13 +418,13 @@ const WalletToBankFund = () => {
                         ? errors.confirmAmount
                         : ""
                     }
-                    type="number"
+                    // type="number"
                     withAsterisk
                     className="w-max"
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                  <CustomDateComponent
+                  {/* <CustomDateComponent
                     label={"Deposit Date"}
                     placeholder={"00/00/0000"}
                     value={
@@ -299,6 +450,16 @@ const WalletToBankFund = () => {
                     withAsterisk
                     dateFormat="YYYY-MM-DD"
                     className="w-48"
+                  /> */}
+                  <FormikDatePicker
+                    name="depositDate"
+                    placeholder="Select a Date"
+                    size="lg"
+                    required
+                    maxDate={new Date}
+                    valueFormat="YYYY-MM-DD"
+                    leftIcon={<IconCalendar size={24} />}
+                    styles={{ input: { height: "55px", fontSize: "18px", backgroundColor: "inherit" } }}
                   />
                 </div>
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
@@ -335,7 +496,7 @@ const WalletToBankFund = () => {
                   />
                 </div>
               </div>
-              <div className="mt-8 flex w-full items-center justify-end ">
+              <div className="mt-8 flex w-full items-center justify-center">
                 <ButtonComponent
                   title="Submit"
                   variant="filled"

@@ -102,8 +102,8 @@ export default function Sidebar({ onClose }: SidebarProps) {
           "&:hover": {
             backgroundColor:
               theme.palette.mode === "dark"
-                ? theme.palette.red.light
-                : theme.palette.red.light,
+                ? theme.palette.primary.light + "25"
+                : theme.palette.primary.light + "15",
           },
           gap: 10,
           display: "flex",
@@ -122,15 +122,17 @@ export default function Sidebar({ onClose }: SidebarProps) {
           root: {
             backgroundColor:
               theme.palette.mode === "dark"
-                ? theme.palette.red.light
-                : theme.palette.red.light,
-            color: theme.palette.red.DEFAULT,
-            borderRadius: 15,
+                ? theme.palette.primary.light + "30"
+                : theme.palette.primary.main + "15",
+            color: theme.palette.mode === "dark"
+              ? theme.palette.primary.light
+              : theme.palette.primary.main,
+            borderRadius: "20px 0px",
             "&:hover": {
               backgroundColor:
                 theme.palette.mode === "dark"
-                  ? theme.palette.red.light
-                  : theme.palette.red.light,
+                  ? theme.palette.primary.light + "40"
+                  : theme.palette.primary.main + "25",
             },
           },
         }),
@@ -171,9 +173,13 @@ export default function Sidebar({ onClose }: SidebarProps) {
                     }}
                     style={{
                       color: isActive(subItem.path)
-                        ? theme.palette.red.DEFAULT
+                        ? (theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.main)
                         : "inherit",
                       fontWeight: isActive(subItem.path) ? 600 : "normal",
+                      backgroundColor: isActive(subItem.path)
+                        ? (theme.palette.mode === 'dark' ? theme.palette.primary.light + "15" : theme.palette.primary.main + "05")
+                        : "transparent",
+                      borderRadius: "20px 0px",
                     }}
                   >
                     {subItem.name}
@@ -211,7 +217,9 @@ export default function Sidebar({ onClose }: SidebarProps) {
         transform: "translateY(-50%)",
         overflowY: "auto",
         borderRadius: "8px",
-        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+        boxShadow: theme.palette.mode === "dark"
+          ? "0 4px 20px rgba(0, 0, 0, 0.5)"
+          : "0 2px 8px rgba(0, 0, 0, 0.15)",
         scrollbarWidth: "none",
       }}
     >
@@ -246,14 +254,14 @@ export default function Sidebar({ onClose }: SidebarProps) {
         }}
       >
         <ActionIcon
-          onClick={() => {
+          onClick={async () => {
             if (onClose) onClose();
-            logout();
+            await logout();
           }}
           size="lg"
           radius="md"
           variant="light"
-          color="red"
+          color="primary"
           style={{ width: "100%", height: "40px" }}
         >
           <IconLogout size={20} />
