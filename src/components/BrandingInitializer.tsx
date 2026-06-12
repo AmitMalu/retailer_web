@@ -16,6 +16,7 @@ const BrandingInitializer = () => {
       // Prevents previously loaded branding from rendering
       // while the new tenant configuration is being fetched.
       dispatch(saveApiResponse("brandingLoaded", false));
+      dispatch(saveApiResponse("brandingFailed", false));
 
       try {
         const response = await Get_Brand_Info();
@@ -24,10 +25,17 @@ const BrandingInitializer = () => {
           const data = response.data?.data || response.data;
           if (data) {
             dispatch(saveApiResponse("brandingData", data));
+          } else {
+            // API responded but returned no usable data — treat as failure
+            dispatch(saveApiResponse("brandingFailed", true));
           }
+        } else {
+          // Non-2xx response
+          dispatch(saveApiResponse("brandingFailed", true));
         }
       } catch (error) {
         console.error("Failed to fetch brand info:", error);
+        dispatch(saveApiResponse("brandingFailed", true));
       }
       finally {
         // Config API finished, Failed or Pass Stop the Loader and White Screen
@@ -39,6 +47,8 @@ const BrandingInitializer = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (!branding) return;
+
     if (branding.title) {
       document.title = branding.title;
     }

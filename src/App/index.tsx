@@ -14,6 +14,7 @@ import { decryptData } from "@/Utils/helper";
 
 import { useLayoutEffect } from "react";
 import Loader from "@/components/Atoms/Loader";
+import ServiceUnavailable from "@/pages/ServiceUnavailable";
 
 const AppContent = ({ darkMode }: { darkMode: boolean }) => {
   // Initialize WebSocket connection for real-time notifications
@@ -73,6 +74,16 @@ function App() {
     return null;
   }, [apiResponses?.brandingData]);
 
+  const brandingFailed = useMemo(() => {
+    const failed = apiResponses?.brandingFailed;
+    if (!failed) return false;
+    try {
+      return Boolean(decryptData(failed));
+    } catch {
+      return false;
+    }
+  }, [apiResponses?.brandingFailed]);
+
   const theme = useMemo(() => {
     return createTheme(
       getThemeOptions(
@@ -99,6 +110,10 @@ function App() {
         >
           <Loader />
         </div>
+      ) : brandingFailed ? (
+        // Tenant config API failed — do NOT fall back to default NFTTech branding
+        // since this may be a white-label deployment
+        <ServiceUnavailable />
       ) : (
         <>
           <RouteChangeHandler />

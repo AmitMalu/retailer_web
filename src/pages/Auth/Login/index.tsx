@@ -33,9 +33,9 @@ const Login: React.FC = () => {
   const branding = useBranding();
   
   const policyLinks = {
-    terms: branding.terms,
-    privacy: branding.privacy,
-    refund: branding.refund,
+    terms: branding?.terms,
+    privacy: branding?.privacy,
+    refund: branding?.refund,
   };
 
   const validationSchema = Yup.object({
@@ -130,8 +130,8 @@ const Login: React.FC = () => {
     <>
       {isLoading && <Loader />}
       <AuthLayout
-        authImage={<img src={branding.loginBgImg} alt="img" className="h-full w-full object-cover" />}
-        authText={branding.welcomeText}
+        authImage={<img src={branding?.loginBgImg} alt="img" className="h-full w-full object-cover" />}
+        authText={branding?.welcomeText}
       >
         <div className="flex w-full  items-center justify-center flex-col gap-5">
           <div className="flex h-auto w-[360px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
