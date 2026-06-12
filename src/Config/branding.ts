@@ -32,49 +32,47 @@ export const useBranding = () => {
 
   const brandingData = apiResponses?.brandingData;
 
-  const fallback = getBranding();
-
   if (!brandingData) {
-    return fallback;
+    return null;
   }
 
   try {
     const decrypted = decryptData(brandingData);
 
     if (!decrypted) {
-      return fallback;
+      return null;
     }
 
     return {
-      tenantCode: decrypted.tenantCode || fallback.tenantCode,
+      tenantCode: decrypted.tenantCode,
 
-      domain: decrypted.domain || fallback.domain,
+      domain: decrypted.domain,
 
-      companyName: decrypted.companyName || fallback.companyName,
+      companyName: decrypted.companyName,
 
-      title: decrypted.portalTitle || fallback.title,
+      title: decrypted.portalTitle,
 
-      logo: decrypted.logoUrl || fallback.logo,
+      logo: decrypted.logoUrl,
 
-      favicon: decrypted.faviconUrl || decrypted.favicon || fallback.favicon,
+      favicon: decrypted.faviconUrl || decrypted.favicon,
 
-      loginBgImg: decrypted.backgroundUrl || fallback.loginBgImg,
+      loginBgImg: decrypted.backgroundUrl,
 
-      welcomeText: decrypted.welcomeText || fallback.welcomeText,
+      welcomeText: decrypted.welcomeText,
 
-      terms: decrypted.termsUrl || fallback.terms,
+      terms: decrypted.termsUrl,
 
-      privacy: decrypted.privacyUrl || fallback.privacy,
+      privacy: decrypted.privacyUrl,
 
-      refund: decrypted.refundUrl || fallback.refund,
+      refund: decrypted.refundUrl,
 
-      primaryColor: decrypted.primaryColor || fallback.primaryColor,
+      primaryColor: decrypted.primaryColor,
 
-      secondaryColor: decrypted.secondaryColor || fallback.secondaryColor,
+      secondaryColor: decrypted.secondaryColor,
     };
   } catch (error) {
     console.error("Error decrypting branding data:", error);
 
-    return fallback;
+    return null;
   }
 };
