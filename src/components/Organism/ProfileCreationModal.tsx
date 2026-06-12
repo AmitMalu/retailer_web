@@ -27,12 +27,13 @@ import NewButtonComponent from "@/components/Atoms/NewComponents/ButtonComponent
 import { RootState } from "@/Redux/Store";
 import {
   Adhaar_Pan_Link,
-  Adhaar_Verification,
   Create_Distributor,
   Create_Partner,
   Create_Retailer,
   Create_Super_Distributor,
   Pan_Verification,
+  Initialize_Digilocker,
+  Download_Aadhaar,
 } from "@/Services/api";
 import {
   AddressSvgIcon,
@@ -46,6 +47,7 @@ import CustomDatePicker from "../Atoms/NewComponents/CustomDatePicker";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import FormikFileInput from "../Molecules/NewComponents/FormikFileInput";
 import FormikTextInputComponent from "../Molecules/NewComponents/FormikTextInputComponent";
+import { getLocationCache } from "@/Utils/locationCache";
 
 const ProfileRegistrationForm = ({
   opened,
@@ -93,54 +95,106 @@ const ProfileRegistrationForm = ({
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  const ipAddress = apiResponses?.ipAddress
-    ? decryptData(apiResponses?.ipAddress)
-    : null;
+  // Mirror the same IP resolution logic used in the axios interceptor:
+  // 1. In-memory locationCache (fastest, most up-to-date)
+  // 2. Redux location slice (persisted via redux-persist)
+  const locationState = useSelector((state: RootState) => state.location);
+
+  const ipAddress = (() => {
+    const cached = getLocationCache();
+    if (cached?.ipAddress) return cached.ipAddress;
+    return locationState.ipAddress || "";
+  })();
 
   const handleAadhaarVerify = async (formik: FormikProps<any>) => {
     try {
-      const resData = await Adhaar_Verification(Number(formik.values.aadhaarNumber));
-      const isAadhaarSuccess = resData?.data?.data?.success === true && resData?.data?.data?.status_code == 200;
+      // 1. Get initialized token
+      const initResponse = await Initialize_Digilocker();
 
-      if (!isAadhaarSuccess) {
-        const remark = resData?.data?.data?.message || resData?.data?.data?.data?.remarks || "Verification failed.";
+      // Response: { statusCode, data: { data: { token, client_id, url } } }
+      const token = initResponse?.data?.data?.data?.token;
 
-        formik.setFieldValue("isAadhaarVerified", false);
-        formik.setFieldValue("aadhaarPanVerified", false);
-        formik.setTouched({ aadhaarNumber: true });
-
-        setTimeout(() => {
-          formik.setFieldError("aadhaarNumber", remark);
-        }, 0);
-
+      if (!token) {
+        console.error("DigiLocker init — token missing:", initResponse?.data);
+        formik.setTouched({ ...formik.touched, aadhaarNumber: true });
+        formik.setFieldError("aadhaarNumber", "Failed to initialize DigiLocker. Please try again.");
+        setAadhaarVerifying(false);
         return;
       }
-      // Aadhaar verification passed ✅
-      // Now check Aadhaar-PAN link
-      try {
-        const panLinkRes = await Adhaar_Pan_Link(Number(formik.values.aadhaarNumber))
-        const isPanApiSuccess = panLinkRes?.data?.data?.status_code == 200;
-        const isLinked = isPanApiSuccess && panLinkRes?.data?.data?.data?.linking_status === true;
 
-        // Save PAN linking status
-        formik.setFieldValue("aadhaarPanVerified", isLinked);
+      // 2. Clear container and mount SDK
+      document.getElementById("digilocker-sdk-container")!.innerHTML = "";
 
-        // ✅ Only now mark Aadhaar as fully verified
-        formik.setFieldValue("isAadhaarVerified", true);
-        formik.setFieldError("aadhaarNumber", "");
-      } catch (error) {
-        // PAN API failed – Aadhaar verification fails too ❌
-        handleCustomError(error)
-        formik.setFieldValue("aadhaarPanVerified", false);
-        formik.setFieldValue("isAadhaarVerified", false);
-        formik.setFieldError("aadhaarNumber", "Aadhaar-PAN link check failed");
-      }
+      window.DigiboostSdk({
+        gateway: "production",
+        token,
+        selector: "#digilocker-sdk-container",
+
+        onSuccess: async (data: any) => {
+          try {
+            const clientId = data?.client_id;
+
+            // 3. Download Aadhaar data
+            const aadhaarResponse = await Download_Aadhaar(clientId);
+            // Response: { statusCode, data: { data: { aadhaar_xml_data, digilocker_metadata, ... } } }
+            const aadhaarPayload = aadhaarResponse?.data?.data?.data;
+            const aadhaarXmlData = aadhaarPayload?.aadhaar_xml_data;
+            const digilockerMeta = aadhaarPayload?.digilocker_metadata;
+
+            // Pre-fill name — prefer aadhaar_xml_data.full_name, fallback to digilocker_metadata.name
+            const fullName = aadhaarXmlData?.full_name || digilockerMeta?.name;
+            if (fullName) {
+              formik.setFieldValue("name", fullName);
+            }
+
+            // Mark Aadhaar verified
+            formik.setFieldValue("isAadhaarVerified", true);
+            formik.setFieldValue("lastVerifiedAadhaar", formik.values.aadhaarNumber);
+            formik.setFieldError("aadhaarNumber", "");
+
+            // 4. Aadhaar-PAN link check
+            try {
+              const panLinkRes = await Adhaar_Pan_Link(Number(formik.values.aadhaarNumber));
+              const isLinked =
+                panLinkRes?.data?.data?.status_code === 200 &&
+                panLinkRes?.data?.data?.data?.linking_status === true;
+              formik.setFieldValue("aadhaarPanVerified", isLinked);
+            } catch (linkError) {
+              console.error("Aadhaar-PAN link check failed:", linkError);
+              formik.setFieldValue("aadhaarPanVerified", false);
+            }
+          } catch (downloadError) {
+            console.error("Download Aadhaar failed:", downloadError);
+            formik.setFieldValue("isAadhaarVerified", false);
+          } finally {
+            setAadhaarVerifying(false);
+          }
+        },
+
+        onFailure: (error: any) => {
+          console.error("DigiLocker SDK failed:", error);
+          formik.setFieldValue("isAadhaarVerified", false);
+          formik.setFieldValue("aadhaarPanVerified", false);
+          setAadhaarVerifying(false);
+        },
+      });
+
+      // 3. Trigger SDK button click — SDK renders a button into the container
+      setTimeout(() => {
+        const sdkButton = document.querySelector(
+          "#digilocker-sdk-container button"
+        ) as HTMLButtonElement | null;
+        sdkButton?.click();
+      }, 100);
+
     } catch (error) {
+      console.error("DigiLocker error:", error);
       formik.setFieldValue("isAadhaarVerified", false);
-      formik.setFieldError("aadhaarNumber", "Something went wrong during verification.");
-      handleCustomError(error)
+      formik.setTouched({ ...formik.touched, aadhaarNumber: true });
+      formik.setFieldError("aadhaarNumber", "Something went wrong. Please try again.");
+      setAadhaarVerifying(false);
     }
-  }
+  };
 
   const handlePanVerify = async (formik: FormikProps<any>) => {
     try {
@@ -291,15 +345,15 @@ const ProfileRegistrationForm = ({
     aadhaarNumber: Yup.string()
       .trim()
       .matches(/^\d{12}$/, "Aadhaar must be exactly 12 digits")
-      .required("Aadhaar Number is required")
-      .test(
-        "aadhaar-verified",
-        "Aadhaar Verification is required",
-        function (value) {
-          const { isAadhaarVerified } = this.parent;
-          return !value || value.length !== 12 || isAadhaarVerified === true;
-        }
-      ),
+      .required("Aadhaar Number is required"),
+    // .test(
+    //   "aadhaar-verified",
+    //   "Aadhaar Verification is required",
+    //   function (value) {
+    //     const { isAadhaarVerified } = this.parent;
+    //     return !value || value.length !== 12 || isAadhaarVerified === true;
+    //   }
+    // ),
     isAadhaarVerified: Yup.boolean(),
     lastVerifiedAadhaar: Yup.string().nullable(), // or stricter version
     aadhaarPanVerified: Yup.boolean(),
@@ -309,15 +363,15 @@ const ProfileRegistrationForm = ({
     panNumber: Yup.string()
       .matches(PanRegex, "Invalid PAN number format")
       .max(10, "PAN number must be exactly 10 characters")
-      .required("PAN number is required")
-      .test(
-        "pan-verified",
-        "PAN Verification is required",
-        function (value) {
-          const { panVerified } = this.parent;
-          return !value || value.length !== 10 || panVerified === true;
-        }
-      ),
+      .required("PAN number is required"),
+    // .test(
+    //   "pan-verified",
+    //   "PAN Verification is required",
+    //   function (value) {
+    //     const { panVerified } = this.parent;
+    //     return !value || value.length !== 10 || panVerified === true;
+    //   }
+    // ),
     lastVerifiedPan: Yup.string().nullable(),
     panVerified: Yup.boolean(),
     businessNumber: Yup.string().required("Required"),
@@ -519,6 +573,8 @@ const ProfileRegistrationForm = ({
       }}
     >
       <div className=" mt-3 flex h-full flex-col justify-between">
+        {/* Hidden SDK container — SDK renders a button here which is auto-clicked to open DigiLocker popup */}
+        <div id="digilocker-sdk-container" style={{ display: "none" }} />
         <Formik<UserProfileFormProps>
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -587,7 +643,7 @@ const ProfileRegistrationForm = ({
                     },
                     stepIcon: {
                       color: theme.palette.background.paper,
-                      backgroundColor: theme.palette.primaryExtra.accent,
+                      backgroundColor: theme.palette.primary.main,
                       width: 35,
                       height: 35,
                     },
@@ -711,7 +767,7 @@ const ProfileRegistrationForm = ({
                               ? errors.aadhaarNumber
                               : ""
                           }
-                          rightSectionWidth={aadhaarVerifying ? 40 : 70}
+                          // rightSectionWidth={aadhaarVerifying ? 40 : 70}
                           rightSection={
                             showVerifiedMess ? (
                               <div
@@ -746,9 +802,9 @@ const ProfileRegistrationForm = ({
                                   size="xs"
                                   onClick={async () => {
                                     formik.setFieldValue("lastVerifiedAadhaar", formik.values.aadhaarNumber);
-                                    setAadhaarVerifying(true); // ✅ Start spinner
-                                    await handleAadhaarVerify(formik);
-                                    setAadhaarVerifying(false); // ✅ Stop spinner
+                                    setAadhaarVerifying(true);
+                                    handleAadhaarVerify(formik);
+                                    // setAadhaarVerifying(false) is called inside onSuccess / onFailure callbacks
                                   }}
                                 >
                                   {aadhaarVerifying ? (

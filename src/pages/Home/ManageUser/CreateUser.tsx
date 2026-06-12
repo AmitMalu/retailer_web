@@ -63,7 +63,7 @@ const CreateUser = () => {
       <div className="relative w-full max-w-3xl h-auto">
         <Box className="relative w-full h-[500px] flex items-center justify-center">
           {/* Center Red Circle */}
-          <Box className="w-[300px] h-[300px] bg-primary-hover rounded-full flex items-center justify-center shadow-lg relative">
+          <Box className="w-[300px] h-[300px] bg-primary-main rounded-full flex items-center justify-center shadow-lg relative">
             <div className=" w-[70%] h-[70%] ">
               <CentralIconSvg color="white" />
             </div>
@@ -111,7 +111,7 @@ const CreateUser = () => {
                   cx="110"
                   cy="100"
                   r="30"
-                  fill={theme.palette.primaryExtra.accent}
+                  fill={theme.palette.primary.main}
                   stroke={theme.palette.primary.main}
                   strokeWidth="2"
                   className="cursor-pointer"
@@ -140,7 +140,7 @@ const CreateUser = () => {
                   cx="50"
                   cy="215"
                   r="30"
-                  fill={theme.palette.primaryExtra.accent}
+                  fill={theme.palette.primary.main}
                   stroke={theme.palette.primary.main}
                   strokeWidth="2"
                   className="cursor-pointer"
@@ -177,7 +177,7 @@ const CreateUser = () => {
                     cx="390"
                     cy="98"
                     r="30"
-                    fill={theme.palette.primaryExtra.accent}
+                    fill={theme.palette.primary.main}
                     stroke={theme.palette.primary.main}
                     strokeWidth="2"
                     className="cursor-pointer"
@@ -209,7 +209,7 @@ const CreateUser = () => {
                     cx="450"
                     cy="216"
                     r="30"
-                    fill={theme.palette.primaryExtra.accent}
+                    fill={theme.palette.primary.main}
                     stroke={theme.palette.primary.main}
                     strokeWidth="2"
                     className="cursor-pointer"
