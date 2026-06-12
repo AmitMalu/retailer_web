@@ -568,6 +568,13 @@ export const Voter_Id_Verification = async (voterid: string) =>
 export const Bank_Verification = async (data: BankVerificationPayload) =>
   await api.post(`${API_ROUTES.BANK_VERIFICATION}`, data);
 
+////////////////////////////// DIGILOCKER ////////////////////////////////////
+export const Initialize_Digilocker = async () =>
+  await api.post(API_ROUTES.INITIALIZE_DIGILOCKER, {});
+
+export const Download_Aadhaar = async (clientId: string) =>
+  await api.get(`${API_ROUTES.DOWNLOAD_AADHAAR}/${clientId}`);
+
 export const Add_Bank = async (data: AddBankFormType) =>
   await api.post(`${API_ROUTES.ADD_BANK}`, data);
 

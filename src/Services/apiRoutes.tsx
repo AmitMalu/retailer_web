@@ -152,6 +152,10 @@ export const API_ROUTES = {
   VOTER_ID_VERIFICATION: `${BASE_URL}/verification/voterId-validate`,
   BANK_VERIFICATION: `${BASE_URL}/verification/bank-validate`,
 
+  ///////////////////////// DIGILOCKER ////////////////////////////////////
+  INITIALIZE_DIGILOCKER: `${BASE_URL}/api/digilocker/initialize`,
+  DOWNLOAD_AADHAAR: `${BASE_URL}/api/digilocker/download-aadhaar`,
+
   /////////////////////////// bANKS ////////////////////////////////////
   ADD_BANK: `${BASE_URL}/api/bank-details`,
   EDIT_BANK: `${BASE_URL}/api/bank-details`,

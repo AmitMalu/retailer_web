@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "prebuild": "node scripts/generateBuildInfo.cjs",
+    "prebuild:uat": "node scripts/generateBuildInfo.cjs",
 
     "dev": "vite --mode development",
     "dev:uat": "vite --mode uat",
