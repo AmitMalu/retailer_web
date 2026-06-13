@@ -27,13 +27,13 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
           </div> */}
 
           {/* Logo */}
-          <div className="absolute top-0 left-3"
+          <div className="absolute top-4 left-8"
             title={`${BUILD_INFO.version} (${BUILD_INFO.builtAt})`}
           >
             <img
               src={branding?.logo}
-              alt={branding?.companyName ?? "Logo"}
-              className="w-24 md:w-40 max-w-none"
+              // alt={branding?.companyName ?? "Logo"}
+              className="h-16 w-auto max-w-[180px]"
             />
           </div>
 
