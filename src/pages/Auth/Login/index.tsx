@@ -130,7 +130,7 @@ const Login: React.FC = () => {
     <>
       {isLoading && <Loader />}
       <AuthLayout
-        authImage={<img src={branding?.loginBgImg} alt="img" className="h-full w-full object-cover" />}
+        authImage={<img src={branding?.loginBgImg} className="h-full w-full object-cover" />}
         authText={branding?.welcomeText}
       >
         <div className="flex w-full  items-center justify-center flex-col gap-5">

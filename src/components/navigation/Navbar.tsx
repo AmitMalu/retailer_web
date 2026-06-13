@@ -120,12 +120,12 @@ export default function Navbar({
                 ☰
               </IconButton>
             ) : (
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-5">
                 {/* <img src={NFTLogo} alt="logo" className="h-10 w-10" /> */}
                 <img
                   src={branding?.logo}
                   alt={branding?.companyName}
-                  className="h-10 w-10 object-contain"
+                  className="h-9 w-auto max-w-[140px] object-contain"
                 />
 
                 <div className="flex flex-col leading-tight">
