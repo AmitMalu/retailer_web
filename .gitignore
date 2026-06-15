@@ -64,3 +64,6 @@ next-env.d.ts
 *.sln
 *.sw?
 .env
+
+# Generated during build
+src/buildInfo.ts
