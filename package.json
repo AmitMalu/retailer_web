@@ -10,15 +10,18 @@
     "dev:uat": "vite --mode uat",
     "dev:prod": "vite --mode production",
 
-    "build:dev": "tsc -b && powershell -Command \"if (Test-Path dist) { Remove-Item -Recurse -Force dist }\" && vite build --mode development && npm run copy-webxml",
-    "build:uat": "tsc -b && powershell -Command \"if (Test-Path dist) { Remove-Item -Recurse -Force dist }\" && vite build --mode uat && npm run copy-webxml",
-    "build": "tsc -b && powershell -Command \"if (Test-Path dist) { Remove-Item -Recurse -Force dist }\" && vite build --mode production && npm run copy-webxml",
+    "clean" : "rimraf dist",
 
-    "war:dev": "npm run build:dev && powershell -Command \"Compress-Archive -Path dist\\* -DestinationPath app.zip -Force; Rename-Item app.zip app.war -Force\"",
-    "war:uat": "npm run build:uat && powershell -Command \"Compress-Archive -Path dist\\* -DestinationPath app.zip -Force; Rename-Item app.zip app.war -Force\"",
-    "war": "npm run build && powershell -Command \"Compress-Archive -Path dist\\* -DestinationPath app.zip -Force; Rename-Item app.zip app.war -Force\"",
+    "build:dev:": "npm run clean && tsc -b && vite build --mode development && npm run copy-webxml",
+    "build:uat": "npm run clean && tsc -b && vite build --mode uat && npm run copy-webxml",
+    "build": "npm run clean && tsc -b && vite build --mode production && npm run copy-webxml",
 
-    "copy-webxml": "powershell -Command \"New-Item -ItemType Directory -Force -Path dist\\WEB-INF; Copy-Item -Path deploy-resources\\WEB-INF\\* -Destination dist\\WEB-INF -Recurse -Force\"",
+    "war:dev": "npm run build:dev && node scripts/createWar.cjs",
+    "war:uat": "npm run build:uat && node scripts/createWar.cjs",
+    "war": "npm run build && node scripts/createWar.cjs",
+
+    "copy-webxml": "node scripts/copyWebXml.cjs",
+
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 1",
 
     "preview": "vite preview",
@@ -122,6 +125,7 @@
     "postcss": "^8.5.3",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.11",
+    "rimraf": "^6.1.3",
     "tailwind-clip-path": "^1.0.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.9.2",
