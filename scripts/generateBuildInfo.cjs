@@ -1,7 +1,9 @@
 const fs = require("fs");
 const path = require("path");
+const packageJson = require("../package.json");
 
 const now = new Date();
+
 const formatted = now.toLocaleString("en-IN", {
   day: "2-digit",
   month: "2-digit",
@@ -10,9 +12,8 @@ const formatted = now.toLocaleString("en-IN", {
   hour12: true,
 });
 
-const content =
-  `export const BUILD_INFO = {
-  version: "v1.0.0",
+const content = `export const BUILD_INFO = {
+  version: "v${packageJson.version}",
   builtAt: "${formatted}"
 };\n`;
 
