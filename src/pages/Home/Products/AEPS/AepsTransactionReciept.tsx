@@ -114,11 +114,24 @@ const TransactionReciept = ({ data }: { data: any }) => {
                         </Table.Tr>
                     )}
 
-                    {data.serviceKey !== "cashWithdrawal" && (
+                    {data.serviceKey === "balanceInquiry" && (
                         <Table.Tr>
                             <Table.Td fw={500}>Available Balance</Table.Td>
-                            <Table.Td>{data.balanceAmount}</Table.Td>
+                            <Table.Td>{dash(data.balanceAmount)}</Table.Td>
                         </Table.Tr>
+                    )}
+
+                    {data.serviceKey === "miniStatement" && (
+                        <>
+                            <Table.Tr>
+                                <Table.Td fw={500}>Account Number</Table.Td>
+                                <Table.Td>{dash(data?.accountNumber)}</Table.Td>
+                            </Table.Tr>
+                            <Table.Tr>
+                                <Table.Td fw={500}>Bank Account Balance</Table.Td>
+                                <Table.Td>{dash(data?.bankAccountBalance)}</Table.Td>
+                            </Table.Tr>
+                        </>
                     )}
 
                     {/* RRN */}
@@ -144,6 +157,49 @@ const TransactionReciept = ({ data }: { data: any }) => {
                         {data.errorMessage || data.statusMessage || "Transaction failed due to unknown reason"}
                     </Text>
                 </Card>
+            )}
+
+            {/* --- Mini Statement Table --- */}
+            {data.serviceKey === "miniStatement" && Array.isArray(data.miniStatement) && data.miniStatement.length > 0 && (
+                <>
+                    <Text fw={600} size="sm" mt="md" mb="xs">
+                        Mini Statement
+                    </Text>
+                    <Table
+                        withColumnBorders
+                        striped
+                        highlightOnHover
+                        verticalSpacing="xs"
+                        horizontalSpacing="sm"
+                    >
+                        <Table.Thead>
+                            <Table.Tr>
+                                <Table.Th>Date</Table.Th>
+                                <Table.Th>Type</Table.Th>
+                                <Table.Th>Amount (₹)</Table.Th>
+                                <Table.Th>Narration</Table.Th>
+                            </Table.Tr>
+                        </Table.Thead>
+                        <Table.Tbody>
+                            {data.miniStatement.map((row: any, idx: number) => (
+                                <Table.Tr key={idx}>
+                                    <Table.Td>{dash(row.date)}</Table.Td>
+                                    <Table.Td>
+                                        <Badge
+                                            color={row.txnType === "CR" ? "green" : "red"}
+                                            variant="light"
+                                            size="sm"
+                                        >
+                                            {row.txnType}
+                                        </Badge>
+                                    </Table.Td>
+                                    <Table.Td>{dash(row.amount)}</Table.Td>
+                                    <Table.Td>{dash(row.narration)}</Table.Td>
+                                </Table.Tr>
+                            ))}
+                        </Table.Tbody>
+                    </Table>
+                </>
             )}
 
 
