@@ -136,11 +136,18 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
             /* ================= USER INPUT (FROM FORM) ================= */
             aadhaarNumber: maskAadhaar(formValues?.aadhaar),
             mobileNumber: formValues?.mobile,
-            bankName: getBankName(formValues?.bank),
+            bankName: txn?.bankName || getBankName(formValues?.bank),
+            accountNumber: txn?.accountNumber,
 
             /* ================= AMOUNTS ================= */
             transactionAmount: txn?.transactionAmount,
             balanceAmount: txn?.balanceAmount,
+            bankAccountBalance: txn?.bankAccountBalance,
+            openingBalance: txn?.openingBalance,
+            closingBalance: txn?.closingBalance,
+
+            /* ================= MINI STATEMENT ================= */
+            miniStatement: txn?.miniStatement ?? [],
 
             /* ================= ERROR ================= */
             responseCode: txn.responseCode,
