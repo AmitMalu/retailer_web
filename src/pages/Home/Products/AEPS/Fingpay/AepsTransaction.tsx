@@ -111,17 +111,11 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
 
     const normalizeReceiptData = (apiResponse: any, service: string, formValues: any) => {
         const wrapper = apiResponse?.data || {};
-        // New API (MS / balance inquiry): fields are flat on wrapper
-        // Old Fingpay API: fields are nested under wrapper.data
-        const txn = wrapper?.data && Object.keys(wrapper.data).length > 0
-            ? wrapper.data
-            : wrapper;
+        const txn = wrapper?.data || {};
 
         const isSuccess =
             wrapper?.status === true ||
             txn?.transactionStatus === "successful";
-
-        console.log(apiResponse, "api resp");
 
         return {
             /* ================= STATUS ================= */
@@ -133,36 +127,25 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
             serviceTitle: SERVICE_TITLES[service] ?? "AEPS Transaction",
 
             /* ================= DATE / IDS ================= */
-            // timestamp at apiResponse level in new API, fallback for old Fingpay
-            dateTime: apiResponse?.timestamp || wrapper?.timestamp || txn?.requestTransactionTime,
-            // operatorId = terminal ref in new API
-            terminalId: txn?.terminalId || txn?.operatorId,
-            // externalRef = RRN equivalent in new API
-            rrn: txn?.bankRRN || txn?.externalRef,
-            // ipayId = transaction ID in new API
-            transactionId: txn?.transactionId || txn?.ipayId,
-            txnType: txn?.transactionType,
+            dateTime: txn.requestTransactionTime,
+            terminalId: txn.terminalId,
+            rrn: txn.bankRRN,
+            transactionId: txn?.transactionId,
+            txnType: txn.transactionType,
 
             /* ================= USER INPUT (FROM FORM) ================= */
             aadhaarNumber: maskAadhaar(formValues?.aadhaar),
             mobileNumber: formValues?.mobile,
-            bankName: txn?.bankName || getBankName(formValues?.bank),
-            accountNumber: txn?.accountNumber,
+            bankName: getBankName(formValues?.bank),
 
             /* ================= AMOUNTS ================= */
             transactionAmount: txn?.transactionAmount,
             balanceAmount: txn?.balanceAmount,
-            bankAccountBalance: txn?.bankAccountBalance,
-            openingBalance: txn?.openingBalance,
-            closingBalance: txn?.closingBalance,
-
-            /* ================= MINI STATEMENT ================= */
-            miniStatement: txn?.miniStatement ?? [],
 
             /* ================= ERROR ================= */
-            responseCode: txn?.responseCode,
-            errorCode: txn?.errorCode,
-            errorMessage: txn?.errorMessage,
+            responseCode: txn.responseCode,
+            errorCode: txn.errorCode,
+            errorMessage: txn.errorMessage,
         };
     };
 
