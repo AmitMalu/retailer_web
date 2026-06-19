@@ -111,11 +111,17 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
 
     const normalizeReceiptData = (apiResponse: any, service: string, formValues: any) => {
         const wrapper = apiResponse?.data || {};
-        const txn = wrapper?.data || {};
+        // New API (MS / balance inquiry): fields are flat on wrapper
+        // Old Fingpay API: fields are nested under wrapper.data
+        const txn = wrapper?.data && Object.keys(wrapper.data).length > 0
+            ? wrapper.data
+            : wrapper;
 
         const isSuccess =
             wrapper?.status === true ||
             txn?.transactionStatus === "successful";
+
+        console.log(apiResponse, "api resp");
 
         return {
             /* ================= STATUS ================= */
@@ -127,11 +133,15 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
             serviceTitle: SERVICE_TITLES[service] ?? "AEPS Transaction",
 
             /* ================= DATE / IDS ================= */
-            dateTime: txn.requestTransactionTime,
-            terminalId: txn.terminalId,
-            rrn: txn.bankRRN,
-            transactionId: txn?.transactionId,
-            txnType: txn.transactionType,
+            // timestamp at apiResponse level in new API, fallback for old Fingpay
+            dateTime: apiResponse?.timestamp || wrapper?.timestamp || txn?.requestTransactionTime,
+            // operatorId = terminal ref in new API
+            terminalId: txn?.terminalId || txn?.operatorId,
+            // externalRef = RRN equivalent in new API
+            rrn: txn?.bankRRN || txn?.externalRef,
+            // ipayId = transaction ID in new API
+            transactionId: txn?.transactionId || txn?.ipayId,
+            txnType: txn?.transactionType,
 
             /* ================= USER INPUT (FROM FORM) ================= */
             aadhaarNumber: maskAadhaar(formValues?.aadhaar),
@@ -150,9 +160,9 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
             miniStatement: txn?.miniStatement ?? [],
 
             /* ================= ERROR ================= */
-            responseCode: txn.responseCode,
-            errorCode: txn.errorCode,
-            errorMessage: txn.errorMessage,
+            responseCode: txn?.responseCode,
+            errorCode: txn?.errorCode,
+            errorMessage: txn?.errorMessage,
         };
     };
 
