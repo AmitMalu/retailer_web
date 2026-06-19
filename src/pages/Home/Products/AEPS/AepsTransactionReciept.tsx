@@ -131,6 +131,14 @@ const TransactionReciept = ({ data }: { data: any }) => {
                                 <Table.Td fw={500}>Bank Account Balance</Table.Td>
                                 <Table.Td>{dash(data?.bankAccountBalance)}</Table.Td>
                             </Table.Tr>
+                            <Table.Tr>
+                                <Table.Td fw={500}>Opening Balance</Table.Td>
+                                <Table.Td>{dash(data?.openingBalance)}</Table.Td>
+                            </Table.Tr>
+                            <Table.Tr>
+                                <Table.Td fw={500}>Closing Balance</Table.Td>
+                                <Table.Td>{dash(data?.closingBalance)}</Table.Td>
+                            </Table.Tr>
                         </>
                     )}
 
