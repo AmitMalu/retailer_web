@@ -31,7 +31,7 @@ interface AepsFormValues {
 
 const SERVICE_TITLES: any = {
     cashWithdrawal: "Cash Withdrawal",
-    balanceInquiry: "Balance Inquiry",
+    balanceInquiry: "Balance Enquiry",
     miniStatement: "Mini Statement",
 };
 
@@ -118,45 +118,53 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
         pidData: "",
     };
 
-    const normalizeReceiptData = (apiResponse: any, service: string, formValues: any) => {
-        const wrapper = apiResponse || {};
-        const vendor = wrapper?.data || {};
-        const txn = vendor?.data || {};
+    const maskAadhaar = (aadhaar?: string) =>
+        aadhaar ? `XXXXXXXX${aadhaar.slice(-4)}` : "—";
 
-        const isSuccess = vendor?.statuscode === "TXN";
+    const normalizeReceiptData = (apiResponse: any, service: string, formValues: any) => {
+        const wrapper = apiResponse?.data || {};
+        const txn = wrapper?.data || {};
+
+        const isSuccess = wrapper?.statuscode === "TXN";
 
         return {
             /* ================= STATUS ================= */
             status: isSuccess ? "SUCCESS" : "FAILED",
-            statusMessage: vendor?.status || wrapper?.message,
+            statusMessage: wrapper?.status || wrapper?.message,
 
             /* ================= SERVICE ================= */
             serviceKey: service,
             serviceTitle: SERVICE_TITLES[service] ?? "AEPS Transaction",
 
             /* ================= DATE / IDS ================= */
-            dateTime: vendor?.timestamp,
-            terminalId: txn.terminalId,
-            rrn: txn?.externalRef,
-            transactionId: txn?.transactionId,
-            txnType: txn.transactionType,
+            dateTime: wrapper?.timestamp,
+            terminalId: txn?.terminalId || txn?.operatorId,
+            rrn: txn?.bankRRN || txn?.externalRef,
+            transactionId: apiResponse?.transactionId || wrapper?.transactionId || txn?.transactionId,
+            txnType: txn?.transactionType,
 
             /* ================= USER INPUT (FROM FORM) ================= */
             aadhaarNumber: maskAadhaar(formValues?.aadhaar),
             mobileNumber: formValues?.mobile,
             bankName: txn?.bankName,
+            accountNumber: txn?.accountNumber,
 
             /* ================= AMOUNTS ================= */
             transactionAmount: txn?.transactionValue,
             balanceAmount: txn?.bankAccountBalance,
+            bankAccountBalance: txn?.bankAccountBalance,
+            openingBalance: txn?.openingBalance,
+            closingBalance: txn?.closingBalance,
+
+            /* ================= MINI STATEMENT ================= */
+            miniStatement: txn?.miniStatement ?? [],
 
             /* ================= ERROR ================= */
-            responseCode: vendor?.statuscode,
-            errorCode: txn.errorCode,
-            errorMessage: vendor?.status,
+            responseCode: wrapper?.statuscode,
+            errorCode: txn?.errorCode,
+            errorMessage: wrapper?.status,
         };
     };
-
 
     const handleSubmit = async (values: AepsFormValues) => {
         try {
@@ -238,8 +246,7 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
         }
     }
 
-    const maskAadhaar = (aadhaar?: string) =>
-        aadhaar ? `XXXXXXXX${aadhaar.slice(-4)}` : "—";
+
 
     // Fetch banks
     const fetchBanks = async () => {

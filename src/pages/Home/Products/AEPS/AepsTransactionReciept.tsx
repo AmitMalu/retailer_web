@@ -73,61 +73,59 @@ const TransactionReciept = ({ data }: { data: any }) => {
                 horizontalSpacing="sm"
             >
                 <Table.Tbody>
+                    {/* Bank Name */}
+                    <Table.Tr>
+                        <Table.Td fw={500}>Bank Name</Table.Td>
+                        <Table.Td w="35%">{dash(data?.bankName)}</Table.Td>
+                        <Table.Td w="20%" fw={500}>Account No</Table.Td>
+                        <Table.Td w="25%">{dash(data?.accountNumber)}</Table.Td>
+                    </Table.Tr>
+
                     {/* Date */}
                     <Table.Tr>
                         <Table.Td fw={500}>Date</Table.Td>
-                        <Table.Td>{dash(data?.dateTime)}</Table.Td>
+                        <Table.Td colSpan={3}>{dash(data?.dateTime)}</Table.Td>
+                    </Table.Tr>
+
+                    {/* TX Type */}
+                    <Table.Tr>
+                        <Table.Td fw={500}>TXN Type</Table.Td>
+                        <Table.Td colSpan={3}>{dash(data?.serviceTitle)}</Table.Td>
                     </Table.Tr>
 
                     {/* Aadhaar + Mobile */}
                     <Table.Tr>
-                        <Table.Td fw={500}>Aadhaar Number</Table.Td>
-                        <Table.Td>
+                        <Table.Td w="25%" fw={500}>Aadhaar Number</Table.Td>
+                        <Table.Td colSpan={3}>
                             {data?.aadhaarNumber
                                 ? `${data.aadhaarNumber}${data?.mobileNumber ? ` with mobile ${data.mobileNumber}` : ""}`
                                 : "-"}
                         </Table.Td>
                     </Table.Tr>
 
-                    {/* Bank Name */}
-                    <Table.Tr>
-                        <Table.Td fw={500}>Bank Name</Table.Td>
-                        <Table.Td>{dash(data?.bankName)}</Table.Td>
-                    </Table.Tr>
-
-                    {/* Transaction Type */}
-                    <Table.Tr>
-                        <Table.Td fw={500}>Transaction Type</Table.Td>
-                        <Table.Td>{dash(data?.serviceTitle)}</Table.Td>
-                    </Table.Tr>
-
                     {/* Transaction ID */}
-                    <Table.Tr>
+                    {data?.transactionId && <Table.Tr>
                         <Table.Td fw={500}>Transaction ID</Table.Td>
-                        <Table.Td>{dash(data?.transactionId)}</Table.Td>
-                    </Table.Tr>
+                        <Table.Td colSpan={3}>{dash(data?.transactionId)}</Table.Td>
+                    </Table.Tr>}
 
                     {data.serviceKey === "cashWithdrawal" && (
                         <Table.Tr>
                             <Table.Td fw={500}>Transaction Amount</Table.Td>
-                            <Table.Td>{data.transactionAmount}</Table.Td>
+                            <Table.Td colSpan={3}>{data.transactionAmount}</Table.Td>
                         </Table.Tr>
                     )}
 
                     {data.serviceKey === "balanceInquiry" && (
                         <Table.Tr>
                             <Table.Td fw={500}>Available Balance</Table.Td>
-                            <Table.Td>{dash(data.balanceAmount)}</Table.Td>
+                            <Table.Td colSpan={3}>{dash(data.balanceAmount)}</Table.Td>
                         </Table.Tr>
                     )}
 
                     {data.serviceKey === "miniStatement" && (
                         <>
-                            <Table.Tr>
-                                <Table.Td fw={500}>Account Number</Table.Td>
-                                <Table.Td>{dash(data?.accountNumber)}</Table.Td>
-                            </Table.Tr>
-                            <Table.Tr>
+                            {/* <Table.Tr>
                                 <Table.Td fw={500}>Bank Account Balance</Table.Td>
                                 <Table.Td>{dash(data?.bankAccountBalance)}</Table.Td>
                             </Table.Tr>
@@ -138,21 +136,21 @@ const TransactionReciept = ({ data }: { data: any }) => {
                             <Table.Tr>
                                 <Table.Td fw={500}>Closing Balance</Table.Td>
                                 <Table.Td>{dash(data?.closingBalance)}</Table.Td>
-                            </Table.Tr>
+                            </Table.Tr> */}
                         </>
                     )}
 
                     {/* RRN */}
                     <Table.Tr>
                         <Table.Td fw={500}>RRN</Table.Td>
-                        <Table.Td>{dash(data?.rrn)}</Table.Td>
+                        <Table.Td colSpan={3}>{dash(data?.rrn)}</Table.Td>
                     </Table.Tr>
 
                     {/* Terminal ID */}
-                    <Table.Tr>
+                    {/* <Table.Tr>
                         <Table.Td fw={500}>Terminal ID</Table.Td>
                         <Table.Td>{dash(data?.terminalId)}</Table.Td>
-                    </Table.Tr>
+                    </Table.Tr> */}
                 </Table.Tbody>
             </Table>
 
