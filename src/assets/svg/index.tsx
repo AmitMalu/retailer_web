@@ -1451,7 +1451,7 @@ export const SortSvgIcon = ({ color }: { color: string }) => (
 );
 
 export const PlusSvgIcon = ({ color }: { color: string }) => (
-  <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none">
+  <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none">
     <g id="Edit / Add_Plus_Circle">
       <path
         id="Vector"

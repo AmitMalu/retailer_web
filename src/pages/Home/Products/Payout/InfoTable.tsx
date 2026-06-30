@@ -36,6 +36,7 @@ import PayoutBankDeleteModal from "@/components/Organism/PayoutBankDeleteModal";
 import { useBankVerification } from "@/Utils/Verification";
 import { Refresh } from "@mui/icons-material";
 import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
+import ConfirmDialog from "@/components/Atoms/ConfirmDialog";
 
 interface LocationState {
   payoutType?: subProductObjType;
@@ -55,6 +56,13 @@ const InfoTable = () => {
   const [isBankList, setIsBankList] = useState<PayoutBankDetails | []>([]);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const { verify: verifyBank } = useBankVerification();
+
+  // --- Transfer confirmation dialog ---
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean;
+    payload: PayoutSendBeneficiaryProps | null;
+    submitFn: (() => void) | null;
+  }>({ open: false, payload: null, submitFn: null });
 
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
   const [page, setPage] = useState(1);
@@ -169,12 +177,14 @@ const InfoTable = () => {
       label: "Holder Name",
       searchKey: "bankHolderName",
       // sortable: true,
+      width: 240,
     },
     {
       key: "bankName",
       label: "Bank Name",
       searchKey: "bankName",
       // sortable: true,
+      width: 200,
     },
     {
       key: "accountNumber",
@@ -279,10 +289,17 @@ const InfoTable = () => {
               errors,
               touched,
               setFieldValue,
+              validateForm,
+              setTouched,
             }) => (
               <div className="flex items-center gap-2 justify-center">
-                <div className="w-40 h-20 flex justify-center items-center">
+                <div className="w-32 h-10 flex justify-center items-center">
                   <DropdownComponent
+                    pY={6}
+                    pX={6}
+                    labelFontSize={14}
+                    inputFontSize={12}
+                    menuFontSize={12}
                     label="Transaction Type"
                     data={[
                       { value: "IMPS", label: "IMPS" },
@@ -298,18 +315,20 @@ const InfoTable = () => {
                     className="w-max"
                   />
                 </div>
-                <div className="w-32 h-20 flex justify-center items-center">
+                <div className="w-32 h-10 flex justify-center items-center">
                   <TextInputComponent
+                    labelFontSize={10}
+                    size="small"
                     placeholder={"Enter Amount"}
                     value={values.amount ? values.amount : 0}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const val = e.target.value;
 
-                      // 🧠 If current value is 0 and user types a number → replace it
+                      // current value is 0 and user types a number → replace it
                       if (values.amount === 0 && /^\d$/.test(val)) {
                         setFieldValue("amount", Number(val));
                       }
-                      // ✅ Otherwise, handle normally
+                      // Otherwise, handle normally
                       else if (/^\d*$/.test(val)) {
                         setFieldValue("amount", Number(val || 0));
                       }
@@ -320,14 +339,23 @@ const InfoTable = () => {
                   />
                 </div>
                 <ButtonComponent
-                  height="40px"
+                  fontSize={14}
+                  height={28}
                   title="Transfer"
                   variant="filled"
-                  onClick={() => {
-                    handleSubmit();
+                  onClick={async () => {
+                    // Touch all fields so errors show up
+                    await setTouched({ paymentMode: true, amount: true });
+                    const errors = await validateForm();
+                    if (Object.keys(errors).length > 0) return; // validation failed — stop
+                    setConfirmModal({
+                      open: true,
+                      payload: values,
+                      submitFn: handleSubmit,
+                    });
                   }}
                   radius={5}
-                  width={120}
+                  width={90}
                 />
               </div>
             )}
@@ -342,32 +370,34 @@ const InfoTable = () => {
       searchKey: "isVerified",
       sortable: false,
       render: (_value: any, _index: number, row: PayoutBankDetails) => (
-        <div className="flex items-center gap-2">
+        <div
+          className="flex items-center justify-center"
+        >
           {row?.isVerified ? (
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
                 color: "#28a745",
-                fontSize: "18px",
+                fontSize: "14px",
                 fontWeight: 500,
               }}
             >
-              ✅ Verified
+              <span>✅</span>
+              <span>Verified</span>
             </div>
           ) : (
             <ButtonComponent
-              height={40}
+              fontSize={14}
+              height={28}
               title="Verify"
               variant="outline"
               radius={5}
-              width={100}
+              width={80}
               onClick={() => handleVerifyBank(row)}
             />
           )}
         </div>
       ),
-      disableSearch: true
+      disableSearch: true,
     },
     {
       key: "action",
@@ -478,10 +508,13 @@ const InfoTable = () => {
 
           {/* Add Bank Button */}
           <ButtonComponent
+            height={40}
+            size="xs"
+            fontSize={12}
             title="ADD BANK"
             variant="filled"
             onClick={() => setShowDrawerForm(true)}
-            radius={4}
+            radius={2}
             width={150}
             leftIcon={<PlusSvgIcon color={theme.palette.background.paper} />}
           />
@@ -507,6 +540,9 @@ const InfoTable = () => {
             }}
             serverSide={true}
             totalRecords={totalRecords}
+            withColumnBorders
+            verticalSpacing="xs"
+            horizontalSpacing="xs"
           />
         </div>
 
@@ -529,6 +565,16 @@ const InfoTable = () => {
             GetPayoutDataSubmit();
           }}
           rowData={selectedRowData}
+        />
+
+        {/* Transfer Confirmation Dialog */}
+        <ConfirmDialog
+          opened={confirmModal.open}
+          onClose={() => setConfirmModal({ open: false, payload: null, submitFn: null })}
+          onConfirm={() => {
+            setConfirmModal((prev) => ({ ...prev, open: false }));
+            confirmModal.submitFn?.();
+          }}
         />
       </div >
     </>

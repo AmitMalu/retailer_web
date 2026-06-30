@@ -38,6 +38,9 @@ const TableComponent: React.FC<TableProps> = ({
   addRowLabel,              // optional text
   addRowIcon,
   showNoDataFound = true, // default to true
+  withColumnBorders = false,
+  verticalSpacing = "sm",
+  horizontalSpacing = "md",
 }) => {
   const theme = useTheme();
 
@@ -161,7 +164,7 @@ const TableComponent: React.FC<TableProps> = ({
             return (
               <Table.Td
                 key={cellKey}
-                className={`w-max items-center justify-center text-center ${isActionColumn
+                className={`items-center justify-center text-center ${isActionColumn
                   ? `bg-${theme.palette.background.paperColor}`
                   : "bg-transparent"
                   } `}
@@ -169,25 +172,44 @@ const TableComponent: React.FC<TableProps> = ({
                   position: isActionColumn ? "sticky" : "relative",
                   right: isActionColumn ? 0 : "auto",
                   zIndex: isActionColumn ? 2 : 1,
-                  minWidth: isActionColumn ? "120px" : "auto",
+                  width: column.width,
+                  maxWidth: column.width,
                 }}
               >
                 {column.render ? (
                   column.render(item[column.key], index, item)
                 ) : (
-                  <TextComponent
-                    color={theme.palette.text.primary}
-                    fontSize={14}
-                    fontWeight={400}
-                    className="w-max justify-self-center"
-                    align="center"
+                  <div
+                    title={String(item[column.key] ?? "-")}
+                    style={{
+                      width: "100%",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      cursor: "pointer"
+                    }}
                   >
-                    {item[column.key] === undefined ||
-                      item[column.key] === null ||
-                      item[column.key] === ""
-                      ? "-"
-                      : item[column.key]}
-                  </TextComponent>
+                    <TextComponent
+                      color={theme.palette.text.primary}
+                      fontSize={14}
+                      fontWeight={400}
+                      // className={`ellipses`}
+                      align="center"
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {item[column.key] === undefined ||
+                        item[column.key] === null ||
+                        item[column.key] === ""
+                        ? "-"
+                        : item[column.key]}
+                    </TextComponent>
+                  </div>
                 )}
               </Table.Td>
             );
@@ -201,10 +223,10 @@ const TableComponent: React.FC<TableProps> = ({
     <>
       <div
         className="my-6 overflow-auto rounded-lg border shadow-xl"
-        style={{ 
-          position: "relative", 
+        style={{
+          position: "relative",
           scrollbarWidth: "none",
-          borderColor: theme.palette.divider 
+          borderColor: theme.palette.divider
         }}
       >
         <Table
@@ -212,12 +234,12 @@ const TableComponent: React.FC<TableProps> = ({
           stickyHeader
           highlightOnHover
           withRowBorders={true}
-          withColumnBorders={false}
-          verticalSpacing="sm"
-          horizontalSpacing="md"
+          withColumnBorders={withColumnBorders}
+          verticalSpacing={verticalSpacing}
+          horizontalSpacing={horizontalSpacing}
           captionSide="bottom"
-          style={{ 
-            minWidth: "100%", 
+          style={{
+            minWidth: "100%",
             width: "100%",
             borderColor: theme.palette.divider
           }}
@@ -235,7 +257,7 @@ const TableComponent: React.FC<TableProps> = ({
             },
           }}
         >
-          <Table.Thead>
+          <Table.Thead >
             <Table.Tr style={{ backgroundColor: theme.palette.mode === "light" ? theme.palette.background.default : theme.palette.secondary.dark }}>
               {columns
                 .filter(
@@ -254,6 +276,8 @@ const TableComponent: React.FC<TableProps> = ({
                         position: isActionColumn ? "sticky" : "relative",
                         right: isActionColumn ? 0 : "auto",
                         zIndex: isActionColumn ? 3 : 2,
+                        width: column.width,
+                        maxWidth: column.width,
                       }}
                       className={`items-center justify-center bg-background-paper text-center ${column.sortable ? "cursor-pointer" : "cursor-default"
                         }`}

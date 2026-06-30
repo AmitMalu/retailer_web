@@ -26,7 +26,12 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
   multiple = false,
   // withCheckIcon = true,
   className = "",
-  allowDeselect = false
+  allowDeselect = false,
+  labelFontSize = 16,
+  inputFontSize = 16,
+  pY = 16,
+  pX = 14,
+  menuFontSize = 14,
 }) => {
   const theme = useTheme();
 
@@ -78,7 +83,7 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
           mt: 0,
           "& .MuiInputLabel-root": {
             color: theme.palette.placeholder,
-            fontSize: "16px",
+            fontSize: `${labelFontSize}px`,
             fontWeight: 400,
             transform: "translate(14px, 16px) scale(1)",
             "&.Mui-focused, &.MuiFormLabel-filled": {
@@ -145,8 +150,10 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
             },
             "& .MuiSelect-select": {
               color: "text.primary",
-              fontSize: "14px",
-              padding: "16px 14px 16px 14px",
+              fontSize: `${inputFontSize}px`,
+              // padding: "16px 14px",
+              paddingY: `${pY}px`,
+              paddingX: `${pX}px`,
               '&[aria-expanded="true"]': {
                 backgroundColor: "transparent",
               },
@@ -186,7 +193,7 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
                 }
               }}
               sx={{
-                fontSize: "14px",
+                fontSize: `${menuFontSize}px`,
                 "&.Mui-selected": {
                   backgroundColor: "gray.dark",
                   "&:hover": {
