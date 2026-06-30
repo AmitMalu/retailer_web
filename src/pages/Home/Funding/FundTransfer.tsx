@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
@@ -17,6 +17,7 @@ import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import { Child_Member_List, Fund_Transfer } from "@/Services/api";
 import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
+import ConfirmDialog from "@/components/Atoms/ConfirmDialog";
 const FundTransfer = () => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,6 +29,11 @@ const FundTransfer = () => {
     : null;
 
   const { checkDuplicate, store } = useTransactionCooldown("FUND-TRANSFER");
+
+  // --- Payment confirmation dialog ---
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const pendingSubmitRef = React.useRef<{ values: FundTransferProps; resetForm: () => void } | null>(null);
+
 
   const [childMemberList, setChildMemberList] = useState<
     ChildMemberListProps[]
@@ -93,7 +99,7 @@ const FundTransfer = () => {
 
   const handleFundRequest = async (
     values: FundTransferProps,
-    { resetForm }: FormikHelpers<FundTransferProps>
+    resetForm: FormikHelpers<FundTransferProps>["resetForm"]
   ) => {
     try {
       setIsLoading(true);
@@ -150,7 +156,11 @@ const FundTransfer = () => {
         <Formik<FundTransferProps>
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={handleFundRequest}
+          // onSubmit={handleFundRequest}
+          onSubmit={(values, { resetForm }) => {
+            pendingSubmitRef.current = { values, resetForm };
+            setConfirmOpen(true);
+          }}
           enableReinitialize={true}
         >
           {({
@@ -281,6 +291,20 @@ const FundTransfer = () => {
           )}
         </Formik>
       </div>
+
+      {/* Payment Confirmation Dialog */}
+      <ConfirmDialog
+        opened={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          setConfirmOpen(false);
+          if (pendingSubmitRef.current) {
+            const { values, resetForm } = pendingSubmitRef.current;
+            pendingSubmitRef.current = null;
+            handleFundRequest(values, resetForm);
+          }
+        }}
+      />
     </>
   );
 };

@@ -10,7 +10,7 @@ import { useTheme } from "@mui/system";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import { Card, Grid, Stack, Group, Center, Box, Drawer } from "@mantine/core";
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import PlanDrawer from "./components/PlanDrawer";
 import SubscriberCard from "./components/SubscriberCard";
 import RechargeTransactionReceipt from "./RechargeTransactionReceipt";
@@ -20,6 +20,7 @@ import { handleCustomError } from "@/Utils/handleCustomError";
 import { RechargeOperatorListType, RechargeTransactionType } from "@/Common/interface";
 import { useAppSelector } from "@/Redux/hooks";
 import { decryptData } from "@/Utils/helper";
+import ConfirmDialog from "@/components/Atoms/ConfirmDialog";
 
 type CardType = {
     active: boolean;
@@ -76,6 +77,10 @@ const Recharge = () => {
     const [showReceipt, setShowReceipt] = useState(false);
     const [receiptData, setReceiptData] = useState<any>(null);
     const resetFormRef = useRef<any>(null);
+
+    // --- Payment confirmation dialog ---
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const pendingSubmitRef = React.useRef<{ values: RechargeFormValues; resetForm: () => void } | null>(null);
 
     const { responses } = useAppSelector(state => state.apiResponse)
 
@@ -426,7 +431,9 @@ const Recharge = () => {
                     initialValues={initialValues}
                     validationSchema={validationSchema}
                     onSubmit={(values, { resetForm }) => {
-                        handleSubmit(values, resetForm)
+                        // handleSubmit(values, resetForm)
+                        pendingSubmitRef.current = { values, resetForm };
+                        setConfirmOpen(true);
                     }}
                 >
                     {({ values, setFieldValue, resetForm }) => {
@@ -719,6 +726,20 @@ const Recharge = () => {
                     />
                 )}
             </Drawer>
+
+            {/* Payment Confirmation Dialog */}
+            <ConfirmDialog
+                opened={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={() => {
+                    setConfirmOpen(false);
+                    if (pendingSubmitRef.current) {
+                        const { values, resetForm } = pendingSubmitRef.current;
+                        pendingSubmitRef.current = null;
+                        handleSubmit(values, resetForm);
+                    }
+                }}
+            />
         </>
     );
 };

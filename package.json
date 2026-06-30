@@ -6,29 +6,21 @@
   "scripts": {
     "prebuild": "node scripts/generateBuildInfo.cjs",
     "prebuild:uat": "node scripts/generateBuildInfo.cjs",
-
     "dev": "vite --mode development",
     "dev:uat": "vite --mode uat",
     "dev:prod": "vite --mode production",
-
-    "clean" : "rimraf dist",
-
+    "clean": "rimraf dist",
     "build:dev:": "npm run clean && tsc -b && vite build --mode development && npm run copy-webxml",
     "build:uat": "npm run clean && tsc -b && vite build --mode uat && npm run copy-webxml",
     "build": "npm run clean && tsc -b && vite build --mode production && npm run copy-webxml",
-
     "war:dev": "npm run build:dev && node scripts/createWar.cjs",
     "war:uat": "npm run build:uat && node scripts/createWar.cjs",
     "war": "npm run build && node scripts/createWar.cjs",
-
     "copy-webxml": "node scripts/copyWebXml.cjs",
-
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 1",
-
     "preview": "vite preview",
     "preview:uat": "vite preview --mode uat",
     "preview:dev": "vite preview --mode development",
-    
     "prepare": "husky",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "lint-staged": "lint-staged",
@@ -92,6 +84,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.22.2",
     "react-scripts": "5.0.1",
+    "react-svg": "^17.2.4",
     "react-to-print": "^3.1.1",
     "react-toastify": "^10.0.4",
     "recharts": "^2.15.4",

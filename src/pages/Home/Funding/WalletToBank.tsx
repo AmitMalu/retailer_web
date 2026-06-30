@@ -1,5 +1,6 @@
 import { WalletToBankProps } from "@/Common/interface";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
+import ConfirmDialog from "@/components/Atoms/ConfirmDialog";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
@@ -11,7 +12,7 @@ import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { Formik, FormikHelpers } from "formik";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import * as Yup from 'yup'
 
@@ -38,11 +39,17 @@ const WalletToBank = () => {
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
+
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses.loginData)
     : null;
 
   const { checkDuplicate, store } = useTransactionCooldown("MOVETOBANK");
+
+  // --- Payment confirmation dialog ---
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const pendingSubmitRef = React.useRef<{ values: WalletToBankProps; resetForm: () => void } | null>(null);
+
 
   const subProductId = loginData?.products
     ?.flatMap((product: any) => (product?.subProducts || []))
@@ -86,7 +93,7 @@ const WalletToBank = () => {
 
   const handleFundRequest = async (
     values: WalletToBankProps,
-    { resetForm }: FormikHelpers<WalletToBankProps>
+    resetForm: FormikHelpers<WalletToBankProps>["resetForm"]
   ) => {
     try {
       setIsLoading(true);
@@ -162,7 +169,11 @@ const WalletToBank = () => {
           <Formik<WalletToBankProps>
             initialValues={initialValues}
             validationSchema={validationSchema}
-            onSubmit={handleFundRequest}
+            // onSubmit={handleFundRequest}
+            onSubmit={(values, { resetForm }) => {
+              pendingSubmitRef.current = { values, resetForm };
+              setConfirmOpen(true);
+            }}
             enableReinitialize={true}
           >
             {({
@@ -277,6 +288,20 @@ const WalletToBank = () => {
           </Formik>
         </div>
       </div>
+
+      {/* Payment Confirmation Dialog */}
+      <ConfirmDialog
+        opened={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          setConfirmOpen(false);
+          if (pendingSubmitRef.current) {
+            const { values, resetForm } = pendingSubmitRef.current;
+            pendingSubmitRef.current = null;
+            handleFundRequest(values, resetForm);
+          }
+        }}
+      />
     </>
   );
 };

@@ -31,6 +31,7 @@ import { toast } from "react-toastify";
 import * as Yup from 'yup'
 import DMTTransactionReceipt from "./DMTTransactionReceipt";
 import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
+import ConfirmDialog from "@/components/Atoms/ConfirmDialog";
 
 const RemitterInfo = () => {
 
@@ -68,6 +69,13 @@ const RemitterInfo = () => {
     referenceKey?: string;
   }>({});
 
+  // --- Transfer confirmation dialog ---
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean;
+    payload: any | null;
+    submitFn: (() => void) | null;
+  }>({ open: false, payload: null, submitFn: null });
+
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
@@ -95,10 +103,15 @@ const RemitterInfo = () => {
 
 
   const tableColumns: TableColumn[] = [
+    // {
+    //   key: "bene_id",
+    //   label: "ID",
+    //   searchKey: "bene_id",
+    // },
     {
-      key: "bene_id",
+      key: "srNo",
       label: "ID",
-      searchKey: "bene_id",
+      searchKey: "name",
     },
     {
       key: "name",
@@ -227,6 +240,8 @@ const RemitterInfo = () => {
               errors,
               touched,
               setFieldValue,
+              validateForm,
+              setTouched,
             }) => (
               <div className="flex items-center gap-2 h-14 justify-center">
                 <div className="w-40 h-20 flex justify-center items-center">
@@ -272,8 +287,17 @@ const RemitterInfo = () => {
                   height="40px"
                   title="Transfer"
                   variant="filled"
-                  onClick={() => {
-                    handleSubmit();
+                  onClick={async () => {
+                    // handleSubmit();
+                    // Touch all fields so errors show up
+                    await setTouched({ paymentMode: true, amount: true });
+                    const errors = await validateForm();
+                    if (Object.keys(errors).length > 0) return; // validation failed — stop
+                    setConfirmModal({
+                      open: true,
+                      payload: values,
+                      submitFn: handleSubmit,
+                    });
                   }}
                   radius={5}
                   width={120}
@@ -833,6 +857,15 @@ const RemitterInfo = () => {
         )}
       </Drawer>
 
+      {/* Transfer Confirmation Dialog */}
+      <ConfirmDialog
+        opened={confirmModal.open}
+        onClose={() => setConfirmModal({ open: false, payload: null, submitFn: null })}
+        onConfirm={() => {
+          setConfirmModal((prev) => ({ ...prev, open: false }));
+          confirmModal.submitFn?.();
+        }}
+      />
     </>
   )
 }

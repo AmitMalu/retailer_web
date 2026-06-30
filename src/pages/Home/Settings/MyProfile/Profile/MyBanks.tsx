@@ -16,6 +16,7 @@ import { saveApiResponse } from "@/Redux/Actions/apiActions";
 import { useDispatch } from "react-redux";
 import { UnstyledButton } from "@mantine/core";
 import { TrashSvgIcon } from "@/assets/svg";
+import { handleCustomError } from "@/Utils/handleCustomError";
 
 const MyBanks = () => {
   const theme = useTheme();
@@ -107,13 +108,14 @@ const MyBanks = () => {
       }
     } catch (error: any) {
       console.error("Delete bank failed:", error);
-      showErrorNotification(error?.response.data.message || error?.message || "Error deleting bank");
+      // showErrorNotification(error?.response.data.message || error?.message || "Error deleting bank");
+      handleCustomError(error || "Error deleting bank");
     }
   };
 
   // Table columns
   const tableColumns = [
-    { key: "id", label: "ID", sortable: false },
+    { key: "srNo", label: "ID", sortable: false },
     { key: "bankName", label: "Bank Name", sortable: false },
     { key: "accountName", label: "Bank Holder Name", sortable: false },
     { key: "accountNo", label: "Account Number", sortable: false },
@@ -221,14 +223,14 @@ const MyBanks = () => {
               ? UserProfileData.myBanksList.length
               : UserProfileData?.myBanksList
                 ? 1
-                : 0) < 2
+                : 0) < 5
               ? () => {
                 setShowDrawerForm(true);
               }
               : undefined
           }
           addRowLabel="Add Bank"
-          addRowIcon={<AddCircleOutlined style={{ color: "white" }} />}
+          addRowIcon={<AddCircleOutlined style={{ color: theme.palette.primary.main }} />}
         />
       </div>
 

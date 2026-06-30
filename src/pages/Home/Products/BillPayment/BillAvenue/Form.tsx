@@ -24,6 +24,7 @@ import { buildFetchBillPayload } from "./Utils/buildExtraParamPayload";
 import { buildProcessTransactionPayload, getBillFormConfig, paiseToRupee } from "./Utils/billHelpers";
 import BBPSTransactionReciept from "../BBPSTransactionReciept";
 import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
+import ConfirmDialog from "@/components/Atoms/ConfirmDialog";
 
 interface Props {
     serviceName: string;
@@ -57,6 +58,10 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
     const [receiptData, setReceiptData] = useState<any>(null);
 
     const [requestId, setRequestId] = useState('')
+
+    // --- Payment confirmation dialog ---
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const pendingSubmitRef = React.useRef<{ values: FormikValues; resetForm: () => void } | null>(null);
     
     // Ref for first Formik to enable form reset
     const firstFormikRef = useRef<any>(null);
@@ -568,7 +573,10 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
                                             validationSchema={validationSchema}
                                             validateOnChange
                                             enableReinitialize
-                                            onSubmit={(values, { resetForm }) => processTransaction(values, resetForm)}
+                                            onSubmit={(values, { resetForm }) => {
+                                                pendingSubmitRef.current = { values, resetForm };
+                                                setConfirmOpen(true);
+                                            }}
                                         >
                                             {({ values, handleChange, errors, touched, handleSubmit }) => {
 
@@ -657,6 +665,20 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
                     )} */}
                     <BBPSTransactionReciept data={receiptData} />
                 </Drawer>
+
+                {/* Payment Confirmation Dialog */}
+                <ConfirmDialog
+                    opened={confirmOpen}
+                    onClose={() => setConfirmOpen(false)}
+                    onConfirm={() => {
+                        setConfirmOpen(false);
+                        if (pendingSubmitRef.current) {
+                            const { values, resetForm } = pendingSubmitRef.current;
+                            pendingSubmitRef.current = null;
+                            processTransaction(values, resetForm);
+                        }
+                    }}
+                />
             </div>
         </>
     )
