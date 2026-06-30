@@ -52,6 +52,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
   capitalize = false,
   allowDecimal,
   decimalPlaces = 3,
+  labelFontSize = 16,
   ...rest
 }) => {
   const theme = useTheme();
@@ -160,7 +161,7 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
             width: "100%",
             height: "100%",
             color: theme.palette.placeholder,
-            fontSize: "16px",
+            fontSize: `${labelFontSize}px`,
             fontWeight: 400,
             "&.Mui-focused": {
               color: theme.palette.primary.main,

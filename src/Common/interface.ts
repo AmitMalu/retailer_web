@@ -217,6 +217,7 @@ export type CustomTextInputProps = Omit<
   allowedChars?: string;
   capitalize?: boolean;
   size?: "medium" | "small";
+  labelFontSize?: number;
 };
 
 export type CustomTextProps = {
@@ -296,6 +297,12 @@ export interface CustomDropdownProps {
   className?: string;
   leftSection?: React.ReactNode;
   rightSection?: React.ReactNode;
+  labelFontSize?: number;
+  inputFontSize?: number;
+  pY?: number;
+  pX?: number;
+  menuFontSize?: number;
+
 }
 
 export type customFileinputProps = {
@@ -382,6 +389,7 @@ export type TableColumn = {
   type?: "text" | "date" | "time" | "dropdown" | "number" | "boolean";
   options?: { value: string; label: string }[];
   align?: "left" | "center" | "right";
+  width?: number;
 };
 
 export type TableProps = {
@@ -406,6 +414,9 @@ export type TableProps = {
   addRowLabel?: string; // Optional text for Add Row
   addRowIcon?: React.ReactNode; // Optional icon for Add Row
   showNoDataFound?: boolean; // Show "No data found" when data is empty
+  withColumnBorders?: boolean;
+  verticalSpacing?: "xs" | "sm" | "md" | "lg";
+  horizontalSpacing?: "xs" | "sm" | "md" | "lg";
 };
 
 export type CustomTextareaProps = {
