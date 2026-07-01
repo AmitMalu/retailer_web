@@ -70,9 +70,9 @@ const FundReversal = () => {
       }
 
       setIsLoading(true);
-      const response = await Resend_Otp_Fund_Reversal(otpId);
+      await Resend_Otp_Fund_Reversal(otpId);
       setTimer(30);
-      showSuccessNotification(response?.data?.data?.otp);
+      // showSuccessNotification(response?.data?.data?.otp);
     } catch (error: any) {
       showErrorNotification(error.response?.data?.message || error.message);
       console.error(error);
@@ -171,14 +171,14 @@ const FundReversal = () => {
       if (response?.data?.statusCode === 200 || response?.data?.statusCode === 201) {
         if (!isOtpStage) {
           // First call (OTP generation)
-          const otp = response?.data?.data?.otp;
+          // const otp = response?.data?.data?.otp;
           const id = response?.data?.data?.fundReversalRequestId;
 
           if (id) {
             setOtpId(id);
           }
 
-          showSuccessNotification(otp);
+          // showSuccessNotification(otp);
           setOpened(true);
           setTimer(30);
           setIsOtpStage(true);
