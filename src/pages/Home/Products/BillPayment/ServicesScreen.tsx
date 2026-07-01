@@ -1,4 +1,4 @@
-import { BackSvgIcon, BillPaymentSvgIcon } from "@/assets/svg";
+import { BackSvgIcon } from "@/assets/svg";
 import TextComponent from "@/components/Atoms/TextComponent";
 import BbpsCard from "@/components/Molecules/BBPSCard";
 import { Get_Services_List } from "@/Services/api";
@@ -8,6 +8,7 @@ import { Skeleton, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getBbpsIcon } from "./bbpsIcons";
 
 const ServicesScreen = () => {
     const theme = useTheme();
@@ -111,16 +112,26 @@ const ServicesScreen = () => {
                 <div className="flex justify-center gap-6 flex-wrap">
                     {isLoading
                         ? shimmerCards // show shimmering skeletons while loading
-                        : cardsData.map((card: any) => (
-                            <BbpsCard
-                                key={card.id}
-                                image={<BillPaymentSvgIcon
-                                    color={theme.palette.primary.main}
-                                />}
-                                title={card.title}
-                                onClick={() => handleIconClick({ serviceName: card.title })}
-                            />
-                        ))}
+                        : cardsData.map((card: any) => {
+                            const Icon = getBbpsIcon(card.title);
+
+                            return (
+                                <BbpsCard
+                                    key={card.id}
+                                    // image={<BillPaymentSvgIcon
+                                    //     color={theme.palette.primary.main}
+                                    // />}
+                                    image={
+                                        <Icon
+                                            size={40}
+                                            color={theme.palette.primary.main}
+                                        />
+                                    }
+                                    title={card.title}
+                                    onClick={() => handleIconClick({ serviceName: card.title })}
+                                />
+                            )
+                        })}
                 </div>
             </div>
         </>
