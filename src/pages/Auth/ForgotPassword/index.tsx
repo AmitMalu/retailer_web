@@ -10,7 +10,6 @@ import { MobileNoRegex } from "@/Utils/helper";
 import { UserNameSvgIcon } from "@/assets/svg";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { ForgotPasswordRequestProps } from "@/Common/interface";
-import ForgetPassword from "@/assets/svg/Auth/ForgetPassword";
 import { Forgot_Password } from "@/Services/api";
 import {
   showErrorNotification,
@@ -63,11 +62,10 @@ const ForgotPassword: React.FC = () => {
     <>
       {isLoading && <Loader />}
       <AuthLayout
-        authImage={<ForgetPassword />}
         authText='"Start smart. Stay secure. Create a password that works for you."'
       >
         <div className="flex w-full  items-center justify-center flex-col gap-5">
-          <div className="flex h-auto w-[350px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
+          <div className="flex h-auto w-[380px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
             <div className="flex flex-col items-center justify-center gap-3">
               <TextComponent
                 fontSize={30}
