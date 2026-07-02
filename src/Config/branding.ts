@@ -58,6 +58,8 @@ export const useBranding = () => {
 
       loginBgImg: decrypted.backgroundUrl,
 
+      loginArtwork : decrypted?.loginArtwork,
+
       welcomeText: decrypted.welcomeText,
 
       terms: decrypted.termsUrl,

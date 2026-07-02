@@ -14,7 +14,6 @@ import { SetPasswordRequestProps } from "@/Common/interface";
 import { CloseEyeSvgIcon, LockSvgIcon, OpenEyeSvgIcon } from "@/assets/svg";
 import { PasswordRegex } from "@/Utils/helper";
 import AuthLayout from "@/components/layouts/AuthLayout";
-import SetPasswordImage from "@/assets/svg/Auth/setPassword";
 import { Set_Password } from "@/Services/api";
 import {
   showErrorNotification,
@@ -73,7 +72,6 @@ const SetPasswordScreen: React.FC = () => {
     <>
       {isLoading && <Loader />}
       <AuthLayout
-        authImage={<SetPasswordImage />}
         authText='"One password. Total protection. Your finances deserve the best security."'
       >
         <div className="flex w-full  items-center justify-center flex-col gap-5">

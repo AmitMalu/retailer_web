@@ -25,7 +25,6 @@ import {
 import { saveApiResponse } from "@/Redux/Actions/apiActions";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/Redux/Store";
-import OtpAuthImage from "@/assets/svg/Auth/Otp";
 import { useTheme } from "@mui/system";
 import { ArrowLeft } from "@mui/icons-material";
 import { useWebSocket } from "@/hooks/useWebSocket";
@@ -76,8 +75,8 @@ const OtpInputScreen = () => {
 
   const validationSchema = Yup.object({
     otp: Yup.string()
-    .matches(/^\d{6}$/, "OTP must be 6 digits")
-    .required("Required"),
+      .matches(/^\d{6}$/, "OTP must be 6 digits")
+      .required("Required"),
   });
 
   const initialValues: OtpRequestProps = {
@@ -102,12 +101,12 @@ const OtpInputScreen = () => {
           dispatch(saveApiResponse("loginData", response?.data?.data));
           document.cookie = `authToken=${encodeURIComponent(response?.data?.data?.token)}; expires=${new Date(Date.now() + 7 * 864e5).toUTCString()}; path=/; SameSite=Strict`;
           showSuccessNotification("Logged In Successfully");
-          
+
           // Initialize WebSocket connection after successful login 
           connect().catch((error) => {
             console.error('Failed to connect WebSocket:', error);
           });
-          
+
           navigate("/dashboard");
           // GenerateCredentials(values.userName);
         } else {
@@ -160,7 +159,6 @@ const OtpInputScreen = () => {
     <>
       {isLoading && <Loader />}
       <AuthLayout
-        authImage={<OtpAuthImage />}
         authText='"Your money, always within reach. Smart, simple, and secure fintech access."'
       >
         <div className="flex w-full items-center justify-center flex-col gap-5">
