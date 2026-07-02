@@ -75,7 +75,7 @@ api.interceptors.request.use(
     const tenantDomain = window.location.hostname;
 
     if (tenantDomain) {
-      config.headers.set("X-Tenant-Domain", "uat.nfttech.in");
+      config.headers.set("X-Tenant-Domain", tenantDomain);
     }
 
     if (config.isMultipart) {
