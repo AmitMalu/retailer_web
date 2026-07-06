@@ -72,6 +72,8 @@ api.interceptors.request.use(
       config.headers.set("IpAddress", ipAddress);
     }
 
+    config.headers.set("Medium", "web");
+
     const tenantDomain = window.location.hostname;
 
     if (tenantDomain) {
