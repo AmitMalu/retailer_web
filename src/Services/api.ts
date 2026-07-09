@@ -543,6 +543,14 @@ export const Recharge_Transaction = async (data: RechargeTransactionType) => {
   return await api.post(`${API_ROUTES.RECHARGE_TRANSACTION}`, data);
 };
 
+export const Recharge_DTH_Customer_Info = async (data: {
+  subProductId: string;
+  accountNo: string;
+  spkey: string;
+}) => {
+  return await api.post(`${API_ROUTES.RECHARGE_DTH_CUSTOMER_INFO}`, data);
+};
+
 ////////////////////////////// VERIFICATIONS /////////////////////////////////
 export const Adhaar_Verification = async (aadhaarNumber: number) =>
   await api.post(

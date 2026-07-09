@@ -142,6 +142,7 @@ export const API_ROUTES = {
   RECHARGE_MOBILE_LOOKUP: `${BASE_URL}/api/recharge/mobile-lookup`,
   RECHARGE_PLANS: `${BASE_URL}/api/recharge/plans`,
   RECHARGE_TRANSACTION: `${BASE_URL}/api/recharge`,
+  RECHARGE_DTH_CUSTOMER_INFO: `${BASE_URL}/api/recharge/dth-customer-info`,
 
 
   ///////////////////////// VERIFICATION //////////////////////////////////
