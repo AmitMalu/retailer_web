@@ -12,9 +12,9 @@ import * as Yup from "yup";
 import { Card, Grid, Stack, Group, Center, Box, Drawer } from "@mantine/core";
 import React, { useEffect, useState, useRef } from "react";
 import PlanDrawer from "./components/PlanDrawer";
-import SubscriberCard from "./components/SubscriberCard";
+import SubscriberCard, { Subscriber } from "./components/SubscriberCard";
 import RechargeTransactionReceipt from "./RechargeTransactionReceipt";
-import { Recharge_Fetch_Operator, Recharge_Fetch_Plans, Recharge_Mobile_Lookup, Recharge_Transaction } from "@/Services/api";
+import { Recharge_Fetch_Operator, Recharge_Fetch_Plans, Recharge_Mobile_Lookup, Recharge_Transaction, Recharge_DTH_Customer_Info } from "@/Services/api";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { RechargeOperatorListType, RechargeTransactionType } from "@/Common/interface";
@@ -67,7 +67,7 @@ const Recharge = () => {
     const { subProductId } = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [plansDrawer, setPlansDrawer] = useState(false);
-    const [subscriber, setSubscriber] = useState<any>(null);
+    const [subscriber, setSubscriber] = useState<Subscriber | null>(null);
     const [operators, setOperators] = useState<RechargeOperatorListType[]>([])
     const [mobileOperators, setMobileOperators] = useState<any[]>([]);
     const [dthOperators, setDthOperators] = useState<any[]>([]);
@@ -139,11 +139,85 @@ const Recharge = () => {
         }),
     });
 
-    const handleCheck = (values: RechargeFormValues) => {
-        if (subscriber) {
-            setSubscriber(null)
-        } else {
-            console.log(values);
+    const handleCheck = async (values: RechargeFormValues) => {
+        if (!values.dthOperator || !values.subscriberNumber) return;
+
+        try {
+            setIsLoading(true);
+
+            // Find the selected DTH operator to get its spKey
+            const selectedOperator = dthOperators.find(
+                (op: any) => op.value === values.dthOperator
+            );
+
+            if (!selectedOperator) {
+                showErrorNotification("Selected operator not found");
+                return;
+            }
+
+            const response = await Recharge_DTH_Customer_Info({
+                subProductId: subProductId || "",
+                accountNo: values.subscriberNumber,
+                spkey: selectedOperator.value, // spKey from operator list
+            });
+
+            // Outer API failed
+            if (response?.data?.statusCode !== 200) {
+                showErrorNotification(response?.data?.message || "Failed to fetch subscriber info");
+                setSubscriber(null);
+                return;
+            }
+
+            const outerData = response?.data?.data;
+
+            // Wrapper level failed
+            if (!outerData || outerData.statusCode !== 1) {
+                showErrorNotification(outerData?.msg || "Failed to fetch subscriber info");
+                setSubscriber(null);
+                return;
+            }
+
+            const innerData = outerData?.data;
+
+            // Actual API failed (MOST IMPORTANT)
+            if (!innerData || innerData.statusCode !== 1) {
+                showErrorNotification(innerData?.msg || "Failed to fetch subscriber info");
+                setSubscriber(null);
+                return;
+            }
+
+            const fields: { key: string; value: string | null; ind: number }[] = innerData?.data || [];
+
+            if (!fields.length) {
+                showErrorNotification("No subscriber data found");
+                setSubscriber(null);
+                return;
+            }
+
+            const getValue = (...keys: string[]): string | null => {
+                const normalizedKeys = keys.map((k) => k.toLowerCase());
+                const field = fields.find((f) => normalizedKeys.includes(f.key?.trim().toLowerCase()));
+                const val = field?.value;
+                return val ? val.trim() : null;
+            };
+
+            // Map key-value array to SubscriberCard shape
+            setSubscriber({
+                name: getValue("customer name", "csutomer name"),
+                status: getValue("status"),
+                balance: getValue("balance"),
+                lastRechargeAmount: getValue("last recharge amount"),
+                lastRechargeDate: getValue("last recharge date"),
+                monthlyRecharge: getValue("monthly recharge"),
+                planName: getValue("plan name"),
+                nextRechargeDate: getValue("next rechargedate", "next recharge date"),
+            });
+
+        } catch (err) {
+            await handleCustomError(err);
+            setSubscriber(null);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -699,7 +773,7 @@ const Recharge = () => {
                                     </Grid.Col>
 
                                     {!isMobile && subscriber && (
-                                        <Grid.Col span={{ base: 12, md: 3 }}>
+                                        <Grid.Col span={{ base: 12, md: 4 }}>
                                             <SubscriberCard subscriber={subscriber} />
                                         </Grid.Col>
                                     )}
