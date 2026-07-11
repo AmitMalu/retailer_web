@@ -31,6 +31,7 @@ import {
   Create_Partner,
   Create_Retailer,
   Create_Super_Distributor,
+  Network_Bank_Master_List_Dropdown,
   Pan_Verification,
   Initialize_Digilocker,
   Download_Aadhaar,
@@ -47,6 +48,7 @@ import CustomDatePicker from "../Atoms/NewComponents/CustomDatePicker";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import FormikFileInput from "../Molecules/NewComponents/FormikFileInput";
 import FormikTextInputComponent from "../Molecules/NewComponents/FormikTextInputComponent";
+import FormikSelectComponent from "../Molecules/NewComponents/FormikSelectComponent";
 import { getLocationCache } from "@/Utils/locationCache";
 
 const ProfileRegistrationForm = ({
@@ -62,6 +64,8 @@ const ProfileRegistrationForm = ({
   // const [showImagePreview, setShowImagePreview] = useState(false);
   // const [isimage, setImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [bankList, setBankList] = useState([]);
+  const [isBanksLoading, setIsBanksLoading] = useState(false);
   // const { verify: verifyAadhaar } = useAadhaarVerification();
   // const { verify: verifyPan } = usePanVerification();
   // const { verify: verifyAdhaarPanLink } = useAdhaarPanVerification();
@@ -75,6 +79,24 @@ const ProfileRegistrationForm = ({
 
   // const hasLinked = useRef(false);
   const formikRef = useRef<FormikProps<UserProfileFormProps>>(null);
+
+  const getBankList = async () => {
+    try {
+      setIsBanksLoading(true);
+      const response = await Network_Bank_Master_List_Dropdown();
+      if (response?.data?.statusCode == 200) {
+        setBankList(response?.data?.data || []);
+      }
+    } catch (error) {
+      setBankList([]);
+    } finally {
+      setIsBanksLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getBankList();
+  }, []);
 
   const handleClose = () => {
     // hasLinked.current = false;
@@ -1139,21 +1161,27 @@ const ProfileRegistrationForm = ({
                   >
                     <div className="mt-5 flex flex-wrap items-start justify-start gap-4">
                       <div className="w-full sm:w-[calc(50%-12px)] ">
-                        <TextInputComponent
-                          label={"Bank Name"}
-                          placeholder={"Enter"}
-                          value={values.bankName}
-                          onChange={handleChange("bankName")}
-                          error={
-                            touched.bankName && errors.bankName
-                              ? errors.bankName
-                              : ""
-                          }
+                        <FormikSelectComponent
+                          // label="Bank Name"
+                          name="bankName"
+                          placeholder="Search & Select Bank"
+                          data={bankList?.map((bank: any) => ({
+                            value: String(bank?.id),
+                            label: bank?.bankName,
+                          })) || []}
+                          size="lg"
+                          searchable
+                          allowDeselect
                           withAsterisk
-                          maxLength={50}
-                          allowSpecialChar={false}
-                          allowNumber={false}
-                          className="w-max"
+                          disabled={isBanksLoading}
+                          onChange={(value: string) => {
+                            const selectedBank: any = bankList?.find(
+                              (bank: any) => String(bank?.id) === value
+                            );
+                            if (selectedBank) {
+                              (formikRef?.current as any)?.setFieldValue?.("ifscCode", selectedBank.ifscCode || "");
+                            }
+                          }}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">

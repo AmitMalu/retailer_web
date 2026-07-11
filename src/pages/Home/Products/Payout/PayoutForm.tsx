@@ -3,16 +3,17 @@ import {
   PayoutSaveBeneficiaryProps,
 } from "@/Common/interface";
 import { Modal } from "@mantine/core";
-import { useState } from "react";
-import { Formik, FormikProps } from "formik";
+import { useEffect, useState } from "react";
+import { Formik } from "formik";
 import * as Yup from "yup";
 import { decryptData } from "@/Utils/helper";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
+import FormikSelectComponent from "@/components/Molecules/NewComponents/FormikSelectComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import theme from "@/theme/ThemeConfig";
 import {
-  Payout_Get_Bank_Details,
+  Network_Bank_Master_List_Dropdown,
   Payout_Save_Beneficiary,
 } from "@/Services/api";
 import {
@@ -36,25 +37,43 @@ const PayoutFormModal = ({
     : null;
 
   const [isLoading, setIsLoading] = useState(false);
+  const [bankList, setBankList] = useState([]);
+  const [isBankLoading, setIsBankLoading] = useState(false);
 
-  const GetBankDetails = async (
-    values: PayoutSaveBeneficiaryProps,
-    setFieldValue: FormikProps<PayoutSaveBeneficiaryProps>["setFieldValue"]
-  ) => {
+  const getBankList = async () => {
     try {
-      setIsLoading(true);
-      const response = await Payout_Get_Bank_Details(values.ifscCode);
-      if (response?.status === 200 || response?.data?.status === "200") {
-        setFieldValue("bankName", response?.data?.data?.bankName);
-      } else {
-        showErrorNotification(response?.data?.message || "Unable to fetch");
-      }
+      setIsBankLoading(true);
+      const response = await Network_Bank_Master_List_Dropdown();
+      setBankList(response?.data?.data || []);
     } catch (error) {
-      await handleCustomError(error);
+      setBankList([]);
     } finally {
-      setIsLoading(false);
+      setIsBankLoading(false);
     }
   };
+
+  useEffect(() => {
+    getBankList();
+  }, []);
+
+  // const GetBankDetails = async (
+  //   values: PayoutSaveBeneficiaryProps,
+  //   setFieldValue: FormikProps<PayoutSaveBeneficiaryProps>["setFieldValue"]
+  // ) => {
+  //   try {
+  //     setIsLoading(true);
+  //     const response = await Payout_Get_Bank_Details(values.ifscCode);
+  //     if (response?.status === 200 || response?.data?.status === "200") {
+  //       setFieldValue("bankName", response?.data?.data?.bankName);
+  //     } else {
+  //       showErrorNotification(response?.data?.message || "Unable to fetch");
+  //     }
+  //   } catch (error) {
+  //     await handleCustomError(error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const validationSchema = Yup.object().shape({
     bankName: Yup.string().required("Required")
@@ -168,22 +187,37 @@ const PayoutFormModal = ({
               <>
                 <div className="mt-3 flex flex-wrap items-start justify-start gap-3">
                   <div className="w-full sm:w-[calc(50%-12px)] ">
+                    <FormikSelectComponent
+                      name="bankName"
+                      placeholder="Select Bank"
+                      data={bankList?.map((bank: any) => ({
+                        value: String(bank?.id),
+                        label: bank?.bankName,
+                      })) || []}
+                      searchable
+                      allowDeselect
+                      withAsterisk
+                      size="md"
+                      radius={6}
+                      disabled={isBankLoading}
+                      onChange={(value: string) => {
+                        setFieldValue("bankName", value);
+                        const selectedBank: any = bankList?.find(
+                          (bank: any) => String(bank?.id) === value
+                        );
+                        if (selectedBank) {
+                          setFieldValue("ifscCode", selectedBank.ifscCode || "");
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="w-full sm:w-[calc(50%-12px)] ">
                     <TextInputComponent
                       label={"IFSC Code"}
                       placeholder={"Enter"}
                       value={values.ifscCode}
                       capitalize
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        handleChange("ifscCode")(e);
-
-                        if (value.length === 11) {
-                          GetBankDetails(
-                            { ...values, ifscCode: value },
-                            setFieldValue
-                          );
-                        }
-                      }}
+                      onChange={handleChange("ifscCode")}
                       error={
                         touched.ifscCode && errors.ifscCode
                           ? errors.ifscCode
@@ -193,25 +227,6 @@ const PayoutFormModal = ({
                       className="w-max"
                       maxLength={11}
                       minLength={11}
-                    />
-                  </div>
-                  <div className="w-full sm:w-[calc(50%-12px)] ">
-                    <TextInputComponent
-                      label={"Bank Name"}
-                      placeholder={"Enter"}
-                      value={values.bankName}
-                      onChange={handleChange("bankName")}
-                      error={
-                        touched.bankName && errors.bankName
-                          ? errors.bankName
-                          : ""
-                      }
-                      withAsterisk
-                      maxLength={50}
-                      allowSpecialChar={false}
-                      allowNumber={false}
-                      className="w-max"
-                      // disabled={true}
                     />
                   </div>
                   <div className="w-full sm:w-[calc(50%-12px)] ">

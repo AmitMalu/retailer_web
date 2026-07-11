@@ -25,6 +25,7 @@ import { buildProcessTransactionPayload, getBillFormConfig, paiseToRupee } from 
 import BBPSTransactionReciept from "../BBPSTransactionReciept";
 import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 import ConfirmDialog from "@/components/Atoms/ConfirmDialog";
+import bbbsLogo from "@/assets/svg/Products/bbps/Bharat_connect_logo.svg";
 
 interface Props {
     serviceName: string;
@@ -36,13 +37,13 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
     // vendor prop is reserved for future vendor-specific logic
     const navigate = useNavigate();
     const theme = useTheme();
-    
+
     // Check if this is a credit card shortcut navigation
     // Only apply if serviceName is "Credit Card" AND we came directly from the shortcut (not through BBPS service screen)
     const location = useLocation();
-    const isCreditCardShortcut = serviceName === "Credit Card" && 
-                                vendor?.toLowerCase().includes("avenue") && 
-                                location.state?.fromCreditCardShortcut === true;
+    const isCreditCardShortcut = serviceName === "Credit Card" &&
+        vendor?.toLowerCase().includes("avenue") &&
+        location.state?.fromCreditCardShortcut === true;
 
     const [isLoading, setIsLoading] = useState(false);
     const [providerList, setProviderList] = useState([]);
@@ -62,10 +63,10 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
     // --- Payment confirmation dialog ---
     const [confirmOpen, setConfirmOpen] = useState(false);
     const pendingSubmitRef = React.useRef<{ values: FormikValues; resetForm: () => void } | null>(null);
-    
+
     // Ref for first Formik to enable form reset
     const firstFormikRef = useRef<any>(null);
-    
+
     // Key to force Formik remount when modal closes
     const [formKey, setFormKey] = useState(0);
 
@@ -409,34 +410,43 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
             {isLoading && <MyLoader />}
             <div className="w-full 320px:mt-12 md:mt-0">
                 {/* Back Button and Title */}
-                <div className="mb-6 flex items-center gap-6 justify-start">
-                    {/* Back Button */}
-                    <UnstyledButton
-                        onClick={() => {
-                            if (isCreditCardShortcut) {
-                                // Navigate back to products page for credit card shortcut
-                                navigate("/products");
-                            } else {
-                                // Normal BBPS navigation
-                                navigate(`/products/billPay/service`, {
-                                    state: {
-                                        subProductId,
-                                    },
-                                });
-                            }
-                        }}
-                    >
-                        <BackSvgIcon color={theme.palette.primary.main} />
-                    </UnstyledButton>
+                <div className="mb-6 flex items-center justify-between">
+                    <div className="flex items-center gap-6">
+                        {/* Back Button */}
+                        <UnstyledButton
+                            onClick={() => {
+                                if (isCreditCardShortcut) {
+                                    // Navigate back to products page for credit card shortcut
+                                    navigate("/products");
+                                } else {
+                                    // Normal BBPS navigation
+                                    navigate(`/products/billPay/service`, {
+                                        state: {
+                                            subProductId,
+                                        },
+                                    });
+                                }
+                            }}
+                        >
+                            <BackSvgIcon color={theme.palette.primary.main} />
+                        </UnstyledButton>
 
-                    {/* Title */}
-                    <TextComponent
-                        fontSize={28}
-                        fontWeight={600}
-                        color={theme.palette.primary.main}
-                    >
-                        {serviceName}
-                    </TextComponent>
+                        {/* Title */}
+                        <TextComponent
+                            fontSize={28}
+                            fontWeight={600}
+                            color={theme.palette.primary.main}
+                        >
+                            {serviceName}
+                        </TextComponent>
+                    </div>
+
+                    {/* Bharat Connect Logo */}
+                    <img
+                        src={bbbsLogo}
+                        alt="BBPS"
+                        style={{ width: 100, height: "auto", objectFit: "contain" }}
+                    />
                 </div>
 
                 {/*Fetch Bill Details Form */}
@@ -537,7 +547,16 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
                             setFormKey(prev => prev + 1);
                         }
                     }}
-                    title="Bill Details"
+                    title={
+                        <div className="flex items-center justify-between w-full">
+                            <span>Bill Details</span>
+                            <img
+                                src={bbbsLogo}
+                                alt="BBPS"
+                                style={{ width: 80, height: "auto", objectFit: "contain" }}
+                            />
+                        </div>
+                    }
                     size="xl"
                     centered
                     closeOnEscape={false}
@@ -547,6 +566,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
                         title: {
                             fontSize: "1.5rem",
                             fontWeight: 600,
+                            width: "100%",
                         },
                         body: {
                             overflow: isLoading ? "hidden" : "auto", // Disable scrolling while loading
@@ -627,7 +647,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
                         setSelectedProviderDetails(null);
                         setRequestId('');
                         setReceiptDrawerOpened(false);
-                        
+
                         if (isCreditCardShortcut) {
                             // Navigate back to credit card form for shortcut users
                             // navigate("/products/billPay/form", {

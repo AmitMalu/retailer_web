@@ -4,7 +4,6 @@ import {
   EmailRegex,
   MobileNoRegex,
   PasswordRegex,
-  singleDateValidationSchema,
 } from "@/Utils/helper";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -61,6 +60,8 @@ const SubuserCreation = () => {
       .required("Required"),
     password: Yup.string()
       .required("Required")
+      .min(8, "Minimum 8 characters")
+      .max(20, "Maximum 20 characters")
       .matches(
         PasswordRegex,
         "Password must be 8+ chars with uppercase, number & special character."
@@ -415,6 +416,7 @@ const SubuserCreation = () => {
                               : ""
                           }
                           withAsterisk
+                          maxLength={20}
                           type={showPassword ? "text" : "password"}
                           className="w-full"
                           rightSection={

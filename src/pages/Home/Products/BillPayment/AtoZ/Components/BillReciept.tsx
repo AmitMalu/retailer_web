@@ -7,6 +7,7 @@ import moment from "moment";
 import { useTheme } from "@mui/system";
 import "./BillReciept.css";
 import { useBranding } from "@/Config/branding";
+import bbbslogo from "@/assets/svg/Products/bbps/Bharat_connect_logo.png";
 
 const BillReceipt = ({ data }: { data: any }) => {
 
@@ -27,10 +28,10 @@ const BillReceipt = ({ data }: { data: any }) => {
     };
 
     return (
-        <Card shadow="sm" radius="md" withBorder p="md">
+        <Card shadow="sm" radius="md" withBorder p="md" pos="relative">
             {/* --- Header Section --- */}
             <Group justify="space-between" align="center" mb="md">
-                <Group gap={2}>
+                <Group gap={8}>
                     {/* <ImLogo /> */}
                     <img
                         style={{
@@ -40,6 +41,15 @@ const BillReceipt = ({ data }: { data: any }) => {
                         }}
                         src={branding?.logo ?? loginData.logoUrl ?? ""}
                         alt={branding?.companyName ?? "Logo"}
+                    />
+                    <img
+                        style={{
+                            width: 70,
+                            height: "auto",
+                            objectFit: "contain",
+                        }}
+                        src={bbbslogo}
+                        alt="BBPS"
                     />
                 </Group>
                 <Text fw={600} size="sm" ta="right">
@@ -114,6 +124,20 @@ const BillReceipt = ({ data }: { data: any }) => {
             <Text size="sm" c="dimmed" ta="center">
                 Note: This is a computer-generated slip; no signature is required.
             </Text>
+
+            {/* --- BBPS Watermark --- */}
+            <div className="bbps-watermark">
+                <img
+                    src={bbbslogo}
+                    alt="BBPS"
+                    style={{
+                        width: 80,
+                        height: "auto",
+                        objectFit: "contain",
+                        opacity: 0.6,
+                    }}
+                />
+            </div>
 
             {/* Print Button */}
             <Group justify="center" mt="lg" className="no-print">

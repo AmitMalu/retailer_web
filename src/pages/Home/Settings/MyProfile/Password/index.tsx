@@ -40,12 +40,16 @@ const ChangePassowrd: React.FC = () => {
   const validationSchema = Yup.object({
     otp: Yup.string().required("Required"),
     oldPassword: Yup.string()
+      .min(8, "Minimum 8 characters")
+      .max(20, "Maximum 20 characters")
       .matches(
         PasswordRegex,
         "Password must be 8+ chars with uppercase, number & special character."
       )
       .required("Required"),
     newPassword: Yup.string()
+      .min(8, "Minimum 8 characters")
+      .max(20, "Maximum 20 characters")
       .matches(
         PasswordRegex,
         "Password must be 8+ chars with uppercase, number & special character."
@@ -175,6 +179,7 @@ const ChangePassowrd: React.FC = () => {
                       }
                       withAsterisk
                       leftSection={<LockSvgIcon />}
+                      maxLength={20}
                       type={showOldPassword ? "text" : "password"}
                       className="w-full"
                       isAuth={true}
@@ -205,6 +210,7 @@ const ChangePassowrd: React.FC = () => {
                       }
                       withAsterisk
                       leftSection={<LockSvgIcon />}
+                      maxLength={20}
                       type={showNewPassword ? "text" : "password"}
                       className="w-full"
                       isAuth={true}
@@ -234,6 +240,7 @@ const ChangePassowrd: React.FC = () => {
                           : ""
                       }
                       withAsterisk
+                      maxLength={20}
                       type={showPassword ? "text" : "password"}
                       leftSection={<LockSvgIcon />}
                       className="w-full"

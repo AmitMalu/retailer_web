@@ -44,7 +44,10 @@ const Login: React.FC = () => {
       .max(10, "Please enter valid number")
       .matches(MobileNoRegex, "Please enter valid number")
       .required("Required"),
-    password: Yup.string().required("Required"),
+    password: Yup.string()
+      .min(8, "Minimum 8 characters")
+      .max(20, "Maximum 20 characters")
+      .required("Required"),
   });
 
   const initialValues: LoginRequest = {
@@ -188,6 +191,7 @@ const Login: React.FC = () => {
                             ? errors.password
                             : ""
                         }
+                        maxLength={20}
                         type={showPassword ? "text" : "password"}
                         className="w-full"
                         isAuth={true}

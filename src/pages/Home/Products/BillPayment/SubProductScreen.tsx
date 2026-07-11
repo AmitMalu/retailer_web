@@ -9,6 +9,7 @@ import { useTheme } from "@mui/system";
 import React from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import bbbslogo from "@/assets/svg/Products/bbps/Bharat_connect_logo.png";
 
 const SubProductScreen = () => {
   const theme = useTheme();
@@ -54,22 +55,36 @@ const SubProductScreen = () => {
 
   return (
     <>
-      <UnstyledButton
-        onClick={() => {
-          navigate(`/products`);
-        }}
-      >
-        <BackSvgIcon color={theme.palette.primary.main} />
-      </UnstyledButton>
-      <div className="mx-auto py-10 px-4 text-center relative">
-        <TextComponent
-          fontSize={28}
-          fontWeight={600}
-          color={theme.palette.primary.main}
-        >
-          Bharat Bill Payment System
-        </TextComponent>
+      <div className="mb-6 flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          {/* Back Button */}
+          <UnstyledButton
+            onClick={() => {
+              navigate(`/products`);
+            }}
+          >
+            <BackSvgIcon color={theme.palette.primary.main} />
+          </UnstyledButton>
 
+          {/* Title */}
+          <TextComponent
+            fontSize={28}
+            fontWeight={600}
+            color={theme.palette.primary.main}
+          >
+            Bharat Bill Payment System
+          </TextComponent>
+        </div>
+
+        {/* Bharat Connect Logo */}
+        <img
+          src={bbbslogo}
+          alt="BBPS"
+          style={{ width: 100, height: "auto", objectFit: "contain" }}
+        />
+      </div>
+
+      <div className="mx-auto py-10 px-4 relative">
         <div className="flex flex-col items-center gap-6 mt-8">
           {groupedCards.map((row, rowIndex) => (
             <div key={rowIndex} className="flex justify-center gap-6 flex-wrap">

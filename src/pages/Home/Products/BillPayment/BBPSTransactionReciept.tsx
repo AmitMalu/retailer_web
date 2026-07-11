@@ -5,6 +5,7 @@ import { useTheme } from "@mui/system";
 import "./BBPSTransactionReciept.css";
 import { useAppSelector } from "@/Redux/hooks";
 import { useBranding } from "@/Config/branding";
+import BharatconnectAssuredLogo from "@/assets/svg/Products/bbps/Bharatconnect_assured_logo.png";
 
 const BBPSTransactionReciept = ({ data }: { data: any }) => {
 
@@ -27,26 +28,32 @@ const BBPSTransactionReciept = ({ data }: { data: any }) => {
     const dash = (val: any) => (val !== null && val !== undefined && val !== "" ? val : "-");
 
     return (
-        <Card shadow="sm" radius="md" withBorder p="md">
+        <Card shadow="sm" radius="md" withBorder p="md" pos="relative">
             {/* --- Header Section --- */}
             <Group justify="space-between" align="center" mb="md">
-                <Group gap={2}>
-                    <img
-                        style={{
-                            width: 120,
-                            height: 120,
-                            objectFit: "contain",
-                        }}
-                        src={branding?.logo ?? loginData.logoUrl ?? ""}
-                        alt={branding?.companyName ?? "Logo"}
-                    />
-                </Group>
-
+                <img
+                    style={{
+                        width: 120,
+                        height: 120,
+                        objectFit: "contain",
+                    }}
+                    src={branding?.logo ?? loginData.logoUrl ?? ""}
+                    alt={branding?.companyName ?? "Logo"}
+                />
                 <Text fw={600} size="sm" ta="right">
                     {loginData
                         ? `${loginData?.outletName ?? ""}/${loginData?.hierarchyId ?? ""}/${loginData?.mobileNumber ?? ""}`
                         : ""}
                 </Text>
+                <img
+                    style={{
+                        width: 90,
+                        height: "auto",
+                        objectFit: "contain",
+                    }}
+                    src={BharatconnectAssuredLogo}
+                    alt="BBPS"
+                />
             </Group>
 
             <Divider mb="sm" />
