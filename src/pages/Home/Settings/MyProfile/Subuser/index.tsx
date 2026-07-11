@@ -51,7 +51,9 @@ const SubuserCreation = () => {
 
   const validationSchema = Yup.object().shape({
     parentAccount: Yup.string().required("Required"),
-    name: Yup.string().required("Required"),
+    name: Yup.string().required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(50, "Must be at most 50 characters"),
     mobileNumber: Yup.string()
       .max(10, "Enter valid Number")
       .min(10, "Enter valid Number")
@@ -63,16 +65,41 @@ const SubuserCreation = () => {
         PasswordRegex,
         "Password must be 8+ chars with uppercase, number & special character."
       ),
+    // emailId: Yup.string()
+    //   .matches(EmailRegex, "Enter valid email")
+    //   .lowercase("Email must be in lowercase")
+    //   .required("Email is Required"),
     emailId: Yup.string()
-      .matches(EmailRegex, "Enter valid email")
+      .test(
+        "email-format",
+        "Enter valid email",
+        (value) => !value || EmailRegex.test(value)
+      )
+      .test(
+        "lowercase",
+        "Email must be in lowercase",
+        (value) => !value || value === value.toLowerCase()
+      )
       .required("Email is Required"),
     emailVerified: Yup.boolean(),
     lastVerifiedEmail: Yup.string().nullable(),
-    dob: singleDateValidationSchema,
+    dob: Yup.date()
+      .nullable()
+      .required("Date of birth is required")
+      .test("dob-age-range", "Age must be between 18 and 75 years", (value) => {
+        if (!value) return false;
+        const today = new Date();
+        const age = today.getFullYear() - value.getFullYear() -
+          (today < new Date(today.getFullYear(), value.getMonth(), value.getDate()) ? 1 : 0);
+        return age >= 18 && age <= 75;
+      }),
     add: Yup.object().shape({
-      address: Yup.string().required("Required"),
+      address: Yup.string().required("Required")
+        .min(15, "Must be at least 15 characters")
+        .max(100, "Must be at most 100 characters"),
       city: Yup.string().required("Required"),
-      state: Yup.string().required("Required"),
+      state: Yup.string().required("Required")
+        .max(25, "Must be at most 25 characters"),
       zipCode: Yup.string()
         .max(6, "Enter valid Number")
         .min(6, "Enter valid Number")
@@ -181,6 +208,7 @@ const SubuserCreation = () => {
     values: SubuserCreationProps,
     { resetForm }: FormikHelpers<SubuserCreationProps>
   ) => {
+
     try {
       setIsLoading(true);
       const bodyData = {

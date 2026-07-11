@@ -303,28 +303,61 @@ const ProfileRegistrationForm = ({
       .max(10, "Enter valid Number")
       .matches(MobileNoRegex, "Please enter valid number")
       .required("Required"),
+    // emailId: Yup.string()
+    //   .matches(EmailRegex, "Please enter valid Email")
+    //   .lowercase("Email must be in lowercase")
+    //   .required("Required"),
     emailId: Yup.string()
-      .matches(EmailRegex, "Please enter valid Email")
-      .required("Required"),
+      .test(
+        "email-format",
+        "Enter valid email",
+        (value) => !value || EmailRegex.test(value)
+      )
+      .test(
+        "lowercase",
+        "Email must be in lowercase",
+        (value) => !value || value === value.toLowerCase()
+      )
+      .required("Email is Required"),
     parentAccount: Yup.string().required("Required"),
-    name: Yup.string().required("Required"),
-    dob: Yup.string().required("Required"),
-    mainAddress: Yup.string().required("Required"),
+    name: Yup.string().required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(50, "Must be at most 50 characters"),
+    dob: Yup.string().required("Required")
+      .test("dob-age-range", "Age must be between 18 and 75 years", (value) => {
+        if (!value) return false;
+        const dob = new Date(value);
+        const today = new Date();
+        const age = today.getFullYear() - dob.getFullYear() -
+          (today < new Date(today.getFullYear(), dob.getMonth(), dob.getDate()) ? 1 : 0);
+        return age >= 18 && age <= 75;
+      }),
+    mainAddress: Yup.string().required("Required")
+      .min(15, "Must be at least 15 characters")
+      .max(100, "Must be at most 100 characters"),
     city: Yup.string().required("Required"),
-    state: Yup.string().required("Required"),
+    state: Yup.string().required("Required")
+      .max(25, "Must be at most 25 characters"),
     addessZipCode: Yup.string()
       .max(6, "Enter valid Number")
       .matches(PinCodeRegex, "Please enter valid number")
       .required("Required"),
-    outletName: Yup.string().required("Required"),
-    outletAddresses: Yup.string().required("Required"),
+    outletName: Yup.string().required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(50, "Must be at most 50 characters"),
+    outletAddresses: Yup.string().required("Required")
+      .min(15, "Must be at least 15 characters")
+      .max(100, "Must be at most 100 characters"),
     outletCity: Yup.string().required("Required"),
-    outletState: Yup.string().required("Required"),
+    outletState: Yup.string().required("Required")
+      .max(25, "Must be at most 25 characters"),
     outletZipCode: Yup.string()
       .max(6, "Enter valid Number")
       .matches(PinCodeRegex, "Please enter valid number")
       .required("Required"),
-    bankName: Yup.string().required("Required"),
+    bankName: Yup.string().required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(50, "Must be at most 50 characters"),
     bankAccountNumber: Yup.string()
       .transform((value) => (value ? value.replace(/\s+/g, "") : "")) // remove all spaces
       .required("Required")
@@ -334,7 +367,9 @@ const ProfileRegistrationForm = ({
     ifscCode: Yup.string()
       .required("Required")
       .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Enter valid IFSC code"),
-    bankHolderName: Yup.string().required("Bank Holder Name is Required"),
+    bankHolderName: Yup.string().required("Bank Holder Name is Required")
+      .min(2, "Must be at least 2 characters")
+      .max(50, "Must be at most 50 characters"),
     isBankVerified: Yup.boolean(),
     branchName: Yup.string().required("Required"),
     // aadhaarNumber: Yup.string()

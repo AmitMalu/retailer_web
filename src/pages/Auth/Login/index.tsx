@@ -5,7 +5,7 @@ import TextComponent from "../../../components/Atoms/TextComponent";
 import TextInputComponent from "../../../components/Atoms/TextInputComponent";
 import { UnstyledButton } from "@mantine/core";
 import ButtonComponent from "../../../components/Atoms/ButtonComponent";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Loader from "../../../components/Atoms/Loader";
 import { login } from "@/Services/api";
 import {
@@ -27,6 +27,7 @@ import { useBranding } from "@/Config/branding";
 const Login: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const { lat, lng, loading } = useAppSelector(state => state.location)
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -47,8 +48,8 @@ const Login: React.FC = () => {
   });
 
   const initialValues: LoginRequest = {
-    userName: "",
-    password: "",
+    userName: (location.state as any)?.userName || "",
+    password: (location.state as any)?.password || "",
     url: "",
   };
 
@@ -107,7 +108,7 @@ const Login: React.FC = () => {
         }
 
         navigate("/otpInput", {
-          state: { userName: values.userName, login: true },
+          state: { userName: values.userName, password: values.password, login: true },
         })
       } else {
         showErrorNotification(response?.data?.message || "Unable to login");

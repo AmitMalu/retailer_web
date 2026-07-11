@@ -40,7 +40,9 @@ const AddBeneficiaryModal = ({
       .min(10, "Enter valid number")
       .matches(MobileNoRegex, "Please enter valid number")
       .required("Mobile number is required"),
-    beneficiaryName: Yup.string().required("Beneficiary name is required"),
+    beneficiaryName: Yup.string().required("Beneficiary name is required")
+      .min(2, "Must be at least 2 characters")
+      .max(50, "Must be at most 50 characters"),
     bankId: Yup.string().required("Please Select the Bank"),
     accountNumber: Yup.string()
       .transform((value) => (value ? value.replace(/\s+/g, "") : ""))
