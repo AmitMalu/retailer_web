@@ -25,7 +25,7 @@ import { buildProcessTransactionPayload, getBillFormConfig, paiseToRupee } from 
 import BBPSTransactionReciept from "../BBPSTransactionReciept";
 import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 import ConfirmDialog from "@/components/Atoms/ConfirmDialog";
-import bbbsLogo from "@/assets/svg/Products/bbps/Bharat_connect_logo.svg";
+import bbbsLogo from "@/assets/svg/Products/bbps/Bharat_connect_logo.png";
 
 interface Props {
     serviceName: string;
