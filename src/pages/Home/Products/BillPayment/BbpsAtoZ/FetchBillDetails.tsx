@@ -31,6 +31,7 @@ import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import BillReciept from "./BillReciept";
 import moment from "moment";
+import bbbsLogo from "@/assets/svg/Products/bbps/Bharat_connect_logo.png";
 
 interface Props {
   serviceName: string;
@@ -144,14 +145,46 @@ const FetchBillDetails: React.FC<Props> = ({ serviceName, subProductId }) => {
             // validation for email
             if (lowerLabel.includes("email")) {
               acc[fieldKey] = Yup.string()
-                .matches(EmailRegex, "Enter valid email address")
+                // .matches(EmailRegex, "Enter valid email address")
+                .test(
+                  "email-format",
+                  "Enter valid email address",
+                  (value) => !value || EmailRegex.test(value)
+                )
+                .test(
+                  "email-lowercase",
+                  "Email must be in lowercase",
+                  (value) => !value || value === value.toLowerCase()
+                )
                 .required("Email is Required");
             }
             // validation for dob
             else if (isDOBField(label)) {
               acc[fieldKey] = Yup.date()
+                // .typeError("Invalid date")
+                // .required(`${label} is required`);
+                .nullable()
                 .typeError("Invalid date")
-                .required(`${label} is required`);
+                .required(`${label} is required`)
+                .test(
+                  "dob-age-range",
+                  "Age must be between 18 and 75 years",
+                  (value) => {
+                    if (!value) return false;
+
+                    const today = new Date();
+
+                    const age =
+                      today.getFullYear() -
+                      value.getFullYear() -
+                      (today <
+                        new Date(today.getFullYear(), value.getMonth(), value.getDate())
+                        ? 1
+                        : 0);
+
+                    return age >= 18 && age <= 75;
+                  }
+                );
             }
             // validation for other fields
             else {
@@ -553,28 +586,35 @@ const FetchBillDetails: React.FC<Props> = ({ serviceName, subProductId }) => {
     <>
       {isLoading && <MyLoader />}
       <div className="w-full 320px:mt-12 md:mt-0">
-        <div className="mb-6 flex items-center gap-6 justify-start">
-          {/* Back Button */}
-          <UnstyledButton
-            onClick={() => {
-              navigate(`/products/billPay/service`, {
-                state: {
-                  subProductId,
-                },
-              });
-            }}
-          >
-            <BackSvgIcon color={theme.palette.primary.main} />
-          </UnstyledButton>
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            {/* Back Button */}
+            <UnstyledButton
+              onClick={() => {
+                navigate(`/products/billPay/service`, {
+                  state: {
+                    subProductId,
+                  },
+                });
+              }}
+            >
+              <BackSvgIcon color={theme.palette.primary.main} />
+            </UnstyledButton>
 
-          {/* Title */}
-          <TextComponent
-            fontSize={28}
-            fontWeight={600}
-            color={theme.palette.primary.main}
-          >
-            {serviceName}
-          </TextComponent>
+            {/* Title */}
+            <TextComponent
+              fontSize={28}
+              fontWeight={600}
+              color={theme.palette.primary.main}
+            >
+              {serviceName}
+            </TextComponent>
+          </div>
+          <img
+            src={bbbsLogo}
+            alt="BBPS"
+            style={{ width: 100, height: "auto", objectFit: "contain" }}
+          />
         </div>
 
         {/*Fetch Bill Details Form */}
@@ -827,7 +867,16 @@ const FetchBillDetails: React.FC<Props> = ({ serviceName, subProductId }) => {
         <Modal
           opened={billModalOpened}
           onClose={() => !isLoading && setBillModalOpened(false)}
-          title="Bill Details"
+          title={
+            <div className="flex items-center justify-between w-full">
+              <span>Bill Details</span>
+              <img
+                src={bbbsLogo}
+                alt="BBPS"
+                style={{ width: 80, height: "auto", objectFit: "contain" }}
+              />
+            </div>
+          }
           size="xl"
           centered
           closeOnEscape={false}
@@ -836,6 +885,7 @@ const FetchBillDetails: React.FC<Props> = ({ serviceName, subProductId }) => {
             title: {
               fontSize: "1.5rem",
               fontWeight: 600,
+              width: "100%",
             },
             body: {
               overflow: isLoading ? "hidden" : "auto", // Disable scrolling while loading

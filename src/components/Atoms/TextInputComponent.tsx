@@ -65,6 +65,9 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
       newValue = newValue.trimStart();
     }
 
+    // prevent consecutive spaces (double space → single space)
+    newValue = newValue.replace(/  +/g, " ");
+
     if (type === "number" || allowDecimal) {
       if (allowDecimal) {
         // allow digits and a single dot

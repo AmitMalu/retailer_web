@@ -20,7 +20,7 @@ const DashboardProfileCard = ({ profile }: any) => {
                 border: `1px solid ${theme.palette.divider}`
             }}
         >
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center mb-2">
                 <Avatar
                     src={hasImage ? profile?.image : null}
                     size={120}
@@ -36,21 +36,21 @@ const DashboardProfileCard = ({ profile }: any) => {
                 />
             </div>
 
-            <TextComponent component="div" className='mt-3 font-bold text-lg' color={theme.palette.text.primary}>
+            <TextComponent component="div" className='mt-3 font-bold text-lg text-center' color={theme.palette.text.primary}>
                 {profile?.name || "-"}
             </TextComponent>
-            <TextComponent component="div" className='mt-1 font-semibold' color={theme.palette.text.secondary}>
+            <TextComponent component="div" className='mt-1 font-semibold text-center' color={theme.palette.text.secondary}>
                 {profile?.retailerId || "-"}
             </TextComponent>
 
             <div className="flex w-full mt-4">
                 <div className="flex-1 text-center border-r border-divider py-2">
-                    <TextComponent component="p" className="text-xs font-semibold" color={theme.palette.text.secondary}>PREPAID BALANCE</TextComponent>
+                    <TextComponent component="p" className="text-xs font-semibold" color={theme.palette.text.secondary}>PREPAID</TextComponent>
                     <TextComponent component="p" className="text-base font-bold" color={theme.palette.text.primary}>₹ {profile?.prepaid || 0}</TextComponent>
                 </div>
 
                 <div className="flex-1 text-center py-2">
-                    <TextComponent component="p" className="text-xs font-semibold" color={theme.palette.text.secondary}>POSTPAID BALANCE</TextComponent>
+                    <TextComponent component="p" className="text-xs font-semibold" color={theme.palette.text.secondary}>POSTPAID</TextComponent>
                     <TextComponent component="p" className="text-base font-bold" color={theme.palette.text.primary}>₹ {profile?.postpaid || 0}</TextComponent>
                 </div>
             </div>

@@ -34,6 +34,7 @@ const OtpInputScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const username = location.state?.userName;
+  const password = location.state?.password;
   const isLogin = location.state?.login;
   // const [autoOtp, setAutoOtp] = useState<string>(location.state?.otp || "");
   const [isLoading, setIsLoading] = useState(false);
@@ -247,7 +248,9 @@ const OtpInputScreen = () => {
                           variant="light"
                           onClick={() => {
                             if (isLogin) {
-                              navigate("/login")
+                              navigate("/login", {
+                                state: { userName: username, password },
+                              });
                             } else {
                               navigate("/forgotPassword")
                             }

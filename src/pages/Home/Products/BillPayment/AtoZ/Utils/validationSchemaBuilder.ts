@@ -38,14 +38,46 @@ export const buildValidationSchema = (providerDetails: any) => {
           // validation for email
           if (lowerLabel.includes("email")) {
             acc[fieldKey] = Yup.string()
-              .matches(EmailRegex, "Enter valid email address")
+              // .matches(EmailRegex, "Enter valid email address")
+              .test(
+                "email-format",
+                "Enter valid email address",
+                (value) => !value || EmailRegex.test(value)
+              )
+              .test(
+                "email-lowercase",
+                "Email must be in lowercase",
+                (value) => !value || value === value.toLowerCase()
+              )
               .required("Email is Required");
           }
           // validation for dob
           else if (isDOBField(label)) {
             acc[fieldKey] = Yup.date()
+              // .typeError("Invalid date")
+              // .required(`${label} is required`);
+              .nullable()
               .typeError("Invalid date")
-              .required(`${label} is required`);
+              .required(`${label} is required`)
+              .test(
+                "dob-age-range",
+                "Age must be between 18 and 75 years",
+                (value) => {
+                  if (!value) return false;
+
+                  const today = new Date();
+
+                  const age =
+                    today.getFullYear() -
+                    value.getFullYear() -
+                    (today <
+                      new Date(today.getFullYear(), value.getMonth(), value.getDate())
+                      ? 1
+                      : 0);
+
+                  return age >= 18 && age <= 75;
+                }
+              );
           }
           // validation for other fields
           else {
@@ -109,24 +141,24 @@ export const buildValidationSchema = (providerDetails: any) => {
 
 
 export const buildBillDetailsValidationSchema = (billDetails: any) => {
-    if (!billDetails) {
-        return Yup.object().shape({});
-    }
+  if (!billDetails) {
+    return Yup.object().shape({});
+  }
 
-    const minAmount = Number(billDetails.minBillPaidAmount);
-    const maxAmount = Number(billDetails.maxAllowPaidAmount);
+  const minAmount = Number(billDetails.minBillPaidAmount);
+  const maxAmount = Number(billDetails.maxAllowPaidAmount);
 
-    return Yup.object().shape({
-        amount: Yup.number()
-            .typeError("Amount must be a number")
-            .required("Amount is required")
-            .min(
-                minAmount,
-                `Amount should be at least ${minAmount}`
-            )
-            .max(
-                maxAmount,
-                `Amount should not exceed ${maxAmount}`
-            ),
-    });
+  return Yup.object().shape({
+    amount: Yup.number()
+      .typeError("Amount must be a number")
+      .required("Amount is required")
+      .min(
+        minAmount,
+        `Amount should be at least ${minAmount}`
+      )
+      .max(
+        maxAmount,
+        `Amount should not exceed ${maxAmount}`
+      ),
+  });
 };

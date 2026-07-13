@@ -1,3 +1,9 @@
+.bbps-watermark {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+}
+
 @media print {
   .no-print {
     display: none !important;
@@ -6,5 +12,11 @@
   .print-area {
     box-shadow: none !important;
     border: none !important;
+  }
+
+  .bbps-watermark {
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
   }
 }

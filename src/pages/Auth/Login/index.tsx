@@ -5,7 +5,7 @@ import TextComponent from "../../../components/Atoms/TextComponent";
 import TextInputComponent from "../../../components/Atoms/TextInputComponent";
 import { UnstyledButton } from "@mantine/core";
 import ButtonComponent from "../../../components/Atoms/ButtonComponent";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Loader from "../../../components/Atoms/Loader";
 import { login } from "@/Services/api";
 import {
@@ -27,6 +27,7 @@ import { useBranding } from "@/Config/branding";
 const Login: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const { lat, lng, loading } = useAppSelector(state => state.location)
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -43,12 +44,15 @@ const Login: React.FC = () => {
       .max(10, "Please enter valid number")
       .matches(MobileNoRegex, "Please enter valid number")
       .required("Required"),
-    password: Yup.string().required("Required"),
+    password: Yup.string()
+      .min(8, "Minimum 8 characters")
+      .max(20, "Maximum 20 characters")
+      .required("Required"),
   });
 
   const initialValues: LoginRequest = {
-    userName: "",
-    password: "",
+    userName: (location.state as any)?.userName || "",
+    password: (location.state as any)?.password || "",
     url: "",
   };
 
@@ -107,7 +111,7 @@ const Login: React.FC = () => {
         }
 
         navigate("/otpInput", {
-          state: { userName: values.userName, login: true },
+          state: { userName: values.userName, password: values.password, login: true },
         })
       } else {
         showErrorNotification(response?.data?.message || "Unable to login");
@@ -187,6 +191,7 @@ const Login: React.FC = () => {
                             ? errors.password
                             : ""
                         }
+                        maxLength={20}
                         type={showPassword ? "text" : "password"}
                         className="w-full"
                         isAuth={true}

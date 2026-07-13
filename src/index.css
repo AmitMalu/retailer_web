@@ -54,3 +54,11 @@ foreignObject {
 foreignObject>* {
   pointer-events: auto;
 }
+
+.bbps-screen-logo {
+  position: fixed;
+  top: 120px;
+  right: 24px;
+  z-index: 0;
+  pointer-events: none;
+}
