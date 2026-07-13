@@ -50,6 +50,7 @@ import FormikFileInput from "../Molecules/NewComponents/FormikFileInput";
 import FormikTextInputComponent from "../Molecules/NewComponents/FormikTextInputComponent";
 import FormikSelectComponent from "../Molecules/NewComponents/FormikSelectComponent";
 import { getLocationCache } from "@/Utils/locationCache";
+import { useAddressFromPincode } from "@/Utils/CustomHooks/useAddressFromPincode";
 
 const ProfileRegistrationForm = ({
   opened,
@@ -688,6 +689,66 @@ const ProfileRegistrationForm = ({
               }
             }, [formik.values.panNumber]);
 
+            const { location: residentialLocation, loading: residentialPincodeLoading, error: residentialPincodeError } = useAddressFromPincode(values.addessZipCode);
+
+            useEffect(() => {
+              if (values.addessZipCode && !residentialPincodeLoading) {
+                if (residentialLocation.state || residentialLocation.city) {
+                  formik.setValues((prev: any) => ({
+                    ...prev,
+                    city: residentialLocation.city || "",
+                    state: residentialLocation.state || "",
+                  }));
+                  formik.setFieldError("city", "");
+                  formik.setFieldError("state", "");
+                } else if (values.addessZipCode.length === 6) {
+                  formik.setValues((prev: any) => ({
+                    ...prev,
+                    city: "",
+                    state: "",
+                  }));
+                }
+              }
+            }, [residentialLocation.state, residentialLocation.city, values.addessZipCode, residentialPincodeLoading]);
+
+            useEffect(() => {
+              if (residentialPincodeError) {
+                formik.setFieldError("addessZipCode", residentialPincodeError);
+              } else {
+                formik.setFieldError("addessZipCode", "");
+              }
+            }, [residentialPincodeError]);
+
+            const { location: outletLocation, loading: outletPincodeLoading, error: outletPincodeError } = useAddressFromPincode(values.outletZipCode);
+
+            useEffect(() => {
+              if (values.outletZipCode && !outletPincodeLoading) {
+                if (outletLocation.state || outletLocation.city) {
+                  formik.setValues((prev: any) => ({
+                    ...prev,
+                    outletCity: outletLocation.city || "",
+                    outletState: outletLocation.state || "",
+                  }));
+                  formik.setFieldError("outletCity", "");
+                  formik.setFieldError("outletState", "");
+                } else if (values.outletZipCode.length === 6) {
+                  formik.setValues((prev: any) => ({
+                    ...prev,
+                    outletCity: "",
+                    outletState: "",
+                  }));
+                }
+              }
+            }, [outletLocation.state, outletLocation.city, values.outletZipCode, outletPincodeLoading]);
+
+            useEffect(() => {
+              if (outletPincodeError) {
+                formik.setFieldError("outletZipCode", outletPincodeError);
+              } else {
+                formik.setFieldError("outletZipCode", "");
+              }
+            }, [outletPincodeError]);
+
 
             return (
               <>
@@ -1004,36 +1065,6 @@ const ProfileRegistrationForm = ({
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
-                          label={"City"}
-                          placeholder={"Enter"}
-                          value={values.city}
-                          onChange={handleChange("city")}
-                          error={touched.city && errors.city ? errors.city : ""}
-                          withAsterisk
-                          className="w-max"
-                          allowNumber={false}        // no digits
-                          allowSpecialChar={false}    // allow only specified symbols
-                          allowedChars={`-'`}        // allow hyphen and apostrophe
-                        />
-                      </div>
-                      <div className="w-full sm:w-[calc(50%-12px)] ">
-                        <TextInputComponent
-                          label={"State"}
-                          placeholder={"Enter"}
-                          value={values.state}
-                          onChange={handleChange("state")}
-                          error={
-                            touched.state && errors.state ? errors.state : ""
-                          }
-                          withAsterisk
-                          className="w-max"
-                          allowNumber={false}
-                          allowSpecialChar={false}
-                          allowedChars={`-'`}
-                        />
-                      </div>
-                      <div className="w-full sm:w-[calc(50%-12px)] ">
-                        <TextInputComponent
                           label={"Zip Code"}
                           allowCharacter={false}
                           allowSpace={false}
@@ -1048,7 +1079,37 @@ const ProfileRegistrationForm = ({
                           }
                           maxLength={6}
                           withAsterisk
+                          disabled={!!residentialPincodeLoading}
+                          rightSection={residentialPincodeLoading ? <Loader size={16} /> : null}
                           className="w-max"
+                        />
+                      </div>
+                      <div className="w-full sm:w-[calc(50%-12px)] ">
+                        <TextInputComponent
+                          label={"City"}
+                          placeholder={"Enter"}
+                          value={values.city}
+                          onChange={handleChange("city")}
+                          error={touched.city && errors.city ? errors.city : ""}
+                          withAsterisk
+                          className="w-max"
+                          disabled
+                          rightSection={residentialPincodeLoading ? <Loader size={16} /> : null}
+                        />
+                      </div>
+                      <div className="w-full sm:w-[calc(50%-12px)] ">
+                        <TextInputComponent
+                          label={"State"}
+                          placeholder={"Enter"}
+                          value={values.state}
+                          onChange={handleChange("state")}
+                          error={
+                            touched.state && errors.state ? errors.state : ""
+                          }
+                          withAsterisk
+                          className="w-max"
+                          disabled
+                          rightSection={residentialPincodeLoading ? <Loader size={16} /> : null}
                         />
                       </div>
                     </div>
@@ -1097,6 +1158,27 @@ const ProfileRegistrationForm = ({
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
                         <TextInputComponent
+                          label={"Outlet Zip Code"}
+                          allowCharacter={false}
+                          allowSpace={false}
+                          allowSpecialChar={false}
+                          placeholder={"Enter"}
+                          value={values.outletZipCode}
+                          onChange={handleChange("outletZipCode")}
+                          error={
+                            touched.outletZipCode && errors.outletZipCode
+                              ? errors.outletZipCode
+                              : ""
+                          }
+                          withAsterisk
+                          maxLength={6}
+                          disabled={!!outletPincodeLoading}
+                          rightSection={outletPincodeLoading ? <Loader size={16} /> : null}
+                          className="w-max"
+                        />
+                      </div>
+                      <div className="w-full sm:w-[calc(50%-12px)] ">
+                        <TextInputComponent
                           label={"Outlet State"}
                           placeholder={"Enter"}
                           value={values.outletState}
@@ -1108,8 +1190,8 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
-                          allowedChars={`-'`}
-                          allowSpecialChar={false}
+                          disabled
+                          rightSection={outletPincodeLoading ? <Loader size={16} /> : null}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -1125,30 +1207,11 @@ const ProfileRegistrationForm = ({
                           }
                           withAsterisk
                           className="w-max"
-                          allowedChars={`-'`}
-                          allowSpecialChar={false}
+                          disabled
+                          rightSection={outletPincodeLoading ? <Loader size={16} /> : null}
                         />
                       </div>
-                      <div className="w-full sm:w-[calc(50%-12px)] ">
-                        <TextInputComponent
-                          label={"Outlet Zip Code"}
-                          allowCharacter={false}
-                          allowSpace={false}
-                          allowSpecialChar={false}
-                          placeholder={"Enter"}
-                          value={values.outletZipCode}
-                          onChange={handleChange("outletZipCode")}
-                          error={
-                            touched.outletZipCode && errors.outletZipCode
-                              ? errors.outletZipCode
-                              : ""
-                          }
-                          withAsterisk
-                          // type="number"
-                          maxLength={6}
-                          className="w-max"
-                        />
-                      </div>
+                      
                     </div>
                   </Stepper.Step>
                   <Stepper.Step

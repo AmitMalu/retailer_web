@@ -28,6 +28,7 @@ import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePic
 import { IconCalendar } from "@tabler/icons-react";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { useAddressFromPincode } from "@/Utils/CustomHooks/useAddressFromPincode";
 
 const SubuserCreation = () => {
   const theme = useTheme();
@@ -336,6 +337,41 @@ const SubuserCreation = () => {
                 }
               }, [formik.values.emailId]);
 
+              const { location, loading: pincodeLoading, error: pincodeError } = useAddressFromPincode(values.add.zipCode);
+
+              useEffect(() => {
+                if (values.add.zipCode && !pincodeLoading) {
+                  if (location.state || location.city) {
+                    formik.setValues((prev: any) => ({
+                      ...prev,
+                      add: {
+                        ...prev.add,
+                        state: location.state || "",
+                        city: location.city || "",
+                      },
+                    }));
+                    formik.setFieldError("add.state", "");
+                    formik.setFieldError("add.city", "");
+                  } else if (values.add.zipCode.length === 6) {
+                    formik.setValues((prev: any) => ({
+                      ...prev,
+                      add: {
+                        ...prev.add,
+                        state: "",
+                        city: "",
+                      },
+                    }));
+                  }
+                }
+              }, [location.state, location.city, values.add.zipCode, pincodeLoading]);
+
+              useEffect(() => {
+                if (pincodeError) {
+                  formik.setFieldError("add.zipCode", pincodeError);
+                } else {
+                  formik.setFieldError("add.zipCode", "");
+                }
+              }, [pincodeError]);
 
               const handleChipChange = (selectedValues: string[]) => {
                 setSelectedChips(selectedValues);
@@ -532,36 +568,6 @@ const SubuserCreation = () => {
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                         <TextInputComponent
-                          label={"City"}
-                          placeholder={"Enter"}
-                          value={values.add.city}
-                          onChange={handleChange("add.city")}
-                          error={
-                            touched?.add?.city && errors?.add?.city
-                              ? errors?.add?.city
-                              : ""
-                          }
-                          withAsterisk
-                          className="w-max"
-                        />
-                      </div>
-                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                        <TextInputComponent
-                          label={"State"}
-                          placeholder={"Enter"}
-                          value={values.add.state}
-                          onChange={handleChange("add.state")}
-                          error={
-                            touched?.add?.state && errors?.add?.state
-                              ? errors?.add?.state
-                              : ""
-                          }
-                          withAsterisk
-                          className="w-max"
-                        />
-                      </div>
-                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                        <TextInputComponent
                           label={"Zipcode"}
                           allowCharacter={false}
                           allowSpace={false}
@@ -577,6 +583,41 @@ const SubuserCreation = () => {
                           maxLength={6}
                           minLength={6}
                           withAsterisk
+                          disabled={!!pincodeLoading}
+                          rightSection={pincodeLoading ? <Loader size={16} /> : null}
+                          className="w-max"
+                        />
+                      </div>
+                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                        <TextInputComponent
+                          label={"City"}
+                          placeholder={"Enter"}
+                          value={values.add.city}
+                          onChange={handleChange("add.city")}
+                          error={
+                            touched?.add?.city && errors?.add?.city
+                              ? errors?.add?.city
+                              : ""
+                          }
+                          withAsterisk
+                          disabled
+                          rightSection={pincodeLoading ? <Loader size={16} /> : null}
+                          className="w-max" />
+                      </div>
+                      <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                        <TextInputComponent
+                          label={"State"}
+                          placeholder={"Enter"}
+                          value={values.add.state}
+                          onChange={handleChange("add.state")}
+                          error={
+                            touched?.add?.state && errors?.add?.state
+                              ? errors?.add?.state
+                              : ""
+                          }
+                          withAsterisk
+                          disabled
+                          rightSection={pincodeLoading ? <Loader size={16} /> : null}
                           className="w-max"
                         />
                       </div>

@@ -162,6 +162,9 @@ export const API_ROUTES = {
   EDIT_BANK: `${BASE_URL}/api/bank-details`,
   DELETE_BANK: `${BASE_URL}/api/bank-details`,
 
+  /////////////////////////// PINCODE ////////////////////////////////////
+  PINCODE_LOOKUP: `${BASE_URL}/api/pincodes/lookup`,
+
   /////////////////////////// COMMON ////////////////////////////////////
   HIERARCHY_TYPE_LIST: `${BASE_URL}/api/hierarchy/name-code`, // Hierarchy Types and Codes List
   HIERARCHY_LIST: `${BASE_URL}/api/hierarchy/hierarchy-details`, //Based on Hierarchy Code Suppose if SD -> Overall SD List 
