@@ -115,7 +115,11 @@ const PayoutTransactionReceipt = ({ data }: { data: any }) => {
                         <Table.Td>{dash(data?.utrNumber)}</Table.Td>
 
                         <Table.Td fw={500}>Reference ID</Table.Td>
-                        <Table.Td>{dash(data?.guid)}</Table.Td>
+                        <Table.Td>{dash(
+                            data?.referenceId ||
+                            data?.refId ||
+                            data?.guid
+                        )}</Table.Td>
                     </Table.Tr>
 
                     <Table.Tr>

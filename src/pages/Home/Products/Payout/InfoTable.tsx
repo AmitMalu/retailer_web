@@ -233,7 +233,7 @@ const InfoTable = () => {
           schemeCode: payoutType?.schemeCode || ""
           // callbackurl: "https://uat.decipay.in/enterprises/api/payout/callback",
         };
-        const handleSubmit = async (values: PayoutSendBeneficiaryProps) => {
+        const handleSubmit = async (values: PayoutSendBeneficiaryProps, bag: any) => {
           try {
             setIsLoading(true);
             const payload = {
@@ -261,6 +261,7 @@ const InfoTable = () => {
             if (status == 200 || status == "202") {
               showSuccessNotification(response?.data?.message);
               store(values.accountNumber, Number(values.amount));
+              bag?.resetForm();
             } else {
               showErrorNotification(
                 response?.data?.message || "Transfer failed"

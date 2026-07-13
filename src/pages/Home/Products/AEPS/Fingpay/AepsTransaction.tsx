@@ -167,12 +167,9 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
                 longitude: lng,
             };
 
-            if (checkDuplicate(values.aadhaar, Number(values.amount))) {
+            if (service === "cashWithdrawal" && checkDuplicate(values.aadhaar, Number(values.amount))) {
                 showErrorNotification(
-                    `You cannot repeat the same transaction within 2 minutes. ${service === "cashWithdrawal"
-                        ? "Please try a different amount or try again shortly."
-                        : "Please try again shortly."
-                    }`
+                    "You cannot repeat the same transaction within 2 minutes. Please try a different amount or try again shortly."
                 );
                 return;
             }
@@ -205,7 +202,9 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
 
             // If response exists → show receipt
             if (res?.data) {
-                store(values.aadhaar, Number(values.amount));
+                if (service === "cashWithdrawal") {
+                    store(values.aadhaar, Number(values.amount));
+                }
 
                 const normalized = normalizeReceiptData(res?.data, service!, values);
                 setReceiptData(normalized);

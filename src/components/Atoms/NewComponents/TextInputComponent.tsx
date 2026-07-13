@@ -85,6 +85,14 @@ const TextInputComponent = forwardRef<HTMLInputElement, TextInputComponentProps>
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         let newValue = event.target.value;
 
+        // prevent leading space
+        if (newValue.startsWith(" ")) {
+            newValue = newValue.trimStart();
+        }
+
+        // prevent consecutive spaces (double space → single space)
+        newValue = newValue.replace(/  +/g, " ");
+
         if (!allowNumber) {
             newValue = newValue.replace(/[0-9]/g, "");
         }
