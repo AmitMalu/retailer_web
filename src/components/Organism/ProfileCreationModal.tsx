@@ -44,8 +44,6 @@ import {
   StoreSvgIcon,
 } from "@/assets/svg";
 import { useTheme } from "@mui/system";
-import CustomDatePicker from "../Atoms/NewComponents/CustomDatePicker";
-import { CalendarIcon } from "@mui/x-date-pickers";
 import FormikFileInput from "../Molecules/NewComponents/FormikFileInput";
 import FormikTextInputComponent from "../Molecules/NewComponents/FormikTextInputComponent";
 import FormikSelectComponent from "../Molecules/NewComponents/FormikSelectComponent";

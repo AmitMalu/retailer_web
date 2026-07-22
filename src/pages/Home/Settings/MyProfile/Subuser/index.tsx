@@ -24,8 +24,6 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
-import FormikDatePicker from "@/components/Molecules/NewComponents/FormikDatePicker";
-import { IconCalendar } from "@tabler/icons-react";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { useAddressFromPincode } from "@/Utils/CustomHooks/useAddressFromPincode";
