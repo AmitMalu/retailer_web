@@ -127,7 +127,6 @@ const FundTransfer = () => {
       if (response?.status === 200 || response?.status === 201) {
         store(values.toHierarchyId, Number(values.amount));
         showSuccessNotification(response?.data?.message);
-        WalletBalanceReq(loginData?.hierarchyId);
         resetForm();
       } else {
         showErrorNotification(response?.data?.message);
@@ -135,6 +134,7 @@ const FundTransfer = () => {
     } catch (error) {
       await handleCustomError(error);
     } finally {
+      WalletBalanceReq(loginData?.hierarchyId);
       setIsLoading(false);
     }
   };

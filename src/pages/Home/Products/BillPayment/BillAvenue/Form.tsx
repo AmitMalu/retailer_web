@@ -331,7 +331,6 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
                 store(selectedProviderDetails.billerId, Number(values.amount))
                 const respData = response?.data?.data || {};
                 showSuccessNotification(response?.data?.message || "Transaction Successful");
-                WalletBalanceReq(loginData?.hierarchyId);
                 setBillModalOpened(false);
                 resetForm();
 
@@ -383,6 +382,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
         } catch (error) {
             await handleCustomError(error);
         } finally {
+            WalletBalanceReq(loginData?.hierarchyId);
             setIsLoading(false);
         }
     }

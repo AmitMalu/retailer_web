@@ -447,7 +447,6 @@ const Recharge = () => {
                 //     showErrorNotification(innerData?.message || "Failed to Process Recharge")
                 // } else {
                 showSuccessNotification("Recharge Processed")
-                WalletBalanceReq(loginData?.hierarchyId);
                 // Merge request and response data into single object for receipt
                 const mergedData = {
                     ...payload,
@@ -464,6 +463,7 @@ const Recharge = () => {
         } catch (err) {
             await handleCustomError(err)
         } finally {
+            WalletBalanceReq(loginData?.hierarchyId);
             setIsLoading(false)
         }
     }

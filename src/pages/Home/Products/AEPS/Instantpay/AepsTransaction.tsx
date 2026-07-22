@@ -238,12 +238,12 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
 
             const normalized = normalizeReceiptData(res?.data, service!, values);
             setReceiptData(normalized);
-            WalletBalanceReq(loginData?.hierarchyId);
             setReceiptDrawerOpened(true);
 
         } catch (err: any) {
             handleCustomError(err);
         } finally {
+            WalletBalanceReq(loginData?.hierarchyId);
             setIsLoading(false);
         }
     }

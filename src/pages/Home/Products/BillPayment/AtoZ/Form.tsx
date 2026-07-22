@@ -256,7 +256,6 @@ const Form: React.FC<Props> = ({ serviceName, subProductId }) => {
             if (response?.data?.statusCode === 200 || response?.data?.statusCode === "200") {
                 store(selectedProviderDetails.provider_id, Number(values.amount))
                 showSuccessNotification(response?.data?.message);
-                WalletBalanceReq(loginData?.hierarchyId);
                 setAmountEditable(false);
                 setBillModalOpened(false);
                 resetForm();
@@ -297,6 +296,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId }) => {
         } catch (error) {
             await handleCustomError(error);
         } finally {
+            WalletBalanceReq(loginData?.hierarchyId);
             setIsLoading(false);
         }
     }
