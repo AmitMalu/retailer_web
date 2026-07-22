@@ -4,7 +4,7 @@ import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
-import { decryptData } from "@/Utils/helper";
+import { decryptData, formatIndianNumber, useWalletBalance } from "@/Utils/helper";
 import Loader from "@/components/Atoms/Loader";
 import TextComponent from "@/components/Atoms/TextComponent";
 import { ChildMemberListProps, FundReversalFormType } from "@/Common/interface";
@@ -40,6 +40,8 @@ const FundReversal = () => {
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
+
+  const { WalletBalanceReq } = useWalletBalance();
 
   const { checkDuplicate, store } = useTransactionCooldown("FUND-REVERSAL");
 
@@ -186,6 +188,7 @@ const FundReversal = () => {
           store(values.childHierarchyId, Number(values.reversalAmount));
           // Second call (OTP verification)
           showSuccessNotification("Fund Reversal Successful");
+          WalletBalanceReq(loginData?.hierarchyId);
           setOpened(false);
           setIsOtpStage(false);
           setOtpId(null);
@@ -237,9 +240,10 @@ const FundReversal = () => {
                     data={childMemberList.map((item) => item.userId)}
                     value={values.childHierarchyId}
                     withAsterisk
-                    onChange={(value) =>
-                      setFieldValue("childHierarchyId", value)
-                    }
+                    onChange={(value) => {
+                      setFieldValue("childHierarchyId", value);
+                      setFieldValue("walletType", "");
+                    }}
                     error={
                       touched.childHierarchyId && errors.childHierarchyId
                         ? errors.childHierarchyId
@@ -328,6 +332,33 @@ const FundReversal = () => {
                   />
                 </div>
               </div>
+
+              {(() => {
+                const selectedMember = childMemberList.find(
+                  (member) => member.userId === values.childHierarchyId
+                );
+                if (!selectedMember) return null;
+                return (
+                  <div className="mt-4 flex w-full items-center justify-start gap-4">
+                    <div className="flex items-center gap-2 py-2 px-4 rounded-xl shadow-lg border border-divider bg-primary-light/15">
+                      <TextComponent fontSize={14} fontWeight={500} color="primary.main">
+                        PREPAID :
+                      </TextComponent>
+                      <TextComponent fontSize={16} fontWeight={700} color="primary.main">
+                        {formatIndianNumber(selectedMember.prepaidBalance)}
+                      </TextComponent>
+                    </div>
+                    <div className="flex items-center gap-2 py-2 px-4 rounded-xl shadow-lg border border-divider bg-primary-light/15">
+                      <TextComponent fontSize={14} fontWeight={500} color="primary.main">
+                        POSTPAID : 
+                      </TextComponent>
+                      <TextComponent fontSize={16} fontWeight={700} color="primary.main">
+                        {formatIndianNumber(selectedMember.postpaidBalance)}
+                      </TextComponent>
+                    </div>
+                  </div>
+                );
+              })()}
 
               <div className="mt-8 flex w-full items-center justify-end ">
                 <ButtonComponent

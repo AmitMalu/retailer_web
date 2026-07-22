@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { RootState } from "@/Redux/Store";
-import { decryptData } from "@/Utils/helper";
+import { decryptData, useWalletBalance } from "@/Utils/helper";
 import { ChildMemberListProps, FundTransferProps } from "@/Common/interface";
 import {
   showErrorNotification,
@@ -27,6 +27,8 @@ const FundTransfer = () => {
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
+
+  const { WalletBalanceReq } = useWalletBalance();
 
   const { checkDuplicate, store } = useTransactionCooldown("FUND-TRANSFER");
 
@@ -125,6 +127,7 @@ const FundTransfer = () => {
       if (response?.status === 200 || response?.status === 201) {
         store(values.toHierarchyId, Number(values.amount));
         showSuccessNotification(response?.data?.message);
+        WalletBalanceReq(loginData?.hierarchyId);
         resetForm();
       } else {
         showErrorNotification(response?.data?.message);

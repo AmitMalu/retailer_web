@@ -11,7 +11,7 @@ import {
 } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { useSelector } from "react-redux";
-import { decryptData } from "@/Utils/helper";
+import { decryptData, useWalletBalance } from "@/Utils/helper";
 import { RootState } from "@/Redux/Store";
 import { WalletToWalletProps } from "@/Common/interface";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
@@ -31,10 +31,10 @@ const WalletToWallet = () => {
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  const isRetailer = loginData?.role === "RT";
-  const { getSubProduct } = useProductEngine(
-    isRetailer ? loginData : null
-  ); const { checkDuplicate, store } = useTransactionCooldown("WALLET-TO-WALLET");
+  const { WalletBalanceReq } = useWalletBalance();
+
+  const { getSubProduct } = useProductEngine(loginData);
+  const { checkDuplicate, store } = useTransactionCooldown("WALLET-TO-WALLET");
 
   const validationSchema = Yup.object().shape({
     // transferAmount: Yup.string()
@@ -80,7 +80,7 @@ const WalletToWallet = () => {
       let subProductId: string | undefined;
       let schemeCode: string | undefined;
 
-      if (isRetailer) {
+      if (loginData) {
         const subProductName =
           SUB_PRODUCT_MAP.BALANCE_TRANSFER[
           values.walletTypeTo as "PREPAID" | "POSTPAID"
@@ -107,7 +107,7 @@ const WalletToWallet = () => {
         walletTypeFrom: values.walletTypeFrom,
         walletTypeTo: values.walletTypeTo,
 
-        ...(isRetailer && {
+        ...(loginData && {
           subProductId,
           schemeCode,
         }),
@@ -124,6 +124,7 @@ const WalletToWallet = () => {
       if (response?.status === 200 || response?.status === 201) {
         store(values.walletTypeFrom, Number(values.transferAmount));
         showSuccessNotification(response?.data?.message);
+        WalletBalanceReq(loginData?.hierarchyId);
         resetForm();
       } else {
         showErrorNotification(response?.data?.message);

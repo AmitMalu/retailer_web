@@ -5,7 +5,7 @@ import FormikTextInputComponent from "@/components/Molecules/NewComponents/Formi
 import BiometricCapture from "@/components/Organism/AEPS/BiometricCapture";
 import { callAepsApi } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { decryptData } from "@/Utils/helper";
+import { decryptData, useWalletBalance } from "@/Utils/helper";
 import { showErrorNotification } from "@/Utils/notifications";
 import { Card, Drawer, Grid, UnstyledButton } from "@mantine/core";
 import { useTheme } from "@mui/system";
@@ -58,6 +58,8 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
     const loginData = responses?.loginData
         ? decryptData(responses.loginData)
         : null;
+
+    const { WalletBalanceReq } = useWalletBalance();
 
     // const schemeCode = loginData?.products
     //     ?.flatMap((product: any) => product.subProducts)
@@ -236,6 +238,7 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
 
             const normalized = normalizeReceiptData(res?.data, service!, values);
             setReceiptData(normalized);
+            WalletBalanceReq(loginData?.hierarchyId);
             setReceiptDrawerOpened(true);
 
         } catch (err: any) {

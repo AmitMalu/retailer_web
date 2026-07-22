@@ -110,11 +110,7 @@ export const useBankVerification = () => {
     ? decryptData(responses?.loginData)
     : null;
 
-  const isRetailer = loginData?.role === "RT";
-
-  const { getSubProduct } = useProductEngine(
-    isRetailer ? loginData : null
-  );
+  const { getSubProduct } = useProductEngine(loginData);
 
   const verify = async ({ id_number, ifsc, ifsc_details }: BankVerificationRequest) => {
     try {
@@ -125,22 +121,21 @@ export const useBankVerification = () => {
         ifsc_details,
       };
 
-      // Apply scheme ONLY for RT
-      if (isRetailer) {
+      if (loginData) {
         const config = getSubProduct(
           PRODUCT_KEYS.VERIFICATION,
           SUB_PRODUCT_MAP.VERIFICATION.BANK
         );
 
         if (config?.error) {
-          showErrorNotification(config.error);
+          showErrorNotification(config?.error);
           return false;
         }
 
         payload = {
           ...payload,
-          subProductId: config.subProduct.subProductId,
-          schemeCode: config.subProduct.schemeCode,
+          subProductId: config?.subProduct?.subProductId,
+          schemeCode: config?.subProduct?.schemeCode,
         };
       }
 

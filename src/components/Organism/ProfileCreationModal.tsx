@@ -811,7 +811,7 @@ const ProfileRegistrationForm = ({
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
-                        <CustomDatePicker
+                        {/* <CustomDatePicker
                           name="dob"
                           value={values.dob}
                           onChange={(value) => setFieldValue("dob", value)}
@@ -830,6 +830,17 @@ const ProfileRegistrationForm = ({
                               fontWeight: "600"
                             },
                           }}
+                        /> */}
+                        <FormikTextInputComponent
+                          name="dob"
+                          // label="Date of Birth"
+                          placeholder="YYYY-MM-DD"
+                          radius={6}
+                          type="date"
+                          size="lg"
+                          withAsterisk
+                          required
+                          max={new Date().toISOString().split("T")[0]}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] ">
@@ -1211,7 +1222,7 @@ const ProfileRegistrationForm = ({
                           rightSection={outletPincodeLoading ? <Loader size={16} /> : null}
                         />
                       </div>
-                      
+
                     </div>
                   </Stepper.Step>
                   <Stepper.Step

@@ -1,6 +1,6 @@
 import { FundRequestProps } from "@/Common/interface";
 import { RootState } from "@/Redux/Store";
-import { decryptData, singleDateValidationSchema } from "@/Utils/helper";
+import { decryptData, singleDateValidationSchema, useWalletBalance } from "@/Utils/helper";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Formik, FormikHelpers } from "formik";
@@ -38,10 +38,9 @@ const WalletToBankFund = () => {
     ? decryptData(apiResponses?.loginData)
     : null;
 
-  const isRetailer = loginData?.role === "RT";
-  const { getSubProduct } = useProductEngine(
-    isRetailer ? loginData : null
-  );
+  const { WalletBalanceReq } = useWalletBalance();
+
+  const { getSubProduct } = useProductEngine(loginData);
 
   const { checkDuplicate, store } = useTransactionCooldown("FUND_REQUEST");
 
@@ -150,7 +149,7 @@ const WalletToBankFund = () => {
       let subProductId: string | undefined;
       let schemeCode: string | undefined;
 
-      if (isRetailer) {
+      if (loginData) {
         const subProductName =
           SUB_PRODUCT_MAP.FUND_REQUEST.CADD;
 
@@ -187,7 +186,7 @@ const WalletToBankFund = () => {
         bankTransferTo: values.bankTransferTo,
         // ipAddress: ipAddress,
         depositDate: values.depositDate ? moment(values.depositDate).format("YYYY-MM-DD") : null,
-        ...(isRetailer && {
+        ...(loginData && {
           subProductId,
           schemeCode,
         }),
@@ -205,6 +204,7 @@ const WalletToBankFund = () => {
       if (response?.status === 200 || response?.status === 201) {
         store(values.bankAccountNumber, Number(values.amount));
         showSuccessNotification(response?.data?.message);
+        WalletBalanceReq(loginData?.hierarchyId);
         resetForm({
           values: {
             ...initialValues,

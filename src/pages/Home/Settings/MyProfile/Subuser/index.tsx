@@ -29,6 +29,7 @@ import { IconCalendar } from "@tabler/icons-react";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { useAddressFromPincode } from "@/Utils/CustomHooks/useAddressFromPincode";
+import FormikTextInputComponent from "@/components/Molecules/NewComponents/FormikTextInputComponent";
 
 const SubuserCreation = () => {
   const theme = useTheme();
@@ -540,7 +541,7 @@ const SubuserCreation = () => {
                           withAsterisk
                           className="w-max"
                         /> */}
-                        <FormikDatePicker
+                        {/* <FormikDatePicker
                           name="dob"
                           placeholder="Select a DOB"
                           size="lg"
@@ -549,6 +550,17 @@ const SubuserCreation = () => {
                           valueFormat="YYYY-MM-DD"
                           leftIcon={<IconCalendar size={24} />}
                           styles={{ input: { height: "55px", fontSize: "18px", borderRadius: "6px" } }}
+                        /> */}
+                        <FormikTextInputComponent
+                          name="dob"
+                          // label="Date of Birth"
+                          placeholder="YYYY-MM-DD"
+                          type="date"
+                          size="lg"
+                          radius={6}
+                          withAsterisk
+                          required
+                          max={new Date().toISOString().split("T")[0]}
                         />
                       </div>
                       <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">

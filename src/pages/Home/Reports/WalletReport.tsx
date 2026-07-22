@@ -93,7 +93,7 @@ const WalletReport = () => {
       url: viewSubmitted ? `${API_ROUTES.WALLET_REPORT}` : undefined,
       payload,
       refreshKey,
-      sendPaginationIn: "body",
+      sendPaginationIn: "params",
     });
 
   const transformPayload = (values: any) => {
