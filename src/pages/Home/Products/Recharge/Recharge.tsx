@@ -19,7 +19,7 @@ import { showErrorNotification, showSuccessNotification } from "@/Utils/notifica
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { RechargeOperatorListType, RechargeTransactionType } from "@/Common/interface";
 import { useAppSelector } from "@/Redux/hooks";
-import { decryptData } from "@/Utils/helper";
+import { decryptData, useWalletBalance } from "@/Utils/helper";
 import ConfirmDialog from "@/components/Atoms/ConfirmDialog";
 
 type CardType = {
@@ -87,6 +87,8 @@ const Recharge = () => {
     const loginData = responses?.loginData
         ? decryptData(responses.loginData)
         : null;
+
+    const { WalletBalanceReq } = useWalletBalance();
 
     const schemeCode = loginData?.products
         ?.flatMap((product: any) => product.subProducts) // Flatten all subProducts into a single array
@@ -445,6 +447,7 @@ const Recharge = () => {
                 //     showErrorNotification(innerData?.message || "Failed to Process Recharge")
                 // } else {
                 showSuccessNotification("Recharge Processed")
+                WalletBalanceReq(loginData?.hierarchyId);
                 // Merge request and response data into single object for receipt
                 const mergedData = {
                     ...payload,
