@@ -136,7 +136,6 @@ const WalletToBank = () => {
       ) {
         store(selectedBank.accountNumber, Number(values.amount));
         showSuccessNotification(response?.data?.message);
-        WalletBalanceReq(loginData?.hierarchyId);
         resetForm();
       } else {
         showErrorNotification(response?.data?.message);
@@ -144,6 +143,7 @@ const WalletToBank = () => {
     } catch (error) {
       await handleCustomError(error);
     } finally {
+      WalletBalanceReq(loginData?.hierarchyId);
       setIsLoading(false);
     }
   };

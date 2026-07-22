@@ -195,7 +195,6 @@ const PGFormModal = ({
 
           // Open payment link in a new tab
           window.open(orderData?.paymentLink, "_blank");
-          WalletBalanceReq(loginData?.hierarchyId);
 
           // Close modal and reset UI
           setIsBinDetails(false);
@@ -215,6 +214,7 @@ const PGFormModal = ({
     } catch (error) {
       await handleCustomError(error);
     } finally {
+      WalletBalanceReq(loginData?.hierarchyId);
       setIsLoading(false);
     }
   };

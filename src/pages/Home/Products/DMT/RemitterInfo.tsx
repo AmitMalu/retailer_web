@@ -636,7 +636,6 @@ const RemitterInfo = () => {
 
       if (data?.statusCode == "200") {
         showSuccessNotification(response?.data?.message || "Transaction Success");
-        WalletBalanceReq(loginData?.hierarchyId);
         if (tranxData?.beneId) {
           store(tranxData?.beneId, Number(tranxData?.amount));
         }
@@ -688,6 +687,7 @@ const RemitterInfo = () => {
       }
       handleCustomError(error);
     } finally {
+      WalletBalanceReq(loginData?.hierarchyId);
       setIsLoading(false);
     }
   }

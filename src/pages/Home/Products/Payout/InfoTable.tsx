@@ -262,7 +262,6 @@ const InfoTable = () => {
             const status = response?.data?.statusCode
             if (status == 200 || status == "202") {
               showSuccessNotification(response?.data?.message);
-              WalletBalanceReq(loginData?.hierarchyId);
               store(values.accountNumber, Number(values.amount));
               bag?.resetForm();
             } else {
@@ -275,6 +274,7 @@ const InfoTable = () => {
             await handleCustomError(error);
             return false;
           } finally {
+            WalletBalanceReq(loginData?.hierarchyId);
             setIsLoading(false);
           }
         };

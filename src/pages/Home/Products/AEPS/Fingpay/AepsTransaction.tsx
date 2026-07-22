@@ -210,7 +210,6 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
 
                 const normalized = normalizeReceiptData(res?.data, service!, values);
                 setReceiptData(normalized);
-                WalletBalanceReq(loginData?.hierarchyId);
                 setReceiptDrawerOpened(true);
             } else {
                 showErrorNotification(res?.data?.data?.message || res?.data?.message || "Failed to process transaction");
@@ -218,6 +217,7 @@ const AepsTransaction = ({ vendorKey }: AepsScreenProps) => {
         } catch (err: any) {
             handleCustomError(err);
         } finally {
+            WalletBalanceReq(loginData?.hierarchyId);
             setIsLoading(false);
         }
     }

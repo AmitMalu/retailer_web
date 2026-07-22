@@ -1254,7 +1254,7 @@ export interface FundLoadingTableType {
   depositAmount: string;
   bankAccountNumber: string;
   depositDate: string;
-  depositImage: string | null;
+  depositeImage: string | null;
   requestedBy: string;
   ipAddress: string;
   mobileNumber: string;
