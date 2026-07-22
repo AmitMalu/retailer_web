@@ -204,7 +204,6 @@ const WalletToBankFund = () => {
       if (response?.status === 200 || response?.status === 201) {
         store(values.bankAccountNumber, Number(values.amount));
         showSuccessNotification(response?.data?.message);
-        WalletBalanceReq(loginData?.hierarchyId);
         resetForm({
           values: {
             ...initialValues,
@@ -219,6 +218,7 @@ const WalletToBankFund = () => {
     } catch (error) {
       await handleCustomError(error);
     } finally {
+      WalletBalanceReq(loginData?.hierarchyId);
       setIsLoading(false);
     }
   };

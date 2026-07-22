@@ -188,7 +188,6 @@ const FundReversal = () => {
           store(values.childHierarchyId, Number(values.reversalAmount));
           // Second call (OTP verification)
           showSuccessNotification("Fund Reversal Successful");
-          WalletBalanceReq(loginData?.hierarchyId);
           setOpened(false);
           setIsOtpStage(false);
           setOtpId(null);
@@ -201,6 +200,7 @@ const FundReversal = () => {
       await handleCustomError(error);
       console.log(error, "error");
     } finally {
+      WalletBalanceReq(loginData?.hierarchyId);
       setIsLoading(false);
     }
   };

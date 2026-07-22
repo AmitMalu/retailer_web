@@ -53,7 +53,7 @@ const FundLoading = () => {
     { key: "bankAccountNumber", label: "Account Number", filterType: "number" },
     { key: "depositDate", label: "Deposit Date", filterType: "date" },
     {
-      key: "depositImage",
+      key: "depositeImage",
       label: "Deposit Slip",
       filterType: "text",
       renderType: "link",
