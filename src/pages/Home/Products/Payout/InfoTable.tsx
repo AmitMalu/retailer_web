@@ -10,7 +10,7 @@ import {
 } from "@/Common/interface";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/Store";
-import { decryptData } from "@/Utils/helper";
+import { decryptData, useWalletBalance } from "@/Utils/helper";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { UnstyledButton } from "@mantine/core";
 import {
@@ -77,6 +77,8 @@ const InfoTable = () => {
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
+
+  const { WalletBalanceReq } = useWalletBalance();
 
   const selectedSubProduct = loginData?.products
     ?.flatMap((product: any) => product.subProducts)
@@ -260,6 +262,7 @@ const InfoTable = () => {
             const status = response?.data?.statusCode
             if (status == 200 || status == "202") {
               showSuccessNotification(response?.data?.message);
+              WalletBalanceReq(loginData?.hierarchyId);
               store(values.accountNumber, Number(values.amount));
               bag?.resetForm();
             } else {

@@ -11,7 +11,7 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "@/Utils/notifications";
-import { decryptData, MobileNoRegex } from "@/Utils/helper";
+import { decryptData, MobileNoRegex, useWalletBalance } from "@/Utils/helper";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
@@ -41,6 +41,8 @@ const PGFormModal = ({
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses?.loginData)
     : null;
+
+  const { WalletBalanceReq } = useWalletBalance();
 
   const selectedSubProduct = loginData?.products
     ?.flatMap((product: any) => product.subProducts)
@@ -193,6 +195,7 @@ const PGFormModal = ({
 
           // Open payment link in a new tab
           window.open(orderData?.paymentLink, "_blank");
+          WalletBalanceReq(loginData?.hierarchyId);
 
           // Close modal and reset UI
           setIsBinDetails(false);

@@ -17,7 +17,7 @@ import RemitterInfoHeader from "@/components/Organism/DMT/RemitterInfoHeader";
 import { RootState } from "@/Redux/Store";
 import { delete_beneficiary, Dmt_Transaction, Dmt_Tranx_Send_Otp, edit_beneficiary, Fetch_Beneficiaries, Remitter_details, Update_Remitter, Verify_Delete_Beneficiary_Otp } from "@/Services/api";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { decryptData } from "@/Utils/helper";
+import { decryptData, useWalletBalance } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { useBankVerification } from "@/Utils/Verification";
 import { Drawer, UnstyledButton } from "@mantine/core";
@@ -85,6 +85,8 @@ const RemitterInfo = () => {
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses.loginData)
     : null;
+
+  const { WalletBalanceReq } = useWalletBalance();
 
   // const schemeCode = loginData?.products
   //   ?.flatMap((product: any) => product.subProducts) // Flatten all subProducts into a single array
@@ -634,6 +636,7 @@ const RemitterInfo = () => {
 
       if (data?.statusCode == "200") {
         showSuccessNotification(response?.data?.message || "Transaction Success");
+        WalletBalanceReq(loginData?.hierarchyId);
         if (tranxData?.beneId) {
           store(tranxData?.beneId, Number(tranxData?.amount));
         }

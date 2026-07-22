@@ -7,9 +7,9 @@ export const useProductEngine = (loginData: any) => {
     const map: Record<string, any> = {};
 
     loginData?.products?.forEach((p: any) => {
-      map[p.productName.toUpperCase()] = {
+      map[p?.productName?.toUpperCase()] = {
         ...p,
-        subProducts: p.subProducts || [],
+        subProducts: p?.subProducts || [],
       };
     });
 
@@ -33,9 +33,9 @@ export const useProductEngine = (loginData: any) => {
 
     if (error) return { error };
 
-    const subProduct = product.subProducts.find(
+    const subProduct = product?.subProducts?.find(
       (sp: any) =>
-        sp.subProductName.toUpperCase() === subProductName.trim().toUpperCase(),
+        sp?.subProductName?.toUpperCase() === subProductName?.trim().toUpperCase(),
     );
 
     const subError = validateSubProduct(subProduct);

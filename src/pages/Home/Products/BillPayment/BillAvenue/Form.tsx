@@ -1,5 +1,5 @@
 import { RootState } from "@/Redux/Store";
-import { decryptData } from "@/Utils/helper";
+import { decryptData, useWalletBalance } from "@/Utils/helper";
 import { useTheme } from "@mui/system";
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useSelector } from "react-redux";
@@ -79,6 +79,8 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
     const loginData = apiResponses?.loginData
         ? decryptData(apiResponses?.loginData)
         : null;
+
+    const { WalletBalanceReq } = useWalletBalance();
 
     const schemeCode = loginData?.products
         ?.flatMap((product: any) => product.subProducts) // Flatten all subProducts into a single array
@@ -329,6 +331,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
                 store(selectedProviderDetails.billerId, Number(values.amount))
                 const respData = response?.data?.data || {};
                 showSuccessNotification(response?.data?.message || "Transaction Successful");
+                WalletBalanceReq(loginData?.hierarchyId);
                 setBillModalOpened(false);
                 resetForm();
 

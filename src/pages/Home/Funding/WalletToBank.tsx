@@ -9,7 +9,7 @@ import { RootState } from "@/Redux/Store";
 import { Get_Hierarchy_Banks, Wallet_To_Bank } from "@/Services/api";
 import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 import { handleCustomError } from "@/Utils/handleCustomError";
-import { decryptData } from "@/Utils/helper";
+import { decryptData, useWalletBalance } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
 import { Formik, FormikHelpers } from "formik";
 import React, { useEffect, useRef, useState } from "react";
@@ -43,6 +43,8 @@ const WalletToBank = () => {
   const loginData = apiResponses?.loginData
     ? decryptData(apiResponses.loginData)
     : null;
+
+  const { WalletBalanceReq } = useWalletBalance();
 
   const { checkDuplicate, store } = useTransactionCooldown("MOVETOBANK");
 
@@ -134,6 +136,7 @@ const WalletToBank = () => {
       ) {
         store(selectedBank.accountNumber, Number(values.amount));
         showSuccessNotification(response?.data?.message);
+        WalletBalanceReq(loginData?.hierarchyId);
         resetForm();
       } else {
         showErrorNotification(response?.data?.message);

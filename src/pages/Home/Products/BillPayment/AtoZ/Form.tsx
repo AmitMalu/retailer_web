@@ -1,5 +1,5 @@
 import { RootState } from "@/Redux/Store";
-import { decryptData } from "@/Utils/helper";
+import { decryptData, useWalletBalance } from "@/Utils/helper";
 import { useTheme } from "@mui/system";
 import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
@@ -65,6 +65,8 @@ const Form: React.FC<Props> = ({ serviceName, subProductId }) => {
     const loginData = apiResponses?.loginData
         ? decryptData(apiResponses?.loginData)
         : null;
+
+    const { WalletBalanceReq } = useWalletBalance();
 
     // 🔹 Main form (Form-1)
     const initialValues = useMemo(
@@ -254,6 +256,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId }) => {
             if (response?.data?.statusCode === 200 || response?.data?.statusCode === "200") {
                 store(selectedProviderDetails.provider_id, Number(values.amount))
                 showSuccessNotification(response?.data?.message);
+                WalletBalanceReq(loginData?.hierarchyId);
                 setAmountEditable(false);
                 setBillModalOpened(false);
                 resetForm();
