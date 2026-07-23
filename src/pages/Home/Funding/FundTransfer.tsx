@@ -17,6 +17,9 @@ import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import { Child_Member_List, Fund_Transfer } from "@/Services/api";
 import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
+import { useProductEngine } from "../../../Utils/CustomHooks/useProductEngine";
+import { SUB_PRODUCT_MAP } from "@/Utils/subProductMap";
+import { PRODUCT_KEYS } from "@/Utils/productKeys";
 import ConfirmDialog from "@/components/Atoms/ConfirmDialog";
 const FundTransfer = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,6 +33,7 @@ const FundTransfer = () => {
 
   const { WalletBalanceReq } = useWalletBalance();
 
+  const { getSubProduct } = useProductEngine(loginData);
   const { checkDuplicate, store } = useTransactionCooldown("FUND-TRANSFER");
 
   // --- Payment confirmation dialog ---
@@ -106,6 +110,26 @@ const FundTransfer = () => {
     try {
       setIsLoading(true);
 
+      let subProductId: string | undefined;
+      let schemeCode: string | undefined;
+
+      if (loginData) {
+        const subProductName = SUB_PRODUCT_MAP.FUND_TRANSFER.CAIN;
+
+        const config = getSubProduct(
+          PRODUCT_KEYS.FUND_TRANSFER,
+          subProductName
+        );
+
+        if (config?.error) {
+          showErrorNotification(config.error);
+          return;
+        }
+
+        subProductId = config?.subProduct?.subProductId;
+        schemeCode = config?.subProduct?.schemeCode;
+      }
+
       const bodyData = {
         fromHierarchyId: values.fromHierarchyId || loginData?.hierarchyId,
         toHierarchyId: values.toHierarchyId,
@@ -114,6 +138,10 @@ const FundTransfer = () => {
         fromWalletType: values.fromWalletType,
         toWalletType: values.toWalletType,
         narration: values.narration,
+        ...(loginData && {
+          subProductId,
+          schemeCode,
+        }),
       };
 
       if (checkDuplicate(values.toHierarchyId, Number(values.amount))) {

@@ -20,6 +20,9 @@ import { useTheme } from "@mui/system";
 import { Modal } from "@mantine/core";
 import OTPInput from "react-otp-input";
 import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
+import { useProductEngine } from "../../../Utils/CustomHooks/useProductEngine";
+import { SUB_PRODUCT_MAP } from "@/Utils/subProductMap";
+import { PRODUCT_KEYS } from "@/Utils/productKeys";
 
 const FundReversal = () => {
   const theme = useTheme();
@@ -43,6 +46,7 @@ const FundReversal = () => {
 
   const { WalletBalanceReq } = useWalletBalance();
 
+  const { getSubProduct } = useProductEngine(loginData);
   const { checkDuplicate, store } = useTransactionCooldown("FUND-REVERSAL");
 
   const GetChildList = async () => {
@@ -147,12 +151,36 @@ const FundReversal = () => {
     try {
       setIsLoading(true);
 
+      let subProductId: string | undefined;
+      let schemeCode: string | undefined;
+
+      if (loginData) {
+        const subProductName = SUB_PRODUCT_MAP.FUND_REVERSAL["Fund Reversal"];
+
+        const config = getSubProduct(
+          PRODUCT_KEYS.FUND_REVERSAL,
+          subProductName
+        );
+
+        if (config?.error) {
+          showErrorNotification(config.error);
+          return;
+        }
+
+        subProductId = config?.subProduct?.subProductId;
+        schemeCode = config?.subProduct?.schemeCode;
+      }
+
       const bodyData: FundReversalFormType = {
         parentHierarchyId: values.parentHierarchyId || loginData?.hierarchyId,
         childHierarchyId: values.childHierarchyId,
         reversalAmount: values.reversalAmount,
         walletType: values.walletType,
         remark: values.remark ?? "",
+        ...(loginData && {
+          subProductId,
+          schemeCode,
+        }),
       };
 
       // Include OTP only if we are in OTP stage
