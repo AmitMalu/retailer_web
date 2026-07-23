@@ -28,7 +28,8 @@ export const API_ROUTES = {
   FUND_TRANSFER: `${BASE_URL}/api/fund-transfer`,
   WALLET_BALANCE: `${BASE_URL}/api/dashboard/wallet-balance`,
   // WALLET_TO_BANK: `${BASE_URL}/api/move-to-bank/send-payout-request-VO`, //old url 
-  WALLET_TO_BANK: `${BASE_URL}/api/send-payout-vo`,
+  // WALLET_TO_BANK: `${BASE_URL}/api/send-payout-vo`,
+  WALLET_TO_BANK: `${BASE_URL}/api/send-payout`,
   FETCH_HIERARCHY_BANKS: `${BASE_URL}/api/bank-details/verified`,
   FETCH_ADMIN_BANKS: `${BASE_URL}/api/im-bank/list`,
 

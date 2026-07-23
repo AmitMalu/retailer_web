@@ -553,6 +553,7 @@ export type WalletToBankRequest = {
   beneficiaryName: string;
   paymentMode: string;
   subProductId: string;
+  bankName: string;
 };
 
 export type FundReversalFormType = {
@@ -1090,6 +1091,7 @@ export type PayoutSendBeneficiaryProps = {
   amount: string | number | null;
   beneficiaryName: string;
   paymentMode: string;
+  bankName: string;
   subProductId: string;
   schemeCode: string;
   // callbackurl: string;

@@ -8,6 +8,9 @@ import TextInputComponent from "@/components/Atoms/TextInputComponent";
 import { RootState } from "@/Redux/Store";
 import { Get_Hierarchy_Banks, Wallet_To_Bank } from "@/Services/api";
 import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
+import { useProductEngine } from "../../../Utils/CustomHooks/useProductEngine";
+import { SUB_PRODUCT_MAP } from "@/Utils/subProductMap";
+import { PRODUCT_KEYS } from "@/Utils/productKeys";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { decryptData, useWalletBalance } from "@/Utils/helper";
 import { showErrorNotification, showSuccessNotification } from "@/Utils/notifications";
@@ -46,19 +49,12 @@ const WalletToBank = () => {
 
   const { WalletBalanceReq } = useWalletBalance();
 
+  const { getSubProduct } = useProductEngine(loginData);
   const { checkDuplicate, store } = useTransactionCooldown("MOVETOBANK");
 
   // --- Payment confirmation dialog ---
   const [confirmOpen, setConfirmOpen] = useState(false);
   const pendingSubmitRef = React.useRef<{ values: WalletToBankProps; resetForm: () => void } | null>(null);
-
-
-  const subProductId = loginData?.products
-    ?.flatMap((product: any) => (product?.subProducts || []))
-    ?.find(
-      (subProduct: any) =>
-        subProduct?.subProductName?.toLowerCase().includes("mtb")
-    )?.subProductId;
 
   const [hierarchyBankList, setHierarchyBankList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -100,6 +96,26 @@ const WalletToBank = () => {
     try {
       setIsLoading(true);
 
+      let subProductId: string | undefined;
+      let schemeCode: string | undefined;
+
+      if (loginData) {
+        const subProductName = SUB_PRODUCT_MAP.MOVE_TO_BANK.DEFAULT;
+
+        const config = getSubProduct(
+          PRODUCT_KEYS.MOVE_TO_BANK,
+          subProductName
+        );
+
+        if (config?.error) {
+          showErrorNotification(config.error);
+          return;
+        }
+
+        subProductId = config?.subProduct?.subProductId;
+        schemeCode = config?.subProduct?.schemeCode;
+      }
+
       // Find selected bank details
       const selectedBank = hierarchyBankList?.find(
         (bank) => bank.id == values.selectBank
@@ -117,7 +133,11 @@ const WalletToBank = () => {
         amount: String(values.amount),
         beneficiaryName: selectedBank.bankHolderName,
         paymentMode: values.paymentMode,
-        subProductId: subProductId ?? "",
+        bankName: selectedBank?.bankName,
+        ...(loginData && {
+          subProductId,
+          schemeCode,
+        }),
       };
 
       if (checkDuplicate(selectedBank.accountNumber, Number(values.amount))) {
