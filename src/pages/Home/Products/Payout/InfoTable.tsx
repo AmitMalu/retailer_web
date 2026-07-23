@@ -232,7 +232,8 @@ const InfoTable = () => {
           beneficiaryName: values?.bankHolderName || "",
           paymentMode: "IMPS",
           subProductId: payoutType?.subProductId || "",
-          schemeCode: payoutType?.schemeCode || ""
+          schemeCode: payoutType?.schemeCode || "",
+          bankName: values?.bankName || "",
           // callbackurl: "https://uat.decipay.in/enterprises/api/payout/callback",
         };
         const handleSubmit = async (values: PayoutSendBeneficiaryProps, bag: any) => {
@@ -247,6 +248,7 @@ const InfoTable = () => {
               paymentMode: values.paymentMode,
               subProductId: values.subProductId,
               schemeCode: values.schemeCode,
+              bankName: values.bankName,
 
               // callbackurl: values.callbackurl,
             };
