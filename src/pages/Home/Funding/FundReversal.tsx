@@ -265,7 +265,9 @@ const FundReversal = () => {
                 <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                   <DropdownComponent
                     label="Reverse Account"
-                    data={childMemberList.map((item) => item.userId)}
+                    data={childMemberList
+                      .filter((item) => item.userId !== loginData?.hierarchyId)
+                      .map((item) => item.userId)}
                     value={values.childHierarchyId}
                     withAsterisk
                     onChange={(value) => {
