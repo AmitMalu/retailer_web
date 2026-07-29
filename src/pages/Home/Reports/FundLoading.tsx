@@ -47,7 +47,7 @@ const FundLoading = () => {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const headers: GenericTableHeader<FundLoadingTableType>[] = [
-    { key: "paymentMode", label: "Deposit Type", filterType: "text" },
+    { key: "depositType", label: "Deposit Type", filterType: "text" },
     { key: "bankTranId", label: "Transaction ID", filterType: "text" },
     { key: "depositAmount", label: "Amount", filterType: "amount" },
     { key: "bankAccountNumber", label: "Account Number", filterType: "number" },
