@@ -4,7 +4,7 @@ export const SUB_PRODUCT_MAP = {
     PREPAID: "MTPR",
   },
   MOVE_TO_BANK: {
-    DEFAULT: "IMPS",
+    DEFAULT: "MTB",
   },
   FUND_REQUEST: {
     "CADD": "CADD",
