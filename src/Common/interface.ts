@@ -1251,7 +1251,7 @@ export interface TransactionWalletReportTableType {
 
 export interface FundLoadingTableType {
   id: string | number;
-  paymentMode: string;
+  depositType: string;
   bankTranId: string;
   depositAmount: string;
   bankAccountNumber: string;

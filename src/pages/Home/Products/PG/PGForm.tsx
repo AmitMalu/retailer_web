@@ -75,6 +75,10 @@ const PGFormModal = ({
         .max(10, "Enter valid Number")
         .min(10, "Enter valid Number")
         .matches(MobileNoRegex, "Please enter valid number")
+        .test("match-mobile", "Mobile number does not match registered number", function (value) {
+          if (!value) return false;
+          return value !== loginData?.mobileNumber;
+        })
         .required("Required"),
       productId: Yup.string().required("Required"),
       subProductId: Yup.string().required("Required"),
