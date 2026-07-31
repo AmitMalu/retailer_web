@@ -73,6 +73,33 @@ const FundRequestReceipt = ({ data }: { data: any }) => {
                         <Table.Td fw={500}>Remarks</Table.Td>
                         <Table.Td>{dash(data?.remarks)}</Table.Td>
                     </Table.Tr>
+
+                    <Table.Tr>
+                        <Table.Td fw={500}>Request Date</Table.Td>
+                        <Table.Td>
+                            {data?.requestDate ? moment(data.requestDate).format("DD-MM-YYYY hh:mm A") : "-"}
+                        </Table.Td>
+                        <Table.Td fw={500}>Deposit Date</Table.Td>
+                        <Table.Td>
+                            {data?.depositDate ? moment(data.depositDate).format("DD-MM-YYYY") : "-"}
+                        </Table.Td>
+                    </Table.Tr>
+
+                    <Table.Tr>
+                        <Table.Td fw={500}>Approve/Reject Date</Table.Td>
+                        <Table.Td>
+                            {data?.approveOrRejectDate ? moment(data.approveOrRejectDate).format("DD-MM-YYYY") : "-"}
+                        </Table.Td>
+                        <Table.Td fw={500}>Bank Account Name</Table.Td>
+                        <Table.Td>{dash(data?.bankAccountName)}</Table.Td>
+                    </Table.Tr>
+
+                    <Table.Tr>
+                        <Table.Td fw={500}>Bank Account Number</Table.Td>
+                        <Table.Td>{dash(data?.bankAccountNumber)}</Table.Td>
+                        <Table.Td></Table.Td>
+                        <Table.Td></Table.Td>
+                    </Table.Tr>
                 </Table.Tbody>
             </Table>
 
