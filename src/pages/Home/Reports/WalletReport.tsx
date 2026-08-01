@@ -30,13 +30,19 @@ const KEY = "wallet_report"
 
 const headers: GenericTableHeader<WalletReportTableType>[] = [
   { key: "tranxId", label: "Transaction ID", filterType: "text", copyable: true },
-  { key: "productName", label: "Product Name", filterType: "none" },
+  { key: "productName", label: "Product Name", filterType: "text" },
   // { key: "subProductName", label: "Sub Product Name", filterType: "text" },
   // { key: "schemeName", label: "Scheme Name", filterType: "text" },
-  { key: "hierarchyId", label: "User ID", filterType: "none" },
+  { key: "hierarchyId", label: "User ID", filterType: "text" },
   // { key: "outletName", label: "Outlet Name", filterType: "text" },
   // { key: "transactionType", label: "Transaction Type", filterType: "text" },
-  { key: "walletType", label: "Wallet Type", filterType: "none" },
+  {
+    key: "walletType", label: "Wallet Type", filterType: "boolean", filterOptions:
+      [
+        { label: "PREPAID", value: "PREPAID" },
+        { label: "POSTPAID", value: "POSTPAID" },
+      ]
+  },
   { key: "balBefore", label: "Balance Before", filterType: "amount" },
   { key: "amount", label: "Amount", filterType: "amount" },
   { key: "balAfter", label: "Balance After", filterType: "amount" },
@@ -47,6 +53,7 @@ const headers: GenericTableHeader<WalletReportTableType>[] = [
         { label: "SUCCESS", value: "SUCCESS" },
         { label: "FAILURE", value: "FAILURE" },
         { label: "PENDING", value: "PENDING" },
+        { label: "REVERSAL", value: "REVERSAL" },
       ]
   },
   { key: "transactionDate", label: "Transaction Date", filterType: "date" },
@@ -293,7 +300,8 @@ const WalletReport = () => {
                     data={[
                       { label: "PENDING", value: "PENDING" },
                       { label: "SUCCESS", value: "SUCCESS" },
-                      { label: "FAILURE", value: "FAILURE" },
+                      { label: "FAILED", value: "FAILED" },
+                      { label: "REVERSAL", value: "REVERSAL" },
                     ]}
                   />
                 </Grid.Col>

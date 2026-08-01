@@ -62,6 +62,7 @@ export const API_ROUTES = {
   FETCH_CARD_TYPE: `${BASE_URL}/api/transaction/fetch-card-bin-details`,
   VALIDATE_TRANSACTION: `${BASE_URL}/api/pg/validate`,
   CREATE_ORDER: `${BASE_URL}/api/pg/create-order`,
+  IM_SUB_PRODUCT_LIST: `${BASE_URL}/api/sub-products/im/list`,
 
   ///////////////// CREATE SUB USER //////////////////////////
   CREATE_SUB_USER: `${BASE_URL}/api/retailer/create-user`,
