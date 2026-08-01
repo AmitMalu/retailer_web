@@ -50,14 +50,7 @@ const PendingTransaction = () => {
     { key: "mobileNo", label: "Mobile No", filterType: "text" },
     // { key: "schemeName", label: "Scheme Name", filterType: "text" },
     { key: "amount", label: "Amount", filterType: "amount" },
-    {
-      key: "txStatus", label: "Transaction Status", filterType: "boolean", filterOptions:
-        [
-          { label: "SUCCESS", value: "SUCCESS" },
-          { label: "FAILURE", value: "FAILURE" },
-          { label: "PENDING", value: "PENDING" },
-        ]
-    },
+    { key: "txStatus", label: "Transaction Status", filterType: "none" },
     { key: "txType", label: "Transaction Type", filterType: "text" },
     { key: "remarks", label: "Remarks", filterType: "text" },
     { key: "walletType", label: "Wallet Type", filterType: "none" },

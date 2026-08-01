@@ -19,6 +19,7 @@ import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import {
   Create_Order,
   Fetch_Card_Bin_Detail,
+  Fetch_IM_Sub_Products,
   Validate_Transaction,
 } from "@/Services/api";
 import theme from "@/theme/ThemeConfig";
@@ -34,6 +35,10 @@ const PGFormModal = ({
 }: PartnerRegistrationModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBinDetails, setIsBinDetails] = useState(false);
+  const [imSubProductOptions, setImSubProductOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [isImSubProductLoading, setIsImSubProductLoading] = useState(false);
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
@@ -50,6 +55,43 @@ const PGFormModal = ({
       (subProduct: any) => subProduct.subProductId === subProductId
     );
 
+  const isIMSubProduct = Boolean(selectedSubProduct?.isIMSubProduct);
+
+  useEffect(() => {
+    if (!opened || !isIMSubProduct) {
+      setImSubProductOptions([]);
+      return;
+    }
+
+    const fetchIMSubProducts = async () => {
+      try {
+        setIsImSubProductLoading(true);
+        const payload = {
+          isSettlement: selectedSubProduct?.isSettlement ? 1 : 0,
+          serviceType: "PG",
+        };
+        const response = await Fetch_IM_Sub_Products(payload);
+        if (response?.data?.status === "SUCCESS") {
+          const options = (response?.data?.data || []).map((item: any) => ({
+            value: item.title,
+            label: item.title,
+          }));
+          setImSubProductOptions(options);
+        } else {
+          showErrorNotification(
+            response?.data?.msg || "Unable to fetch sub-products"
+          );
+        }
+      } catch (error) {
+        await handleCustomError(error);
+      } finally {
+        setIsImSubProductLoading(false);
+      }
+    };
+
+    fetchIMSubProducts();
+  }, [opened, isIMSubProduct, subProductId, selectedSubProduct?.isSettlement]);
+
   const { checkDuplicate, store } = useTransactionCooldown("PG");
 
   const productOptions =
@@ -60,6 +102,9 @@ const PGFormModal = ({
 
   const validationSchema = Yup.object().shape({
     cardType: Yup.string().required("Required"),
+    ...(isIMSubProduct && {
+      imSubProductName: Yup.string().required("Required"),
+    }),
     cardBinNo: Yup.string()
       .max(6, "Enter valid Number")
       .min(6, "Enter valid Number")
@@ -105,6 +150,7 @@ const PGFormModal = ({
   const initialValues: PGFormBodyProps = {
     cardType: "",
     cardBinNo: "",
+    imSubProductName: "",
     paymentMethod: "",
     cardHolderName: "",
     cardHolderMobileNumber: "",
@@ -149,6 +195,7 @@ const PGFormModal = ({
         amount: values.amount,
         productId: values.productId,
         subProductId: values.subProductId,
+        imSubProductName: values.imSubProductName,
       };
 
       const response = await Validate_Transaction(payload);
@@ -176,6 +223,7 @@ const PGFormModal = ({
         productId: values.productId,
         subProductId: values.subProductId,
         schemeCode: selectedSubProduct?.schemeCode ?? "",
+        imSubProductName: values.imSubProductName,
         initiatedBy: loginData?.hierarchyId
       };
 
@@ -323,6 +371,28 @@ const PGFormModal = ({
             return (
               <>
                 <div className="mt-3 flex flex-wrap items-start justify-start gap-3">
+                  {isIMSubProduct && (
+                    <div className="w-full sm:w-[calc(50%-12px)]">
+                      <DropdownComponent
+                        label="IM Sub Product"
+                        data={imSubProductOptions}
+                        value={values.imSubProductName}
+                        withAsterisk
+                        disabled={isImSubProductLoading}
+                        onChange={(value) =>
+                          setFieldValue("imSubProductName", value)
+                        }
+                        error={
+                          touched.imSubProductName &&
+                            errors.imSubProductName
+                            ? errors.imSubProductName
+                            : ""
+                        }
+                        className="w-max"
+                      />
+                    </div>
+                  )}
+
                   <div className="w-full sm:w-[calc(50%-12px)] ">
                     <DropdownComponent
                       label="Card Type"
