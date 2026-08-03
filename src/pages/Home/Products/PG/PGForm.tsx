@@ -71,9 +71,9 @@ const PGFormModal = ({
           serviceType: "PG",
         };
         const response = await Fetch_IM_Sub_Products(payload);
-        if (response?.data?.status === "SUCCESS") {
+        if (response?.data?.statusCode == "200") {
           const options = (response?.data?.data || []).map((item: any) => ({
-            value: item.title,
+            value: item.subproduct,
             label: item.title,
           }));
           setImSubProductOptions(options);
