@@ -302,6 +302,7 @@ export interface CustomDropdownProps {
   pY?: number;
   pX?: number;
   menuFontSize?: number;
+  labelMargin?: number;
 
 }
 
@@ -1102,6 +1103,7 @@ export type PayoutSendBeneficiaryProps = {
   bankName: string;
   subProductId: string;
   schemeCode: string;
+  imSubProductName?: string;
   // callbackurl: string;
 };
 

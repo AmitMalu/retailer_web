@@ -27,7 +27,7 @@ import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import PayoutFormModal from "./PayoutForm";
 import DropdownComponent from "@/components/Atoms/DropdownComponent";
 import TextInputComponent from "@/components/Atoms/TextInputComponent";
-import { Edit_Beneficiary_Bank_Details, Payout_GetAll_Payout_BankDetails, Payout_Send } from "@/Services/api";
+import { Edit_Beneficiary_Bank_Details, Fetch_IM_Sub_Products, Payout_GetAll_Payout_BankDetails, Payout_Send } from "@/Services/api";
 import {
   showErrorNotification,
   showSuccessNotification,
@@ -55,6 +55,10 @@ const InfoTable = () => {
   >([]);
   const [isBankList, setIsBankList] = useState<PayoutBankDetails | []>([]);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
+  const [imSubProductOptions, setImSubProductOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [isImSubProductLoading, setIsImSubProductLoading] = useState(false);
   const { verify: verifyBank } = useBankVerification();
 
   // --- Transfer confirmation dialog ---
@@ -85,6 +89,43 @@ const InfoTable = () => {
     ?.find(
       (subProduct: any) => subProduct.subProductId === payoutType?.subProductId
     );
+
+  const isIMSubProduct = Boolean(selectedSubProduct?.isIMSubProduct);
+
+  useEffect(() => {
+    if (!isIMSubProduct) {
+      setImSubProductOptions([]);
+      return;
+    }
+
+    const fetchIMSubProducts = async () => {
+      try {
+        setIsImSubProductLoading(true);
+        const payload = {
+          isSettlement: 2,
+          serviceType: "PAYOUT",
+        };
+        const response = await Fetch_IM_Sub_Products(payload);
+        if (response?.data?.statusCode == "200") {
+          const options = (response?.data?.data || []).map((item: any) => ({
+            value: item.subproduct,
+            label: item.title,
+          }));
+          setImSubProductOptions(options);
+        } else {
+          showErrorNotification(
+            response?.data?.msg || "Unable to fetch sub-products"
+          );
+        }
+      } catch (error) {
+        await handleCustomError(error);
+      } finally {
+        setIsImSubProductLoading(false);
+      }
+    };
+
+    fetchIMSubProducts();
+  }, [isIMSubProduct]);
 
   const GetPayoutDataSubmit = async (pageNum = 1, pageSize = 10, filters: Record<string, any> = {}) => {
     const reqParams: PayoutBankDetailsParams = {
@@ -222,6 +263,9 @@ const InfoTable = () => {
                 return value <= selectedSubProduct.maxAmount;
               }
             ),
+          ...(isIMSubProduct && {
+            imSubProductName: Yup.string().required("Required"),
+          }),
         });
 
         const initialValues: PayoutSendBeneficiaryProps = {
@@ -234,6 +278,7 @@ const InfoTable = () => {
           subProductId: payoutType?.subProductId || "",
           schemeCode: payoutType?.schemeCode || "",
           bankName: values?.bankName || "",
+          imSubProductName: "",
           // callbackurl: "https://uat.decipay.in/enterprises/api/payout/callback",
         };
         const handleSubmit = async (values: PayoutSendBeneficiaryProps, bag: any) => {
@@ -249,6 +294,7 @@ const InfoTable = () => {
               subProductId: values.subProductId,
               schemeCode: values.schemeCode,
               bankName: values.bankName,
+              imSubProductName: values.imSubProductName,
 
               // callbackurl: values.callbackurl,
             };
@@ -321,6 +367,31 @@ const InfoTable = () => {
                     className="w-max"
                   />
                 </div>
+                {isIMSubProduct && (
+                  <div className="w-40 h-10 flex justify-center items-center">
+                    <DropdownComponent
+                      pY={6}
+                      pX={6}
+                      labelFontSize={12}
+                      inputFontSize={12}
+                      menuFontSize={12}
+                      label="IM Sub Product"
+                      data={imSubProductOptions}
+                      value={values.imSubProductName}
+                      disabled={isImSubProductLoading}
+                      onChange={(value) =>
+                        setFieldValue("imSubProductName", value)
+                      }
+                      error={
+                        touched.imSubProductName && errors.imSubProductName
+                          ? errors.imSubProductName
+                          : ""
+                      }
+                      className="w-max"
+                      labelMargin={-8}
+                    />
+                  </div>
+                )}
                 <div className="w-32 h-10 flex justify-center items-center">
                   <TextInputComponent
                     labelFontSize={10}
@@ -351,7 +422,11 @@ const InfoTable = () => {
                   variant="filled"
                   onClick={async () => {
                     // Touch all fields so errors show up
-                    await setTouched({ paymentMode: true, amount: true });
+                    await setTouched({
+                      paymentMode: true,
+                      amount: true,
+                      imSubProductName: isIMSubProduct,
+                    });
                     const errors = await validateForm();
                     if (Object.keys(errors).length > 0) return; // validation failed — stop
                     setConfirmModal({
