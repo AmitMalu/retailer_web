@@ -23,6 +23,7 @@ import ProviderDynamicFields from "./Components/ProviderDynamicFields";
 import { buildFetchBillPayload } from "./Utils/buildExtraParamPayload";
 import { buildProcessTransactionPayload, getBillFormConfig, paiseToRupee } from "./Utils/billHelpers";
 import BBPSTransactionReciept from "../BBPSTransactionReciept";
+import PayViaPgComingSoon from "../PayViaPgComingSoon";
 import { useTransactionCooldown } from "@/Utils/CustomHooks/useTransactionCooldown";
 import ConfirmDialog from "@/components/Atoms/ConfirmDialog";
 import bbbsLogo from "@/assets/svg/Products/bbps/Bharat_connect_logo.png";
@@ -54,6 +55,8 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
     const [billModalOpened, setBillModalOpened] = useState(false);
     const [billDetails, setBillDetails] = useState<any>(null);
     // const [amountEditable, setAmountEditable] = useState(false);
+
+    const [showPayViaPg, setShowPayViaPg] = useState(false);
 
     const [receiptDrawerOpened, setReceiptDrawerOpened] = useState(false);
     const [receiptData, setReceiptData] = useState<any>(null);
@@ -546,6 +549,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
                     onClose={() => {
                         if (!isLoading) {
                             setBillModalOpened(false);
+                            setShowPayViaPg(false);
                             // Force Formik remount by incrementing key
                             setFormKey(prev => prev + 1);
                         }
@@ -572,7 +576,7 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
                             width: "100%",
                         },
                         body: {
-                            overflow: isLoading ? "hidden" : "auto", // Disable scrolling while loading
+                            overflow: isLoading || showPayViaPg ? "hidden" : "auto", // Disable scrolling while loading
                         },
                     }}
                 >
@@ -601,36 +605,59 @@ const Form: React.FC<Props> = ({ serviceName, subProductId, vendor }) => {
                                                 setConfirmOpen(true);
                                             }}
                                         >
-                                            {({ values, handleChange, errors, touched, handleSubmit }) => {
+                                            {({ values, handleChange, errors, touched, handleSubmit, validateForm, setTouched }) => {
+
+                                                const handlePayViaPg = async () => {
+                                                    await setTouched({ amount: true });
+                                                    const formErrors = await validateForm();
+                                                    if (Object.keys(formErrors).length > 0) return;
+                                                    setShowPayViaPg(true);
+                                                };
 
                                                 return (
                                                     <form onSubmit={handleSubmit} className="flex flex-col w-full p-4 overflow-y-auto gap-4">
-                                                        <BillPaymentDetails
-                                                            billDetails={billDetails}
-                                                        />
+                                                        <div className="relative">
+                                                            <div className={showPayViaPg ? "hidden" : ""}>
+                                                                <BillPaymentDetails
+                                                                    billDetails={billDetails}
+                                                                />
 
-                                                        {/* Editable Amount Field */}
-                                                        <AmountInput
-                                                            value={values.amount ?? ""}
-                                                            onChange={handleChange("amount")}
-                                                            error={touched.amount ? errors.amount as string : ""}
-                                                            disabled={!amountEditable || isLoading}
-                                                        />
+                                                                {/* Editable Amount Field */}
+                                                                <AmountInput
+                                                                    value={values.amount ?? ""}
+                                                                    onChange={handleChange("amount")}
+                                                                    error={touched.amount ? errors.amount as string : ""}
+                                                                    disabled={!amountEditable || isLoading}
+                                                                />
 
+                                                                <div className="mt-6 flex h-9 w-full items-center justify-end gap-3">
+                                                                    <ButtonComponent
+                                                                        type="submit"
+                                                                        width={150}
+                                                                        title={"Pay via Wallet"}
+                                                                        variant="filled"
+                                                                        onClick={() => null}
+                                                                        disabled={isLoading}
+                                                                        radius={28}
+                                                                        fontSize={14}
+                                                                    />
+                                                                    <ButtonComponent
+                                                                        width={120}
+                                                                        title={"Pay via PG"}
+                                                                        variant="outline"
+                                                                        onClick={handlePayViaPg}
+                                                                        disabled={isLoading}
+                                                                        radius={28}
+                                                                        fontSize={14}
+                                                                    />
+                                                                </div>
+                                                            </div>
 
-                                                        <div className="mt-6 flex h-9 w-full items-center justify-end">
-                                                            <ButtonComponent
-
-                                                                type="submit"
-                                                                width={120}
-                                                                title={"SUBMIT"}
-                                                                variant="filled"
-                                                                onClick={() => null}
-                                                                disabled={isLoading}
-                                                                radius={28}
-                                                                fontSize={14}
-                                                                fullWidth
-                                                            />
+                                                            {showPayViaPg && (
+                                                                <PayViaPgComingSoon
+                                                                    onBack={() => setShowPayViaPg(false)}
+                                                                />
+                                                            )}
                                                         </div>
                                                     </form>
                                                 )
