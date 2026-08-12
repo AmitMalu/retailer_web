@@ -57,7 +57,7 @@ export const BOT_ROUTE_OPTIONS: BotOption[] = [
   {
     label: "Transaction Report",
     path: "/reports/transaction-report",
-    allowedRoles: ROLES_RT_RU,
+    allowedRoles: ROLES_ALL,
   },
   {
     label: "TXN Wallet Report",

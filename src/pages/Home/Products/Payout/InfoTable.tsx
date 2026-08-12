@@ -175,9 +175,9 @@ const InfoTable = () => {
               ? {
                 ...item,
                 isVerified: true,
-                ...(verifiedData?.ifsc_details?.bank_name && {
-                  bankName: verifiedData?.ifsc_details.bank_name,
-                }),
+                // ...(verifiedData?.ifsc_details?.bank_name && {
+                //   bankName: verifiedData?.ifsc_details.bank_name,
+                // }),
                 ...(verifiedData?.full_name && {
                   bankHolderName: verifiedData?.full_name,
                 }),
@@ -190,7 +190,8 @@ const InfoTable = () => {
         const payload = {
           id: row?.id,
           hierarchyId: row.hierarchyId,
-          bankName: verifiedData?.ifsc_details?.bank_name || row.bankName,
+          // bankName: verifiedData?.ifsc_details?.bank_name || row.bankName,
+          bankName: row.bankName,
           bankHolderName: verifiedData?.full_name || row.bankHolderName,
           bankAccountNumber: row.accountNumber,
           ifscCode: row.ifscCode,
