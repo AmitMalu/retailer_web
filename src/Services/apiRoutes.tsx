@@ -43,7 +43,7 @@ export const API_ROUTES = {
   //////////////// REPORTS //////////////////////////
   COMMISSION_AND_CHARGES: `${BASE_URL}/api/commission-charge/view`,
   WALLET_REPORT: `${BASE_URL}/api/my-transaction/view`,
-  NETWORK_TRANSACTION_REPORT: `${BASE_URL}/api/network-transaction/view`,
+  NETWORK_TRANSACTION_REPORT: `${BASE_URL}/api/transaction-report/view`,
   SEARCH_TRANSACTION_REPORT: `${BASE_URL}/api/search-transaction/view`,
   DEBIT_HISTORY_REPORT: `${BASE_URL}/api/debit-credit/report`,
   DOWNLINE_BALANCE_REPORT: `${BASE_URL}/api/downline-balance/report`,

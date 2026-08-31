@@ -163,17 +163,17 @@ const ProtecteAuthRoute: React.FC<{ children?: React.ReactNode }> = memo(({ }) =
   const currentPath = window.location.pathname;
   const isLoggingOut = sessionStorage.getItem("isLoggingOut");
   const preventNavigation = sessionStorage.getItem("preventNavigation");
-  
+
   // Prevent navigation during logout process
   if (isLoggingOut === "true" || preventNavigation === "true") {
     return <Outlet />;
   }
-  
+
   // Only navigate if not already at target
   if (hasToken && currentPath !== "/dashboard") {
     return <Navigate to="/dashboard" replace />;
   }
-  
+
   return <Outlet />;
 });
 
@@ -673,7 +673,7 @@ const RouterOutlet = () => {
             path="reports/transaction-report"
             element={
               <ProtectedRoute
-                allowedRoles={["RT", "RU"]}
+                allowedRoles={["WL", "SD", "PT", "DT", "RT", "RU"]}
               >
                 <Outlet />
               </ProtectedRoute>

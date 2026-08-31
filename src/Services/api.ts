@@ -132,7 +132,7 @@ export const Get_Hierarchy_Banks = async (id: string) => {
 };
 
 export const Get_Admin_Banks = async () => {
-  return await api.get(API_ROUTES.FETCH_ADMIN_BANKS);
+  return await api.post(API_ROUTES.FETCH_ADMIN_BANKS);
 };
 
 export const Wallet_Balance = async (id: string) =>

@@ -32,6 +32,7 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
   pY = 16,
   pX = 14,
   menuFontSize = 14,
+  labelMargin,
 }) => {
   const theme = useTheme();
 
@@ -99,13 +100,15 @@ const DropdownComponent: React.FC<CustomDropdownProps> = ({
         <InputLabel
           sx={{
             color: "text.primary",
-            fontSize: "16px",
+            fontSize: `${labelFontSize}px`,
             fontWeight: 400,
+            margin: `${labelMargin ?? 0}px`,
             transform: "translate(14px, 16px) scale(1)",
             backgroundColor: theme.palette.background.default,
             zIndex: 1,
             "&.Mui-focused, &.MuiFormLabel-filled": {
               color: error ? "error.main" : "primary.main",
+              margin: 0,
               transform: "translate(14px, -9px) scale(0.75)",
               zIndex: 1,
             },
