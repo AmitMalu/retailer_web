@@ -244,7 +244,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
           name: "Transaction Report",
           path: "/reports/transaction-report",
           //   icon: <ListIcon />,
-          roles: ["RT", "RU"],
+          roles: ["DT", "RT", "SD", "WL", "PT", "RU"],
         },
         {
           name: "TXN and Wallet Report",

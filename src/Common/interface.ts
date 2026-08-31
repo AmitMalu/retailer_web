@@ -302,6 +302,7 @@ export interface CustomDropdownProps {
   pY?: number;
   pX?: number;
   menuFontSize?: number;
+  labelMargin?: number;
 
 }
 
@@ -750,16 +751,7 @@ export type WalletRequest = {
 export type WalletData = Record<string, any>;
 
 export type NetworkTransactionParams = {
-  loginHierarchyId: string;
   dateRange: DatesRangeValue;
-  partnerId: string;
-  whitelabelId: string;
-  superDistributorId: string;
-  distributorId: string;
-  retailerId: string;
-  reportType: string;
-  page: number;
-  size: number;
   [key: string]: any;
 };
 
@@ -838,19 +830,9 @@ export interface SearchTransReportData {
 }
 
 export type NetworkTransactionRequest = {
-  loginHierarchyId: string;
   fromDate: string | null;
   toDate: string | null;
-  subProductName: string;
-  partnerId: string;
-  whitelabelId: string;
-  superDistributorId: string;
-  distributorId: string;
-  retailerId: string;
-  // status: string;
-  reportType: string;
-  page: number;
-  size: number;
+  hierarchyId?: string;
   [key: string]: any;
 };
 
@@ -1102,6 +1084,7 @@ export type PayoutSendBeneficiaryProps = {
   bankName: string;
   subProductId: string;
   schemeCode: string;
+  imSubProductName?: string;
   // callbackurl: string;
 };
 
@@ -1178,16 +1161,21 @@ export type FormValues = {
 //////////////////////////REPORTS//////////////////////////////
 export interface NetworkTransactionTableType {
   tranxId: string;
-  productName: string;
-  schemeName: string;
-  balBefore: string;
-  amount: string;
-  balAfter: string;
-  actionOnBalanceAmount: string;
+  hierarchyId: string;
+  mobileNo: string | null;
+  productName: string | null;
+  walletType: string | null;
+  transactionType: string | null;
+  transactionDate: string;
+  transactionTime: string | null;
+  amount: string | number;
   status: string;
-  transactionDate: number;
-  transactionTime: number;
-  narration: string;
+  balBefore: string | number;
+  balAfter: string | number;
+  actionOnBalanceAmount: string | null;
+  bankReferenceNo: string | null;
+  vendorTransactionId: string | null;
+  narration: string | null;
 }
 
 export interface PendingTransactionTableType {

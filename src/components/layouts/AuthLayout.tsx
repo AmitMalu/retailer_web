@@ -23,7 +23,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
           >
             <img
               src={branding?.logo}
-              className="h-16 w-auto max-w-[180px]"
+              className="h-24 w-auto max-w-[180px]"
             />
           </div>
 
