@@ -8,8 +8,8 @@ export const getBranding = () => {
   return {
     tenantCode: "nfttech",
     domain: window.location.hostname,
-    title: "NFT Enterprise Portal",
-    companyName: "NFT Tech",
+    title: "Smart Credit Solution",
+    companyName: "Smart Credit Solution",
 
     logo: `${normalizedBasePath}branding/nfttech/logo.png`,
     favicon: `${normalizedBasePath}branding/nfttech/favicon.ico`,
@@ -20,7 +20,7 @@ export const getBranding = () => {
     terms: `${normalizedBasePath}branding/nfttech/terms.pdf`,
     privacy: `${normalizedBasePath}branding/nfttech/privacy.pdf`,
     refund: `${normalizedBasePath}branding/nfttech/refund.pdf`,
-    primaryColor: "#2563EB",
+    primaryColor: "#059669",
     secondaryColor: "#0F172A",
   };
 };

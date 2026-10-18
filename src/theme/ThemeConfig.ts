@@ -184,7 +184,7 @@ export const createThemeOptions = (
       },
     },
     typography: {
-      fontFamily: '"Poppins", sans-serif',
+      fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif',
       h1: {
         color: adjustedColors.textPrimary,
       },
@@ -225,7 +225,21 @@ export const createThemeOptions = (
         color: adjustedColors.textSecondary,
       },
     },
-    components: {},
+    shape: { borderRadius: 10 },
+    components: {
+      MuiPaper: { styleOverrides: { rounded: { borderRadius: 14 } } },
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            borderRadius: 14,
+            border: `1px solid ${darkMode ? "#1e293b" : "#e2e8f0"}`,
+            boxShadow: "0 1px 2px rgba(15,23,42,0.04), 0 4px 16px rgba(15,23,42,0.06)",
+          },
+        },
+      },
+      MuiButton: { styleOverrides: { root: { borderRadius: 10, textTransform: "none", fontWeight: 600, boxShadow: "none" } } },
+      MuiTableHead: { styleOverrides: { root: { "& .MuiTableCell-head": { fontWeight: 600, color: darkMode ? "#cbd5e1" : "#475569" } } } },
+    },
   };
 };
 

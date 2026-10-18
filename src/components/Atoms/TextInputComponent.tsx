@@ -179,17 +179,17 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
           },
           "& .MuiOutlinedInput-root": {
             borderColor: theme.palette.gray.DEFAULT,
-            borderRadius: `${isAuth ? 28 : 6}px !important`,
+            borderRadius: `${isAuth ? 10 : 8}px !important`,
             "&.Mui-error .MuiOutlinedInput-notchedOutline": {
               borderColor: theme.palette.error.main,
-              borderRadius: `${isAuth ? 28 : 6}px !important`,
+              borderRadius: `${isAuth ? 10 : 8}px !important`,
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
               borderColor: error
                 ? theme.palette.error.main
                 : theme.palette.primary.main,
               borderWidth: "1.5px",
-              borderRadius: `${isAuth ? 28 : 6}px !important`,
+              borderRadius: `${isAuth ? 10 : 8}px !important`,
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
               borderColor: error
@@ -200,13 +200,13 @@ const TextInputComponent: React.FC<CustomTextInputProps> = ({
               borderColor: isAuth
                 ? theme.palette.placeholder
                 : theme.palette.gray.DEFAULT,
-              borderRadius: `${isAuth ? 28 : 6}px !important`,
+              borderRadius: `${isAuth ? 10 : 8}px !important`,
             },
             "&:hover fieldset": {
               borderColor: error
                 ? theme.palette.error.main
                 : theme.palette.primary.main,
-              borderRadius: `${isAuth ? 28 : 6}px !important`,
+              borderRadius: `${isAuth ? 10 : 8}px !important`,
             },
           },
           ...(typeof className === "string"

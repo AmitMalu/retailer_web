@@ -25,7 +25,9 @@ module.exports = {
       },
       fontFamily: {
         "belle-aurore": ['"La Belle Aurore"', "cursive"],
-        poppins: ["Poppins", "sans-serif"],
+        // legacy class name, now renders the brand font
+        poppins: ['"Plus Jakarta Sans"', "system-ui", "sans-serif"],
+        sans: ['"Plus Jakarta Sans"', "system-ui", "sans-serif"],
       },
       clipPath: {
         diamond: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",

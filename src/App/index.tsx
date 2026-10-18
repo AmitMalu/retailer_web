@@ -7,6 +7,7 @@ import LocationGuard from "@/components/LocationGuard";
 // import ChatBot from "@/pages/Home/chatbot/ChatBot";
 import { useAppSelector } from "@/Redux/hooks";
 import { getThemeOptions } from "@/theme/ThemeConfig";
+import { mantineTheme } from "@/theme/mantineTheme";
 import { useMemo } from "react";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import BrandingInitializer from "@/components/BrandingInitializer";
@@ -34,7 +35,7 @@ const AppContent = ({ darkMode }: { darkMode: boolean }) => {
   }, [darkMode]);
 
   return (
-    <MantineProvider forceColorScheme={darkMode ? "dark" : "light"}>
+    <MantineProvider theme={mantineTheme} forceColorScheme={darkMode ? "dark" : "light"}>
       <LocationGuard />
       <RouterOutlet />
       {/* {loginData && <ChatBot />} */}

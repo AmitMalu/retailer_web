@@ -46,7 +46,7 @@ const Login: React.FC = () => {
       .required("Required"),
     password: Yup.string()
       .min(8, "Minimum 8 characters")
-      .max(20, "Maximum 20 characters")
+      .max(50, "Maximum 50 characters")
       .required("Required"),
   });
 
@@ -135,21 +135,21 @@ const Login: React.FC = () => {
       {isLoading && <Loader />}
       <AuthLayout>
         <div className="flex w-full  items-center justify-center flex-col gap-5">
-          <div className="flex h-auto w-[360px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
-            <div className="flex flex-col items-center justify-items-center gap-2 ">
+          <div className="flex h-auto w-full max-w-[400px] flex-col items-stretch bg-transparent justify-start px-2 py-3">
+            <div className="flex flex-col items-start gap-1">
               <TextComponent
-                fontSize={28}
-                fontWeight={600}
+                fontSize={30}
+                fontWeight={800}
                 color={theme.palette.text.primary}
               >
-                Welcome!
+                Welcome back
               </TextComponent>
               <TextComponent
                 fontSize={14}
                 fontWeight={400}
                 color={theme.palette.text.secondary}
               >
-                Login and manage everything in one place.
+                Sign in to your retailer account to continue.
               </TextComponent>
             </div>
             <Formik<LoginRequest>
@@ -191,7 +191,7 @@ const Login: React.FC = () => {
                             ? errors.password
                             : ""
                         }
-                        maxLength={20}
+                        maxLength={50}
                         type={showPassword ? "text" : "password"}
                         className="w-full"
                         isAuth={true}
@@ -229,9 +229,9 @@ const Login: React.FC = () => {
                     <div className="mt-6 flex w-full items-center justify-center">
                       <ButtonComponent
                         type="submit"
-                        title="CONTINUE"
+                        title="Sign in"
                         variant="filled"
-                        radius={28}
+                        radius={10}
                         fullWidth={true}
                         disabled={
                           isLoading ||

@@ -61,7 +61,7 @@ const SubuserCreation = () => {
     password: Yup.string()
       .required("Required")
       .min(8, "Minimum 8 characters")
-      .max(20, "Maximum 20 characters")
+      .max(50, "Maximum 50 characters")
       .matches(
         PasswordRegex,
         "Password must be 8+ chars with uppercase, number & special character."
@@ -451,7 +451,7 @@ const SubuserCreation = () => {
                               : ""
                           }
                           withAsterisk
-                          maxLength={20}
+                          maxLength={50}
                           type={showPassword ? "text" : "password"}
                           className="w-full"
                           rightSection={

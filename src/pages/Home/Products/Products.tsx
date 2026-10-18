@@ -1,10 +1,9 @@
-import { ProductCard } from "@/components/Molecules/ProductCard";
 import PGSvgIcon from "@/assets/svg/Products/PgIcon";
 import PayoutSvgIcon from "@/assets/svg/Products/PayoutIcon";
 import DMTSvgIcon from "@/assets/svg/Products/DmtIcon";
 import RechargeSvgIcon from "@/assets/svg/Products/Recharge";
 import BillPaymenstSvgIcon from "@/assets/svg/Products/BillPayments";
-import TextComponent from "@/components/Atoms/TextComponent";
+import { IconArrowRight, IconLock } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/system";
 import { AepsCardSvgIcon } from "@/assets/svg/Products/AepsSvgIcon";
@@ -156,138 +155,84 @@ export default function Products() {
     }
   ];
 
+  const descriptions: Record<string, string> = {
+    "Payment Gateway": "Collect payments by card, UPI and net banking",
+    Payout: "Send money instantly to any bank account",
+    DMT: "Domestic money transfer for walk-in customers",
+    Recharge: "Mobile, DTH and data card recharges",
+    AEPS: "Aadhaar cash withdrawal, balance and statements",
+    "Credit Card": "Pay credit card bills for any bank",
+    "Bill Payment": "Electricity, water, gas and other BBPS bills",
+    CMS: "Cash management and loan EMI collections",
+  };
+
+  // Same visibility / blocked rules as before, flattened into one list for the grid
+  const visibleProducts = [...row1, ...row2, ...row3].flatMap((product: any) => {
+    const status = productStatusMap[product.key];
+    if (!status?.isVisible) return [];
+
+    const isCreditCard = product.title === "Credit Card";
+    const subProduct = bbpsBillAvenueSubProduct;
+    if (isCreditCard && !subProduct?.isVisible) return [];
+
+    const isDisabled = status?.blocked || (isCreditCard && subProduct?.blocked);
+    return [{ ...product, isDisabled }];
+  });
+
   return (
-    <div
-      style={{
-        scrollbarWidth: "none",
-      }}
-      className="mx-auto py-2 px-4 relative flex flex-col gap-5 items-center justify-center"
-    >
-      <div>
-        <TextComponent
-          fontSize={24}
-          fontWeight={600}
-          color={theme.palette.text.primary}
-        >
+    <div style={{ scrollbarWidth: "none" }} className="w-full max-w-[1200px] mx-auto py-2">
+      <div className="mb-6">
+        <h1 className="text-[24px] font-extrabold tracking-tight" style={{ color: theme.palette.text.primary }}>
           Products
-        </TextComponent>
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">Choose a service to start a transaction.</p>
       </div>
 
-      <div>
-        <div className="flex justify-center gap-12 my-1">
-          {row1?.map((product: any) => {
-            const status = productStatusMap[product.key];
-
-            if (!status?.isVisible)
-              return (
-                <ProductCard
-                  key={product.id}
-                  size={{ base: 24, md: 24, lg: 32 }}
-                  placeholder
-                />
-              );
-
-            return (
-              <div key={product.id} className="scale-90">
-                <ProductCard
-                  key={product?.id}
-                  image={product?.image}
-                  title={product?.title}
-                  fill={false}
-                  onClick={() => handleProductClick(product?.key, product?.route)}
-                  size={{ base: 24, md: 24, lg: 32 }}
-                  disabled={status.blocked}
-                />
-              </div>
-            )
-          })}
+      {visibleProducts.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
+          No products are enabled for your account yet. Please contact support.
         </div>
-
-        <div className="flex justify-center gap-12 mb-0 mt-[-32px]">
-          <div className="w-20" />
-          {row2?.map((product: any) => {
-            const status = productStatusMap[product.key];
-
-            if (!status?.isVisible)
-              return (
-                <ProductCard
-                  key={product.id}
-                  size={{ base: 24, md: 24, lg: 32 }}
-                  placeholder
-                />
-              );
-
-            return (
-              <div key={product.id} className="scale-90">
-                <ProductCard
-                  key={product?.id}
-                  image={product?.image}
-                  title={product?.title}
-                  fill={true}
-                  onClick={() => handleProductClick(product?.key, product?.route)}
-                  size={{ base: 24, md: 24, lg: 32 }}
-                  disabled={status.blocked}
-                />
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          {visibleProducts.map((product: any) => (
+            <button
+              key={product.id}
+              type="button"
+              disabled={product.isDisabled}
+              onClick={() => {
+                if (product.isDisabled) return;
+                handleProductClick(product.key, product.route);
+              }}
+              className="group relative flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+            >
+              <div
+                className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl [&_svg]:max-h-9 [&_svg]:max-w-9"
+                style={{ backgroundColor: theme.palette.primary.main + "14", color: theme.palette.primary.main }}
+              >
+                {React.isValidElement(product.image)
+                  ? React.cloneElement(product.image as React.ReactElement<{ color?: string }>, { color: theme.palette.primary.main })
+                  : product.image}
               </div>
-            )
-          })}
-          <div className="w-20" />
-        </div>
-
-        <div className="flex justify-center gap-12 mt-[-24px]">
-          {row3.map((product: any) => {
-
-            const status = productStatusMap[product.key];
-            const isCreditCard = product.title === "Credit Card";
-
-            // Sub-product (Bill Avenue) for Credit Card
-            const subProduct = bbpsBillAvenueSubProduct;
-
-
-            if (!status?.isVisible)
-              return (
-                <ProductCard
-                  key={product.id}
-                  size={{ base: 24, md: 24, lg: 32 }}
-                  placeholder
-                />
-              );
-
-            // Hide Credit Card if sub-product not visible
-            if (isCreditCard && !subProduct?.isVisible) {
-              return (
-                <ProductCard
-                  key={product.id}
-                  size={{ base: 24, md: 24, lg: 32 }}
-                  placeholder
-                />
-              );
-            }
-
-            // DISABLED LOGIC for Credit Card and Common
-            const isDisabled =
-              status?.blocked ||
-              (isCreditCard && subProduct?.blocked);
-
-            return (
-              <div key={product.id} className="scale-90">
-                <ProductCard
-                  key={product?.id}
-                  image={product?.image}
-                  title={product?.title}
-                  fill={false}
-                  onClick={() => {
-                    if (isDisabled) return;
-                    handleProductClick(product?.key, product?.route)
-                  }}
-                  size={{ base: 24, md: 24, lg: 32 }}
-                  disabled={isDisabled}
-                />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-[16px] font-bold text-slate-900">{product.title}</div>
+                  {product.isDisabled ? (
+                    <IconLock size={16} className="text-slate-400" />
+                  ) : (
+                    <IconArrowRight
+                      size={18}
+                      className="text-slate-300 transition-transform group-hover:translate-x-0.5"
+                    />
+                  )}
+                </div>
+                <div className="mt-1 text-[13px] leading-snug text-slate-500">
+                  {product.isDisabled ? "Currently unavailable" : descriptions[product.title]}
+                </div>
               </div>
-            )
-          })}
+            </button>
+          ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }

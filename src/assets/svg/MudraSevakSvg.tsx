@@ -1,11 +1,13 @@
-import NFTLogoAsset from "../Images/NFT_Logo.png";
+import { BrandMark } from "@/components/Brand/BrandLogo";
 
 type MudraSevakSvgProps = {
   width?: number | string;
   height?: number | string;
 };
 
+// Chat assistant avatar: the Smart Credit brand mark
 const MudraSevakSvg = ({ width = 86, height = 82 }: MudraSevakSvgProps) => {
+  const size = Math.min(Number(width) || 86, Number(height) || 82);
   return (
     <div
       style={{
@@ -16,11 +18,7 @@ const MudraSevakSvg = ({ width = 86, height = 82 }: MudraSevakSvgProps) => {
         justifyContent: "center",
       }}
     >
-      <img
-        src={NFTLogoAsset}
-        alt="NFT Logo"
-        style={{ width: "100%", height: "100%", objectFit: "contain" }}
-      />
+      <BrandMark size={size} />
     </div>
   );
 };
