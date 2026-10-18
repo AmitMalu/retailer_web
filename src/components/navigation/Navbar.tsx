@@ -1,26 +1,24 @@
 import {
   AppBar,
   IconButton,
-  Box,
   useMediaQuery,
   useTheme,
-  Paper,
   Stack,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../Redux/Store";
 // import NFTLogo from "@/assets/Images/NFT_Logo.png";
 import { NavbarProps } from "@/Common/interface";
-import TextComponent from "../Atoms/TextComponent";
 import {
   ProfileSvgIcon,
   RefreshSvgIcon,
   // ThemeSettingSvgIcon,
 } from "@/assets/svg";
 import NotificationBell from "../Molecules/NotificationBell";
-import { decryptData, formatIndianNumber, getCompanyNameLines, useWalletBalance } from "@/Utils/helper";
+import { decryptData, formatIndianNumber, useWalletBalance } from "@/Utils/helper";
 import { NavLink } from "react-router-dom";
 import { useBranding } from "@/Config/branding";
+import TopMenuBar from "./TopMenuBar";
 // import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
 // import { useDispatch } from "react-redux";
 
@@ -29,7 +27,6 @@ export default function Navbar({
   isMobile: isMobileProp,
 }: NavbarProps) {
   // const dispatch = useDispatch();
-  const { navbarPosition } = useSelector((state: RootState) => state.settings);
   const theme = useTheme();
   const isMobileView = useMediaQuery(theme.breakpoints.down("md"));
   const isMobile = isMobileProp || isMobileView;
@@ -47,159 +44,118 @@ export default function Navbar({
   // };
   const { WalletBalanceReq, isLoading } = useWalletBalance();
   const branding = useBranding();
-  const [line1, line2] = getCompanyNameLines(
-    branding?.companyName
-  );
+
+  // Wallet chip styled for the dark brand bar
   const WalletDisplay = ({
     title,
     amount,
+    tone = "primary",
   }: {
     title: string;
     amount?: number | null | undefined;
-  }) => {
-    const formattedAmount = formatIndianNumber(amount);
-
-    const numericAmount = Number(
-      String(amount ?? 0).replace(/₹|,/g, "").trim()
-    );
-
-    return (
-      <Paper
-        elevation={0}
-        className="flex items-center justify-center w-auto py-2 px-3 cursor-default rounded-xl shadow-lg border border-divider"
-        sx={{
-          transition: "all 0.2s ease-in-out",
-          background: (theme) =>
-            theme.palette.mode === "dark"
-              ? "var(--background-paper)"
-              : "rgba(var(--primary-main-rgb), 0.15)",
-        }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.transform = "translateY(-1px)")
-        }
-        onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+    tone?: "primary" | "neutral";
+  }) => (
+    <div
+      className="flex items-center gap-2.5 rounded-xl px-3 py-1.5"
+      style={{
+        backgroundColor: tone === "primary" ? theme.palette.primary.main + "26" : "rgba(255,255,255,0.05)",
+        border: `1px solid ${tone === "primary" ? theme.palette.primary.main + "55" : "rgba(255,255,255,0.1)"}`,
+      }}
+    >
+      <div
+        className="flex h-7 w-7 items-center justify-center rounded-lg text-[13px] font-bold text-white"
+        style={{ backgroundColor: tone === "primary" ? theme.palette.primary.main : "#334155" }}
       >
-        <Box display="flex" alignItems="center">
-          <TextComponent fontSize={14} fontWeight={500} color="primary.main">
-            {title}
-          </TextComponent>
-          {amount != null && numericAmount >= 0 && <TextComponent color="primary.main"> - </TextComponent>}
-          <TextComponent fontSize={16} fontWeight={700} color="primary.main">
-            {formattedAmount}
-          </TextComponent>
-        </Box>
-      </Paper>
-    )
-  };
+        ₹
+      </div>
+      <div className="leading-tight">
+        <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{title}</div>
+        <div className="text-[14px] font-bold text-white">{formatIndianNumber(amount) || "0.00"}</div>
+      </div>
+    </div>
+  );
+
+  const displayName = loginData?.name || loginData?.userName || loginData?.firstName || "";
 
   return (
     <>
+      {/* BaseLayout positions the navbar slot, so the bar itself stays static */}
       <AppBar
-        position={navbarPosition}
-        className="flex flex-row items-center justify-between w-screen px-[3%] rounded-b-[50px] "
+        position="static"
+        elevation={0}
         sx={{
-          ...(navbarPosition === "fixed" && {
-            position: "fixed",
-            top: 0,
-            height: "60px", // FIXED HEIGHT
-            minHeight: "60px",
-            maxHeight: "60px",
-            overflow: "hidden", // prevent stretch
-            zIndex: (theme) => theme.zIndex.drawer + 1,
-            backgroundColor: theme.palette.background.navBackground,
-          }),
-          paddingY: 1,
           zIndex: (theme) => theme.zIndex.drawer + 1,
-          backgroundColor: theme.palette.background.navBackground,
+          backgroundColor: "transparent",
+          color: theme.palette.text.primary,
         }}
       >
-        <div className="flex flex-row items-center justify-between h-auto w-screen px-[3%] rounded-b-[50px] ">
-          <div>
-            {isMobile ? (
-              <IconButton color="primary" edge="start" onClick={onMenuClick}>
-                ☰
-              </IconButton>
-            ) : (
-              <div className="flex items-center gap-5">
-                {/* <img src={NFTLogo} alt="logo" className="h-10 w-10" /> */}
-                <img
-                  src={branding?.logo}
-                  alt={branding?.companyName}
-                  className="h-12 w-auto max-w-[140px] object-contain"
-                />
-
-                <div className="flex flex-col leading-tight">
-                  <span className="font-semibold text-sm whitespace-nowrap" style={{ color: theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.main }}>
-                    {/* NFT Network Technologies */}
-                    {line1}
-                  </span>
-                  {line2 && (
-                    <span
-                      className="text-[10px]"
-                      style={{
-                        color:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.primary.light
-                            : theme.palette.primary.main,
-                      }}
-                    >
-                      {line2}
-                    </span>
-                  )}
+        {/* Tier 1: dark brand bar */}
+        <div className="h-16 bg-[#0f172a]">
+          <div className="mx-auto flex h-full max-w-[1600px] items-center justify-between gap-4 px-5">
+            <div className="flex min-w-0 items-center gap-3">
+              {isMobile && (
+                <IconButton edge="start" onClick={onMenuClick} sx={{ color: "#cbd5e1" }}>
+                  ☰
+                </IconButton>
+              )}
+              {branding?.logo && (
+                <div className="flex h-10 shrink-0 items-center rounded-lg bg-white px-2">
+                  <img src={branding.logo} alt={branding?.companyName} className="max-h-8 w-auto max-w-[120px] object-contain" />
+                </div>
+              )}
+              <div className="hidden min-w-0 leading-tight sm:block">
+                <div className="truncate text-[14px] font-bold text-white">{branding?.companyName}</div>
+                <div className="truncate text-[11px] text-slate-400">
+                  {displayName ? `${displayName} | ` : ""}{loginData?.hierarchyId}
                 </div>
               </div>
-            )}
-          </div>
+            </div>
 
-          <div className="flex flex-row items-center justify-end w-screen">
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
               {!isMobile && (
                 <>
                   <Stack direction="row" spacing={1} alignItems="center">
-                    <WalletDisplay
-                      title="PREPAID"
-                      amount={walletBalance?.prepaidBalance}
-                    />
-                    <WalletDisplay
-                      title="POSTPAID"
-                      amount={walletBalance?.postpaidBalance}
-                    />
-                    <WalletDisplay title={loginData?.hierarchyId} />
+                    <WalletDisplay title="Prepaid" amount={walletBalance?.prepaidBalance} />
+                    <WalletDisplay title="Postpaid" amount={walletBalance?.postpaidBalance} tone="neutral" />
                   </Stack>
-                  {isLoading ? (
-                    <div className="animate-spin mr-2">
-                      <RefreshSvgIcon color={theme.palette.primary.main} />
-                    </div>
-                  ) : (
-                    <div
-                      className="cursor-pointer rounded-md p-2"
-                      style={{ backgroundColor: theme.palette.primary.light + "40" }}
-                      onClick={(e) => {
-                        e.stopPropagation(); // prevent bubbling
-                        WalletBalanceReq(loginData?.hierarchyId);
-                      }}
-                    >
-                      <RefreshSvgIcon color={theme.palette.primary.main} />
-                    </div>
-                  )}
+                  <button
+                    type="button"
+                    title="Refresh wallet balance"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-white/10"
+                    onClick={(e) => {
+                      e.stopPropagation(); // prevent bubbling
+                      WalletBalanceReq(loginData?.hierarchyId);
+                    }}
+                  >
+                    <span className={isLoading ? "animate-spin" : ""}>
+                      <RefreshSvgIcon color="#cbd5e1" />
+                    </span>
+                  </button>
                 </>
               )}
-              <NotificationBell size="lg" />
-              <NavLink to="/settings/myProfile">
-                <div className="cursor-pointer rounded-md p-2" style={{ backgroundColor: theme.palette.primary.light + "40" }}>
-                  <ProfileSvgIcon color={theme.palette.primary.main} />
+              <div className="rounded-lg bg-white/90">
+                <NotificationBell size="lg" />
+              </div>
+              <NavLink to="/settings/myProfile" title="My profile">
+                <div
+                  className="flex h-9 w-9 items-center justify-center rounded-full ring-2 ring-white/10"
+                  style={{ backgroundColor: theme.palette.primary.main }}
+                >
+                  <ProfileSvgIcon color="#ffffff" />
                 </div>
               </NavLink>
-              {/* <div
-                onClick={handleSettingsClick}
-                className="cursor-pointer rounded-md p-2"
-                style={{ backgroundColor: theme.palette.primary.light + "40" }}
-              >
-                <ThemeSettingSvgIcon color={theme.palette.primary.main} />
-              </div> */}
             </div>
           </div>
         </div>
+
+        {/* Tier 2: horizontal menu (desktop) */}
+        {!isMobile && (
+          <div className="h-12 border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+            <div className="mx-auto h-full max-w-[1600px] px-2">
+              <TopMenuBar />
+            </div>
+          </div>
+        )}
       </AppBar>
     </>
   );

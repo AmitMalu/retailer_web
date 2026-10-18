@@ -152,7 +152,7 @@ export default function ChatBot() {
           >
             <MudraSevakSvg width={44} height={44} />
             <Text fw={700} size="sm">
-              NFT Sevak
+              Smart Sevak
             </Text>
             <Text
               size="xs"

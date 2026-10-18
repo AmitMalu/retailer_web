@@ -22,7 +22,7 @@ const SubProductCards = ({
     // Placeholder 
     if (placeholder) {
         return (
-            <div className="w-32 h-32 rounded-3xl border-2 border-divider bg-background-default shadow-inner" />
+            <div className="w-36 h-36 rounded-2xl border border-dashed border-slate-200 bg-transparent" />
         );
     }
 
@@ -33,18 +33,19 @@ const SubProductCards = ({
         >
             <div
                 onClick={!disabled ? onClick : undefined}
-                className={`relative w-32 h-32 rounded-3xl border-2 shadow-md z-10 transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-lg`}
+                className={`relative w-36 h-36 rounded-2xl border z-10 transition-all duration-200 ease-in-out group-hover:-translate-y-0.5 group-hover:shadow-lg`}
                 style={{
                     backgroundColor: disabled
                         ? theme.palette.divider
                         : theme.palette.background.paper,
-                    borderColor: disabled
-                        ? theme.palette.divider
-                        : theme.palette.primary.main,
+                    borderColor: disabled ? theme.palette.divider : "#e2e8f0",
                 }}
             >
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-2 gap-2">
-                    <div className="transition-transform duration-300 group-hover:scale-110">
+                    <div
+                        className="flex h-14 w-14 items-center justify-center rounded-xl [&_svg]:max-h-9 [&_svg]:max-w-9"
+                        style={{ backgroundColor: theme.palette.primary.main + "14" }}
+                    >
                         {React.isValidElement(image)
                             ? React.cloneElement(image as React.ReactElement<any>, {
                                 color: (theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.main)
@@ -59,13 +60,9 @@ const SubProductCards = ({
                         </TextComponent> */}
 
                         <TextComponent
-                            fontSize={12}
-                            fontWeight={500}
-                            color={
-                                disabled
-                                    ? theme.palette.text.disabled
-                                    : theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.main
-                            }
+                            fontSize={13}
+                            fontWeight={600}
+                            color={disabled ? theme.palette.text.disabled : theme.palette.text.primary}
                             className="transition-colors duration-300"
                         >
                             {title}

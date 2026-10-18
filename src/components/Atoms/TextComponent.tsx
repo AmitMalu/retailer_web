@@ -27,7 +27,7 @@ const TextComponent: React.FC<CustomTextProps> = ({
     WebkitLineClamp: lineClamp,
     WebkitBoxOrient: lineClamp ? "vertical" : undefined,
     whiteSpace: truncate && !lineClamp ? "nowrap" : undefined,
-    fontFamily: fontFamily ? fontFamily : '"Poppins", sans-serif',
+    fontFamily: fontFamily && !/poppins|cursive/i.test(fontFamily) ? fontFamily : '"Plus Jakarta Sans", system-ui, sans-serif',
   };
 
   return (

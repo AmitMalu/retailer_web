@@ -34,7 +34,7 @@ const SetPasswordScreen: React.FC = () => {
   const validationSchema = Yup.object({
     newPassword: Yup.string()
       .min(8, "Minimum 8 characters")
-      .max(20, "Maximum 20 characters")
+      .max(50, "Maximum 50 characters")
       .matches(
         PasswordRegex,
         "Password must be 8+ chars with uppercase, number & special character."
@@ -77,11 +77,11 @@ const SetPasswordScreen: React.FC = () => {
         authText='"One password. Total protection. Your finances deserve the best security."'
       >
         <div className="flex w-full  items-center justify-center flex-col gap-5">
-          <div className="flex h-auto w-[380px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
-            <div className="flex flex-col items-center justify-center gap-3 ">
+          <div className="flex h-auto w-full max-w-[400px] flex-col items-stretch bg-transparent justify-start px-2 py-3">
+            <div className="flex flex-col items-start gap-2">
               <TextComponent
                 fontSize={30}
-                fontWeight={600}
+                fontWeight={800}
                 color={theme.palette.text.primary}
               >
                 Set Password
@@ -113,7 +113,7 @@ const SetPasswordScreen: React.FC = () => {
                       }
                       withAsterisk
                       leftSection={<LockSvgIcon />}
-                      maxLength={20}
+                      maxLength={50}
                       type={showNewPassword ? "text" : "password"}
                       className="w-full"
                       isAuth={true}
@@ -142,7 +142,7 @@ const SetPasswordScreen: React.FC = () => {
                           : ""
                       }
                       withAsterisk
-                      maxLength={20}
+                      maxLength={50}
                       type={showPassword ? "text" : "password"}
                       leftSection={<LockSvgIcon />}
                       className="w-full"
@@ -172,7 +172,7 @@ const SetPasswordScreen: React.FC = () => {
                         variant="light"
                         onClick={() => navigate("/login")}
                         leftIcon={<ArrowLeft />}
-                        radius={28}
+                        radius={10}
                       />
                     </div>
                     <ButtonComponent
@@ -181,7 +181,7 @@ const SetPasswordScreen: React.FC = () => {
                       variant="filled"
                       onClick={() => handleSubmit()}
                       loading={isLoading}
-                      radius={28}
+                      radius={10}
                       fontSize={14}
                       fullWidth={true}
                       disabled={

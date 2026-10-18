@@ -1,11 +1,11 @@
 export const colorTokens = {
   primary: {
-    dark: "#151a4d",
-    hover: "#1e2480",
-    DEFAULT: "#2f3691", // Organization Blue
-    accent: "#4c54d9",
-    highlight: "#8088f8",
-    light: "#96addf",
+    dark: "#064e3b",
+    hover: "#047857",
+    DEFAULT: "#059669", // Smart Credit emerald
+    accent: "#10b981",
+    highlight: "#34d399",
+    light: "#6ee7b7",
   },
   corporate: {
     primary: "#004a99",
@@ -83,27 +83,27 @@ export const colorTokens = {
   background: {
     light: "#ffffff",
     paper: "#ffffff",
-    default: "#f8fafc",
+    default: "#f4f6f9",
     dark: "#0f172a",
     darkPaper: "#1e293b",
   },
   text: {
-    primary: "#171717",
-    secondary: "#404040",
+    primary: "#0f172a",
+    secondary: "#475569",
     darkPrimary: "#f1f5f9",
     darkSecondary: "#94a3b8",
   },
-  headLine: "#2B3241",
+  headLine: "#0f172a",
   placeholder: "#AAB3C3",
   navBackground: "#ffffff",
-  authBackground: "#BDBDBD",
+  authBackground: "#0f172a",
   lightGray: "#D9D9D9",
   redLightText: {
     main: "#FF0000",
   },
   authButtonBg: {
-    DEFAULT: "#EB4335",
-    light: "#EB3535",
+    DEFAULT: "#059669",
+    light: "#10b981",
   },
   red: {
     MAIN: "BF0204",
@@ -119,7 +119,7 @@ export const colorTokens = {
     dark: "#DEDEDE",
   },
   GreenColor: {
-    DEFAULT: "#1A9882",
-    light: "#E9FAF7",
+    DEFAULT: "#059669",
+    light: "#ecfdf5",
   },
 };

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Drawer, useMediaQuery, useTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../Redux/Store";
 import BaseLayout from "./BaseLayout";
@@ -46,7 +46,17 @@ export default function StandardLayout({ children }: StandardLayoutProps) {
       navbar={
         <Navbar onMenuClick={handleDrawerToggle} isMobile={isMobileView} />
       }
-      sidebar={<Sidebar mobileOpen={mobileOpen} onClose={handleDrawerToggle} />}
+      sidebar={
+        isMobileView ? (
+          <Drawer
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            PaperProps={{ sx: { backgroundColor: "var(--sidebar-bg)", border: "none" } }}
+          >
+            <Sidebar mobileOpen={mobileOpen} onClose={handleDrawerToggle} />
+          </Drawer>
+        ) : null
+      }
       footer={null}
     >
       {/* Main Content Area */}

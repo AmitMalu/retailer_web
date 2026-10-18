@@ -163,11 +163,11 @@ const OtpInputScreen = () => {
         authText='"Your money, always within reach. Smart, simple, and secure fintech access."'
       >
         <div className="flex w-full items-center justify-center flex-col gap-5">
-          <div className="flex h-auto w-[380px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
-            <div className="flex flex-col items-center justify-center gap-3 ">
+          <div className="flex h-auto w-full max-w-[400px] flex-col items-stretch bg-transparent justify-start px-2 py-3">
+            <div className="flex flex-col items-start gap-2">
               <TextComponent
                 fontSize={28}
-                fontWeight={600}
+                fontWeight={800}
                 color={theme.palette.text.primary}
               >
                 Verification
@@ -256,7 +256,7 @@ const OtpInputScreen = () => {
                             }
                           }}
                           leftIcon={<ArrowLeft />}
-                          radius={28}
+                          radius={10}
                         />
                       </div>
                       <ButtonComponent
@@ -266,7 +266,7 @@ const OtpInputScreen = () => {
                         variant="filled"
                         onClick={() => handleSubmit()}
                         loading={isLoading}
-                        radius={28}
+                        radius={10}
                         fontSize={14}
                         fullWidth
                         disabled={isLoading || !values.otp || values.otp.length < 6}

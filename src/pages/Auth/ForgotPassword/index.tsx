@@ -65,11 +65,11 @@ const ForgotPassword: React.FC = () => {
         authText='"Start smart. Stay secure. Create a password that works for you."'
       >
         <div className="flex w-full  items-center justify-center flex-col gap-5">
-          <div className="flex h-auto w-[380px] flex-col items-center rounded-3xl shadow-lg shadow-slate-800 border-2 bg-background-paper justify-start px-6 py-3">
-            <div className="flex flex-col items-center justify-center gap-3">
+          <div className="flex h-auto w-full max-w-[400px] flex-col items-stretch bg-transparent justify-start px-2 py-3">
+            <div className="flex flex-col items-start gap-2">
               <TextComponent
                 fontSize={30}
-                fontWeight={600}
+                fontWeight={800}
                 color={theme.palette.text.primary}
               >
                 Forgot Password
@@ -121,7 +121,7 @@ const ForgotPassword: React.FC = () => {
                           variant="light"
                           onClick={() => navigate("/login")}
                           leftIcon={<ArrowLeft />}
-                          radius={28}
+                          radius={10}
                         />
                       </div>
                       <ButtonComponent
@@ -131,7 +131,7 @@ const ForgotPassword: React.FC = () => {
                         variant="filled"
                         onClick={() => handleSubmit()}
                         loading={isLoading}
-                        radius={28}
+                        radius={10}
                         fontSize={14}
                         fullWidth={true}
                         disabled={isLoading || !values.userName}

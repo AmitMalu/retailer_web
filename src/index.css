@@ -3,19 +3,26 @@
 @tailwind utilities;
 
 :root {
-  font-family: "Poppins", sans-serif;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
   /* Theme variables - Light Mode */
-  --background-default: #f8fafc;
+  --background-default: #f4f6f9;
   --background-paper: #ffffff;
-  --text-primary: #171717;
-  --text-secondary: #404040;
-  --primary-main: #2f3691;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --primary-main: #059669;
   --divider: #e2e8f0;
+
+  /* Sidebar (dark slate) */
+  --sidebar-bg: #0f172a;
+  --sidebar-hover: #1e293b;
+  --sidebar-text: #cbd5e1;
+  --sidebar-text-muted: #94a3b8;
+  --sidebar-border: #1e293b;
 }
 
 .dark {
@@ -24,7 +31,7 @@
   --background-paper: #1e293b;
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
-  --primary-main: #2f3691;
+  --primary-main: #10b981;
   --divider: #334155;
 }
 
@@ -61,4 +68,9 @@ foreignObject>* {
   right: 24px;
   z-index: 0;
   pointer-events: none;
+}
+/* Sidebar link hover (dark slate sidebar) */
+.sidebar-item .mantine-NavLink-root:not([data-active]):hover {
+  background-color: var(--sidebar-hover) !important;
+  color: #ffffff !important;
 }
