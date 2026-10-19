@@ -376,7 +376,7 @@ const InfoTable = () => {
                       labelFontSize={12}
                       inputFontSize={12}
                       menuFontSize={12}
-                      label="IM Sub Product"
+                      label="SCS Sub Product"
                       data={imSubProductOptions}
                       value={values.imSubProductName}
                       disabled={isImSubProductLoading}

@@ -374,7 +374,7 @@ const PGFormModal = ({
                   {isIMSubProduct && (
                     <div className="w-full sm:w-[calc(50%-12px)]">
                       <DropdownComponent
-                        label="IM Sub Product"
+                        label="SCS Sub Product"
                         data={imSubProductOptions}
                         value={values.imSubProductName}
                         withAsterisk
