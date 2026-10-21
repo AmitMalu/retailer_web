@@ -16,7 +16,10 @@ import {
 } from "@/assets/svg";
 import NotificationBell from "../Molecules/NotificationBell";
 import { decryptData, formatIndianNumber, useWalletBalance } from "@/Utils/helper";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Menu, Tooltip } from "@mantine/core";
+import { IconChevronDown, IconLogout, IconUser } from "@tabler/icons-react";
+import { useLogoutHandling } from "@/Utils/CustomLogout";
 import { useBranding } from "@/Config/branding";
 import TopMenuBar from "./TopMenuBar";
 // import { toggleSettingsDrawer } from "@/Redux/Actions/settingsAction";
@@ -44,6 +47,8 @@ export default function Navbar({
   // };
   const { WalletBalanceReq, isLoading } = useWalletBalance();
   const branding = useBranding();
+  const navigate = useNavigate();
+  const { logout } = useLogoutHandling();
 
   // Wallet chip styled for the dark brand bar
   const WalletDisplay = ({
@@ -136,14 +141,43 @@ export default function Navbar({
               <div className="rounded-lg bg-white/90">
                 <NotificationBell size="lg" />
               </div>
-              <NavLink to="/settings/myProfile" title="My profile">
-                <div
-                  className="flex h-9 w-9 items-center justify-center rounded-full ring-2 ring-white/10"
-                  style={{ backgroundColor: theme.palette.primary.main }}
+              {/* Profile menu */}
+              <Menu shadow="md" width={200} position="bottom-end" radius="md" withinPortal>
+                <Menu.Target>
+                  <button type="button" className="flex items-center gap-1.5 rounded-lg px-1 py-1 hover:bg-white/10" title="Account">
+                    <div
+                      className="flex h-9 w-9 items-center justify-center rounded-full ring-2 ring-white/10"
+                      style={{ backgroundColor: theme.palette.primary.main }}
+                    >
+                      <ProfileSvgIcon color="#ffffff" />
+                    </div>
+                    <IconChevronDown size={14} color="#94a3b8" />
+                  </button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Label>{displayName || loginData?.hierarchyId}</Menu.Label>
+                  <Menu.Item leftSection={<IconUser size={16} />} onClick={() => navigate("/settings/myProfile")}>
+                    My Profile
+                  </Menu.Item>
+                  <Menu.Divider />
+                  <Menu.Item color="red" leftSection={<IconLogout size={16} />} onClick={() => logout()}>
+                    Logout
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+
+              {/* Always-visible logout */}
+              <Tooltip label="Logout" withinPortal>
+                <button
+                  type="button"
+                  aria-label="Logout"
+                  onClick={() => logout()}
+                  className="hidden h-9 items-center gap-1.5 rounded-lg border border-white/15 px-3 text-sm font-semibold text-slate-200 transition-colors hover:border-red-400/40 hover:bg-red-500/15 hover:text-red-200 md:flex"
                 >
-                  <ProfileSvgIcon color="#ffffff" />
-                </div>
-              </NavLink>
+                  <IconLogout size={16} />
+                  Logout
+                </button>
+              </Tooltip>
             </div>
           </div>
         </div>

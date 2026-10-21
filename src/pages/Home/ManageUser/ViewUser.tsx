@@ -294,7 +294,7 @@ const ViewUser = () => {
                 fontSize={14}
                 fontWeight={600}
               >
-                View User
+                Members
               </TextComponent>
             </div>
           </div>

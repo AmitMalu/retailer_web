@@ -13,7 +13,6 @@ import {
   ReportsSvgIcon,
   SettingsSvgIcon,
   SupportSvgIcon,
-  // WebSettingsSvgIcon,
 } from "@/assets/svg";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -26,311 +25,74 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
     ? decryptData(apiResponses.loginData)
     : null;
 
+  // Smart Credit Solution naming. Order is display only: sub-user (RU) permissions are keyed
+  // by path (MENU_PATH_TO_ROLE_PATTERN / subRouteMapping), so paths must not change.
   const allMenuItems: MenuItem[] = [
     {
-      name: "Dashboard",
+      name: "Home",
       path: "/dashboard",
       icon: React.createElement(DashboardSvgIcon, { color: "currentColor" }),
     },
     {
-      name: "Manage User",
-      path: "/manageUser",
-      icon: React.createElement(ManageuserSvgIcon, { color: "currentColor" }),
-      roles: ["DT", "SD", "WL", "PT"],
-      subItems: [
-        {
-          name: "Create User ",
-          path: "/manageUser/createUser",
-          //   icon: <ListIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
-        // {
-        //   name: "Debit and Credit User",
-        //   path: "/manageUser/debitAndCreditUser",
-        //   //   icon: <PendingIcon />,
-        //   roles: ["DT", "SD", "WL", "PT"],
-        // },
-        {
-          name: "View User",
-          path: "/manageUser/ViewUser",
-          //   icon: <PendingIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
-      ],
-    },
-    {
-      name: "Products",
+      name: "Services",
       path: "/products",
       icon: React.createElement(ProductsSvgIcon, { color: "currentColor" }),
       roles: ["RT", "RU"],
     },
     {
-      name: "Funding",
+      name: "Wallet",
       path: "/funding",
       icon: React.createElement(FundingSvgIcon, { color: "currentColor" }),
       roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
       subItems: [
-        {
-          name: "Fund Request",
-          path: "/funding/walletToBankFund",
-          //   icon: <InventoryIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
-        },
-        {
-          name: "Wallet To Wallet",
-          path: "/funding/walletToWallet",
-          //   icon: <InventoryIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
-        },
-        {
-          name: "Move To Bank",
-          path: "/funding/walletToBank",
-          //   icon: <ShowChartIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
-        },
-        {
-          name: "Fund Transfer",
-          path: "/funding/fundTransfer",
-          //   icon: <InventoryIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
-        {
-          name: "Fund Reversal",
-          path: "/funding/fundReversal",
-          //   icon: <InventoryIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
+        { name: "Add Money", path: "/funding/walletToBankFund", roles: ["RT", "DT", "SD", "WL", "PT", "RU"] },
+        { name: "Send to Wallet", path: "/funding/walletToWallet", roles: ["RT", "DT", "SD", "WL", "PT", "RU"] },
+        { name: "Withdraw to Bank", path: "/funding/walletToBank", roles: ["RT", "DT", "SD", "WL", "PT", "RU"] },
+        { name: "Transfer to Network", path: "/funding/fundTransfer", roles: ["DT", "SD", "WL", "PT"] },
+        { name: "Reverse Transfer", path: "/funding/fundReversal", roles: ["DT", "SD", "WL", "PT"] },
       ],
     },
     {
-      name: "Settings",
-      path: "/settings",
-      icon: React.createElement(SettingsSvgIcon, { color: "currentColor" }),
-      roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
-      subItems: [
-        {
-          name: "Create Sub User",
-          path: "/settings/ViewSubUser",
-          //   icon: <InventoryIcon />,
-          roles: ["RT"],
-        },
-        // {
-        //   name: "Change TPIN",
-        //   path: "/settings/changeTPIN",
-        //   //   icon: <InventoryIcon />,
-        //   roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
-        // },
-        // {
-        //   name: "My Certificate",
-        //   path: "/settings/myCertificate",
-        //   //   icon: <InventoryIcon />,
-        //   roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
-        // },
-        // {
-        //   name: "Low balance alert",
-        //   path: "/settings/lowBalanceAlert",
-        //   //   icon: <InventoryIcon />,
-        //   roles: ["RT", "RU"],
-        // },
-        // {
-        //   name: "ID Card",
-        //   path: "/settings/idCard",
-        //   //   icon: <InventoryIcon />,
-        //   roles: ["DT", "SD", "WL", "PT"],
-        // },
-      ],
-    },
-    {
-      name: "Support",
-      path: "/support",
-      icon: React.createElement(SupportSvgIcon, { color: "currentColor" }),
-      roles: ["RT", "DT", "SD", "WL", "PT", "RU"], // Only System Admin can see this menu
-      subItems: [
-        // {
-        //   name: "Bio Metric Device",
-        //   path: "/support/bioMetricDevice",
-        //   //   icon: <PeopleIcon />,
-        //   roles: ["RT", "RU"],
-        // },
-        {
-          name: "Ticketing System",
-          path: "/support/ticketingSystem",
-          //   icon: <AdminPanelSettingsIcon />,
-          roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
-        },
-        // {
-        //   name: "Contact Us",
-        //   path: "/support/contactUs",
-        //   //   icon: <AdminPanelSettingsIcon />,
-        //   roles: ["RT", "SD", "WL", "RU"],
-        // },
-        // {
-        //   name: "Top Up Request",
-        //   path: "/support/topUpRequest",
-        //   //   icon: <AdminPanelSettingsIcon />,
-        //   roles: ["DT", "SD", "WL", "PT"],
-        // },
-        // {
-        //   name: "Top Up History",
-        //   path: "/support/topUpHistory",
-        //   //   icon: <AdminPanelSettingsIcon />,
-        //   roles: ["DT", "SD", "WL", "PT"],
-        // },
-        // {
-        //   name: "Add Money",
-        //   path: "/support/addMoney",
-        //   //   icon: <AdminPanelSettingsIcon />,
-        //   roles: ["DT", "SD", "WL", "PT"],
-        // },
-        // {
-        //   name: "Payment Request",
-        //   path: "/support/paymentRequest",
-        //   //   icon: <AdminPanelSettingsIcon />,
-        //   roles: ["DT", "SD", "WL", "PT"],
-        // },
-        // {
-        //   name: "Payment History",
-        //   path: "/support/paymentHistory",
-        //   //   icon: <AdminPanelSettingsIcon />,
-        //   roles: ["DT", "SD", "WL", "PT"],
-        // },
-        // {
-        //   name: "Payment Banks",
-        //   path: "/support/paymentBanks",
-        //   //   icon: <AdminPanelSettingsIcon />,
-        //   roles: ["DT", "SD", "WL", "PT"],
-        // },
-      ],
-    },
-    // {
-    //   name: "Website Settings",
-    //   path: "/websiteSettings",
-    //   icon: React.createElement(WebSettingsSvgIcon, { color: "currentColor" }),
-    //   roles: ["WL"], // Only System Admin can see this menu
-    //   subItems: [
-    //     {
-    //       name: "Website data",
-    //       path: "/websiteSettings/websiteData",
-    //       //   icon: <PeopleIcon />,
-    //       roles: ["WL"],
-    //     },
-    //     {
-    //       name: "Social Media Links",
-    //       path: "/websiteSettings/socialMediaLinks",
-    //       //   icon: <AdminPanelSettingsIcon />,
-    //       roles: ["WL"],
-    //     },
-    //     {
-    //       name: "Web And App Logo Image",
-    //       path: "/websiteSettings/webAndAppLogoImage",
-    //       //   icon: <AdminPanelSettingsIcon />,
-    //       roles: ["WL"],
-    //     },
-    //     {
-    //       name: "Website Page Content",
-    //       path: "/websiteSettings/websitePageContent",
-    //       //   icon: <AdminPanelSettingsIcon />,
-    //       roles: ["WL"],
-    //     },
-    //   ],
-    // },
-    {
-      name: "Reports",
+      name: "Statements",
       path: "/reports",
       icon: React.createElement(ReportsSvgIcon, { color: "currentColor" }),
       roles: ["DT", "RT", "SD", "WL", "PT", "RU"],
       subItems: [
-        {
-          name: "Transaction Report",
-          path: "/reports/transaction-report",
-          //   icon: <ListIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT", "RU"],
-        },
-        {
-          name: "TXN and Wallet Report",
-          path: "/reports/txn-wallet-report",
-          //   icon: <ListIcon />,
-          roles: ["RT", "RU"],
-        },
-        {
-          name: "Commission and Charges",
-          path: "/reports/commissionAndCharges",
-          //   icon: <ListIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT", "RU"],
-        },
-        {
-          name: "Wallet Report",
-          path: "/reports/WalletReport",
-          //   icon: <PendingIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT", "RU"],
-        },
-        {
-          name: "Network Transaction",
-          path: "/reports/networkTransaction",
-          //   icon: <PendingIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
-        // {
-        //   name: "Account Summary",
-        //   path: "/reports/accountSummary",
-        //   //   icon: <ListIcon />,
-        //   roles: ["DT", "RT", "SD", "WL", "PT", "RU"],
-        // },
-        {
-          name: "Search Transaction",
-          path: "/reports/searchTransaction",
-          //   icon: <ListIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT", "RU"],
-        },
-        // {
-        //   name: "Download Report",
-        //   path: "/reports/downloadReport",
-        //   //   icon: <ListIcon />,
-        //   roles: ["DT", "RT", "SD", "WL", "PT", "RU"],
-        // },
-        {
-          name: "Fund Loading",
-          path: "/reports/fundLoading",
-          //   icon: <ListIcon />,
-          roles: ["DT", "RT", "SD", "WL", "PT", "RU"],
-        },
-        // {
-        //   name: "Payment Loading",
-        //   path: "/reports/paymentLoading",
-        //   //   icon: <ListIcon />,
-        //   roles: ["DT", "SD", "WL", "PT"],
-        // },
-        {
-          name: "Pending Transaction",
-          path: "/reports/pendingTransaction",
-          //   icon: <ListIcon />,
-          roles: ["RT", "RU"],
-        },
-        {
-          name: "Debit History",
-          path: "/reports/debitHistory",
-          //   icon: <ListIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
-        // {
-        //   name: "Agent Performance",
-        //   path: "/reports/agentPerformance",
-        //   //   icon: <ListIcon />,
-        //   roles: ["DT", "SD", "WL", "PT"],
-        // },
-        // {
-        //   name: "Bank Withdrawal",
-        //   path: "/reports/bankWithdrawal",
-        //   //   icon: <ListIcon />,
-        //   roles: ["DT", "SD", "WL", "PT"],
-        // },
-        {
-          name: "Down Line Balance",
-          path: "/reports/downLineBalance",
-          //   icon: <ListIcon />,
-          roles: ["DT", "SD", "WL", "PT"],
-        },
+        { name: "Transactions", path: "/reports/transaction-report", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
+        { name: "Find a Transaction", path: "/reports/searchTransaction", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
+        { name: "In-Process", path: "/reports/pendingTransaction", roles: ["RT", "RU"] },
+        { name: "Transactions & Wallet", path: "/reports/txn-wallet-report", roles: ["RT", "RU"] },
+        { name: "Wallet Statement", path: "/reports/WalletReport", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
+        { name: "Earnings & Charges", path: "/reports/commissionAndCharges", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
+        { name: "Money Added", path: "/reports/fundLoading", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
+        { name: "Network Activity", path: "/reports/networkTransaction", roles: ["DT", "SD", "WL", "PT"] },
+        { name: "Network Balances", path: "/reports/downLineBalance", roles: ["DT", "SD", "WL", "PT"] },
+        { name: "Debits", path: "/reports/debitHistory", roles: ["DT", "SD", "WL", "PT"] },
       ],
+    },
+    {
+      name: "My Network",
+      path: "/manageUser",
+      icon: React.createElement(ManageuserSvgIcon, { color: "currentColor" }),
+      roles: ["DT", "SD", "WL", "PT"],
+      subItems: [
+        { name: "Add Member", path: "/manageUser/createUser", roles: ["DT", "SD", "WL", "PT"] },
+        { name: "Members", path: "/manageUser/ViewUser", roles: ["DT", "SD", "WL", "PT"] },
+      ],
+    },
+    {
+      name: "Account",
+      path: "/settings",
+      icon: React.createElement(SettingsSvgIcon, { color: "currentColor" }),
+      roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
+      subItems: [{ name: "Sub Users", path: "/settings/ViewSubUser", roles: ["RT"] }],
+    },
+    {
+      name: "Help",
+      path: "/support",
+      icon: React.createElement(SupportSvgIcon, { color: "currentColor" }),
+      roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
+      subItems: [{ name: "Support Tickets", path: "/support/ticketingSystem", roles: ["RT", "DT", "SD", "WL", "PT", "RU"] }],
     },
   ];
 

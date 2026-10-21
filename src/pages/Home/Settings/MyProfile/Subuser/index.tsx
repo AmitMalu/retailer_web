@@ -142,12 +142,12 @@ const SubuserCreation = () => {
               // ❌ At least one menu with submenus has no submenu selected
               return this.createError({
                 message: `Please select at least one sub-menu for ${menu === "2"
-                  ? "Funding"
+                  ? "Wallet"
                   : menu === "3"
-                    ? "Settings"
+                    ? "Account"
                     : menu === "4"
-                      ? "Support"
-                      : "Reports"
+                      ? "Help"
+                      : "Statements"
                   }.`,
               });
             }
@@ -259,21 +259,21 @@ const SubuserCreation = () => {
   };
 
   const chipLabels: Record<string, string> = {
-    "2.1": "Fund Request",
-    "2.2": "Wallet to Wallet",
-    "2.3": "Move to Bank",
+    "2.1": "Add Money",
+    "2.2": "Send to Wallet",
+    "2.3": "Withdraw to Bank",
     "3.1": "Change TPIN",
     "3.2": "My Certificate",
     "3.3": "Low Balance Alert",
     "4.1": "Bio Metric Device",
-    "4.2": "Ticketing System",
+    "4.2": "Support Tickets",
     "4.3": "Contact Us",
-    "5.1": "Commission and Charges",
-    "5.2": "Wallet Report",
-    "5.3": "Network Transaction",
-    "5.4": "Search Transaction",
-    "5.5": "Fund Loading",
-    "5.6": "Pending Transaction",
+    "5.1": "Earnings & Charges",
+    "5.2": "Wallet Statement",
+    "5.3": "Network Activity",
+    "5.4": "Find a Transaction",
+    "5.5": "Money Added",
+    "5.6": "In-Process",
     // "5.4": "Account Summary",
     // "5.6": "Download Report",
   };
@@ -656,35 +656,35 @@ const SubuserCreation = () => {
                             value="1"
                             size="md"
                           >
-                            Products
+                            Services
                           </Chip>
                           <Chip
                             color={theme.palette.primary.main}
                             value="2"
                             size="md"
                           >
-                            Funding
+                            Wallet
                           </Chip>
                           <Chip
                             color={theme.palette.primary.main}
                             value="3"
                             size="md"
                           >
-                            Settings
+                            Account
                           </Chip>
                           <Chip
                             color={theme.palette.primary.main}
                             value="4"
                             size="md"
                           >
-                            Support
+                            Help
                           </Chip>
                           <Chip
                             color={theme.palette.primary.main}
                             value="5"
                             size="md"
                           >
-                            Reports
+                            Statements
                           </Chip>
                         </Group>
                       </Chip.Group>
