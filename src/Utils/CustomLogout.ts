@@ -103,7 +103,7 @@ export const useLogoutHandling = () => {
       await new Promise(resolve => setTimeout(resolve, 500));
 
       // Let browser handle navigation naturally with correct base path
-      const basePath = import.meta.env.VITE_APP_BASE_PATH || "";
+      const basePath = (import.meta.env.VITE_APP_BASE_PATH || "").replace(/\/+$/, ""); // "/" or "/enterprise/" -> no trailing slash
       window.location.href = `${basePath}/login`;
     } catch (err) {
       console.error("Logout failed", err);
@@ -284,7 +284,7 @@ export const useLogoutHandling = () => {
               await new Promise(resolve => setTimeout(resolve, 500));
 
               // Let browser handle reload naturally with correct base path
-              const basePath = import.meta.env.VITE_APP_BASE_PATH || "";
+              const basePath = (import.meta.env.VITE_APP_BASE_PATH || "").replace(/\/+$/, ""); // "/" or "/enterprise/" -> no trailing slash
               window.location.href = `${basePath}/login`;
             } catch (err) {
               console.error("Logout failed", err);

@@ -242,7 +242,7 @@ const FundReversal = () => {
 
           <div className="relative py-1 flex items-center justify-center">
             <TextComponent fontSize={30} fontWeight={500} color="primary.main">
-              Fund Reversal
+              Reverse Transfer
             </TextComponent>
           </div>
         </div>
