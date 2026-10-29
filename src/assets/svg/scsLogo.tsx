@@ -1,4 +1,4 @@
-const ImLogo = () => (
+const ScsLogo = () => (
   <svg
     width={170}
     height={38}
@@ -76,4 +76,4 @@ const ImLogo = () => (
     />
   </svg>
 );
-export default ImLogo;
+export default ScsLogo;

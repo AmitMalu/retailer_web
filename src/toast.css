@@ -1,0 +1,53 @@
+/* Toasts: compact cards, centred just below the header + menu bar
+   so they never cover the wallet, profile or Logout buttons. */
+:root {
+  --toastify-toast-width: 380px;
+  --toastify-toast-min-height: 48px;
+  --toastify-toast-bd-radius: 12px;
+  --toastify-font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  --toastify-color-success: #059669;
+  --toastify-color-error: #dc2626;
+  --toastify-color-warning: #d97706;
+  --toastify-color-info: #0f766e;
+  --scs-toast-top: 100px; /* header (50px) + menu bar (38px) + gap */
+}
+
+.scs-toast-container.Toastify__toast-container--top-center {
+  top: var(--scs-toast-top);
+  width: min(var(--toastify-toast-width), calc(100vw - 32px));
+  padding: 0;
+}
+
+.scs-toast-container .Toastify__toast {
+  margin-bottom: 8px;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-left-width: 4px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  box-shadow: 0 10px 24px -12px rgba(15, 23, 42, 0.35);
+}
+
+.scs-toast-container .Toastify__toast--success { border-left-color: var(--toastify-color-success); }
+.scs-toast-container .Toastify__toast--error { border-left-color: var(--toastify-color-error); }
+.scs-toast-container .Toastify__toast--warning { border-left-color: var(--toastify-color-warning); }
+.scs-toast-container .Toastify__toast--info { border-left-color: var(--toastify-color-info); }
+
+.scs-toast-container .Toastify__close-button {
+  align-self: center;
+  color: #64748b;
+  opacity: 0.8;
+}
+
+/* Small screens: full width with the page gutter, still below the header */
+@media (max-width: 480px) {
+  .scs-toast-container.Toastify__toast-container--top-center {
+    left: 16px;
+    right: 16px;
+    width: auto;
+    transform: none;
+  }
+}

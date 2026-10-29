@@ -7,7 +7,6 @@ import {
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../Redux/Store";
-// import NFTLogo from "@/assets/Images/NFT_Logo.png";
 import { NavbarProps } from "@/Common/interface";
 import {
   ProfileSvgIcon,

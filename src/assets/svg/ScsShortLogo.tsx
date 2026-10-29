@@ -1,4 +1,4 @@
-const ImShortLogo = () => (
+const ScsShortLogo = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -54,4 +54,4 @@ const ImShortLogo = () => (
     </g>
   </svg>
 );
-export default ImShortLogo;
+export default ScsShortLogo;

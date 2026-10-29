@@ -2,14 +2,7 @@ import React from "react";
 import { toast } from "react-toastify";
 
 export const showSuccessNotification = (message: string) => {
-  toast.success(message, {
-    position: "top-right",
-    autoClose: 6000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-  });
+  toast.success(message);
 };
 
 // export const showErrorNotification = (message: string) => {
@@ -34,12 +27,5 @@ export const showErrorNotification = (content: string | React.ReactNode) => {
         )
       : content;
 
-  toast.error(node, {
-    position: "top-right",
-    autoClose: 6000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-  });
+  toast.error(node, typeof content === "string" ? { toastId: content } : undefined);
 };

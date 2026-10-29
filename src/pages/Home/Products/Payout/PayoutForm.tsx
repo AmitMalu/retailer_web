@@ -76,9 +76,8 @@ const PayoutFormModal = ({
   // };
 
   const validationSchema = Yup.object().shape({
-    bankName: Yup.string().required("Required")
-      .min(2, "Must be at least 2 characters")
-      .max(50, "Must be at most 50 characters"),
+    // holds the selected bank's id (backend resolves the name), so no length rule
+    bankName: Yup.string().required("Required"),
     ifscCode: Yup.string()
       .required("Required")
       .min(11, "Invalid IFSC Code")

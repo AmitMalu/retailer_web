@@ -49,7 +49,7 @@ function App() {
   const apiResponses = useAppSelector((state: any) => state.apiResponse.responses);
 
   // Prevent rendering the app until branding config is fetched.
-  // This avoids showing the default NFTTech branding briefly before
+  // This avoids showing the default SmartCredit branding briefly before
   // tenant-specific branding (logo, colors, favicon, title, etc.) loads.
   const brandingLoaded = useMemo(() => {
     const loaded = apiResponses?.brandingLoaded;
@@ -112,7 +112,7 @@ function App() {
           <Loader />
         </div>
       ) : brandingFailed ? (
-        // Tenant config API failed — do NOT fall back to default NFTTech branding
+        // Tenant config API failed — do NOT fall back to default SmartCredit branding
         // since this may be a white-label deployment
         <ServiceUnavailable />
       ) : (

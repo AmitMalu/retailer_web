@@ -6,20 +6,20 @@ export const getBranding = () => {
   const normalizedBasePath = basePath.endsWith("/") ? basePath : `${basePath}/`;
 
   return {
-    tenantCode: "nfttech",
+    tenantCode: "smartcredit",
     domain: window.location.hostname,
     title: "Smart Credit Solution",
     companyName: "Smart Credit Solution",
 
-    logo: `${normalizedBasePath}branding/nfttech/logo.png`,
-    favicon: `${normalizedBasePath}branding/nfttech/favicon.ico`,
-    loginBgImg: `${normalizedBasePath}branding/nfttech/loginBgImage.png`,
+    logo: `${normalizedBasePath}branding/smartcredit/logo.png`,
+    favicon: `${normalizedBasePath}branding/smartcredit/favicon.ico`,
+    loginBgImg: `${normalizedBasePath}branding/smartcredit/loginBgImage.png`,
 
     welcomeText: "Welcome to your financial hub.",
 
-    terms: `${normalizedBasePath}branding/nfttech/terms.pdf`,
-    privacy: `${normalizedBasePath}branding/nfttech/privacy.pdf`,
-    refund: `${normalizedBasePath}branding/nfttech/refund.pdf`,
+    terms: `${normalizedBasePath}branding/smartcredit/terms.pdf`,
+    privacy: `${normalizedBasePath}branding/smartcredit/privacy.pdf`,
+    refund: `${normalizedBasePath}branding/smartcredit/refund.pdf`,
     primaryColor: "#059669",
     secondaryColor: "#0F172A",
   };

@@ -5,7 +5,7 @@
 
 # Enterprise Portal (`retailer_web`)
 
-Retailer-facing web portal for the Instant Mudra / NFTTech fintech platform. A single-page
+Retailer-facing web portal for the Smart Credit Solution / SmartCredit fintech platform. A single-page
 React app that lets a retailer (and their sub-users) run money-movement products — **AEPS,
 DMT, BBPS / Bill Payment, Recharge, Payout, Payment Gateway, Credit Card, MPOS** — plus
 wallet **Funding**, **Manage User**, **Reports**, and a **Dashboard**.
@@ -65,7 +65,7 @@ REST call to the Spring Boot backend (separate team/repo).
 
 ```bash
 # Node >= 18 (Node 20 LTS recommended), npm >= 8
-git clone https://github.com/Instant-Mudra-Prepaid/retailer_web.git
+git clone https://github.com/AmitMalu/retailer_web.git
 cd retailer_web
 git checkout DEV
 
@@ -89,7 +89,7 @@ template; the real files are git-ignored.
 
 | Var | Purpose |
 |-----|---------|
-| `VITE_SERVER_URL` | Backend REST base URL (e.g. `https://api.nfttech.in/enterprises`) |
+| `VITE_SERVER_URL` | Backend REST base URL (e.g. `https://admin1.utsabpay.com/enterprises`) |
 | `VITE_APP_BASE_PATH` | URL sub-path the app is mounted at. **Must match the nginx `location` / Tomcat context path.** Feeds both `vite.config.ts` `base` and the router `basename`. e.g. prod = `/enterprise`, uat = `/enterprise-portal`. |
 | `VITE_SECRET_KEY` | Key used to AES/PBKDF2-encrypt username+password on the login call. **Must match the backend's value.** |
 | `VITE_DMT_PAYSPRINT_LIVE_ENC_KEY` | AES key (exactly 16 chars) — encrypts Paysprint DMT Remitter eKYC PID data |
@@ -164,7 +164,7 @@ src/
 │   └── websocketService.ts  STOMP/SockJS client for realtime notifications
 ├── Config/
 │   ├── menuItems.ts         sidebar menu definition (labels, paths, icons, role flags)
-│   ├── branding.ts          default (NFTTech) branding + useBranding() hook
+│   ├── branding.ts          default (SmartCredit) branding + useBranding() hook
 │   └── botConfig.ts         chatbot config
 ├── Common/interface.ts      shared TypeScript types (UserRole, ProtectedRouteProps, …)
 ├── Utils/
@@ -199,7 +199,7 @@ branding config** (`apiResponse.responses.brandingLoaded` in Redux, populated by
 
 - loading → full-screen `<Loader/>`
 - branding API **failed** → `<ServiceUnavailable/>` (it deliberately does **not** fall back to
-  default NFTTech branding — on a white-label domain that would show the wrong brand)
+  default SmartCredit branding — on a white-label domain that would show the wrong brand)
 - success → builds the MUI theme from `brandingData.primaryColor / secondaryColor`, renders routes
 
 > A blank/loader screen on a white-label domain almost always means the tenant-config backend
@@ -277,14 +277,14 @@ Biometric flows also use `encryptPidData(pid, key, iv)` (AES-CBC/PKCS7) with the
 
 ```
 User opens https://<customer-domain>
-  → Load Balancer routes it to the same nginx build as portal.nfttech.in
+  → Load Balancer routes it to the same nginx build as portal1.utsabpay.com
   → axios interceptor sends header  X-Tenant-Domain: <customer-domain>
   → backend returns that tenant's branding (logo, colours, favicon, title, policy PDFs)
   → <BrandingInitializer> stores it (encrypted) in Redux → App/index.tsx themes & renders
   → assets load from  https://<customer-domain>/wl-assets/<tenantCode>/<file>
 ```
 
-- Default NFTTech branding: `src/Config/branding.ts` (used only for `portal.nfttech.in`).
+- Default SmartCredit branding: `src/Config/branding.ts` (used only for `portal1.utsabpay.com`).
 - `useBranding()` hook returns the decrypted tenant branding for use in components.
 - Adding a customer needs **no code change** — LB rule + DNS + SSL cert + a backend
   `tenant_branding` DB row + asset uploads (done in Enterprise Admin).
@@ -345,7 +345,7 @@ ports per device brand). Builds `PidOptions` XML — `wadh` is set for **eKYC**,
 | **BBPS** | `/products/billPay`, `/products/credit-card` | `SubProductScreen` → `ServicesScreen` (`Get_Services_List`) → `WrapperFormPage` → `AtoZForm` or `AvenueForm` (dynamic form built from provider field config) → fetch bill → pay → receipt | `GET_SERVICES_LIST`, `GET_PROVIDER_CONFIG`, `FETCH_BILL_DETAILS`, `TRANSACTION`, `BILLAVENUE_*` |
 | **Recharge** | `/products/recharge` | subproduct → `Recharge.tsx`: mobile (lookup auto-detects operator/circle) or DTH → plan drawer / amount → confirm → transact | `RECHARGE_MOBILE_LOOKUP`, `RECHARGE_PLANS`, `RECHARGE_DTH_CUSTOMER_INFO`, `RECHARGE_TRANSACTION` |
 | **Payout** | `/products/payoutScreen` | `PayoutFormModal` add beneficiary → `/Info` list → send payout | `SAVE_BENEFICIARY`, `SEND_PAYOUT` (**shared with Funding Wallet-to-Bank**), `PAYOUT_SUCCESS_CALLBACK` |
-| **PG** | `/products/pgScreen` | `PGFormModal`: card type → 6-digit BIN → `Fetch_Card_Bin_Detail` → card-holder details → `Validate_Transaction` → `Create_Order`. `isIMSubProduct` adds an extra dropdown. | `FETCH_CARD_TYPE`, `VALIDATE_TRANSACTION`, `CREATE_ORDER`, `IM_SUB_PRODUCT_LIST` |
+| **PG** | `/products/pgScreen` | `PGFormModal`: card type → 6-digit BIN → `Fetch_Card_Bin_Detail` → card-holder details → `Validate_Transaction` → `Create_Order`. `isScsSubProduct` adds an extra dropdown. | `FETCH_CARD_TYPE`, `VALIDATE_TRANSACTION`, `CREATE_ORDER`, `SCS_SUB_PRODUCT_LIST` |
 
 Shared helpers: `useTransactionCooldown` (120s duplicate guard, sessionStorage),
 `useWalletBalance` (refetch after txn), per-product `*TransactionReceipt.tsx` + print CSS.
@@ -379,9 +379,9 @@ the VM's nginx serves plain HTTP internally.
 ### Production (nginx static, `main` branch)
 
 nginx on `10.1.3.4` serves this build from `/var/www/enterprise-portal/` on port **81**
-(`portal.nfttech.in`, path `/enterprise/`). Two ways to deploy:
+(`portal1.utsabpay.com`, path `/enterprise/`). Two ways to deploy:
 
-1. **Internal Deployment Console** — `https://admin.nfttech.in/internal/deployment-console/`
+1. **Internal Deployment Console** — `https://admin1.utsabpay.com/internal/deployment-console/`
    → **Deploy Portal** → enter the deploy password. (A Node/PM2 service on `127.0.0.1:4001`
    validates the password and runs the script below.)
 2. **Manual** —
@@ -403,7 +403,7 @@ The script: `git fetch` + `reset --hard origin/<branch>` + `clean -fd` in
 
 On the separate UAT server: `/opt/scripts/deploy-enterprise-portal.sh` (defaults to `DEV`) —
 stops Tomcat, pulls, copies `.env.uat`, `npm ci`, `npm run build:uat`, copies `dist/*` into
-`webapps/enterprise-portal/`, starts Tomcat. Serves `https://uat.nfttech.in/enterprises`.
+`webapps/enterprise-portal/`, starts Tomcat. Serves `https://portal1.utsabpay.com/enterprises`.
 
 > Full infra details (VPN credentials, server layout, PM2, nginx config, white-label NFS)
 > are in the handover bundle handed to the manager — not in this repo.

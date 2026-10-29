@@ -31,7 +31,7 @@ export const API_ROUTES = {
   // WALLET_TO_BANK: `${BASE_URL}/api/send-payout-vo`,
   WALLET_TO_BANK: `${BASE_URL}/api/send-payout`,
   FETCH_HIERARCHY_BANKS: `${BASE_URL}/api/bank-details/verified`,
-  FETCH_ADMIN_BANKS: `${BASE_URL}/api/im-bank/list`,
+  FETCH_ADMIN_BANKS: `${BASE_URL}/api/scs-bank/list`,
 
   ///////////////// CREATE USER //////////////////////////
   CREATE_WHITE_LABEL: `${BASE_URL}/api/white-labels`,
@@ -62,7 +62,7 @@ export const API_ROUTES = {
   FETCH_CARD_TYPE: `${BASE_URL}/api/transaction/fetch-card-bin-details`,
   VALIDATE_TRANSACTION: `${BASE_URL}/api/pg/validate`,
   CREATE_ORDER: `${BASE_URL}/api/pg/create-order`,
-  IM_SUB_PRODUCT_LIST: `${BASE_URL}/api/sub-products/im/list`,
+  SCS_SUB_PRODUCT_LIST: `${BASE_URL}/api/sub-products/scs/list`,
 
   ///////////////// CREATE SUB USER //////////////////////////
   CREATE_SUB_USER: `${BASE_URL}/api/retailer/create-user`,

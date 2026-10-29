@@ -3,7 +3,7 @@ import { decryptData } from "@/Utils/helper";
 import { Card, Table, Text, Group, Divider, Button } from "@mantine/core";
 import { useSelector } from "react-redux";
 import moment from "moment";
-// import ImLogo from '@/assets/svg/ImFullLogo'
+// import ScsLogo from '@/assets/svg/ScsFullLogo'
 import { useTheme } from "@mui/system";
 import "./BillReciept.css";
 import { useBranding } from "@/Config/branding";
@@ -32,7 +32,7 @@ const BillReceipt = ({ data }: { data: any }) => {
             {/* --- Header Section --- */}
             <Group justify="space-between" align="center" mb="md">
                 <Group gap={8}>
-                    {/* <ImLogo /> */}
+                    {/* <ScsLogo /> */}
                     <img
                         style={{
                             width: 120,
