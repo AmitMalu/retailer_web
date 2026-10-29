@@ -39,7 +39,7 @@ const TransactionReciept = ({ data }: { data: any }) => {
                         src={branding?.logo ?? loginData.logoUrl ?? ""}
                         alt={branding?.companyName ?? "Logo"}
                     />
-                    {/* <ImLogo /> */}
+                    {/* <ScsLogo /> */}
                 </Group>
 
                 <Text fw={600} size="sm" ta="right">

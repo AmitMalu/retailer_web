@@ -378,7 +378,7 @@ const SearchRemitterScreen = () => {
             fontWeight={600}
             color={theme.palette.primary.main}
           >
-            Mudra Remit
+            SCS Remit
           </TextComponent>
           <TextComponent
             fontSize={16}

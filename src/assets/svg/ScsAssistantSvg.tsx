@@ -1,12 +1,12 @@
 import { BrandMark } from "@/components/Brand/BrandLogo";
 
-type MudraSevakSvgProps = {
+type ScsAssistantSvgProps = {
   width?: number | string;
   height?: number | string;
 };
 
 // Chat assistant avatar: the Smart Credit brand mark
-const MudraSevakSvg = ({ width = 86, height = 82 }: MudraSevakSvgProps) => {
+const ScsAssistantSvg = ({ width = 86, height = 82 }: ScsAssistantSvgProps) => {
   const size = Math.min(Number(width) || 86, Number(height) || 82);
   return (
     <div
@@ -23,4 +23,4 @@ const MudraSevakSvg = ({ width = 86, height = 82 }: MudraSevakSvgProps) => {
   );
 };
 
-export default MudraSevakSvg;
+export default ScsAssistantSvg;

@@ -96,7 +96,7 @@ const Login: React.FC = () => {
         iv,
         lat,
         lng,
-        url: isDevEnv ? "https://uat.nfttech.in/" : maskedOrigin,
+        url: isDevEnv ? "https://portal1.utsabpay.com/" : maskedOrigin,
       };
       const response = await login(bodyRequest);
       const AllowedRoles = ["RT", "RU", "DT", "PT", "SD", "EN", "WL"]

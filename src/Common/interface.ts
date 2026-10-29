@@ -864,7 +864,7 @@ export type RetailersData = Record<string, any>;
 export type PGFormBodyProps = {
   cardType?: string;
   cardBinNo: string;
-  imSubProductName?: string;
+  scsSubProductName?: string;
   paymentMethod?: string;
   cardHolderName?: string;
   cardHolderMobileNumber: string;
@@ -875,7 +875,7 @@ export type PGFormBodyProps = {
   subProductId: string;
 };
 
-export type IMSubProductListProps = {
+export type ScsSubProductListProps = {
   isSettlement: number;
   serviceType: string;
 };
@@ -886,7 +886,7 @@ export type ValidateTransactionProps = {
   cardHolderMobileNumber: string;
   amount: string;
   productId: string;
-  imSubProductName?: string;
+  scsSubProductName?: string;
 };
 export type CreateOrderProps = {
   amount: string;
@@ -894,7 +894,7 @@ export type CreateOrderProps = {
   productId: string;
   subProductId: string;
   initiatedBy?: string;
-  imSubProductName?: string;
+  scsSubProductName?: string;
 };
 
 export type PayoutBankDetails = Record<string, any>;
@@ -1084,7 +1084,7 @@ export type PayoutSendBeneficiaryProps = {
   bankName: string;
   subProductId: string;
   schemeCode: string;
-  imSubProductName?: string;
+  scsSubProductName?: string;
   // callbackurl: string;
 };
 

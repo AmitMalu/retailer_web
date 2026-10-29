@@ -31,7 +31,7 @@ const BillReceipt = ({ data }: { data: any }) => {
             {/* --- Header Section --- */}
             <Group justify="space-between" align="center" mb="md">
                 <Group gap={8}>
-                    {/* <ImLogo /> */}
+                    {/* <ScsLogo /> */}
                     <img
                         style={{
                             width: 120,

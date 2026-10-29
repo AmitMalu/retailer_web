@@ -4,6 +4,8 @@ import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "react-toastify/dist/ReactToastify.css";
+import "./toast.css";
+import { toastContainerProps } from "./Utils/toastSetup";
 import { ToastContainer } from "react-toastify";
 import "@mantine/core/styles.css";
 import { ErrorBoundary } from "react-error-boundary";
@@ -25,7 +27,7 @@ createRoot(document.getElementById("root")!).render(
           <App />
         </BrowserRouter>
       </ReduxProvider>
-      <ToastContainer />
+      <ToastContainer {...toastContainerProps} />
     </ErrorBoundary>
   </StrictMode>
 );

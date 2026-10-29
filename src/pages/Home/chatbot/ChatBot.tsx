@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/Redux/hooks";
 import { addMessage, clearChat, toggleChat } from "@/Redux/Reducers/chatSlice";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
-import MudraSevakSvg from "@/assets/svg/MudraSevakSvg";
+import ScsAssistantSvg from "@/assets/svg/ScsAssistantSvg";
 import { decryptData } from "@/Utils/helper";
 
 export default function ChatBot() {
@@ -91,7 +91,7 @@ export default function ChatBot() {
     <>
       <style>
         {`
-          @keyframes mudra-sevak-shake {
+          @keyframes scs-assistant-shake {
             0% { transform: translateX(0); }
             20% { transform: translateX(-3px) rotate(-4deg); }
             40% { transform: translateX(3px) rotate(4deg); }
@@ -113,13 +113,13 @@ export default function ChatBot() {
             bottom: 20,
             left: 20,
             zIndex: 9999,
-            animation: isShaking ? "mudra-sevak-shake 0.7s ease-in-out" : "none",
+            animation: isShaking ? "scs-assistant-shake 0.7s ease-in-out" : "none",
             border: "#FFFFFF",
             boxShadow: "0 4px 12px rgba(47, 54, 145, 0.3)",
           }}
           onClick={() => dispatch(toggleChat())}
         >
-          <MudraSevakSvg width={100} height={100} />
+          <ScsAssistantSvg width={100} height={100} />
         </ActionIcon>
       </div>
 
@@ -150,7 +150,7 @@ export default function ChatBot() {
               marginBottom: 8,
             }}
           >
-            <MudraSevakSvg width={44} height={44} />
+            <ScsAssistantSvg width={44} height={44} />
             <Text fw={700} size="sm">
               Smart Sevak
             </Text>

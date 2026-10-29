@@ -3,7 +3,7 @@ import { Modal } from "@mantine/core";
 import React, { useRef, useState } from "react";
 import { useTheme } from "@mui/material";
 import TextComponent from "@/components/Atoms/TextComponent";
-import ImFullLogo from "@/assets/svg/ImFullLogo";
+import ScsFullLogo from "@/assets/svg/ScsFullLogo";
 import ButtonComponent from "@/components/Atoms/ButtonComponent";
 import { PrinterSvgIcon } from "@/assets/svg";
 import { useReactToPrint } from "react-to-print";
@@ -28,7 +28,7 @@ const ReceiptContent = React.forwardRef<
       <div className="flex w-full flex-col border-2 rounded-xl" style={{ borderColor: theme.palette.divider }}>
         <div className="flex items-center justify-between border-b-2" style={{ borderBottomColor: theme.palette.divider }}>
           <div className="flex items-center justify-center border-r-2 p-4 w-[calc(35%-10px)]" style={{ borderRightColor: theme.palette.divider }}>
-            <ImFullLogo />
+            <ScsFullLogo />
           </div>
           <div className="flex p-4 w-[calc(65%-10px)]">
             <TextComponent
@@ -37,7 +37,7 @@ const ReceiptContent = React.forwardRef<
               color="text.primary"
               align="left"
             >
-              Demo/IM-R-009650/9653192852
+              Demo/SCS-R-009650/9653192852
             </TextComponent>
           </div>
         </div>

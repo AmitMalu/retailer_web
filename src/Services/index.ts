@@ -78,7 +78,7 @@ api.interceptors.request.use(
 
     if (tenantDomain) {
       config.headers.set("X-Tenant-Domain", tenantDomain);
-      // config.headers.set("X-Tenant-Domain", "portal.nfttech.in");
+      // config.headers.set("X-Tenant-Domain", "portal1.utsabpay.com");
     }
 
     if (config.isMultipart) {

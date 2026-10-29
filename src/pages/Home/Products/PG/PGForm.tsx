@@ -35,10 +35,10 @@ const PGFormModal = ({
 }: PartnerRegistrationModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBinDetails, setIsBinDetails] = useState(false);
-  const [imSubProductOptions, setImSubProductOptions] = useState<
+  const [scsSubProductOptions, setScsSubProductOptions] = useState<
     { value: string; label: string }[]
   >([]);
-  const [isImSubProductLoading, setIsImSubProductLoading] = useState(false);
+  const [isScsSubProductLoading, setIsScsSubProductLoading] = useState(false);
   const apiResponses = useSelector(
     (state: RootState) => state.apiResponse.responses
   );
@@ -55,17 +55,17 @@ const PGFormModal = ({
       (subProduct: any) => subProduct.subProductId === subProductId
     );
 
-  const isIMSubProduct = Boolean(selectedSubProduct?.isIMSubProduct);
+  const isScsSubProduct = Boolean(selectedSubProduct?.isScsSubProduct);
 
   useEffect(() => {
-    if (!opened || !isIMSubProduct) {
-      setImSubProductOptions([]);
+    if (!opened || !isScsSubProduct) {
+      setScsSubProductOptions([]);
       return;
     }
 
-    const fetchIMSubProducts = async () => {
+    const fetchScsSubProducts = async () => {
       try {
-        setIsImSubProductLoading(true);
+        setIsScsSubProductLoading(true);
         const payload = {
           isSettlement: selectedSubProduct?.isSettlement ? 1 : 0,
           serviceType: "PG",
@@ -76,7 +76,7 @@ const PGFormModal = ({
             value: item.subproduct,
             label: item.title,
           }));
-          setImSubProductOptions(options);
+          setScsSubProductOptions(options);
         } else {
           showErrorNotification(
             response?.data?.msg || "Unable to fetch sub-products"
@@ -85,12 +85,12 @@ const PGFormModal = ({
       } catch (error) {
         await handleCustomError(error);
       } finally {
-        setIsImSubProductLoading(false);
+        setIsScsSubProductLoading(false);
       }
     };
 
-    fetchIMSubProducts();
-  }, [opened, isIMSubProduct, subProductId, selectedSubProduct?.isSettlement]);
+    fetchScsSubProducts();
+  }, [opened, isScsSubProduct, subProductId, selectedSubProduct?.isSettlement]);
 
   const { checkDuplicate, store } = useTransactionCooldown("PG");
 
@@ -102,8 +102,8 @@ const PGFormModal = ({
 
   const validationSchema = Yup.object().shape({
     cardType: Yup.string().required("Required"),
-    ...(isIMSubProduct && {
-      imSubProductName: Yup.string().required("Required"),
+    ...(isScsSubProduct && {
+      scsSubProductName: Yup.string().required("Required"),
     }),
     cardBinNo: Yup.string()
       .max(6, "Enter valid Number")
@@ -150,7 +150,7 @@ const PGFormModal = ({
   const initialValues: PGFormBodyProps = {
     cardType: "",
     cardBinNo: "",
-    imSubProductName: "",
+    scsSubProductName: "",
     paymentMethod: "",
     cardHolderName: "",
     cardHolderMobileNumber: "",
@@ -195,7 +195,7 @@ const PGFormModal = ({
         amount: values.amount,
         productId: values.productId,
         subProductId: values.subProductId,
-        imSubProductName: values.imSubProductName,
+        scsSubProductName: values.scsSubProductName,
       };
 
       const response = await Validate_Transaction(payload);
@@ -223,7 +223,7 @@ const PGFormModal = ({
         productId: values.productId,
         subProductId: values.subProductId,
         schemeCode: selectedSubProduct?.schemeCode ?? "",
-        imSubProductName: values.imSubProductName,
+        scsSubProductName: values.scsSubProductName,
         initiatedBy: loginData?.hierarchyId
       };
 
@@ -371,21 +371,21 @@ const PGFormModal = ({
             return (
               <>
                 <div className="mt-3 flex flex-wrap items-start justify-start gap-3">
-                  {isIMSubProduct && (
+                  {isScsSubProduct && (
                     <div className="w-full sm:w-[calc(50%-12px)]">
                       <DropdownComponent
                         label="SCS Sub Product"
-                        data={imSubProductOptions}
-                        value={values.imSubProductName}
+                        data={scsSubProductOptions}
+                        value={values.scsSubProductName}
                         withAsterisk
-                        disabled={isImSubProductLoading}
+                        disabled={isScsSubProductLoading}
                         onChange={(value) =>
-                          setFieldValue("imSubProductName", value)
+                          setFieldValue("scsSubProductName", value)
                         }
                         error={
-                          touched.imSubProductName &&
-                            errors.imSubProductName
-                            ? errors.imSubProductName
+                          touched.scsSubProductName &&
+                            errors.scsSubProductName
+                            ? errors.scsSubProductName
                             : ""
                         }
                         className="w-max"

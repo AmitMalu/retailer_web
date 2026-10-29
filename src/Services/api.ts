@@ -10,7 +10,7 @@ import {
   FetchBillDetailsProps,
   FetchCardBinDetailProps,
   FetchListParams,
-  IMSubProductListProps,
+  ScsSubProductListProps,
   FetchSubUserRequest,
   ForgotPasswordRequestProps,
   FundReversalFormType,
@@ -277,8 +277,8 @@ export const Validate_Transaction = async (data: ValidateTransactionProps) =>
 export const Create_Order = async (data: CreateOrderProps) =>
   await api.post(`${API_ROUTES.CREATE_ORDER}`, data);
 
-export const Fetch_IM_Sub_Products = async (data: IMSubProductListProps) =>
-  await api.post(`${API_ROUTES.IM_SUB_PRODUCT_LIST}`, data);
+export const Fetch_IM_Sub_Products = async (data: ScsSubProductListProps) =>
+  await api.post(`${API_ROUTES.SCS_SUB_PRODUCT_LIST}`, data);
 
 export const Fetch_Sub_User = async (
   id: string | number,

@@ -46,7 +46,7 @@ const InfoTable = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const location = useLocation();
-  const { payoutType } = location.state as LocationState;
+  const { payoutType } = (location.state ?? {}) as LocationState;
 
   const [showDrawerForm, setShowDrawerForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,10 +55,10 @@ const InfoTable = () => {
   >([]);
   const [isBankList, setIsBankList] = useState<PayoutBankDetails | []>([]);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
-  const [imSubProductOptions, setImSubProductOptions] = useState<
+  const [scsSubProductOptions, setScsSubProductOptions] = useState<
     { value: string; label: string }[]
   >([]);
-  const [isImSubProductLoading, setIsImSubProductLoading] = useState(false);
+  const [isScsSubProductLoading, setIsScsSubProductLoading] = useState(false);
   const { verify: verifyBank } = useBankVerification();
 
   // --- Transfer confirmation dialog ---
@@ -90,17 +90,17 @@ const InfoTable = () => {
       (subProduct: any) => subProduct.subProductId === payoutType?.subProductId
     );
 
-  const isIMSubProduct = Boolean(selectedSubProduct?.isIMSubProduct);
+  const isScsSubProduct = Boolean(selectedSubProduct?.isScsSubProduct);
 
   useEffect(() => {
-    if (!isIMSubProduct) {
-      setImSubProductOptions([]);
+    if (!isScsSubProduct) {
+      setScsSubProductOptions([]);
       return;
     }
 
-    const fetchIMSubProducts = async () => {
+    const fetchScsSubProducts = async () => {
       try {
-        setIsImSubProductLoading(true);
+        setIsScsSubProductLoading(true);
         const payload = {
           isSettlement: 2,
           serviceType: "PAYOUT",
@@ -111,7 +111,7 @@ const InfoTable = () => {
             value: item.subproduct,
             label: item.title,
           }));
-          setImSubProductOptions(options);
+          setScsSubProductOptions(options);
         } else {
           showErrorNotification(
             response?.data?.msg || "Unable to fetch sub-products"
@@ -120,12 +120,12 @@ const InfoTable = () => {
       } catch (error) {
         await handleCustomError(error);
       } finally {
-        setIsImSubProductLoading(false);
+        setIsScsSubProductLoading(false);
       }
     };
 
-    fetchIMSubProducts();
-  }, [isIMSubProduct]);
+    fetchScsSubProducts();
+  }, [isScsSubProduct]);
 
   const GetPayoutDataSubmit = async (pageNum = 1, pageSize = 10, filters: Record<string, any> = {}) => {
     const reqParams: PayoutBankDetailsParams = {
@@ -264,8 +264,8 @@ const InfoTable = () => {
                 return value <= selectedSubProduct.maxAmount;
               }
             ),
-          ...(isIMSubProduct && {
-            imSubProductName: Yup.string().required("Required"),
+          ...(isScsSubProduct && {
+            scsSubProductName: Yup.string().required("Required"),
           }),
         });
 
@@ -279,7 +279,7 @@ const InfoTable = () => {
           subProductId: payoutType?.subProductId || "",
           schemeCode: payoutType?.schemeCode || "",
           bankName: values?.bankName || "",
-          imSubProductName: "",
+          scsSubProductName: "",
           // callbackurl: "https://uat.decipay.in/enterprises/api/payout/callback",
         };
         const handleSubmit = async (values: PayoutSendBeneficiaryProps, bag: any) => {
@@ -295,7 +295,7 @@ const InfoTable = () => {
               subProductId: values.subProductId,
               schemeCode: values.schemeCode,
               bankName: values.bankName,
-              imSubProductName: values.imSubProductName,
+              scsSubProductName: values.scsSubProductName,
 
               // callbackurl: values.callbackurl,
             };
@@ -368,7 +368,7 @@ const InfoTable = () => {
                     className="w-max"
                   />
                 </div>
-                {isIMSubProduct && (
+                {isScsSubProduct && (
                   <div className="w-40 h-10 flex justify-center items-center">
                     <DropdownComponent
                       pY={6}
@@ -377,15 +377,15 @@ const InfoTable = () => {
                       inputFontSize={12}
                       menuFontSize={12}
                       label="SCS Sub Product"
-                      data={imSubProductOptions}
-                      value={values.imSubProductName}
-                      disabled={isImSubProductLoading}
+                      data={scsSubProductOptions}
+                      value={values.scsSubProductName}
+                      disabled={isScsSubProductLoading}
                       onChange={(value) =>
-                        setFieldValue("imSubProductName", value)
+                        setFieldValue("scsSubProductName", value)
                       }
                       error={
-                        touched.imSubProductName && errors.imSubProductName
-                          ? errors.imSubProductName
+                        touched.scsSubProductName && errors.scsSubProductName
+                          ? errors.scsSubProductName
                           : ""
                       }
                       className="w-max"
@@ -426,7 +426,7 @@ const InfoTable = () => {
                     await setTouched({
                       paymentMode: true,
                       amount: true,
-                      imSubProductName: isIMSubProduct,
+                      scsSubProductName: isScsSubProduct,
                     });
                     const errors = await validateForm();
                     if (Object.keys(errors).length > 0) return; // validation failed — stop
