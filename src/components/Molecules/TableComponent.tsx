@@ -505,8 +505,8 @@ const TableComponent: React.FC<TableProps> = ({
 
       <div className="flex justify-between items-center mt-4 bg-background-paper shadow-lg">
         {enablePagination && sortedData.length > 0 && (
-          <div className="flex items-center justify-between gap-4 w-full m-2">
-            <div className="flex items-center w-1/4 gap-3">
+          <div className="flex items-center justify-start gap-4 w-full m-2">
+            <div className="flex items-center gap-3">
               <div>
                 <DropdownComponent
                   data={[

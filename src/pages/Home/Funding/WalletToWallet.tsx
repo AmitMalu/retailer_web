@@ -149,7 +149,7 @@ const WalletToWallet = () => {
               fontWeight={500}
               color="primary.main"
             >
-              Send to Wallet
+              Wallet To Wallet
             </TextComponent>
           </div>
         </div>

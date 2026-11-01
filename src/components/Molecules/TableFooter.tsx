@@ -32,7 +32,7 @@ const TableFooter = ({
     <Table.Tfoot>
       <Table.Tr>
         <Table.Td colSpan={headersLength + (renderExtraRowCell ? 1 : 0)}>
-          <Group justify="space-between" px="md">
+          <Group justify="flex-start" gap="lg" px="md" style={{ position: "sticky", left: 0, width: "fit-content" }}>
             {message && (
               <TextComponent color="text.secondary" fontFamily="Inter" fontSize={14}>
                 {message}
