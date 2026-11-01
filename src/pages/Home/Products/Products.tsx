@@ -183,9 +183,9 @@ export default function Products() {
     <div style={{ scrollbarWidth: "none" }} className="w-full max-w-[1200px] mx-auto py-2">
       <div className="mb-6">
         <h1 className="text-[24px] font-extrabold tracking-tight" style={{ color: theme.palette.text.primary }}>
-          Services
+          Products
         </h1>
-        <p className="mt-1 text-sm text-slate-500">Choose a service to start a transaction.</p>
+        <p className="mt-1 text-sm text-slate-500">Choose a product to start a transaction.</p>
       </div>
 
       {visibleProducts.length === 0 ? (

@@ -180,7 +180,7 @@ const FundTransfer = () => {
               fontWeight={500}
               color="primary.main"
             >
-              Transfer to Network
+              Fund Transfer
             </TextComponent>
           </div>
         </div>

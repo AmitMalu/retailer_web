@@ -89,7 +89,7 @@ const GenericMasterTable = <T,>({
         withColumnBorders
         striped
         highlightOnHover
-        style={{ borderRadius: 8, overflow: "hidden" }}
+        style={{ borderRadius: 8, overflow: "clip" }}
         styles={{
           th: {
             ...thStyle,

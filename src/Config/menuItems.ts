@@ -25,74 +25,74 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
     ? decryptData(apiResponses.loginData)
     : null;
 
-  // Smart Credit Solution naming. Order is display only: sub-user (RU) permissions are keyed
-  // by path (MENU_PATH_TO_ROLE_PATTERN / subRouteMapping), so paths must not change.
+  // Original menu names and order. Sub-user (RU) permissions are keyed by path
+  // (MENU_PATH_TO_ROLE_PATTERN / subRouteMapping), so paths must not change.
   const allMenuItems: MenuItem[] = [
     {
-      name: "Home",
+      name: "Dashboard",
       path: "/dashboard",
       icon: React.createElement(DashboardSvgIcon, { color: "currentColor" }),
     },
     {
-      name: "Services",
+      name: "Manage User",
+      path: "/manageUser",
+      icon: React.createElement(ManageuserSvgIcon, { color: "currentColor" }),
+      roles: ["DT", "SD", "WL", "PT"],
+      subItems: [
+        { name: "Create User", path: "/manageUser/createUser", roles: ["DT", "SD", "WL", "PT"] },
+        { name: "View User", path: "/manageUser/ViewUser", roles: ["DT", "SD", "WL", "PT"] },
+      ],
+    },
+    {
+      name: "Products",
       path: "/products",
       icon: React.createElement(ProductsSvgIcon, { color: "currentColor" }),
       roles: ["RT", "RU"],
     },
     {
-      name: "Wallet",
+      name: "Funding",
       path: "/funding",
       icon: React.createElement(FundingSvgIcon, { color: "currentColor" }),
       roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
       subItems: [
-        { name: "Add Money", path: "/funding/walletToBankFund", roles: ["RT", "DT", "SD", "WL", "PT", "RU"] },
-        { name: "Send to Wallet", path: "/funding/walletToWallet", roles: ["RT", "DT", "SD", "WL", "PT", "RU"] },
-        { name: "Withdraw to Bank", path: "/funding/walletToBank", roles: ["RT", "DT", "SD", "WL", "PT", "RU"] },
-        { name: "Transfer to Network", path: "/funding/fundTransfer", roles: ["DT", "SD", "WL", "PT"] },
-        { name: "Reverse Transfer", path: "/funding/fundReversal", roles: ["DT", "SD", "WL", "PT"] },
+        { name: "Fund Request", path: "/funding/walletToBankFund", roles: ["RT", "DT", "SD", "WL", "PT", "RU"] },
+        { name: "Wallet To Wallet", path: "/funding/walletToWallet", roles: ["RT", "DT", "SD", "WL", "PT", "RU"] },
+        { name: "Move To Bank", path: "/funding/walletToBank", roles: ["RT", "DT", "SD", "WL", "PT", "RU"] },
+        { name: "Fund Transfer", path: "/funding/fundTransfer", roles: ["DT", "SD", "WL", "PT"] },
+        { name: "Fund Reversal", path: "/funding/fundReversal", roles: ["DT", "SD", "WL", "PT"] },
       ],
     },
     {
-      name: "Statements",
+      name: "Settings",
+      path: "/settings",
+      icon: React.createElement(SettingsSvgIcon, { color: "currentColor" }),
+      roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
+      subItems: [{ name: "Create Sub User", path: "/settings/ViewSubUser", roles: ["RT"] }],
+    },
+    {
+      name: "Support",
+      path: "/support",
+      icon: React.createElement(SupportSvgIcon, { color: "currentColor" }),
+      roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
+      subItems: [{ name: "Ticketing System", path: "/support/ticketingSystem", roles: ["RT", "DT", "SD", "WL", "PT", "RU"] }],
+    },
+    {
+      name: "Reports",
       path: "/reports",
       icon: React.createElement(ReportsSvgIcon, { color: "currentColor" }),
       roles: ["DT", "RT", "SD", "WL", "PT", "RU"],
       subItems: [
-        { name: "Transactions", path: "/reports/transaction-report", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
-        { name: "Find a Transaction", path: "/reports/searchTransaction", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
-        { name: "In-Process", path: "/reports/pendingTransaction", roles: ["RT", "RU"] },
-        { name: "Transactions & Wallet", path: "/reports/txn-wallet-report", roles: ["RT", "RU"] },
-        { name: "Wallet Statement", path: "/reports/WalletReport", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
-        { name: "Earnings & Charges", path: "/reports/commissionAndCharges", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
-        { name: "Money Added", path: "/reports/fundLoading", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
-        { name: "Network Activity", path: "/reports/networkTransaction", roles: ["DT", "SD", "WL", "PT"] },
-        { name: "Network Balances", path: "/reports/downLineBalance", roles: ["DT", "SD", "WL", "PT"] },
-        { name: "Debits", path: "/reports/debitHistory", roles: ["DT", "SD", "WL", "PT"] },
+        { name: "Transaction Report", path: "/reports/transaction-report", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
+        { name: "TXN and Wallet Report", path: "/reports/txn-wallet-report", roles: ["RT", "RU"] },
+        { name: "Commission and Charges", path: "/reports/commissionAndCharges", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
+        { name: "Wallet Report", path: "/reports/WalletReport", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
+        { name: "Network Transaction", path: "/reports/networkTransaction", roles: ["DT", "SD", "WL", "PT"] },
+        { name: "Search Transaction", path: "/reports/searchTransaction", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
+        { name: "Fund Loading", path: "/reports/fundLoading", roles: ["DT", "RT", "SD", "WL", "PT", "RU"] },
+        { name: "Pending Transaction", path: "/reports/pendingTransaction", roles: ["RT", "RU"] },
+        { name: "Debit History", path: "/reports/debitHistory", roles: ["DT", "SD", "WL", "PT"] },
+        { name: "Down Line Balance", path: "/reports/downLineBalance", roles: ["DT", "SD", "WL", "PT"] },
       ],
-    },
-    {
-      name: "My Network",
-      path: "/manageUser",
-      icon: React.createElement(ManageuserSvgIcon, { color: "currentColor" }),
-      roles: ["DT", "SD", "WL", "PT"],
-      subItems: [
-        { name: "Add Member", path: "/manageUser/createUser", roles: ["DT", "SD", "WL", "PT"] },
-        { name: "Members", path: "/manageUser/ViewUser", roles: ["DT", "SD", "WL", "PT"] },
-      ],
-    },
-    {
-      name: "Account",
-      path: "/settings",
-      icon: React.createElement(SettingsSvgIcon, { color: "currentColor" }),
-      roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
-      subItems: [{ name: "Sub Users", path: "/settings/ViewSubUser", roles: ["RT"] }],
-    },
-    {
-      name: "Help",
-      path: "/support",
-      icon: React.createElement(SupportSvgIcon, { color: "currentColor" }),
-      roles: ["RT", "DT", "SD", "WL", "PT", "RU"],
-      subItems: [{ name: "Support Tickets", path: "/support/ticketingSystem", roles: ["RT", "DT", "SD", "WL", "PT", "RU"] }],
     },
   ];
 
