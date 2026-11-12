@@ -58,7 +58,7 @@ const CreateUser = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 relative">
       <TextComponent fontSize={30} fontWeight={500} color={"primary"}>
-        User Creation
+        Network Creation
       </TextComponent>
       <div className="relative w-full max-w-3xl h-auto">
         <Box className="relative w-full h-[500px] flex items-center justify-center">

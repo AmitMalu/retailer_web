@@ -133,7 +133,7 @@ const SearchTransactionReport = () => {
     <div className="p-2 w-full h-[calc(100vh-90px)] flex flex-col">
       {/* Heading */}
       <TextComponent fontFamily="Inter" color={theme.palette.primaryExtra.hover} fontWeight={600} fontSize={24}>
-        Search Transaction Report
+        Transaction Search
       </TextComponent>
 
       <Formik

@@ -198,7 +198,7 @@ const FundLoading = () => {
   return (
     <div className="w-full">
       <NewTextComponent fontSize={22} color={theme.palette.primary.main} fontFamily="Inter" fontWeight={600}>
-        FUND LOADING REPORT
+        FUND LOAD HISTORY
       </NewTextComponent>
 
       <Formik

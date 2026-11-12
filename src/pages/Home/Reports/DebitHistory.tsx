@@ -149,7 +149,7 @@ const DebitHistory = () => {
   return (
     <div className="w-full">
       <NewTextComponent fontSize={22} color={theme.palette.primary.main} fontFamily="Inter" fontWeight={600}>
-        DEBIT HISTORY REPORT
+        DEBIT STATEMENT
       </NewTextComponent>
 
       <Formik

@@ -184,7 +184,7 @@ const PendingTransaction = () => {
   return (
     <div className="w-full">
       <NewTextComponent fontSize={22} color={theme.palette.primary.main} fontFamily="Inter" fontWeight={600}>
-        PENDING TRANSACTION REPORT
+        PENDING TRANSACTIONS
       </NewTextComponent>
 
       <Formik

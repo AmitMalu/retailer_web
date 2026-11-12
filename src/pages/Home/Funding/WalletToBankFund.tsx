@@ -236,7 +236,7 @@ const WalletToBankFund = () => {
               fontWeight={500}
               color="primary.main"
             >
-              Fund Request
+              Request Funds
             </TextComponent>
           </div>
         </div>
