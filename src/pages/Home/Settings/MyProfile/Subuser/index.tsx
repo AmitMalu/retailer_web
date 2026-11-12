@@ -142,11 +142,11 @@ const SubuserCreation = () => {
               // ❌ At least one menu with submenus has no submenu selected
               return this.createError({
                 message: `Please select at least one sub-menu for ${menu === "2"
-                  ? "Funding"
+                  ? "Fund Management"
                   : menu === "3"
-                    ? "Settings"
+                    ? "Account Settings"
                     : menu === "4"
-                      ? "Support"
+                      ? "Help & Support"
                       : "Reports"
                   }.`,
               });
@@ -259,21 +259,21 @@ const SubuserCreation = () => {
   };
 
   const chipLabels: Record<string, string> = {
-    "2.1": "Fund Request",
-    "2.2": "Wallet to Wallet",
-    "2.3": "Move to Bank",
+    "2.1": "Request Funds",
+    "2.2": "Wallet Transfer",
+    "2.3": "Transfer to Bank",
     "3.1": "Change TPIN",
     "3.2": "My Certificate",
     "3.3": "Low Balance Alert",
     "4.1": "Bio Metric Device",
-    "4.2": "Ticketing System",
+    "4.2": "Support Tickets",
     "4.3": "Contact Us",
-    "5.1": "Commission and Charges",
-    "5.2": "Wallet Report",
-    "5.3": "Network Transaction",
-    "5.4": "Search Transaction",
-    "5.5": "Fund Loading",
-    "5.6": "Pending Transaction",
+    "5.1": "Commission & Charges",
+    "5.2": "Wallet Statement",
+    "5.3": "Network Transactions",
+    "5.4": "Transaction Search",
+    "5.5": "Fund Load History",
+    "5.6": "Pending Transactions",
     // "5.4": "Account Summary",
     // "5.6": "Download Report",
   };
@@ -295,7 +295,7 @@ const SubuserCreation = () => {
             fontWeight={600}
             color={theme.palette.primary.main}
           >
-            Sub User Creation
+            Manage Sub Users
           </TextComponent>
         </div>
         <div className=" flex w-full flex-col flex-wrap items-center justify-start gap-1">
@@ -663,21 +663,21 @@ const SubuserCreation = () => {
                             value="2"
                             size="md"
                           >
-                            Funding
+                            Fund Management
                           </Chip>
                           <Chip
                             color={theme.palette.primary.main}
                             value="3"
                             size="md"
                           >
-                            Settings
+                            Account Settings
                           </Chip>
                           <Chip
                             color={theme.palette.primary.main}
                             value="4"
                             size="md"
                           >
-                            Support
+                            Help & Support
                           </Chip>
                           <Chip
                             color={theme.palette.primary.main}

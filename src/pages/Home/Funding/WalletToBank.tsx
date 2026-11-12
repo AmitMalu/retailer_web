@@ -181,7 +181,7 @@ const WalletToBank = () => {
               fontWeight={500}
               color="primary.main"
             >
-              Move to bank
+              Transfer to Bank
             </TextComponent>
           </div>
         </div>

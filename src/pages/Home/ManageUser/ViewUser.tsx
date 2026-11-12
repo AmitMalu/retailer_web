@@ -294,7 +294,7 @@ const ViewUser = () => {
                 fontSize={14}
                 fontWeight={600}
               >
-                View User
+                View Network
               </TextComponent>
             </div>
           </div>
