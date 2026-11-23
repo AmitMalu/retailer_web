@@ -6,15 +6,13 @@ import {
   useWalletBalance,
   useSubProductDropdown,
 } from "@/Utils/helper";
-import RetailerDashboard from "@/components/Organism/Dashboard/RetailerDashboard";
-import CommonDashboard from "@/components/Organism/Dashboard/CommonDashboard";
+import SmartDashboard from "@/components/Organism/Dashboard/SmartDashboard";
 import { Dashboard_Api } from "@/Services/api";
 import { showErrorNotification } from "@/Utils/notifications";
 import { handleCustomError } from "@/Utils/handleCustomError";
 import { DateRangeLabel, getLabelFromRange, getRangeFromLabel } from "@/Utils/dateRangeUtils";
 import { DatesRangeValue } from "@mantine/dates";
 import moment from "moment";
-import Loader from "@/components/Atoms/Loader";
 
 export default function Dashboard() {
   const { WalletBalanceReq } = useWalletBalance();
@@ -92,27 +90,17 @@ export default function Dashboard() {
     dashboardDataReq();
   }, [loginData?.hierarchyId, selectedDate]);
 
-  const commonProps = {
-    selectedDate,
-    setSelectedDate,
-    selectedLabel,
-    dashboardData,
-    isLoading,
-  };
-
   return (
-    <>
-      {isLoading && <Loader />}
-      <div style={{
-        scrollbarWidth: "none",
-      }}
-        className="flex h-[calc(100vh-90px)] mx-auto p-4 items-center justify-center">
-        {loginData?.role === "RT" || loginData?.role === "RU" ? (
-          <RetailerDashboard  {...commonProps} />
-        ) : (
-          <CommonDashboard  {...commonProps} />
-        )}
-      </div>
-    </>
+    <div className="mx-auto w-full p-4">
+      <SmartDashboard
+        role={loginData?.role}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        selectedLabel={selectedLabel}
+        dashboardData={dashboardData}
+        isLoading={isLoading}
+        onRefresh={dashboardDataReq}
+      />
+    </div>
   );
 }
